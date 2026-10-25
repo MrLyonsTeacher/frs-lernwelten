@@ -37,7 +37,13 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"quiz", lernen:"empire", typ:"quiz", icon:"👑", titel:"Empire Quiz", art:"Quiz · the big picture",
+    { id:"quiz", E:{plus:[
+        {q:"Which method of protest did Mahatma Gandhi use?", o:["non-violent protest, e.g. the Salt March","a big army","a trade war with China","strikes only in London"], c:0, e:"In **1930** Gandhi walked about 390 km to the sea on the **Salt March**."},
+        {q:"Why did Britain send convicts to Australia?", o:["British prisons were too full","Australia needed tourists","The convicts wanted to go","To find gold"], c:0},
+        {q:"What was the **triangular trade**?", o:["Ships carried goods to Africa, enslaved people to America and sugar or cotton to Britain","A trade only between Britain and India","A game with triangles","A trade with Australia"], c:0},
+        {q:"What is a long-term effect of the empire?", o:["English is spoken in many countries today","Britain still rules India","Everyone uses the pound","All colonies are rich today"], c:0}
+      ]},
+      lernen:"empire", typ:"quiz", icon:"👑", titel:"Empire Quiz", art:"Quiz · the big picture",
       anleitung:"What do you know about the British Empire now? Choose the right answer.",
       anleitungDe:"Was weißt du jetzt über das Britische Weltreich? Wähle die richtige Antwort.",
       tipp:"Tippe auf 📖, wenn du dir die Infokarten oder das Video noch einmal ansehen willst.",
@@ -51,7 +57,12 @@ TH.start({
         {q:"What is the Commonwealth of Nations today?", o:["A group of 56 countries that work together","A British company","Another name for the UK","A new empire"], c:0, e:"Most of the **56 member countries** were once part of the empire."},
         {q:"Which event is often seen as the end of the empire?", o:["Hong Kong was given back to China in 1997","The Olympic Games in 2012","The Battle of Hastings","Jamestown was built"], c:0, e:"**1997**: Britain gave **Hong Kong** back to China."}
       ]},
-    { id:"timeline", typ:"zeitstrahl", icon:"⏳", titel:"Rise and Fall", art:"Timeline · 8 events",
+    { id:"timeline", E:{auto:true, items:[
+        {j:"1600", t:"The East India Company is founded."}, {j:"1607", t:"English settlers build Jamestown in North America."}, {j:"1776", t:"The American colonies declare independence."},
+        {j:"1788", t:"The First Fleet arrives in Australia."}, {j:"1807", t:"Britain bans the slave trade."}, {j:"1833", t:"Slavery is abolished in most of the empire."},
+        {j:"1858", t:"The British Crown starts to rule India."}, {j:"1930", t:"Gandhi leads the Salt March."}, {j:"1947", t:"India and Pakistan become independent."},
+        {j:"1957", t:"Ghana becomes the first independent colony in Africa south of the Sahara."}, {j:"1997", t:"Britain gives Hong Kong back to China."} ]},
+      typ:"zeitstrahl", icon:"⏳", titel:"Rise and Fall", art:"Timeline · 8 events",
       lernen:{ titel:"Rise and fall – the timeline", folien:[
         {bild:"🏢", jahr:"1600", titel:"East India Company", text:"Merchants found the **East India Company** to trade with Asia.", de:"Kaufleute gründen die **East India Company** für den Handel mit Asien."},
         {bild:"🏕️", jahr:"1607", titel:"Jamestown", text:"English settlers build **Jamestown** in North America.", de:"Englische Siedler gründen **Jamestown** in Nordamerika."},
@@ -75,7 +86,8 @@ TH.start({
         {j:"1947", t:"India and Pakistan become independent."},
         {j:"1997", t:"Britain gives Hong Kong back to China."}
       ]},
-    { id:"map", typ:"sortieren", lernen:"empire", icon:"🗺️", titel:"Around the World", art:"Sort · continents",
+    { id:"map", E:{plus:[ {t:"Uganda", k:0}, {t:"Sri Lanka", k:1}, {t:"Belize", k:2}, {t:"Fiji", k:3} ]},
+      typ:"sortieren", lernen:"empire", icon:"🗺️", titel:"Around the World", art:"Sort · continents",
       anleitung:"These countries were once British colonies. On which continent are they? Tap the right box.",
       anleitungDe:"Diese Länder waren einmal britische Kolonien. Auf welchem Kontinent liegen sie? Tippe auf das richtige Kästchen.",
       tipp:"Denk an eine Weltkarte. Oceania = Australien und die Inseln im Pazifik.",
@@ -86,7 +98,8 @@ TH.start({
         {t:"Canada", k:2}, {t:"Jamaica", k:2, e:"**Jamaica** is an island in the Caribbean – part of the Americas."},
         {t:"Australia", k:3}, {t:"New Zealand", k:3}
       ]},
-    { id:"words", typ:"memory", icon:"📚", titel:"Empire Words", art:"Words & meanings · memory",
+    { id:"words", E:{plus:[ {a:"to rule", b:"to have power over a country"}, {a:"non-violent", b:"without fighting or weapons"} ]},
+      typ:"memory", icon:"📚", titel:"Empire Words", art:"Words & meanings · memory",
       anleitung:"Find the pairs: **word + meaning**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Wort + Bedeutung**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"colony = Kolonie, independence = Unabhängigkeit, to rule = herrschen.",
@@ -96,7 +109,13 @@ TH.start({
         {a:"convict", b:"a prisoner who was sent away"}, {a:"trade", b:"buying and selling goods"},
         {a:"slavery", b:"owning people and forcing them to work"}, {a:"Commonwealth", b:"a group of countries that work together"}
       ]},
-    { id:"facts", typ:"swipe", lernen:"empire", icon:"✅", titel:"True or False?", art:"Swipe · facts",
+    { id:"facts", E:{plus:[
+        {t:"Jamestown was the first lasting English settlement in North America.", r:"r", e:"True – it was founded in **1607**."},
+        {t:"Gandhi’s Salt March was a protest against a British tax on salt.", r:"r"},
+        {t:"Canada and Australia are members of the Commonwealth.", r:"r"},
+        {t:"The First Fleet brought free farmers to New Zealand.", r:"l", e:"False – it brought **convicts** to **Australia** (Sydney)."}
+      ]},
+      typ:"swipe", lernen:"empire", icon:"✅", titel:"True or False?", art:"Swipe · facts",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
       anleitungDe:"Stimmt das? Wische nach **rechts für True** (wahr) und nach **links für False** (falsch).",
       tipp:"Lies genau – oft ist nur die Jahreszahl oder das Land falsch.",

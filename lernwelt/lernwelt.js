@@ -839,7 +839,8 @@ const LW = {
       if(nv!=="M") world.levels = world.levels.filter(l => l[nv]!==false).map(l => { let ex = l[nv] && typeof l[nv]==="object" ? l[nv] : null;
         let src = l; if(ex && ex.plus){ const key = {quiz:"fragen", schaetzen:"fragen", swipe:"karten", memory:"paare", sortieren:"items", zeitstrahl:"items", rush:"items", satzbau:"saetze"}[l.typ];
           src = Object.assign({}, l); if(key) src[key] = (l[key]||[]).concat(ex.plus); ex = Object.assign({}, ex); delete ex.plus; ex.auto = ex.auto!==false; }
-        const base = (!ex || ex.auto) ? autoNiveau(src, nv, world) : src; return Object.assign({}, base, ex||{}, {id: l.id+"-"+nv.toLowerCase()}); });
+        const base = (!ex || ex.auto) ? autoNiveau(src, nv, world) : src; const out = Object.assign({}, base, ex||{}, {id: l.id+"-"+nv.toLowerCase()}), arr = out.typ==="memory" ? out.paare : (out.items||out.fragen||out.karten||out.saetze);
+        if(out.art && arr) out.art = out.art.replace(/\b\d+(\s+(events|pairs|cards|questions|sentences|words))/, arr.length+"$1"); return out; });
       if(world[nv] && typeof world[nv]==="object") Object.assign(world, world[nv]); }
     W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
     MAX = W.levels.reduce((a,l)=>a+maxOf(l),0);
