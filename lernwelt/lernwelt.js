@@ -697,7 +697,9 @@ GAMES.schaetzen = (l, A, done) => {
 const normA = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/\bshan't\b/g,"shall not")
   .replace(/n't\b/g," not").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ve\b/g," have").replace(/'ll\b/g," will").replace(/'d\b/g," would").replace(/\b(it|he|she|that|what|there|who|where|here|how)'s\b/g,"$1 is")
   .replace(/can not/g,"cannot").replace(/[.,!?;:"“”()–—-]/g," ").replace(/\s+/g," ").trim();
-const same = (v, ans) => v!==null && v!==undefined && [].concat(ans).some(a => normA(a)===normA(v));
+const normS = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/[.,!?;:"“”()]/g," ").replace(/\s+/g," ").trim(),
+  noArt = v => v.replace(/^(at |in |to |on )?(the |a |an )/,"");
+const same = (v, ans, strict) => v!==null && v!==undefined && [].concat(ans).some(a => strict ? normS(a)===normS(v) : (normA(a)===normA(v) || noArt(normA(a))===noArt(normA(v))));
 
 GAMES.eingabe = (l, A, done) => {
   const qs = l.mischen===false ? l.fragen.slice() : shuffle(l.fragen), P = l.punkte||1, res=[]; let i=0, pts=0, locked=false;
@@ -709,7 +711,7 @@ GAMES.eingabe = (l, A, done) => {
     const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } });
   }
   A.onclick = e => { if(!e.target.closest("#chk") || locked) return; const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
-    locked=true; $("#ans").disabled=true; const ok = same(v, q.a); res.push(ok);
+    locked=true; $("#ans").disabled=true; const ok = same(v, q.a, q.strict); res.push(ok);
     if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e); }
     sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||""), i<qs.length-1?T.next:T.result,
       ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); }); };
@@ -807,7 +809,7 @@ function autoNiveau(l, nv, world){
     switch(c.typ){
       case "lueckentext": c.tippen = true; c.anleitung = "Read the text. Tap a gap and **type** the right word."; c.anleitungDe = "Lies den Text. Tippe auf eine Lücke und **schreibe** das richtige Wort."; break;
       case "quiz": { const ok = c.fragen.every(q => { const a=String(q.o[q.c]); return a.length<=24 && a.split(/\s+/).length<=4; });
-        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, a:[q.o[q.c]].concat(q.alt||[]), e:q.e, tipp:q.o.filter((_,j)=>j!==q.c).length ? "" : ""}));
+        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:[q.o[q.c]].concat(q.alt||[]), e:q.e, tipp:q.o.filter((_,j)=>j!==q.c).length ? "" : ""}));
           c.anleitung = (c.anleitung||"")+" **Type** the answer – no choices this time!"; c.anleitungDe = (c.anleitungDe||"")+" Schreibe die Antwort selbst – diesmal ohne Auswahl!"; }
         else if(c.zeit) c.zeit = Math.max(8, Math.round(c.zeit*.75)); break; }
       case "satzbau": { const all = c.saetze.flatMap(x=>x.w);
@@ -819,7 +821,7 @@ function autoNiveau(l, nv, world){
       case "sortieren": c.koerbe = c.koerbe.map(k=>Object.assign(k,{info:""})); c.anleitung = (c.anleitung||"")+" No examples this time!"; c.anleitungDe = (c.anleitungDe||"")+" Diesmal ohne Beispiele!"; break;
       case "memory": { const de = /german/i.test((c.art||"")+(c.anleitung||"")), Q = p => de ? p.b : p.a, Aw = p => de ? p.a : p.b;
         if((kat!=="country" || de) && c.paare.every(p=>String(Aw(p)).split(/\s+/).length<=4 && String(Aw(p)).length<=24)){
-          c.typ="eingabe"; c.art = de ? "German → English · type" : "Type the partner"; c.fragen = c.paare.map(p=>({q:`**${Q(p)}** → …`, a:String(Aw(p)).split(/\s*\/\s*/).concat(p.alt||[]), e: de ? "" : `${p.a} – ${p.b}`}));
+          c.typ="eingabe"; c.art = de ? "German → English · type" : "Type the partner"; c.fragen = c.paare.map(p=>({q:`**${Q(p)}** → …`, strict: normA(Q(p))===normA(Aw(p)), a:String(Aw(p)).split(/\s*\/\s*/).concat(p.alt||[]), e: de ? "" : `${p.a} – ${p.b}`}));
           c.anleitung = de ? "What’s the English word? **Type** it – check your spelling!" : "What belongs to the word? **Type** the partner.";
           c.anleitungDe = de ? "Wie heißt das Wort auf Englisch? **Schreibe** es – achte auf die Rechtschreibung!" : "Was gehört zu dem Wort? **Schreibe** das passende Gegenstück."; } break; }
     }

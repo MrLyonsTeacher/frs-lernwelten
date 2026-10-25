@@ -43,7 +43,12 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"sights", lernen:"sights", typ:"quiz", icon:"🏰", titel:"Famous Sights", art:"Sights · quiz",
+    { id:"sights", E:{plus:[
+        {q:"What is the real name of the tower with Big Ben?", o:["the Elizabeth Tower","the Victoria Tower","the Tower of London"], c:0, e:"Since 2012 it is called the **Elizabeth Tower**."},
+        {q:"What do the guards at Buckingham Palace wear on their heads?", o:["tall black bearskin hats","red caps","silver helmets"], c:0},
+        {q:"Which sight is the oldest?", o:["the Tower of London","Tower Bridge","the London Eye"], c:0, e:"The Tower was started in **1078**."}
+      ]},
+      lernen:"sights", typ:"quiz", icon:"🏰", titel:"Famous Sights", art:"Sights · quiz",
       anleitung:"Which London sight is it? Choose the right answer.",
       anleitungDe:"Welche Sehenswürdigkeit in London ist gemeint? Wähle die richtige Antwort.",
       tipp:"Denk an die Bilder aus dem Englischbuch: Riesenrad, Palast, Turm, Brücke …",
@@ -57,7 +62,12 @@ TH.start({
         {q:"It is a very tall building made of glass. It looks like a piece of broken glass.", o:["the Shard","the Gherkin","St Paul’s Cathedral"], c:0, e:"**The Shard** is about 310 metres high."},
         {q:"In this big museum you can see mummies from Egypt – and it is free!", o:["the British Museum","Madame Tussauds","the London Dungeon"], c:0, e:"Entry to the **British Museum** is free."}
       ]},
-    { id:"tube", lernen:"tube", typ:"quiz", icon:"🚇", titel:"Mind the Gap!", art:"Travelling in London · quiz",
+    { id:"tube", E:{plus:[
+        {q:"London taxi drivers must learn all the streets. This test is called …", o:["the Knowledge","the Big Test","the Street Quiz"], c:0, e:"The test is called **the Knowledge**."},
+        {q:"You only want to go there, not back. You buy a …", o:["single ticket","return ticket","one ticket"], c:0},
+        {q:"When did the first Tube train run?", o:["in 1863","in 1963","in 1666"], c:0}
+      ]},
+      lernen:"tube", typ:"quiz", icon:"🚇", titel:"Mind the Gap!", art:"Travelling in London · quiz",
       anleitung:"How do you travel in London? Choose the right answer.",
       anleitungDe:"Wie reist man in London? Wähle die richtige Antwort.",
       tipp:"Die Londoner U-Bahn heißt *the Underground* oder *the Tube*.",
@@ -71,7 +81,13 @@ TH.start({
         {q:"In London you can pay for the Tube with a card called …", o:["Oyster card","Fish card","Shell card"], c:0, e:"An **Oyster card** – or a bank card."},
         {q:"In the UK people drive on the …", o:["left","right","middle"], c:0, e:"In the UK you drive on the **left** – look right first when you cross the road!"}
       ]},
-    { id:"facts", typ:"swipe", icon:"✅", titel:"True or False?", art:"London facts · swipe",
+    { id:"facts", E:{plus:[
+        {t:"The Great Fire of London started in a school.", r:"l", e:"False – it started in a **bakery**."},
+        {t:"The Romans called their town Londinium.", r:"r", e:"True – the **Romans** built it about AD 50."},
+        {t:"Tower Bridge can open for tall ships.", r:"r", e:"True – its middle part goes up."},
+        {t:"In London, cars drive on the right.", r:"l", e:"False – in the UK people drive on the **left**."}
+      ]},
+      typ:"swipe", icon:"✅", titel:"True or False?", art:"London facts · swipe",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
       anleitungDe:"Stimmt das? Wische nach **rechts für True** (wahr) und nach **links für False** (falsch).",
       tipp:"Wenn du unsicher bist: Lies die Erklärung danach genau – so lernst du dazu.",

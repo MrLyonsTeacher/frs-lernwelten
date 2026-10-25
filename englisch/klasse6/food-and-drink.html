@@ -47,7 +47,13 @@ TH.start({
       tipp:"Manche Wörter sind leicht (*cheese – Käse*), andere musst du lernen (*peas – Erbsen*).",
       paare:[ {a:"cucumber", b:"Gurke"}, {a:"mushrooms", b:"Pilze"}, {a:"beans", b:"Bohnen"}, {a:"sausage", b:"Würstchen"},
               {a:"peas", b:"Erbsen"}, {a:"onion", b:"Zwiebel"}, {a:"pear", b:"Birne"}, {a:"cheese", b:"Käse"} ]},
-    { id:"british", lernen:"british", typ:"quiz", icon:"🇬🇧", titel:"Typically British", art:"British food · quiz",
+    { id:"british", E:{plus:[
+        {q:"What is **gravy**?", o:["a hot sauce for a Sunday roast","a sweet drink","a kind of bread"], c:0, e:"**Gravy** = Bratensoße."},
+        {q:"When do people traditionally have **afternoon tea**?", o:["at about 4 o’clock","before breakfast","at midnight"], c:0},
+        {q:"Which is NOT part of a **full English breakfast**?", o:["cornflakes","fried eggs","baked beans"], c:0},
+        {q:"In Britain, **crisps** are …", o:["Kartoffelchips","Pommes frites","Kekse"], c:0}
+      ]},
+      lernen:"british", typ:"quiz", icon:"🇬🇧", titel:"Typically British", art:"British food · quiz",
       anleitung:"What do you know about food in Britain? Choose the right answer.",
       anleitungDe:"Was weißt du über das Essen in Großbritannien? Wähle die richtige Antwort.",
       tipp:"Vorsicht, Falle: *chips* sind in Großbritannien Pommes, *crisps* sind Kartoffelchips!",
@@ -61,7 +67,8 @@ TH.start({
         {q:"What do British people often drink with milk?", o:["tea","orange juice","lemonade"], c:0, e:"Most British people drink their **tea with milk**."},
         {q:"In Britain, **pudding** can also mean …", o:["dessert","soup","breakfast"], c:0, e:"“What’s for **pudding**?” = What’s for dessert?"}
       ]},
-    { id:"packs", typ:"sortieren", icon:"🛒", titel:"Shopping Basket", art:"a bottle of, a packet of … · sort",
+    { id:"packs", E:{plus:[ {t:"orange juice", k:0}, {t:"chewing gum", k:1}, {t:"cornflakes", k:3} ]},
+      typ:"sortieren", icon:"🛒", titel:"Shopping Basket", art:"a bottle of, a packet of … · sort",
       anleitung:"How do you buy it? Tap the right box.",
       anleitungDe:"Wie kauft man das? Tippe auf das richtige Kästchen.",
       tipp:"a bottle of = eine Flasche, a packet of = eine Packung, a cup of = eine Tasse, a bowl of = eine Schüssel.",
@@ -71,7 +78,12 @@ TH.start({
               {t:"crisps", k:1}, {t:"biscuits", k:1}, {t:"sweets", k:1},
               {t:"tea", k:2}, {t:"coffee", k:2}, {t:"hot chocolate", k:2},
               {t:"soup", k:3}, {t:"cereal", k:3, e:"**cereal** = Frühstücksflocken – you eat them from a bowl."}, {t:"salad", k:3} ]},
-    { id:"order", lernen:"cafe", typ:"quiz", icon:"🧾", titel:"At the Counter", art:"Ordering food · quiz",
+    { id:"order", E:{plus:[
+        {q:"The waiter asks: “**Would you like** some dessert?” You don’t want any. You say:", o:["No, thank you.","No, I don’t like.","Yes, I wouldn’t."], c:0},
+        {q:"You want the bill. You say:", o:["Can I have the bill, please?","Give me the money.","How many is the bill?"], c:0},
+        {q:"“**Would you like** …?” means …", o:["Möchtest du …?","Magst du …?","Wolltest du …?"], c:0, e:"**Would you like …?** = höfliches Angebot: Möchtest du …?"}
+      ]},
+      lernen:"cafe", typ:"quiz", icon:"🧾", titel:"At the Counter", art:"Ordering food · quiz",
       anleitung:"You are in a British café. What do you say?",
       anleitungDe:"Du bist in einem britischen Café. Was sagst du?",
       tipp:"Höflich bestellen: *Can I have …, please?* – *I’d like …, please.*",
