@@ -19,10 +19,10 @@ export function build(A){
   const blocks = {
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, rock:{side:T.rock},
     quartz:{side:T.quartz}, qbrick:{side:T.qbrick}, qpillar:{side:T.qpillar, top:T.quartz}, roof:{side:T.roof}, gold:{side:T.gold, em:.25}, window:{side:T.window, em:.9},
-    water:{side:T.water, alpha:.75, anim:[0,-.6], em:.2}, pool:{side:T.water, alpha:.8, anim:[.05,.03], em:.15}, cloud:{side:T.cloud, alpha:.92, em:.15},
+    water:{side:T.water, alpha:.75, anim:[0,-.6], em:.2}, pool:{side:T.water, alpha:.8, anim:[.05,.03], em:.15}, cloud:{side:T.cloud, alpha:.92, em:.15, soft:true}, cloudS:{side:T.cloud, em:.3, soft:true},
     blossom:{side:T.leaves}, leaves:{side:T.leavesG}, log:{side:T.log, top:T.logTop}, planks:{side:T.planks},
     woolR:{side:T.woolR}, woolW:{side:T.woolW}, woolY:{side:T.woolY}, iron:{side:T.iron}, rope:{side:T.rope},
-    flowerR:{side:T.flowerR}, flowerY:{side:T.flowerY}, flowerB:{side:T.flowerB}, crystal:{side:T.crystal, em:1.0}, snowP:{side:T.snowP}, lamp:{side:T.lamp, em:1.1}
+    flowerR:{side:T.flowerR}, flowerY:{side:T.flowerY}, flowerB:{side:T.flowerB}, crystal:{side:T.crystal, em:1.0}, snowP:{side:T.snowP}, lamp:{side:T.lamp, em:1.1, scale:.6, halo:[0xFFE6A8,3.4,.75]}
   };
   const W=92, D=70;
   // Schwebende Insel: Oberfläche bei yt, darunter ein zerklüfteter Felskegel
@@ -109,9 +109,9 @@ export function build(A){
   // Wolken als Blöcke
   for(let i=0;i<16;i++){ const cx=rand()*W, cz=rand()*D, cy=6+rand()*30; if(Object.values(S).some(s=>Math.hypot(s.x-cx,s.z-cz)<s.r+4)) continue;
     for(let k=0;k<4;k++){ const ox=cx+(rand()-.5)*8, oz=cz+(rand()-.5)*5; fill(Math.round(ox-2),Math.round(cy),Math.round(oz-1),Math.round(ox+2),Math.round(cy+1),Math.round(oz+1),"cloud"); } }
-  // dichte Wolkenbank hinter dem Schloss – der Adler fliegt ab und zu hindurch
-  for(let i=0;i<26;i++){ const a = Math.PI*(1.18 + i*.025), cx = 46 + Math.cos(a)*30, cz = 16 + Math.sin(a)*22 + (rand()-.5)*3, cy = 44 + (rand()-.5)*4;
-    ellip(cx, cy, cz, 4+rand()*3, 2.2+rand()*1.6, 3+rand()*2, "cloud"); }
+  // dichte Wolkenbänke hinten links und rechts – der Adler taucht hinein und verschwindet ganz
+  for(const a0 of [1.18, 1.62]) for(let i=0;i<7;i++){ const a = Math.PI*(a0 + i*.035), rr = 44 + (rand()-.5)*8, cx = 46 + Math.cos(a)*58*rr/44, cz = 24 + Math.sin(a)*rr, cy = 46 + (rand()-.5)*3;
+    ellip(cx, cy, cz, 10+rand()*4, 7+rand()*2, 12+rand()*3, "cloudS"); ellip(cx+(rand()-.5)*8, cy+5, cz+(rand()-.5)*6, 7, 4, 7, "cloudS"); }
   // Kristalle unter den Inseln
   for(const s of Object.values(S)) for(let i=0;i<6;i++){ const a=rand()*Math.PI*2, x=Math.round(s.x+Math.cos(a)*s.r*.5), z=Math.round(s.z+Math.sin(a)*s.r*.5); let y=s.y-4; while(get(x,y,z) && y>s.y-40) y--; for(let k=0;k<3;k++) set(x,y-k,z,"crystal"); }
 
@@ -130,7 +130,7 @@ export function build(A){
   for(const [x,y,z,r,d] of [[-44,30,-24,9,"tree"],[146,38,-14,10,"tower"],[96,52,-74,12,"fall"],[0,46,-94,9,"tree"],[-96,26,40,8,"fall"],[186,30,58,9,"tree"],[60,64,-150,14,"tower"],[-120,58,-110,12,"tree"],[230,50,-60,11,"fall"],[-70,40,-48,6,"tower"]]) farIsland(x,y,z,r,d);
 
   // Riesiger Adler und kleine Vögel
-  const creatures = [{ ...eagle(), orbit:{c:[46,46,24], r:[58,44], speed:.09, ph:3.6, bob:2, wander:{f:.27, r:.18, y:6, eight:6, dx:10, dz:10, span:10, clear:5}}, scale:.42 },
+  const creatures = [{ ...eagle(), orbit:{c:[46,46,24], r:[58,44], speed:.09, ph:3.6, bob:2, wander:{f:.27, r:.18, y:6, eight:6, dx:10, dz:10, span:10, clear:5}}, scale:.42, cloudHide:"cloudS" },
                      { ...eagle(), orbit:{c:[60,70,-90], r:[90,40], speed:.06, ph:3, bob:4, bank:-.25}, scale:.6, noShadow:true }];
   for(let i=0;i<9;i++) creatures.push({ ...bird(i%3?0xFFFFFF:0xE8EEF8), orbit:{c:[46+(i%3)*2,30+(i%4),30+(i%2)*3], r:[40,24], speed:.12, ph:i*.1, bob:1}, scale:.5, noShadow:true });
   const ship=[]; for(let a=-4;a<=4;a++){ ship.push([a,0,0,0xC08A50],[a,0,1,0xC08A50],[a,0,-1,0xC08A50]); for(let b=-2;b<=2;b++) for(let c=-2;c<=2;c++) if((a/4.6)**2+(b/2.2)**2+(c/2.2)**2<=1) ship.push([a,4+b,c, (a+8)%3?0xF4F4F4:0x3A78E0]); }

@@ -136,6 +136,8 @@ export async function start(o){
     if(d.anim) anim.push([d.side, d.anim], ...(d.top && d.top!==d.side ? [[d.top, d.anim]] : []));
     return mats[t] = [side,side,top,bot,side,side]; };
   let count = 0;
+  let _halo = null; const haloTex = () => _halo || (_halo = (()=>{ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), gr=g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(.18,"rgba(255,255,255,.75)"); gr.addColorStop(.5,"rgba(255,255,255,.18)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })());
   const addStore = (store, cell, isFar) => { const groups = {}, g = store.get; let minY = 1e9; for(const [, b] of store.V) if(b[1]<minY) minY=b[1];
     for(const [, b] of store.V){ const [x,y,z,t] = b; if(!B[t]) continue;
       const vis = B[t].alpha || !solid(g(x+1,y,z)) || !solid(g(x-1,y,z)) || !solid(g(x,y+1,z)) || (y>minY && !solid(g(x,y-1,z))) || !solid(g(x,y,z+1)) || !solid(g(x,y,z-1));
@@ -144,7 +146,12 @@ export async function start(o){
       const mesh = new THREE.InstancedMesh(box, matsFor(t), groups[t].length);
       groups[t].forEach((b,i)=>{ dummy.position.set((b[0]+.5)*cell,(b[1]+.5)*cell,(b[2]+.5)*cell); dummy.scale.setScalar((d.scale||1)*cell); dummy.updateMatrix(); mesh.setMatrixAt(i,dummy.matrix); });
       mesh.castShadow = !isFar && !d.em && !d.alpha; mesh.receiveShadow = !isFar && !d.alpha; if(d.alpha) mesh.renderOrder = 2;
-      mesh.frustumCulled = false; scene.add(mesh); count += groups[t].length; } };
+      mesh.frustumCulled = false; scene.add(mesh); count += groups[t].length;
+      // runder, weicher Lichtschein um Lampen (statt harter Würfelkanten)
+      if(d.halo && !isFar){ const pos = new Float32Array(groups[t].length*3); groups[t].forEach((b,i)=>{ pos[i*3]=b[0]+.5; pos[i*3+1]=b[1]+.5; pos[i*3+2]=b[2]+.5; });
+        const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos,3));
+        const pm = new THREE.Points(g, new THREE.PointsMaterial({color:d.halo[0], size:d.halo[1], map:haloTex(), transparent:true, opacity:d.halo[2]||.85, depthWrite:false, blending:THREE.AdditiveBlending}));
+        pm.frustumCulled = false; pm.renderOrder = 3; scene.add(pm); } } };
   addStore(api.near, 1, false);
   addStore(api.far, world.farCell || api.far.cell || 4, true);
 
@@ -178,7 +185,7 @@ export async function start(o){
     const base = new THREE.Color(p.color);
     if(p.blink){ const cc = new Float32Array(n*3); for(let i=0;i<n;i++){ cc[i*3]=base.r; cc[i*3+1]=base.g; cc[i*3+2]=base.b; } g.setAttribute("color", new THREE.BufferAttribute(cc,3)); }
     const m = new THREE.Points(g, new THREE.PointsMaterial({color:p.blink?0xffffff:p.color, vertexColors:!!p.blink, size:p.size||.3, transparent:true, opacity:p.opacity||.9, depthWrite:false,
-      ...(p.soft||p.blink ? {map:softTex} : {}), ...(p.add||p.blink?{blending:THREE.AdditiveBlending}:{}) }));
+      ...(p.square ? {} : {map:softTex}), ...(p.add||p.blink?{blending:THREE.AdditiveBlending}:{}) }));
     scene.add(m); parts.push({p, g, sp, ph, m, n, base});
   }
   // Rauch / Wolkenschwaden / Nebel
@@ -191,6 +198,7 @@ export async function start(o){
   const creatures = [];
   const legacy = (world.movers||[]).map(mv=>({ parts:[{cubes:mv.cubes.map(([x,y,z,c,em])=>[x,y,z,c,em])}], orbit:{c:mv.center, r:mv.radius, speed:mv.speed, ph:mv.ph, bob:mv.bob, legacyFace:mv.face||0}, scale:mv.scale }));
   for(const cr of (world.creatures||[]).concat(legacy)){
+    if(o.noFly && cr.orbit && cr.orbit.wander) continue;
     const outer = new THREE.Group(); outer.rotation.order = "YXZ"; const inner = new THREE.Group(); inner.scale.setScalar(cr.scale||1); outer.add(inner);
     const movers = [];
     for(const pt of cr.parts){ const pg = new THREE.Group(), piv = pt.pivot || [0,0,0]; pg.position.set(...piv);
@@ -209,7 +217,7 @@ export async function start(o){
   function safeField(R){ if(safeFields.has(R)) return safeFields.get(R);
     const pad = R+12, x0 = -pad-60, z0 = -pad-60, X = world.W+2*pad+120, Z = world.D+2*pad+120, top = new Float32Array(X*Z).fill(-50);
     const put = (x,z,y) => { const i=Math.round(x)-x0, k=Math.round(z)-z0; if(i>=0&&k>=0&&i<X&&k<Z){ const j=k*X+i; if(y>top[j]) top[j]=y; } };
-    for(const [, b] of api.near.V) put(b[0], b[2], b[1]+1);
+    for(const [, b] of api.near.V){ if(B[b[3]] && B[b[3]].soft) continue; put(b[0], b[2], b[1]+1); }
     const fc = world.farCell || api.far.cell || 4; for(const [, b] of api.far.V) for(let a=0;a<fc;a++) for(let c=0;c<fc;c++) put(b[0]*fc+a, b[2]*fc+c, (b[1]+1)*fc);
     const maxPass = (src, r, horiz) => { const out = new Float32Array(src.length);
       for(let k=0;k<Z;k++) for(let i=0;i<X;i++){ let m=-50; for(let d=-r; d<=r; d++){ const ii = horiz ? i+d : i, kk = horiz ? k : k+d; if(ii<0||kk<0||ii>=X||kk>=Z) continue; const v=src[kk*X+ii]; if(v>m) m=v; } out[k*X+i]=m; } return out; };
@@ -299,12 +307,23 @@ export async function start(o){
             const eight = w.eight ? Math.sin(th*2)*w.eight*(.5+.5*Math.sin(a*1.3)) : 0;
             return [cx + Math.cos(th)*rx*f + Math.sin(a*1.7)*(w.dx||0), cy + Math.sin(a*1.4+.3)*(w.y||0) + Math.sin(th*2)*(ob.bob??.6), cz + Math.sin(th)*rz*f + eight + Math.cos(a*1.1)*(w.dz||0)]; };
           const lift = q => { if(sf){ const m = sf(q[0], q[2]) + (ob.wander.clear ?? 10); if(q[1] < m) q[1] = m; } return q; };
-          const p0 = lift(P(t)), p1 = lift(P(t + .02*(ob.dir||1))), p2 = lift(P(t + .04*(ob.dir||1)));
-          outer.position.set(p0[0], p0[1], p0[2]);
-          const h0 = Math.atan2(-(p1[2]-p0[2]), p1[0]-p0[0]), h1 = Math.atan2(-(p2[2]-p1[2]), p2[0]-p1[0]);
-          let turn = h1-h0; if(turn>Math.PI) turn-=2*Math.PI; if(turn<-Math.PI) turn+=2*Math.PI;
-          outer.rotation.y = h0; outer.rotation.x = Math.max(-.6, Math.min(.6, -turn*14)); 
-          outer.rotation.z = Math.max(-.35, Math.min(.35, Math.atan2(p1[1]-p0[1], Math.hypot(p1[0]-p0[0], p1[2]-p0[2]))));
+          const dir = ob.dir||1, p0 = lift(P(t)), pa = lift(P(t + .09*dir)), pb = lift(P(t + .18*dir));
+          // Ziele aus weiter vorausliegenden Punkten, danach weich nachgeführt – keine Ruckler bei Richtungswechseln
+          const hA = Math.atan2(-(pa[2]-p0[2]), pa[0]-p0[0]), hB = Math.atan2(-(pb[2]-pa[2]), pb[0]-pa[0]);
+          let turn = hB-hA; if(turn>Math.PI) turn-=2*Math.PI; if(turn<-Math.PI) turn+=2*Math.PI;
+          const tBank = Math.max(-.5, Math.min(.5, -turn*2.2)), tPitch = Math.max(-.3, Math.min(.3, Math.atan2(pa[1]-p0[1], Math.hypot(pa[0]-p0[0], pa[2]-p0[2]))));
+          const st = cr._s || (cr._s = {y:p0[1], yaw:hA, bank:tBank, pitch:tPitch});
+          const k = o.still ? 1 : 1-Math.exp(-dt*1.6), kr = o.still ? 1 : 1-Math.exp(-dt*2.2);
+          st.y += (p0[1]-st.y)*k;
+          let dy = hA - st.yaw; while(dy>Math.PI) dy-=2*Math.PI; while(dy<-Math.PI) dy+=2*Math.PI; st.yaw += dy*kr;
+          st.bank += (tBank-st.bank)*k; st.pitch += (tPitch-st.pitch)*k;
+          outer.position.set(p0[0], st.y, p0[2]);
+          outer.rotation.y = st.yaw; outer.rotation.x = st.bank; outer.rotation.z = st.pitch;
+          // in Wolken ganz verschwinden: weich ausblenden, solange die Mitte in einer Wolke steckt
+          if(cr.cloudHide){ const g = api.near.get, cxp=Math.round(p0[0]), cyp=Math.round(st.y), czp=Math.round(p0[2]); let n=0;
+            for(let a=-2;a<=2;a+=2) for(let b=-2;b<=2;b+=2) for(let c=-2;c<=2;c+=2) if(g(cxp+a,cyp+b,czp+c)===cr.cloudHide) n++;
+            const tv = n>=6 ? 0 : 1; st.op = st.op ?? 1; st.op += (tv-st.op)*(o.still?1:1-Math.exp(-dt*5));
+            outer.visible = st.op > .03; outer.traverse(m=>{ if(m.material){ m.material.transparent = st.op<.99; m.material.opacity = st.op; } }); }
         } else {
         outer.position.set(cx+Math.cos(t)*rx, cy+Math.sin(t*2)*(ob.bob??.6)*move, cz+Math.sin(t)*rz);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;

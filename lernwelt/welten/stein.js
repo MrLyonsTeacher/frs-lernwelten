@@ -27,7 +27,7 @@ export function build(A){
   const blocks = {
     stone:{side:T.stone}, deep:{side:T.deep}, flag:{side:T.sbrick, top:T.flag}, sbrick:{side:T.sbrick}, chisel:{side:T.chisel, top:T.sbrick}, statue:{side:T.statue},
     gold:{side:T.gold, em:.35}, planks:{side:T.planks}, log:{side:T.log, top:T.planks}, iron:{side:T.iron}, dark:{side:T.dark},
-    lava:{side:T.lava, em:1.25, anim:[.1,.06]}, glow:{side:T.glow, em:1.3}, door:{side:T.door, em:.75}, win:{side:T.win, em:1.0}, rune:{side:T.rune, top:T.sbrick, em:.6},
+    lava:{side:T.lava, em:1.25, anim:[.1,.06]}, glow:{side:T.glow, em:1.3, halo:[0xFFB84A,3.6,.6]}, door:{side:T.door, em:.75}, win:{side:T.win, em:1.0}, rune:{side:T.rune, top:T.sbrick, em:.6},
     amethyst:{side:T.amethyst, em:1.0}, emerald:{side:T.emerald, em:.9}, sapphire:{side:T.sapphire, em:1.0}, ruby:{side:T.ruby, em:.95},
     goldOre:{side:T.goldOre}, diaOre:{side:T.diaOre, em:.15}, woolR:{side:T.woolR}, woolB:{side:T.woolB}, woolY:{side:T.woolY}, shroom:{side:T.shroom, em:1.0},
     chain:{side:T.chain, alpha:.99, cross:true}

@@ -23,7 +23,7 @@ export function build(A){
     snow:{side:T.snowSide, top:T.snow, bottom:T.frost}, snowB:{side:T.snow}, frost:{side:T.frost}, floorIce:{side:T.frost, top:T.floorIce, em:.08},
     iceBrick:{side:T.iceBrick}, iceTrim:{side:T.iceTrim}, carved:{side:T.carved, top:T.iceBrick}, pillar:{side:T.pillar, top:T.pillarTop, em:.38},
     spire:{side:T.spire, top:T.snow}, win:{side:T.win, em:.9}, door:{side:T.door, em:.7}, dark:{side:T.dark},
-    icicle:{side:T.icicle, alpha:.85, em:.35}, crystal:{side:T.crystal, em:1.0}, violet:{side:T.violet, em:1.0}, lamp:{side:T.lamp, em:1.3}, silver:{side:T.silver}
+    icicle:{side:T.icicle, alpha:.85, em:.35}, crystal:{side:T.crystal, em:1.0}, violet:{side:T.violet, em:1.0}, lamp:{side:T.lamp, em:1.3, scale:.6, halo:[0xBFF4FF,3.4,.75]}, silver:{side:T.silver}
   };
   const W=92, D=72, G=5;  // G: Boden
   // Boden: Schnee, eisiger Weg zum Tor, Schneewehen an den Rändern, hinten Eisklippen
