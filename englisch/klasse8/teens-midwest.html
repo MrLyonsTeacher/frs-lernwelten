@@ -41,7 +41,11 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"compare", typ:"swipe", lernen:"school", icon:"🏫", titel:"USA or Germany?", art:"School life · swipe",
+    { id:"compare", E:{plus:[
+        {t:"Many students have a part-time job after school.", r:"r"}, {t:"Students choose their own schedule with many electives.", r:"r"},
+        {t:"Most students go home for lunch.", r:"l"}, {t:"There are different school types like Realschule and Gymnasium.", r:"l"}
+      ]},
+      typ:"swipe", lernen:"school", icon:"🏫", titel:"USA or Germany?", art:"School life · swipe",
       anleitung:"Typical for a US high school or for a German school? Swipe **left for Germany** and **right for USA**.",
       anleitungDe:"Typisch für eine High School in den USA oder eine Schule in Deutschland? Wische nach **links für Deutschland** und nach **rechts für die USA**.",
       tipp:"Denk an Schulbus, Spinde, Wahlfächer und Prom.",
@@ -53,7 +57,12 @@ TH.start({
         {t:"Students say the Pledge of Allegiance in the morning.", r:"r", e:"In many US schools students promise loyalty to the flag."}, {t:"Grades go from 1 (very good) to 6.", r:"l", e:"In the US grades are letters: **A** is the best, **F** means fail."},
         {t:"Students graduate with cap and gown.", r:"r"}, {t:"You can do an Ausbildung after grade 9 or 10.", r:"l"}
       ]},
-    { id:"school", typ:"quiz", lernen:"school", icon:"🎓", titel:"High School Quiz", art:"Quiz",
+    { id:"school", E:{plus:[
+        {q:"A student in **grade 10** is a …", o:["sophomore","junior","freshman"], c:0},
+        {q:"What is **homecoming**?", o:["a school celebration with a football game and a dance","the last day of school","a test at home"], c:0},
+        {q:"What does **GPA** stand for?", o:["grade point average","great people award","general practice area"], c:0}
+      ]},
+      typ:"quiz", lernen:"school", icon:"🎓", titel:"High School Quiz", art:"Quiz",
       anleitung:"What do you know about high school in the USA?",
       anleitungDe:"Was weißt du über die High School in den USA?",
       tipp:"freshman – sophomore – junior – senior",
@@ -66,7 +75,12 @@ TH.start({
         {q:"In many states teens can get a driver's license at …", o:["16","18","21"], c:0},
         {q:"Where do students eat lunch?", o:["in the cafeteria","in the gym","in the locker room"], c:0}
       ]},
-    { id:"storms", typ:"quiz", lernen:"storms", icon:"🌪️", titel:"Tornado Alley", art:"Midwest · quiz",
+    { id:"storms", E:{plus:[
+        {q:"Which river flows through the Midwest to the Gulf of Mexico?", o:["the Mississippi","the Hudson","the Colorado"], c:0},
+        {q:"What is a **siren** for?", o:["to warn people of danger","to play music","to start a race"], c:0},
+        {q:"Why is the Midwest called **the Heartland**?", o:["it is in the middle of the USA and has lots of farms","it has many hospitals","people love Valentine’s Day there"], c:0}
+      ]},
+      typ:"quiz", lernen:"storms", icon:"🌪️", titel:"Tornado Alley", art:"Midwest · quiz",
       anleitung:"What do you know about the Midwest and tornadoes?",
       anleitungDe:"Was weißt du über den Mittleren Westen und Tornados?",
       tipp:"Schau dir das Video und die Infokarten an.",
@@ -79,7 +93,11 @@ TH.start({
         {q:"How many Great Lakes are there?", o:["5","3","10"], c:0},
         {q:"What can you see at Mount Rushmore?", o:["four presidents’ faces","a huge waterfall","the biggest mall"], c:0}
       ]},
-    { id:"day", typ:"zeitstrahl", icon:"⏰", titel:"A Day at Lincoln High", art:"Order · daily routine",
+    { id:"day", E:{auto:true, items:[
+        {j:"6:45 am", t:"Emma takes the yellow school bus."}, {j:"7:45 am", t:"She puts her books in her locker."}, {j:"8:00 am", t:"Everybody says the Pledge of Allegiance."},
+        {j:"9:00 am", t:"She has a chemistry test."}, {j:"11:30 am", t:"She has lunch in the cafeteria."}, {j:"1:00 pm", t:"Her elective: photography."}, {j:"3:00 pm", t:"Soccer practice with the school team."},
+        {j:"5:30 pm", t:"She works at the ice cream shop."}, {j:"8:00 pm", t:"She does her homework."} ]},
+      typ:"zeitstrahl", icon:"⏰", titel:"A Day at Lincoln High", art:"Order · daily routine",
       anleitung:"Put Emma’s school day in the right order – **the earliest first**.",
       anleitungDe:"Bring Emmas Schultag in die richtige Reihenfolge – **das Früheste zuerst**.",
       tipp:"Achte auf die Uhrzeiten nach dem Lösen.",

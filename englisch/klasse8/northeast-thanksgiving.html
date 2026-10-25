@@ -41,7 +41,12 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"ne", typ:"quiz", lernen:"ne", icon:"💦", titel:"Northeast Quiz", art:"Quiz",
+    { id:"ne", E:{plus:[
+        {q:"What was the slogan of the angry colonists?", o:["No taxation without representation!","Tea for everybody!","God save the King!"], c:0},
+        {q:"Which document was signed on 4 July 1776?", o:["the Declaration of Independence","the Magna Carta","the Civil Rights Act"], c:0},
+        {q:"Which states belong to New England?", o:["e.g. Massachusetts, Maine and Vermont","e.g. Texas, Florida and Georgia","e.g. Ohio, Iowa and Kansas"], c:0}
+      ]},
+      typ:"quiz", lernen:"ne", icon:"💦", titel:"Northeast Quiz", art:"Quiz",
       anleitung:"What do you know about the Northeast?",
       anleitungDe:"Was weißt du über den Nordosten der USA?",
       tipp:"Denk an die Infokarten.",
@@ -54,7 +59,10 @@ TH.start({
         {q:"Which is the oldest university in the USA?", o:["Harvard","Stanford","Yale"], c:0},
         {q:"New England is a group of …", o:["six states","six cities","six islands"], c:0}
       ]},
-    { id:"tl", typ:"zeitstrahl", lernen:"tg", icon:"⛵", titel:"From the Mayflower to Independence", art:"Timeline · 6 events",
+    { id:"tl", E:{auto:true, items:[ {j:"1620", t:"The Mayflower arrives at Plymouth."}, {j:"1621", t:"Pilgrims and Wampanoag celebrate the harvest."}, {j:"1636", t:"Harvard University is founded."},
+        {j:"1773", t:"The Boston Tea Party."}, {j:"1775", t:"The War of Independence begins."}, {j:"1776", t:"The Declaration of Independence is signed."},
+        {j:"1789", t:"George Washington becomes the first president."}, {j:"1863", t:"Abraham Lincoln makes Thanksgiving a national holiday."} ]},
+      typ:"zeitstrahl", lernen:"tg", icon:"⛵", titel:"From the Mayflower to Independence", art:"Timeline · 6 events",
       anleitung:"Put the events in the right order – **the oldest first**.",
       anleitungDe:"Bring die Ereignisse in die richtige Reihenfolge – **das älteste zuerst**.",
       tipp:"Die Pilger kamen zuerst, die Unabhängigkeit kam viel später.",
@@ -62,7 +70,12 @@ TH.start({
         {j:"1620", t:"The Mayflower arrives at Plymouth."}, {j:"1621", t:"Pilgrims and Wampanoag celebrate the harvest."}, {j:"1636", t:"Harvard University is founded."},
         {j:"1773", t:"The Boston Tea Party."}, {j:"1776", t:"The Declaration of Independence is signed."}, {j:"1863", t:"Abraham Lincoln makes Thanksgiving a national holiday."}
       ]},
-    { id:"tg", typ:"quiz", lernen:"tg", icon:"🦃", titel:"Thanksgiving Quiz", art:"Quiz",
+    { id:"tg", E:{plus:[
+        {q:"What was the name of the Pilgrims’ ship?", o:["the Mayflower","the Titanic","the Santa Maria"], c:0},
+        {q:"Many Native Americans call Thanksgiving a **National Day of Mourning**. **to mourn** means …", o:["trauern","feiern","danken"], c:0},
+        {q:"Which president made Thanksgiving a national holiday?", o:["Abraham Lincoln","George Washington","Barack Obama"], c:0}
+      ]},
+      typ:"quiz", lernen:"tg", icon:"🦃", titel:"Thanksgiving Quiz", art:"Quiz",
       anleitung:"What do you know about Thanksgiving?",
       anleitungDe:"Was weißt du über Thanksgiving?",
       tipp:"Schau dir das Video an.",
@@ -75,7 +88,8 @@ TH.start({
         {q:"Which pie is typical for Thanksgiving?", o:["pumpkin pie","apple strudel","cheesecake"], c:0},
         {q:"Why is Thanksgiving a sad day for many Native Americans?", o:["settlers later took their land","they don’t like turkey","it is always cold"], c:0}
       ]},
-    { id:"words", typ:"memory", icon:"🍂", titel:"Thanksgiving Words", art:"English – German · memory",
+    { id:"words", E:{plus:[ {a:"corn", b:"Mais"}, {a:"freedom of religion", b:"Religionsfreiheit"} ]},
+      typ:"memory", icon:"🍂", titel:"Thanksgiving Words", art:"English – German · memory",
       anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Wörter rund um Thanksgiving.",

@@ -698,7 +698,7 @@ const normA = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").repla
   .replace(/n't\b/g," not").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ve\b/g," have").replace(/'ll\b/g," will").replace(/'d\b/g," would").replace(/\b(it|he|she|that|what|there|who|where|here|how)'s\b/g,"$1 is")
   .replace(/can not/g,"cannot").replace(/[.,!?;:"“”()–—-]/g," ").replace(/\s+/g," ").trim();
 const normS = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/[.,!?;:"“”()]/g," ").replace(/\s+/g," ").trim(),
-  noArt = v => v.replace(/^(at |in |to |on )?(the |a |an )/,"");
+  noArt = v => v.replace(/^(at |in |to |on )?(the |a |an )/,"").replace(/^to /,"");
 const same = (v, ans, strict) => v!==null && v!==undefined && [].concat(ans).some(a => strict ? normS(a)===normS(v) : (normA(a)===normA(v) || noArt(normA(a))===noArt(normA(v))));
 
 GAMES.eingabe = (l, A, done) => {
@@ -811,7 +811,7 @@ function autoNiveau(l, nv, world){
     switch(c.typ){
       case "lueckentext": c.tippen = true; c.anleitung = "Read the text. Tap a gap and **type** the right word."; c.anleitungDe = "Lies den Text. Tippe auf eine Lücke und **schreibe** das richtige Wort."; break;
       case "quiz": { const ok = c.fragen.every(q => { const a=String(q.o[q.c]); return a.length<=24 && a.split(/\s+/).length<=4; });
-        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:[q.o[q.c]].concat(q.alt||[]), e:q.e, tipp:q.o.filter((_,j)=>j!==q.c).length ? "" : ""}));
+        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:String(q.o[q.c]).split(/\s+\/\s+/).concat(q.alt||[]), e:q.e, tipp:q.o.filter((_,j)=>j!==q.c).length ? "" : ""}));
           c.anleitung = (c.anleitung||"")+" **Type** the answer – no choices this time!"; c.anleitungDe = (c.anleitungDe||"")+" Schreibe die Antwort selbst – diesmal ohne Auswahl!"; }
         else if(c.zeit) c.zeit = Math.max(8, Math.round(c.zeit*.75)); break; }
       case "satzbau": { const all = c.saetze.flatMap(x=>x.w);

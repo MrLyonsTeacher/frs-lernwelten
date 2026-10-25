@@ -35,7 +35,8 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"regions", typ:"sortieren", lernen:"usa", icon:"🧭", titel:"Four Regions", art:"States · sort",
+    { id:"regions", E:{plus:[ {t:"Maine", k:0}, {t:"Minnesota", k:1}, {t:"Georgia", k:2}, {t:"Oregon", k:3} ]},
+      typ:"sortieren", lernen:"usa", icon:"🧭", titel:"Four Regions", art:"States · sort",
       anleitung:"In which region is the state? Tap the right box.",
       anleitungDe:"In welcher Region liegt der Staat? Tippe auf das richtige Kästchen.",
       tipp:"Northeast = oben rechts, Midwest = Mitte oben, South = unten, West = links.",
@@ -60,13 +61,18 @@ TH.start({
         {q:"Tennessee", o:["Nashville","Memphis","Knoxville"], c:0}, {q:"Louisiana", o:["Baton Rouge","New Orleans","Lafayette"], c:0},
         {q:"Nevada", o:["Carson City","Las Vegas","Reno"], c:0}, {q:"Ohio", o:["Columbus","Cleveland","Cincinnati"], c:0}, {q:"Michigan", o:["Lansing","Detroit","Ann Arbor"], c:0}
       ]},
-    { id:"nick", typ:"memory", lernen:"usa", icon:"🏷️", titel:"Nickname Memory", art:"State + nickname · memory",
+    { id:"nick", E:{plus:[ {a:"Washington, D.C.", b:"capital of the USA"}, {a:"Rhode Island", b:"smallest state"} ]},
+      typ:"memory", lernen:"usa", icon:"🏷️", titel:"Nickname Memory", art:"State + nickname · memory",
       anleitung:"Find the pairs: **state + nickname**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Staat + Spitzname**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Gold → Kalifornien (Goldrausch), Sonne → Florida, Stern → Texas.",
       paare:[ {a:"California", b:"Golden State"}, {a:"Texas", b:"Lone Star State"}, {a:"Florida", b:"Sunshine State"}, {a:"New York", b:"Empire State"},
               {a:"Hawaii", b:"Aloha State"}, {a:"Alaska", b:"Last Frontier"}, {a:"Illinois", b:"Land of Lincoln"}, {a:"New Jersey", b:"Garden State"} ]},
-    { id:"facts", typ:"swipe", lernen:"usa", icon:"✅", titel:"True or False?", art:"USA facts · swipe",
+    { id:"facts", E:{plus:[
+        {t:"The 50 stars on the flag stand for the 50 states.", r:"r"}, {t:"Alaska is next to Mexico.", r:"l", e:"False – Alaska is next to **Canada**."},
+        {t:"The mainland USA has four time zones.", r:"r"}, {t:"New York City is the capital of the state of New York.", r:"l", e:"False – the capital is **Albany**."}
+      ]},
+      typ:"swipe", lernen:"usa", icon:"✅", titel:"True or False?", art:"USA facts · swipe",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
       anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
       tipp:"Denk an die Infokarten.",

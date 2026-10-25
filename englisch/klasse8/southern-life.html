@@ -39,7 +39,12 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"culture", typ:"quiz", lernen:"south", icon:"🎺", titel:"Southern Culture", art:"Quiz",
+    { id:"culture", E:{plus:[
+        {q:"Which state is called the **Lone Star State**?", o:["Texas","Georgia","Florida"], c:0},
+        {q:"Many people in Louisiana have French roots. They are called …", o:["Cajuns","Pilgrims","Yankees"], c:0},
+        {q:"Which music style was born in the South from African American music?", o:["the blues","techno","K-pop"], c:0}
+      ]},
+      typ:"quiz", lernen:"south", icon:"🎺", titel:"Southern Culture", art:"Quiz",
       anleitung:"What do you know about the South?",
       anleitungDe:"Was weißt du über den Süden der USA?",
       tipp:"Denk an die Infokarten.",
@@ -52,7 +57,8 @@ TH.start({
         {q:"What is **southern hospitality**?", o:["being very friendly to guests","a hospital in the South","a type of food"], c:0},
         {q:"Where can you see alligators in the wild?", o:["in the Everglades","in Central Park","at Niagara Falls"], c:0}
       ]},
-    { id:"food", typ:"sortieren", lernen:"south", icon:"🍤", titel:"Southern Kitchen", art:"Food · sort",
+    { id:"food", E:{plus:[ {t:"po’boy sandwich", k:0}, {t:"burritos", k:1}, {t:"gospel", k:2} ]},
+      typ:"sortieren", lernen:"south", icon:"🍤", titel:"Southern Kitchen", art:"Food · sort",
       anleitung:"Where does it come from? Tap the right box.",
       anleitungDe:"Woher kommt es? Tippe auf das richtige Kästchen.",
       tipp:"Louisiana: französische/kreolische Küche. Texas: Tex-Mex. Musik: jazz, blues, country.",
@@ -62,7 +68,9 @@ TH.start({
         {t:"nachos", k:1}, {t:"fajitas", k:1}, {t:"chili con carne", k:1}, {t:"quesadillas", k:1},
         {t:"jazz", k:2}, {t:"blues", k:2}, {t:"country", k:2}, {t:"rock 'n' roll", k:2}
       ]},
-    { id:"rights", typ:"zeitstrahl", lernen:"rights", icon:"⚖️", titel:"The Fight for Equal Rights", art:"Timeline · 5 events",
+    { id:"rights", E:{auto:true, items:[ {j:"1863", t:"Abraham Lincoln’s Emancipation Proclamation."}, {j:"1865", t:"Slavery ends in the USA."}, {j:"1955", t:"Rosa Parks refuses to give up her seat on the bus."},
+        {j:"1963", t:"Martin Luther King Jr.: “I have a dream.”"}, {j:"1964", t:"The Civil Rights Act becomes law."}, {j:"1968", t:"Martin Luther King Jr. is killed in Memphis."}, {j:"2009", t:"Barack Obama becomes the first Black president."} ]},
+      typ:"zeitstrahl", lernen:"rights", icon:"⚖️", titel:"The Fight for Equal Rights", art:"Timeline · 5 events",
       anleitung:"Put the events in the right order – **the oldest first**.",
       anleitungDe:"Bring die Ereignisse in die richtige Reihenfolge – **das älteste zuerst**.",
       tipp:"Erst der Busstreik, dann die Rede, dann das Gesetz.",
@@ -70,7 +78,12 @@ TH.start({
         {j:"1865", t:"Slavery ends in the USA."}, {j:"1955", t:"Rosa Parks refuses to give up her seat on the bus."},
         {j:"1963", t:"Martin Luther King Jr.: “I have a dream.”"}, {j:"1964", t:"The Civil Rights Act becomes law."}, {j:"2009", t:"Barack Obama becomes the first Black president."}
       ]},
-    { id:"rq", typ:"quiz", lernen:"rights", icon:"✊", titel:"Civil Rights Quiz", art:"Quiz",
+    { id:"rq", E:{plus:[
+        {q:"How long did the Montgomery bus boycott last?", o:["about a year","one day","ten years"], c:0, e:"From December 1955 to December 1956 – **381 days**."},
+        {q:"Where did Martin Luther King Jr. give his “I have a dream” speech?", o:["in Washington, D.C.","in New Orleans","in Los Angeles"], c:0},
+        {q:"What is **equal rights**?", o:["the same rights for all people","more rights for rich people","rights only for adults"], c:0}
+      ]},
+      typ:"quiz", lernen:"rights", icon:"✊", titel:"Civil Rights Quiz", art:"Quiz",
       anleitung:"What do you know about the civil rights movement?",
       anleitungDe:"Was weißt du über die Bürgerrechtsbewegung?",
       tipp:"Schau dir das Video an.",

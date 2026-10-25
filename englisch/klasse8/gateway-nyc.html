@@ -34,7 +34,12 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"sights", typ:"quiz", lernen:"nyc", icon:"🏙️", titel:"Sightseeing Quiz", art:"Quiz",
+    { id:"sights", E:{plus:[
+        {q:"What was the first name of New York?", o:["New Amsterdam","New London","New Holland"], c:0, e:"Dutch settlers called it **New Amsterdam**."},
+        {q:"What is **Wall Street** famous for?", o:["the stock exchange","musicals","a big zoo"], c:0},
+        {q:"How tall is One World Trade Center in feet?", o:["1,776 feet – like the year of independence","1,000 feet","2,024 feet"], c:0}
+      ]},
+      typ:"quiz", lernen:"nyc", icon:"🏙️", titel:"Sightseeing Quiz", art:"Quiz",
       anleitung:"Which place is it? Choose the right answer.",
       anleitungDe:"Welcher Ort ist gemeint? Wähle die richtige Antwort.",
       tipp:"Denk an das Video und die Infokarten.",
@@ -48,13 +53,17 @@ TH.start({
         {q:"What is New York’s nickname?", o:["the Big Apple","the Windy City","the Big Easy"], c:0, e:"*The Windy City* = Chicago, *The Big Easy* = New Orleans."},
         {q:"Which one is **not** a borough of New York City?", o:["Hollywood","Brooklyn","Queens"], c:0, e:"Hollywood is in **Los Angeles**."}
       ]},
-    { id:"boro", typ:"memory", icon:"🗺️", titel:"Five Boroughs", art:"Place + fact · memory",
+    { id:"boro", E:{plus:[ {a:"New Amsterdam", b:"Dutch name of New York"}, {a:"the Big Apple", b:"nickname of New York"} ]},
+      typ:"memory", icon:"🗺️", titel:"Five Boroughs", art:"Place + fact · memory",
       anleitung:"Find the pairs: **place + fact**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Ort + Information**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Lies die Infokarten noch einmal, wenn du unsicher bist.",
       paare:[ {a:"Manhattan", b:"Times Square & Central Park"}, {a:"Brooklyn", b:"famous bridge since 1883"}, {a:"Staten Island", b:"free ferry past the Statue of Liberty"}, {a:"the Bronx", b:"home of the Yankees & hip hop"},
               {a:"Queens", b:"most languages in the city"}, {a:"Ellis Island", b:"12 million immigrants"}, {a:"Wall Street", b:"stock exchange"}, {a:"Broadway", b:"theaters & musicals"} ]},
-    { id:"ellis", typ:"zeitstrahl", icon:"📜", titel:"New York Through Time", art:"Timeline · 7 events",
+    { id:"ellis", E:{auto:true, items:[ {j:"1625", t:"Dutch settlers start New Amsterdam."}, {j:"1664", t:"The English rename the town New York."}, {j:"1776", t:"The colonies declare independence."},
+        {j:"1883", t:"The Brooklyn Bridge opens."}, {j:"1886", t:"The Statue of Liberty is opened."}, {j:"1892", t:"Ellis Island opens."}, {j:"1931", t:"The Empire State Building is finished."},
+        {j:"1954", t:"Ellis Island closes."}, {j:"2014", t:"One World Trade Center opens."} ]},
+      typ:"zeitstrahl", icon:"📜", titel:"New York Through Time", art:"Timeline · 7 events",
       lernen:{ titel:"New York through time", folien:[
         {bild:"⛵", jahr:"1625", titel:"New Amsterdam", text:"Dutch settlers start a town on Manhattan: **New Amsterdam**.", de:"Niederländische Siedler gründen auf Manhattan **Nieuw Amsterdam**."},
         {bild:"🇬🇧", jahr:"1664", titel:"New York", text:"The English take the town and rename it **New York**.", de:"Die Engländer übernehmen die Stadt und nennen sie **New York**."},

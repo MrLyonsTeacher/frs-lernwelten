@@ -40,7 +40,9 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"tl", typ:"zeitstrahl", lernen:"gold", icon:"⛏️", titel:"Gold Rush Timeline", art:"Timeline · 6 events",
+    { id:"tl", E:{auto:true, items:[ {j:"1769", t:"Spanish missionaries build the first mission in San Diego."}, {j:"1848", t:"Gold is found at Sutter’s Mill."}, {j:"1849", t:"Thousands of forty-niners arrive."}, {j:"1850", t:"California becomes the 31st state."},
+        {j:"1873", t:"Levi Strauss and Jacob Davis get a patent for jeans."}, {j:"1937", t:"The Golden Gate Bridge opens."}, {j:"1955", t:"Disneyland opens in Anaheim."}, {j:"1976", t:"Apple is founded in a garage in Silicon Valley."} ]},
+      typ:"zeitstrahl", lernen:"gold", icon:"⛏️", titel:"Gold Rush Timeline", art:"Timeline · 6 events",
       anleitung:"Put the events in the right order – **the oldest first**.",
       anleitungDe:"Bring die Ereignisse in die richtige Reihenfolge – **das älteste zuerst**.",
       tipp:"Erst das Gold, dann die Menschen, dann der neue Staat …",
@@ -48,7 +50,12 @@ TH.start({
         {j:"1848", t:"Gold is found at Sutter’s Mill."}, {j:"1849", t:"Thousands of forty-niners arrive."}, {j:"1850", t:"California becomes the 31st state."},
         {j:"1873", t:"Levi Strauss and Jacob Davis get a patent for jeans."}, {j:"1937", t:"The Golden Gate Bridge opens."}, {j:"1955", t:"Disneyland opens in Anaheim."}
       ]},
-    { id:"gold", typ:"quiz", lernen:"gold", icon:"✨", titel:"Gold Rush Quiz", art:"Quiz",
+    { id:"gold", E:{plus:[
+        {q:"Why were they called **forty-niners**?", o:["because most of them came in 1849","because there were 49 of them","because they were 49 years old"], c:0},
+        {q:"Who often became richer than the gold diggers?", o:["people who sold food, tools and clothes to them","the Native Americans","the soldiers"], c:0, e:"Shop owners like **Levi Strauss** made a lot of money."},
+        {q:"In which year did California become a US state?", o:["1850","1776","1900"], c:0}
+      ]},
+      typ:"quiz", lernen:"gold", icon:"✨", titel:"Gold Rush Quiz", art:"Quiz",
       anleitung:"What do you know about the Gold Rush?",
       anleitungDe:"Was weißt du über den Goldrausch?",
       tipp:"Schau dir das Video an.",
@@ -60,13 +67,18 @@ TH.start({
         {q:"What did miners need – and Levi Strauss sold?", o:["strong trousers (jeans)","smartphones","surfboards"], c:0},
         {q:"What did the Gold Rush mean for many Native Americans?", o:["they lost their land and many died","they all became rich","nothing changed"], c:0}
       ]},
-    { id:"west", typ:"memory", lernen:"west", icon:"🎬", titel:"California Hotspots", art:"Place + fact · memory",
+    { id:"west", E:{plus:[ {a:"Route 66", b:"famous road from Chicago to L.A."}, {a:"San Diego", b:"city near the Mexican border"} ]},
+      typ:"memory", lernen:"west", icon:"🎬", titel:"California Hotspots", art:"Place + fact · memory",
       anleitung:"Find the pairs: **place + fact**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Ort + Information**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Lies die Infokarten.",
       paare:[ {a:"Hollywood", b:"film industry"}, {a:"Silicon Valley", b:"tech companies"}, {a:"Golden Gate Bridge", b:"red bridge, 1937"}, {a:"Death Valley", b:"one of the hottest places"},
               {a:"Yosemite", b:"national park with waterfalls"}, {a:"Sacramento", b:"state capital"}, {a:"Sutter's Mill", b:"gold found in 1848"}, {a:"Santa Monica", b:"end of Route 66"} ]},
-    { id:"facts", typ:"swipe", lernen:"west", icon:"✅", titel:"True or False?", art:"California facts · swipe",
+    { id:"facts", E:{plus:[
+        {t:"Silicon Valley is near San Francisco.", r:"r"}, {t:"Yosemite is a big city in the south of California.", r:"l", e:"False – **Yosemite** is a **national park**."},
+        {t:"Route 66 ends in Santa Monica.", r:"r"}, {t:"Levi Strauss invented the smartphone.", r:"l", e:"False – he sold **jeans** to the miners."}
+      ]},
+      typ:"swipe", lernen:"west", icon:"✅", titel:"True or False?", art:"California facts · swipe",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
       anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
       tipp:"Denk an die Infokarten.",
