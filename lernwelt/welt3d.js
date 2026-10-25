@@ -198,6 +198,14 @@ export async function start(o){
       ...(p.square ? {} : {map:softTex}), ...(p.add||p.blink?{blending:THREE.AdditiveBlending}:{}) }));
     scene.add(m); parts.push({p, g, sp, ph, m, n, base});
   }
+  // Vulkanausbruch: in Schüben fliegen glühende Lavabrocken im Bogen aus dem Krater
+  const bombs = [];
+  if(world.bombs){ const bw = world.bombs, mat = new THREE.MeshBasicMaterial({color:bw.color||0xFFB040}), geo = new THREE.BoxGeometry(1,1,1);
+    for(let i=0;i<(bw.n||16);i++){ const g = new THREE.Group(), m = new THREE.Mesh(geo, mat); m.scale.setScalar((bw.size||1)*(.6+api.rand()*.7)); g.add(m);
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:bw.glow||0xFF7A1A, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:.9})); sp.scale.setScalar((bw.size||1)*(bw.glowSize||3)); g.add(sp);
+      const a = api.rand()*Math.PI*2, hs = (bw.speed||[6,14])[0] + api.rand()*((bw.speed||[6,14])[1]-(bw.speed||[6,14])[0]), vs = (bw.up||[14,22])[0] + api.rand()*((bw.up||[14,22])[1]-(bw.up||[14,22])[0]);
+      g.userData = {v:[Math.cos(a)*hs, vs, Math.sin(a)*hs*.8 + (bw.biasZ||0)], off: api.rand()*(bw.burst||1.6), spin: api.rand()*4}; g.visible = false; scene.add(g); bombs.push(g); }
+    if(bw.light){ const L = new THREE.PointLight(bw.light[0], 0, bw.light[2]||80, 2); L.position.set(...bw.pos); scene.add(L); bombs.light = L; } }
   // Rauch / Wolkenschwaden / Nebel
   const puffs = [];
   if(world.puffs){ const pt = softTex;
@@ -302,6 +310,12 @@ export async function start(o){
     for(const s of puffs){ const pf=s.userData.pf; s.userData.t=(s.userData.t+dt*(pf.speed||.05))%1; const t=s.userData.t;
       s.position.set(pf.pos[0]+(pf.dx||0)*t+Math.sin(t*6+s.userData.ox*9)*(pf.spread||2), pf.pos[1]+(pf.dy||0)*t + (pf.ry? (s.userData.oz-.5)*pf.ry : 0), pf.pos[2]+(pf.dz||0)*t+s.userData.ox*(pf.spread||2)*(pf.sz||1));
       const sc=(pf.s0||4)+t*(pf.s1||12); s.scale.set(sc,sc*(pf.flat||1),1); s.material.opacity=(pf.opacity||.5)*Math.sin(Math.PI*t); }
+    if(bombs.length){ const bw = world.bombs, P = bw.period||10, g = bw.g||-16, life = bw.life||4; let flash = 0;
+      for(const b of bombs){ const u = b.userData, ph = (tt - u.off) % P, s = ph < 0 ? ph + P : ph;
+        if(s < life){ const y = bw.pos[1] + u.v[1]*s + .5*g*s*s; b.visible = y > (bw.floor ?? 0); b.position.set(bw.pos[0]+u.v[0]*s, y, bw.pos[2]+u.v[2]*s); b.children[0].rotation.set(s*u.spin, s*u.spin*.7, 0); }
+        else b.visible = false; }
+      { const s0 = ((tt % P) + P) % P; flash = s0 < 2.2 ? Math.sin(s0/2.2*Math.PI) : 0; }
+      if(bombs.light) bombs.light.intensity = bw.light[1]*flash; }
     for(const r of rays){ r.material.opacity = .08 + .08*Math.sin(now/1500 + r.userData.ph); }
     for(const {b, pivot, m} of beams){ const tb = o.still ? (o.stillTime||12) : (now-clock0)/1000, ph=b.ph||0, sp=b.speed||.25;
       pivot.rotation.z = (b.tilt??.35)*Math.sin(tb*sp+ph); pivot.rotation.x = (b.tilt??.35)*.6*Math.cos(tb*sp*.8+ph); m.material.opacity = (b.opacity||.22)*(.75+.25*Math.sin(tb*1.3+ph*2)); }

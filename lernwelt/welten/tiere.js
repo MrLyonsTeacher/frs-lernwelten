@@ -290,3 +290,44 @@ export function bat(){
   const w = M().poly([[1.5,1],[0,5],[-1,8],[-2,9],[-3,6],[-3,4],[-2,1]], ()=>0, (x,y,z)=> (Math.round(z)%3===0) ? B : MEM); w.line([1,0,1],[-1,0,8],B);
   return { parts:[ part(body,[0,0,0]), part(w,[0,0,1],["x",1.0,14,0]), part(w.mirrorZ(),[0,0,-1],["x",-1.0,14,0]) ], noShadow:true };
 }
+
+/* ---------- Feuersalamander (Feuerwelt, doppelte Auflösung, scale ≈ .22) ---------- */
+export function salamander(o={}){
+  const B=o.col||0x2A1A1E, B2=0x3A2428, SPOT=o.spot||0xFF8A1A, SPOT2=0xFFC23A, BEL=0x5A2A20, EYE=0xFFE860, step=o.walk ? (o.speed||9) : 0;
+  const skin = (x,y,z) => { if(y < 1) return BEL; const k=Math.abs(Math.sin(x*.9+z*1.7)+Math.cos(x*.5-z*.9)); return k>1.45 ? SPOT2 : k>1.15 ? SPOT : ((Math.round(x)+Math.round(z))%3===0 ? B2 : B); };
+  const body = M();
+  body.ell(0,3,0,7,2.4,3.2,skin).ell(6,3.4,0,3,2.4,2.8,skin);
+  for(let x=-6;x<=6;x+=2) body.put(x,5.6,0,SPOT,1);                                    // glühende Rückenlinie
+  const head = M();
+  head.ell(10,3.6,0,3,2,2.6,skin).ell(13,3.2,0,2,1.4,2,skin).box(14,2,-1,15,2,1,BEL);
+  head.put(11,5,-2,EYE,1).put(11,5,2,EYE,1).put(12,5,-2,0x1A0A04).put(12,5,2,0x1A0A04);
+  const tail = M(); tail.seg([-6,3,0],[-12,2.6,0],2.2,1.4,skin).seg([-12,2.6,0],[-18,2,0],1.4,.6,skin);
+  for(let x=-8;x>=-16;x-=2) tail.put(x,4,0,SPOT,1);
+  const parts = [ part(body,[0,0,0]), part(head,[8,3.5,0],["y",.25,.8,0]), part(tail,[-6,3,0],["y",.35,step?step*.5:1.2,0]) ];
+  [[4,-3,0],[4,3,Math.PI],[-4,-3,Math.PI],[-4,3,0]].forEach(([lx,lz,ph])=>{ const l=M(), s=Math.sign(lz);
+    l.seg([lx,2.6,lz],[lx+1,1.2,lz+2*s],1,.9,skin).box(lx+1,0,lz+2*s-1,lx+2,0,lz+2*s+1,B2);
+    parts.push({...part(l,[lx,2.6,lz], step?["y",.5,step,ph]:null), gait:true}); });
+  return { parts };
+}
+
+/* ---------- Phönix (Feuerwelt) – leuchtend, mit langen Schwanzfedern (scale ≈ .45) ---------- */
+export function phoenix(o={}){
+  const R=0xE8401A, O=0xFF7A1A, Y=0xFFC23A, W=0xFFF0B0, D=0x8A1A0A, BEAK=0xF2C238;
+  const plume = (x,y,z) => { const k=((Math.round(x)+Math.round(z))%4+4)%4; return k===0 ? Y : k===1 ? O : R; };
+  const body = M();
+  body.ell(0,0,0,7,3.2,3.2,plume,1).ell(5,1,0,3.4,3.2,3,(x,y,z)=> y>2 ? Y : O,1).ell(8.5,3,0,2.8,2.6,2.4,(x,y,z)=> y>4 ? W : Y,1);
+  body.box(11,2,0,12,3,0,BEAK).put(13,2,0,BEAK).put(10,4,-2,0x1A0A04).put(10,4,2,0x1A0A04);
+  for(let k=0;k<5;k++) body.put(7-k*.6,5+k*.9,0,k>2?W:Y,1);                         // Federkrone
+  for(const s of [-1,0,1]) for(let k=0;k<16;k++){ const x=-6-k, z=s*(1+k*.18), y=-.5-k*.12+Math.sin(k*.6)*.6; body.put(x,y,z, k>12 ? W : k>8 ? Y : k>4 ? O : R, 1); }
+  for(const s of [-1,1]) for(let k=0;k<11;k++) body.put(-6-k, .5+k*.08, s*(2.5+k*.35), k>8?Y:R, 1);
+  const wing = M(), tip = M(); const wy = z => 1 + Math.round(z*.05);
+  wing.poly([[5,3],[4,10],[2,18],[-5,18],[-6,10],[-4,3]], (x,z)=>wy(z), (x,y,z)=> x>2 ? Y : x>-1 ? O : R, 1);
+  for(let z=4; z<=18; z+=2) for(let k=0;k<4;k++) wing.put(-6-k, wy(z), z, k>1 ? W : Y, 1);
+  for(let i=0;i<5;i++){ const z0=18+i*1.4; for(let k=0;k<9+i;k++) tip.put(2-k*.9, wy(z0)+k*.04, z0+k*(.3+i*.08), k>6 ? W : k>3 ? Y : O, 1); }
+  if(o.perch){ // sitzend: Beine mit Krallen, Flügel halb angelegt, langsames Flattern und Kopfnicken
+    for(const z of [-1.5,1.5]) body.box(1,-5,z,1,-3,z,0x5A2A10).box(1,-6,z-1,3,-6,z+1,0x3A1A0A);
+    return { parts:[ part(body,[0,0,0]), part(wing,[1,1,3],["x",.45,.9,0,.7]), {...part(tip,[1,2,18],["x",.3,.9,-.5,.4]), parent:1},
+      part(wing.mirrorZ(),[1,1,-3],["x",-.45,.9,0,-.7]), {...part(tip.mirrorZ(),[1,2,-18],["x",-.3,.9,-.5,-.4]), parent:3} ], noShadow:true }; }
+  return { parts:[ part(body,[0,0,0]), part(wing,[1,1,3],["x",.5,2.2,0,-.15]), {...part(tip,[1,2,18],["x",.35,2.2,-.5]), parent:1},
+    part(wing.mirrorZ(),[1,1,-3],["x",-.5,2.2,0,.15]), {...part(tip.mirrorZ(),[1,2,-18],["x",-.35,2.2,-.5]), parent:3} ], noShadow:true };
+}
