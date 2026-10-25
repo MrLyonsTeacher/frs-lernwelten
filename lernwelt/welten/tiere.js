@@ -184,42 +184,43 @@ export function polarBear(o={}){
   return { parts };
 }
 
-/* ---------- Hirsch (Waldwelt) – detailliert (doppelte Auflösung, im Spiel scale ≈ .38) ---------- */
+/* ---------- Hirsch (Waldwelt) – sehr fein (Faktor 3,2 gegenüber einfachen Tieren, im Spiel scale ≈ .22) ---------- */
 export function stag(){
-  const BR=0x8A5630, BR2=0x74462A, BR3=0x9E663A, DARK=0x5A3820, BELLY=0xD8BC90, RUMP=0xF4EEE2, MANE=0x6A4228, HOOF=0x2A1A10, NOSE=0x1A1210, ANT=0xE8D8B0, ANT2=0xC8B48A, TIP=0xFAF4E4, EYE=0x140C08;
-  const coat = (x,y,z) => { if(y < 12.5) return BELLY; const k=((Math.round(x*1.5)+Math.round(y)*2+Math.round(z))%6+6)%6; return y > 16.5 ? (k===0?DARK:BR2) : k===0 ? BR3 : k===3 ? BR2 : BR; };
-  const body = M();
-  body.ell(0,15,0,8.5,4,3.6,coat);                         // Rumpf
-  body.ell(5.5,15.5,0,3.8,4.3,3.5,coat);                   // Brust
-  body.ell(-6,15.5,0,3.6,4,3.5,coat);                      // Keule
-  body.ell(-8.5,15,0,1.6,3,3,(x,y,z)=> y<17 ? RUMP : coat(x,y,z));   // heller Spiegel
-  // Beine: Oberschenkel, Knie, schlanker Lauf, Huf
+  const K=1.6, BR=0x8A5630, BR2=0x74462A, BR3=0xA06A3E, DARK=0x5A3820, DARK2=0x4A2E1A, BELLY=0xDCC498, THROAT=0xF0E6D2, RUMP=0xF6F0E4, MANE=0x5E3A22, HOOF=0x221410, NOSE=0x16100C,
+        ANT=0xE8D8B0, ANT2=0xC8B48A, ANT3=0x9A8660, TIP=0xFCF6E8, EYE=0x100A06, EAR=0xD8A890;
+  const m = M(), h = M(), t = M();
+  const E = (o,x,y,z,rx,ry,rz,c) => o.ell(x*K,y*K,z*K,rx*K,ry*K,rz*K,c), G = (o,a,b,r0,r1,c) => o.seg(a.map(v=>v*K),b.map(v=>v*K),r0*K,r1*K,c);
+  const coat = (x,y,z) => { const Y=y/K; if(Y < 12.6) return BELLY; const k=((Math.round(x*.9)+Math.round(y)*2+Math.round(z*1.3))%7+7)%7;
+    if(Y > 17.3) return k<2 ? DARK : (k===4 ? DARK2 : BR2); return k===0 ? BR3 : k===3 ? BR2 : (k===5 ? BR3 : BR); };
+  E(m,0,15,0,8.5,4,3.6,coat); E(m,5.5,15.5,0,3.9,4.4,3.5,coat); E(m,-6,15.5,0,3.7,4.1,3.5,coat);
+  E(m,-8.6,15,0,1.7,3.1,3.1,(x,y,z)=> y/K<17.2 ? RUMP : coat(x,y,z));
   for(const [lx,lz,fr] of [[5,-2,1],[5,2,1],[-6,-2,0],[-6,2,0]]){
-    body.ell(lx, 11, lz, 1.6, 2.6, 1.3, coat);
-    body.seg([lx,9,lz],[lx+(fr?0:-1),5,lz],1.0,.8,BR2).seg([lx+(fr?0:-1),5,lz],[lx,1,lz],.8,.7,(x,y,z)=> y<3 ? DARK : BR2);
-    body.box(lx,0,lz,lx+1,0,lz,HOOF).put(lx,1,lz,HOOF); }
-  // Hals mit Mähne
-  body.seg([7,17,0],[10,22,0],2.8,2.2,coat).seg([10,22,0],[12,25,0],2.2,1.9,coat);
-  body.ell(8.5,17.5,0,2.4,3,2.6,(x,y,z)=> y<17 ? MANE : coat(x,y,z));
-  for(let i=0;i<7;i++) body.put(8+i*.6,15+i*.5,0,MANE).put(8.5+i*.6,14.5+i*.5,-1,MANE).put(8.5+i*.6,14.5+i*.5,1,MANE);
-  // Kopf: Schädel, Schnauze, Nase, Augen, Ohren, Geweih
-  const head = M();
-  head.ell(13,26,0,2.4,2.2,2,coat);
-  for(let x=14;x<=18;x++){ const w = x<17 ? 1 : 0, y0 = 24 + (x>16?0:0); head.box(x,y0,-w,x,y0+2-(x>16?1:0),w,(xx,yy,zz)=> yy===y0 ? BELLY : (x>16 ? BR3 : BR)); }
-  head.box(18,24,-1,18,24,1,BR3).box(19,24,-1,19,25,1,NOSE).box(16,23,-1,18,23,1,BELLY);
-  for(const s of [-1,1]){ head.put(14,27,2*s,EYE).put(14,28,2*s,DARK).put(15,27,2*s,0xF0E0C0);
-    head.line([12,27,2*s],[11,29,4.5*s],BR).line([12,28,2*s],[11,30,4*s],BR3).put(11,29,4*s,BELLY);             // Ohren
-    // Geweih: Hauptstange mit mehreren Enden
-    head.line([12.5,28,1.2*s],[12,31,2.5*s],ANT2).line([12,31,2.5*s],[10,35,4.5*s],ANT).line([10,35,4.5*s],[8,39,6*s],ANT).line([8,39,6*s],[7,43,6.5*s],ANT);
-    head.line([12.2,30,2*s],[15,32,2.5*s],ANT).put(16,33,2.6*s,TIP);                                                // Augspross
-    head.line([11,33,3.5*s],[14,36,4*s],ANT).put(15,37,4*s,TIP);
-    head.line([9,37,5.2*s],[12,41,5.5*s],ANT).put(12,42,5.5*s,TIP);
-    head.line([8,40,6.2*s],[6,44,8*s],ANT).put(6,45,8*s,TIP);
-    head.line([7,43,6.5*s],[9,46,6*s],ANT).put(9,47,6*s,TIP).put(7,44,6.5*s,TIP);
-    head.line([10,35,4.5*s],[8,36,7*s],ANT2).put(7,36,7.5*s,TIP); }
-  const tail = M().ell(-9.5,17,0,.8,1.3,.8,RUMP).put(-10,18,0,BR2);
-  const ear = null;
-  return { parts:[ part(body,[0,0,0]), part(head,[11,24,0],["z",.26,.6,0,-.22]), part(tail,[-9,17,0],["y",.6,3,0]) ] };
+    E(m,lx,11.2,lz,1.7,2.8,1.4,coat);
+    G(m,[lx,9,lz],[lx+(fr?.3:-1),5,lz],1.0,.75,BR2); G(m,[lx+(fr?.3:-1),5,lz],[lx,1.2,lz],.72,.62,(x,y,z)=> y/K<3.2 ? DARK : BR2);
+    E(m,lx+(fr?.3:-1),5,lz,.95,.8,.9,BR2);                                                    // Knöchel
+    E(m,lx+.3,.55,lz,.9,.55,.8,HOOF); m.put((lx+.9)*K,0,lz*K-1,HOOF).put((lx+.9)*K,0,lz*K+1,HOOF); }
+  G(m,[7,17,0],[10,22,0],2.9,2.2,coat); G(m,[10,22,0],[12,25,0],2.2,1.9,coat);
+  E(m,8.8,17.6,0,2.5,3.2,2.7,(x,y,z)=> y/K<17.5 ? MANE : coat(x,y,z));
+  for(let i=0;i<14;i++) G(m,[8+i*.32,15.2+i*.28,0],[8.4+i*.32,14.2+i*.28,0],.55,.35,MANE);         // Halsmähne
+  E(m,10.4,21.2,0,1.2,1.6,1.4,THROAT);                                                       // heller Kehlfleck
+  // Kopf
+  E(h,13,26,0,2.5,2.3,2.1,coat);
+  G(h,[14,25.6,0],[18.2,24.5,0],1.6,1.0,(x,y,z)=> y/K<24.4 ? BELLY : BR3);
+  G(h,[14.5,24.3,0],[17.8,23.6,0],1.05,.8,BELLY);
+  E(h,18.6,24.6,0,.75,.75,.95,NOSE); for(const s of [-1,1]) h.put(19.1*K,24.4*K,s*.7*K,0x060404);
+  for(const s of [-1,1]){
+    E(h,14.6,27.1,2*s,.55,.5,.35,EYE); h.put(14.8*K,27.3*K,2.15*s*K,0xFFFFFF);                // Auge mit Glanzpunkt
+    E(h,14.4,27.1,1.95*s,.85,.75,.3,DARK2);                                                    // dunkler Augenring
+    G(h,[12.3,27.6,1.8*s],[11,29.6,4.4*s],.9,.5,BR); E(h,11.3,29.3,4*s,.5,.7,.25,EAR);           // Ohr mit hellem Inneren
+    // Geweih: kräftige Stangen mit Rosen, viele Enden
+    E(h,12.4,28.5,1.3*s,.7,.45,.7,ANT3);
+    const A = (a,b,r0,r1,c=ANT) => G(h,a,b,r0,r1,c);
+    A([12.4,28.5,1.3*s],[12,31,2.5*s],.55,.48,ANT2); A([12,31,2.5*s],[10,35,4.5*s],.48,.42); A([10,35,4.5*s],[8,39,6*s],.42,.36); A([8,39,6*s],[7,43,6.5*s],.36,.3);
+    A([12.2,30,2*s],[15,32,2.5*s],.36,.22); A([11,33,3.5*s],[14,36,4*s],.34,.2); A([9,37,5.2*s],[12,41,5.5*s],.3,.18);
+    A([8,40,6.2*s],[6,44,8*s],.28,.18); A([7,43,6.5*s],[9,46,6*s],.26,.16); A([7,43,6.5*s],[6.5,46,6.8*s],.24,.15); A([10,35,4.5*s],[8,36,7*s],.28,.16,ANT2);
+    for(const tp of [[15,32,2.5*s],[14,36,4*s],[12,41,5.5*s],[6,44,8*s],[9,46,6*s],[6.5,46,6.8*s],[8,36,7*s]]) E(h,tp[0],tp[1],tp[2],.22,.22,.22,TIP); }
+  E(t,-9.6,17.2,0,.8,1.4,.8,RUMP); E(t,-9.9,18.3,0,.5,.5,.5,DARK);
+  return { parts:[ part(m,[0,0,0]), part(h,[11*K,24*K,0],["z",.26,.6,0,-.22]), part(t,[-9*K,17*K,0],["y",.6,3,0]) ] };
 }
 
 /* ---------- Frostfuchs (Eiswelt) – detailliert (doppelte Auflösung, scale ≈ .25) ---------- */
