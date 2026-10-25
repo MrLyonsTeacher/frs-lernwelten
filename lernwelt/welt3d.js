@@ -45,8 +45,8 @@ export function makeApi(seedNum){
   const fbm = (x,y) => vn(x,y)*.55 + vn(x*2.1,y*2.1)*.3 + vn(x*4.3,y*4.3)*.15;
   const pick = a => a[Math.floor(rand()*a.length)];
 
-  const near = makeStore(), far = makeStore();
-  far.cell = 4;
+  const near = makeStore(), far = makeStore(), fine = makeStore();
+  far.cell = 4; fine.cell = .5;   // fine: halbe Blockgröße für Verzierungen (Koordinaten doppelt)
   const terrain = (W,D,hf,layer) => { for(let z=0;z<D;z++) for(let x=0;x<W;x++){ const h=Math.round(hf(x,z)); for(let y=0;y<h;y++){ const t=layer(x,y,z,h); if(t) near.set(x,y,z,t); } } };
   /* Landschaft bis zum Horizont in groben Blöcken.
      o: { x0,x1,z0,z1 (Weltkoordinaten), h:(x,z)=>Höhe in Welt-Einheiten, top:(x,z,y,hc)=>Typ der obersten Lage, fill:(x,z,y,hc)=>Typ darunter, skip:(x,z)=>true }
@@ -71,7 +71,7 @@ export function makeApi(seedNum){
   const glassT = (frame, fill) => tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y, (x===0||y===0||x===15||y===15) ? frame : fill); P(g,3,3,"#ffffff"); P(g,4,3,"#ffffff"); P(g,3,4,"#ffffff"); });
   // Fenster mit Rahmen und Sprossen, warm leuchtend
   const windowT = (frame, glow, glow2) => tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const fr = x<2||y<2||x>13||y>13||x===7||x===8||y===7||y===8; P(g,x,y, fr?frame:(rand()<.25?glow2:glow)); } });
-  return { rand, vn, fbm, pick, ...near, near, far, terrain, farTerrain,
+  return { rand, vn, fbm, pick, ...near, near, far, fine, terrain, farTerrain,
            tex, P, noise, stripes, bricks, rings, topEdge, planks, glassT, windowT };
 }
 
@@ -148,12 +148,13 @@ export async function start(o){
       mesh.castShadow = !isFar && !d.em && !d.alpha; mesh.receiveShadow = !isFar && !d.alpha; if(d.alpha) mesh.renderOrder = 2;
       mesh.frustumCulled = false; scene.add(mesh); count += groups[t].length;
       // runder, weicher Lichtschein um Lampen (statt harter Würfelkanten)
-      if(d.halo && !isFar){ const pos = new Float32Array(groups[t].length*3); groups[t].forEach((b,i)=>{ pos[i*3]=b[0]+.5; pos[i*3+1]=b[1]+.5; pos[i*3+2]=b[2]+.5; });
+      if(d.halo && !isFar){ const pos = new Float32Array(groups[t].length*3); groups[t].forEach((b,i)=>{ pos[i*3]=(b[0]+.5)*cell; pos[i*3+1]=(b[1]+.5)*cell; pos[i*3+2]=(b[2]+.5)*cell; });
         const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos,3));
         const pm = new THREE.Points(g, new THREE.PointsMaterial({color:d.halo[0], size:d.halo[1], map:haloTex(), transparent:true, opacity:d.halo[2]||.85, depthWrite:false, blending:THREE.AdditiveBlending}));
         pm.frustumCulled = false; pm.renderOrder = 3; scene.add(pm); } } };
   addStore(api.near, 1, false);
   addStore(api.far, world.farCell || api.far.cell || 4, true);
+  addStore(api.fine, .5, false);
 
   // Flächen (Meer, Wolken, Lava)
   for(const s of (world.planes||[])){
@@ -218,6 +219,7 @@ export async function start(o){
     const pad = R+12, x0 = -pad-60, z0 = -pad-60, X = world.W+2*pad+120, Z = world.D+2*pad+120, top = new Float32Array(X*Z).fill(-50);
     const put = (x,z,y) => { const i=Math.round(x)-x0, k=Math.round(z)-z0; if(i>=0&&k>=0&&i<X&&k<Z){ const j=k*X+i; if(y>top[j]) top[j]=y; } };
     for(const [, b] of api.near.V){ if(B[b[3]] && B[b[3]].soft) continue; put(b[0], b[2], b[1]+1); }
+    for(const [, b] of api.fine.V){ if(B[b[3]] && B[b[3]].soft) continue; put(b[0]/2, b[2]/2, (b[1]+1)/2); }
     const fc = world.farCell || api.far.cell || 4; for(const [, b] of api.far.V) for(let a=0;a<fc;a++) for(let c=0;c<fc;c++) put(b[0]*fc+a, b[2]*fc+c, (b[1]+1)*fc);
     const maxPass = (src, r, horiz) => { const out = new Float32Array(src.length);
       for(let k=0;k<Z;k++) for(let i=0;i<X;i++){ let m=-50; for(let d=-r; d<=r; d++){ const ii = horiz ? i+d : i, kk = horiz ? k : k+d; if(ii<0||kk<0||ii>=X||kk>=Z) continue; const v=src[kk*X+ii]; if(v>m) m=v; } out[k*X+i]=m; } return out; };
