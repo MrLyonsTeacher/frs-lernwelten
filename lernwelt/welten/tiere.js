@@ -109,25 +109,31 @@ export function eagle(){
     part(wingR,[2,1,-4],["x",-.2,1.3,0,.1]), {...part(tipR,[2,2,-28],["x",-.16,1.3,-.5,.04]), parent:3} ] };
 }
 
-/* ---------- Wal (Wasserwelt) ---------- */
+/* ---------- Buckelwal (Wasserwelt) – detailliert (doppelte Auflösung, scale ≈ .55) ---------- */
 export function whale(){
-  const TOP=0x2E4660, TOP2=0x263C54, BELLY=0xC8D4DE, GROOVE=0x8A9AAA;
+  const TOP=0x2C4258, TOP2=0x243850, TOP3=0x34506A, BELLY=0xDCE4EC, GROOVE=0x9AA8B6, KNOB=0x1C2C3C, WHITE=0xF0F4F8;
   const body = M();
-  for(let x=-16;x<=14;x++){ const f=(x+1)/16, r = x>=-1 ? 4.4*Math.sqrt(Math.max(0,1-f*f*.9)) : 4.4*Math.max(.18, 1-((-x-1)/15)**1.3);
-    const ry=r*.85, rz=r;
+  for(let x=-34;x<=28;x++){ const f=(x+2)/30, r = x>=-2 ? 9*Math.sqrt(Math.max(0,1-Math.pow(f,2)*.92)) : 9*Math.max(.14, 1-Math.pow((-x-2)/32,1.25));
+    const ry=r*.82, rz=r;
     for(let y=Math.floor(-ry-1);y<=Math.ceil(ry+1);y++) for(let z=Math.floor(-rz-1);z<=Math.ceil(rz+1);z++){
-      if((y/(ry+.35))**2+(z/(rz+.35))**2>1) continue;
-      let col = y < -ry*.25 ? ((x>0 && z%2===0 && y<-ry*.5) ? GROOVE : BELLY) : ((x+y+z)%4===0 ? TOP2 : TOP);
+      const e=(y/(ry+.35))**2+(z/(rz+.35))**2; if(e>1) continue; if(e<.7 && Math.abs(z)<rz-2 && Math.abs(y)<ry-2) continue;
+      let col;
+      if(y < -ry*.2){ col = (x>-6 && x<24 && (Math.abs(z)%3===0) && y<-ry*.45) ? GROOVE : BELLY; }
+      else { const k=((x+2*y+z)%7+7)%7; col = k===0 ? TOP2 : k===3 ? TOP3 : TOP; }
       body.put(x,y,z,col); } }
-  for(const [x,z] of [[10,0],[11,-1],[11,1],[12,0],[9,-2],[9,2]]) body.put(x,Math.round(3.6*.85*Math.sqrt(Math.max(0,1-((x+1)/16)**2*.9)))+1,z,0x1E3046); // Höcker
-  body.put(9,0,-4,0x0A0E14).put(9,0,4,0x0A0E14);                                  // Augen
-  for(let x=7;x<=14;x++) body.put(x,-1,-3,0x1E3046), body.put(x,-1,3,0x1E3046);    // Maul
-  body.box(-8,3,0,-6,4,0,TOP);                                                       // Rückenflosse
-  const fin = M(); fin.poly([[6,3.5],[4,6],[-2,12],[-5,13],[-3,10],[3,4]], (x,z)=>-2-Math.round((z-3)*.25), (x,y,z)=> x>1 ? BELLY : 0xB0BEC8);
+  // Höcker auf dem Kopf, Augen, Maullinie, Rückenfinne
+  for(let i=0;i<14;i++){ const x=14+Math.floor(i/2)*2, z=(i%2?1:-1)*(1+(i%3)), y=Math.round(9*.82*Math.sqrt(Math.max(0,1-((x+2)/30)**2*.92)))+1; body.put(x,y,z,KNOB); }
+  for(const s of [-1,1]){ body.put(18,0,8*s,0x0A0E14).put(19,0,8*s,0x0A0E14); for(let x=8;x<=27;x++) body.put(x,-2,Math.round(7.4*Math.sqrt(Math.max(0,1-((x+2)/30)**2*.92)))*s,KNOB); }
+  body.box(-16,6,0,-12,7,0,TOP).box(-15,8,0,-13,8,0,TOP).put(-14,9,0,TOP);
+  // lange Brustflossen mit weißer Unterseite und Knötchen
+  const fin = M(); fin.poly([[10,6],[6,10],[-2,20],[-10,30],[-12,32],[-8,26],[0,14],[6,8]], (x,z)=>-5-Math.round((z-6)*.28), (x,y,z)=> (Math.round(x+z)%5===0) ? KNOB : WHITE);
+  fin.poly([[9,7],[5,11],[-3,21],[-9,29],[-7,25],[1,13]], (x,z)=>-4-Math.round((z-6)*.28), (x,y,z)=> (Math.round(x)%3===0)? TOP3 : TOP);
   const finR = fin.mirrorZ();
-  const fluke = M(); fluke.poly([[-15,-1.5],[-18,-5],[-22,-8],[-21,-3],[-20,0],[-21,3],[-22,8],[-18,5],[-15,1.5]], ()=>0, (x,y,z)=> (x+z)%3===0 ? TOP2 : TOP);
-  fluke.box(-16,0,-1,-15,0,1,TOP);
-  return { parts:[ part(body,[0,0,0]), part(fin,[5,-2,3],["x",.18,.9,0]), part(finR,[5,-2,-3],["x",-.18,.9,0]), part(fluke,[-15,0,0],["z",.32,1.0,0]) ] };
+  // Fluke mit weißer Unterseite
+  const fluke = M(); fluke.poly([[-32,-2.5],[-37,-8],[-43,-15],[-44,-10],[-41,-3],[-42,0],[-41,3],[-44,10],[-43,15],[-37,8],[-32,2.5]], ()=>0, (x,y,z)=> (Math.abs(z)>9 && (Math.round(x)%2===0)) ? KNOB : TOP2);
+  fluke.poly([[-33,-2],[-37,-7],[-42,-13],[-41,-4],[-41,4],[-42,13],[-37,7],[-33,2]], ()=>-1, WHITE);
+  fluke.box(-34,0,-2,-31,0,2,TOP);
+  return { parts:[ part(body,[0,0,0]), part(fin,[8,-4,7],["x",.16,.8,0]), part(finR,[8,-4,-7],["x",-.16,.8,0]), part(fluke,[-31,0,0],["z",.28,.9,0]) ] };
 }
 
 /* ---------- Fische ---------- */
@@ -259,19 +265,21 @@ export function bird(col=0xFFFFFF){
   return { parts:[ part(b,[0,0,0]), part(w,[0,0,1],["x",.7,6,0]), part(wR,[0,0,-1],["x",-.7,6,0]) ] };
 }
 
-/* ---------- Delfin (Wasserwelt, scale ≈ .5) ---------- */
+/* ---------- Delfin (Wasserwelt) – detailliert (doppelte Auflösung, scale ≈ .2) ---------- */
 export function dolphin(){
-  const TOP=0x5A7A9A, TOP2=0x4A6888, SIDE=0x8AA4BC, BELLY=0xE2EAF2, DARK=0x18202A;
+  const TOP=0x56708C, TOP2=0x4A6480, SIDE=0x8EA6BC, CAPE=0x6A8098, BELLY=0xEEF2F6, DARK=0x141A22;
   const body = M();
-  for(let x=-12;x<=10;x++){ const f=(x+1)/12, r = x>=-1 ? 3.6*Math.sqrt(Math.max(0,1-f*f*.85)) : 3.6*Math.max(.25, 1-((-x-1)/12)**1.4), ry=r*.9;
-    for(let y=Math.floor(-ry-1);y<=Math.ceil(ry+1);y++) for(let z=Math.floor(-r-1);z<=Math.ceil(r+1);z++){ if((y/(ry+.35))**2+(z/(r+.35))**2>1) continue;
-      body.put(x,y,z, y < -ry*.3 ? BELLY : y < ry*.2 ? SIDE : ((x+z)%4===0 ? TOP2 : TOP)); } }
-  body.box(11,-1,-1,14,0,1,(x,y,z)=> y<0 ? BELLY : SIDE).put(15,0,0,SIDE);                              // Schnabel
-  body.put(9,1,-3,DARK).put(9,1,3,DARK);                                                               // Augen
-  body.line([-1,3,0],[-4,7,0],TOP2).line([-2,3,0],[-5,6,0],TOP2).line([0,3,0],[-3,6,0],TOP);          // Rückenflosse
-  for(const s of [-1,1]) body.line([4,-2,3*s],[1,-4,6*s],SIDE).line([3,-2,3*s],[0,-4,5*s],SIDE);       // Brustflossen
-  const fluke = M(); fluke.poly([[-12,-1.2],[-15,-4],[-17,-6],[-16,-2],[-15,0],[-16,2],[-17,6],[-15,4],[-12,1.2]], ()=>0, TOP2);
-  return { parts:[ part(body,[0,0,0]), part(fluke,[-12,0,0],["z",.45,2.6,0]) ] };
+  for(let x=-24;x<=20;x++){ const f=(x+2)/22, r = x>=-2 ? 6.4*Math.sqrt(Math.max(0,1-f*f*.86)) : 6.4*Math.max(.2, 1-Math.pow((-x-2)/23,1.3)), ry=r*.92;
+    for(let y=Math.floor(-ry-1);y<=Math.ceil(ry+1);y++) for(let z=Math.floor(-r-1);z<=Math.ceil(r+1);z++){ const e=(y/(ry+.35))**2+(z/(r+.35))**2; if(e>1 || e<.6) continue;
+      body.put(x,y,z, y < -ry*.25 ? BELLY : y < ry*.15 ? (x<-4 && y>-ry*.1 ? CAPE : SIDE) : ((x+z)%5===0 ? TOP2 : TOP)); } }
+  for(let x=20;x<=27;x++){ const w = x<24 ? 1 : 0; body.box(x,-2,-w,x,0,w,(xx,y)=> y<-1 ? BELLY : SIDE); }   // Schnabel
+  for(let x=18;x<=21;x++) body.put(x,1,0,TOP).put(x,2,0,TOP);                                             // Melone
+  for(const s of [-1,1]){ body.put(16,1,5*s,DARK).put(17,1,5*s,DARK).put(15,2,5*s,BELLY); for(let x=20;x<=26;x++) body.put(x,-1,(x<24?1.6:.8)*s,DARK); }   // Augen, Maullinie
+  // Rückenfinne (sichelförmig), Brustflossen
+  for(let k=0;k<8;k++){ const x=-1-k*.9, y=6+k*1.0; body.box(Math.round(x)-1,y,0,Math.round(x)+2-Math.floor(k/3),y,0,TOP2); }
+  const fin = M(); fin.poly([[8,4],[5,6],[0,11],[-2,12],[2,8],[6,4]], (x,z)=>-4-Math.round((z-4)*.4), SIDE);
+  const fluke = M(); fluke.poly([[-23,-1.5],[-27,-5],[-31,-9],[-30,-3],[-29,0],[-30,3],[-31,9],[-27,5],[-23,1.5]], ()=>0, TOP2);
+  return { parts:[ part(body,[0,0,0]), part(fin,[6,-3,5],["x",.2,2,0]), part(fin.mirrorZ(),[6,-3,-5],["x",-.2,2,0]), part(fluke,[-23,0,0],["z",.5,2.6,0]) ] };
 }
 
 /* ---------- Fledermaus (Zwergenstadt, scale ≈ .45) ---------- */
