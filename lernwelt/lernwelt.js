@@ -29,7 +29,7 @@ const TXT = {
       medalWon:"Du hast eine neue Medaille gewonnen!",medalOk:"Super!",perfect:"PERFEKT!",platinum:"PLATIN!",
       newFlags:n=>n===1?"+1 neue Flagge":`+${n} neue Flaggen`,noNew:"Keine neuen Flaggen – diese hattest du schon richtig.",thisRound:"Diese Runde",
       platHint:"Platin gibt es nur, wenn jedes Spiel beim ersten Versuch fehlerfrei war.",platGame:"Platin: beim ersten Versuch fehlerfrei!",
-      rankNew:"Neuer Rang!",rankNext:(n,name)=>`noch ${n} bis ${name}`,rankTop:"Höchster Rang!",today:"heute",rankOk:"Weiter!",
+      rankNew:"Neuer Rang!",allRanks:"Alle Ränge",rankNext:(n,name)=>`noch ${n} bis ${name}`,rankTop:"Höchster Rang!",today:"heute",rankOk:"Weiter!",
       review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
       videoNote:"Das Video wird von YouTube geladen.",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
   en:{map:"Games",pts:"points",stars:"stars",next:"Next",check:"Check",again:"Play again",nextLvl:"Next game",
@@ -55,7 +55,7 @@ const TXT = {
       medalWon:"You won a new medal!",medalOk:"Great!",perfect:"PERFECT!",platinum:"PLATINUM!",
       newFlags:n=>n===1?"+1 new flag":`+${n} new flags`,noNew:"No new flags – you already had these right.",thisRound:"This round",
       platHint:"Platinum only if every game was perfect on the first try.",platGame:"Platinum: perfect on the first try!",
-      rankNew:"New rank!",rankNext:(n,name)=>`${n} more to ${name}`,rankTop:"Top rank!",today:"today",rankOk:"Keep going!",
+      rankNew:"New rank!",allRanks:"All ranks",rankNext:(n,name)=>`${n} more to ${name}`,rankTop:"Top rank!",today:"today",rankOk:"Keep going!",
       review:"Learn from your mistakes",gap:"Gap",learn:"Learn first",learnAgain:"Learn again",startGame:"Start the game ▸",read:"Read aloud",auto:"Play",pause:"Pause",prev:"Back",
       videoNote:"The video is loaded from YouTube.",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
 };
@@ -142,7 +142,7 @@ function chipInner(){
   if(!RANKED) return `<span class="chip-ic" aria-hidden="true">${W.sammel||"⭐"}</span><span id="ptsNum">${liveTotal()}</span><span class="chip-max">/${MAX}</span>`;
   const n = todayN(), r = UH.rank(W.insel.k, n);
   return `<span class="chip-ic" aria-hidden="true">${W.sammel||"⭐"}</span><span id="ptsNum">${n}</span>
-    <span class="rk" title="${esc(r.top?T.rankTop:T.rankNext(r.toNext, r.nextName))}"><span class="rk-n">${r.icon} ${esc(r.name)}</span><span class="rk-bar"><i style="width:${Math.round(r.pct*100)}%"></i></span></span>`;
+    <span class="rk-ic" aria-hidden="true">${r.icon}</span><span class="rk" title="${esc(r.top?T.rankTop:T.rankNext(r.toNext, r.nextName))}"><span class="rk-n">${esc(r.name)}</span><span class="rk-bar"><i style="width:${Math.round(r.pct*100)}%"></i></span></span>`;
 }
 function updateChip(bump){
   const c=$("#ptsChip"); if(!c) return;
@@ -152,13 +152,15 @@ function updateChip(bump){
   if(bump && v>old && c.animate) c.animate([{transform:"scale(1)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],{duration:320});
   if(RANKED){ const r = UH.rank(W.insel.k, todayN()); if(r.i > RANK_I){ RANK_I = r.i; if(bump) setTimeout(()=>rankPop(r), 350); } }
 }
+document.addEventListener("click", e=>{ if(RANKED && e.target.closest("#ptsChip")) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en"); });
+document.addEventListener("keydown", e=>{ if(RANKED && (e.key==="Enter"||e.key===" ") && e.target.closest && e.target.closest("#ptsChip")){ e.preventDefault(); UH.rankSheet(W.insel.k, todayN(), W.sprache==="en"); } });
 function rankPop(r){
   if(document.querySelector(".medal-pop")) { setTimeout(()=>rankPop(r), 1200); return; }
   const d=document.createElement("div"); d.className="medal-pop rank-pop"; d.setAttribute("role","dialog"); d.setAttribute("aria-label", T.rankNew);
   d.innerHTML = `<div class="mp-card"><div class="rk-big" aria-hidden="true">${r.icon}</div>
     <p class="rk-kicker">${T.rankNew}</p><h2 class="disp">${esc(r.name)}</h2>
     <p class="mp-pts">${W.sammel||"⭐"} ${todayN()} ${T.today}</p>
-    <p class="rk-next">${r.top ? T.rankTop : esc(T.rankNext(r.toNext, r.nextIcon+" "+r.nextName))}</p>
+    <p class="rk-next">${r.top ? T.rankTop : T.rankNext(r.toNext, r.nextIcon+" "+esc(r.nextName))}</p>
     <button class="btn big">${T.rankOk}</button></div>`;
   document.body.appendChild(d); confetti(120);
   const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>d.remove();
@@ -202,7 +204,7 @@ function award(list, el){
 }
 
 /* ---------- Untere Leiste (Feedback + Weiter) ---------- */
-function closeSheet(){ const s=$("#sheet"); if(s) s.remove(); const a=$("#area"); if(a) a.style.paddingBottom=""; }
+function closeSheet(){ clearTimeout(autoT); const s=$("#sheet"); if(s) s.remove(); const a=$("#area"); if(a) a.style.paddingBottom=""; }
 function bar(cls, html){
   closeSheet();
   const d=document.createElement("div"); d.id="sheet"; d.className="sheet "+cls; d.innerHTML=`<div class="sheet-in">${html}</div>`;
@@ -210,7 +212,18 @@ function bar(cls, html){
   const a=$("#area"); if(a) a.style.paddingBottom=(d.offsetHeight+10)+"px";
   return d;
 }
+// Richtige Antwort: kurze Rückmeldung, dann geht es von selbst weiter (Antippen beschleunigt).
+// Falsche Antwort: Lösung/Erklärung bleibt stehen, bis man auf "Weiter" tippt.
+let autoT = null;
 function sheet(kind, head, body, label, onNext){
+  clearTimeout(autoT);
+  if(kind==="ok" && onNext){
+    const words = String(body||"").replace(/<[^>]+>/g," ").split(/\s+/).filter(Boolean).length, ms = words ? Math.min(4200, 1300 + words*170) : 950;
+    const d = bar(kind+" auto", `<div class="sheet-t" role="status"><b>${head}</b>${body?`<div>${body}</div>`:""}</div><div class="auto-bar" aria-hidden="true"><i style="animation-duration:${ms}ms"></i></div>`);
+    let done = false; const go = () => { if(done) return; done = true; clearTimeout(autoT); onNext(); };
+    autoT = setTimeout(()=>{ if(d.isConnected) go(); }, ms); d.onclick = go;
+    return d;
+  }
   const d = bar(kind, `<div class="sheet-t" role="status"><b>${head}</b>${body?`<div>${body}</div>`:""}</div>${label?`<button class="btn big">${esc(label)}</button>`:""}`);
   const b = d.querySelector(".btn"); if(b){ b.onclick = onNext; setTimeout(()=>b.focus({preventScroll:true}), 30); }
   return d;
@@ -227,7 +240,7 @@ function topbar(o){
     ${o.island?`<button class="back" data-href="${esc(W.insel.href)}" aria-label="${T.island}"><span aria-hidden="true">${W.insel.icon||"🗺️"}</span><span class="bl"> ${T.island}</span></button>`:""}
     ${o.title?`<div class="tb-title"><span class="ic" aria-hidden="true">${o.icon||"🎯"}</span><div style="min-width:0">${o.art?`<p class="tb-art">${esc(o.art)}</p>`:""}<h1 class="disp">${esc(o.title)}</h1></div></div>`:`<span class="sp"></span>`}
     ${o.pill?`<button class="pill-fin" ${finTarget()}><span aria-hidden="true">🏁</span> ${T.finishPill}</button>`:""}
-    <span class="chip${RANKED?" rchip":""}" id="ptsChip">${chipInner()}</span></div>`;
+    <span class="chip${RANKED?" rchip":""}" id="ptsChip"${RANKED?` role="button" tabindex="0" aria-label="${esc(T.allRanks)}"`:""}>${chipInner()}</span></div>`;
 }
 function howBox(text, de, tip, extra){
   if(!text) return "";
@@ -242,7 +255,7 @@ function howBox(text, de, tip, extra){
 function fit(){
   const a=$("#area"); if(!a) return;
   const top = a.getBoundingClientRect().top + window.scrollY;
-  const v = Math.max(300, Math.round(window.innerHeight - top - 14));
+  const v = Math.max(150, Math.round(window.innerHeight - top - 14));
   document.documentElement.style.setProperty("--avail", v+"px");
 }
 

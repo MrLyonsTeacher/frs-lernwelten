@@ -24,7 +24,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .wbar>*{pointer-events:auto}
 .wk{flex:0 0 auto;background:var(--ui-accent);color:var(--ui-accent-ink);border-radius:12px;padding:3px 12px;font:700 18px Fredoka;box-shadow:0 4px 0 rgba(0,0,0,.35)}
 .wt{flex:1;min-width:0;font:700 clamp(22px,4vw,32px) Fredoka;color:#fff;text-shadow:0 0 16px var(--ui-glow),0 3px 0 rgba(0,0,0,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wchip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:var(--ui-chip);border:2px solid var(--ui-border);border-radius:12px;padding:5px 12px;font:700 16px Fredoka;box-shadow:0 0 14px var(--ui-glow)}
+.wchip{cursor:pointer;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:var(--ui-chip);border:2px solid var(--ui-border);border-radius:12px;padding:5px 12px;font:700 16px Fredoka;box-shadow:0 0 14px var(--ui-glow)}
 .wchip small{opacity:.7}
 .wrk{display:flex;flex-direction:column;gap:3px;line-height:1;min-width:84px}
 .wrk b{font:700 13px Fredoka;white-space:nowrap}
@@ -36,6 +36,16 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .wfin{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 14px 0 0;border-radius:12px;border:2px dashed #fff;background:var(--ui-accent);color:var(--ui-accent-ink);font:700 16px Fredoka;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.35)}
 .wfin .chk{align-self:stretch;width:26px;background:repeating-conic-gradient(#1A1A1A 0 25%,#fff 0 50%) 0 0/12px 12px}
 @media (max-width:760px){ .wfin .long{display:none} } @media (min-width:761px){ .wfin .short{display:none} }
+@media (max-width:560px){
+  .wbar{flex-wrap:wrap;gap:6px 8px;padding:calc(8px + env(safe-area-inset-top,0)) 10px 8px}
+  .wt{display:none} .picking .wt{display:block}
+  .wk{font-size:15px;padding:3px 9px}
+  .wchip{padding:3px 8px;font-size:14px;gap:4px}
+  .wrk{min-width:58px} .wrk b{font-size:11px;max-width:84px;overflow:hidden;text-overflow:ellipsis}
+  .wreset{min-height:38px;padding:0 10px}
+  .wfin{min-height:40px;margin-left:auto;font-size:14px;padding:0 10px 0 0;gap:6px} .wfin .chk{width:18px}
+  .wlbl{min-height:40px;font-size:15px;padding:4px 9px 4px 6px;gap:6px;border-radius:13px} .wl-ic{width:26px;height:26px;font-size:16px} .wl-n{min-width:20px;height:20px;font-size:12px}
+}
 
 /* Beschriftungen in der Welt */
 #labels{position:fixed;inset:0;z-index:4;pointer-events:none}
@@ -161,6 +171,7 @@ const KL = FRS.klasse(K), WI = FRS.welt(K);
 if(new URLSearchParams(location.search).has("clean")) document.documentElement.classList.add("clean");
 if(!KL){
   $("#bar").innerHTML = `<span class="wk">FRS</span><span class="wt">Choose your class</span>`;
+  document.body.classList.add("picking");
   document.body.insertAdjacentHTML("beforeend", `<main class="pick">${FRS.englisch.klassen.map(c=>{ const w=FRS.welt(c.k); return `<a href="?k=${c.k}"><img src="welten/vorschau-k${c.k}.jpg" alt=""><span>Class ${c.k} · ${esc(w.name)}</span></a>`; }).join("")}</main>`);
   $("#dock").remove();
 } else main();
@@ -187,7 +198,7 @@ async function main(){
   const NAME_KEY = "insel-"+KL.id+"-name"; let NAME = ""; try{ NAME = localStorage.getItem(NAME_KEY) || ""; }catch(e){}
 
   $("#bar").innerHTML = `<span class="wk">Class ${K}</span><span class="wt">${WI.icon} ${esc(WI.name)}</span>
-    ${allMax?`<span class="wchip" title="${esc(RK().top?"Top rank!":RK().toNext+" more to "+RK().nextName)}">${UK} ${UH.today(K)}<span class="wrk"><b>${RK().icon} ${esc(RK().name)}</b><i><u style="width:${Math.round(RK().pct*100)}%"></u></i></span></span>`:""}
+    ${allMax?`<span class="wchip" id="rkChip" role="button" tabindex="0" title="${esc(RK().top?"Top rank!":RK().toNext+" more to "+RK().nextName)}">${UK} ${UH.today(K)}<span class="wrk"><b>${RK().icon} ${esc(RK().name)}</b><i><u style="width:${Math.round(RK().pct*100)}%"></u></i></span></span>`:""}
     <button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
     <button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="long">If you’re finished, click here</span><span class="short">Finished?</span></button>`;
   $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${counts[b]}</span></button>`).join("");
@@ -262,6 +273,7 @@ async function main(){
   F.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="nm"){ e.preventDefault(); $("#mk").click(); } });
   document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!F.hidden) F.hidden=true; else closeArea(); } });
   $("#finBtn").addEventListener("click", openFinish);
+  const rkc = $("#rkChip"); if(rkc){ const op=()=>UH.rankSheet(K, UH.today(K), true); rkc.addEventListener("click", op); rkc.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); op(); } }); }
   $("#resetBtn").addEventListener("click", ()=>{
     if(!confirm("Reset everything? All flags, games and your initials on this iPad will be deleted.\n\nAlles zurücksetzen? Alle Flaggen, Spiele und dein Kürzel auf diesem iPad werden gelöscht.\n\n(Show your result code to your teacher first!)")) return;
     UH.resetClass(K, KL.themen.map(t=>t.id), KL.id); location.replace(location.pathname + "?k=" + K);

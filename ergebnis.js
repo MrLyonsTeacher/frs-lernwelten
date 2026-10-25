@@ -58,20 +58,56 @@
   }
 
   /* ---------- Ränge der Klassenwelten (pro Stunde, nach heute gesammelten Flaggen) ---------- */
+  // Bilder liegen in lernwelt/raenge/<datei>.webp – der Pfad wird vom Ort dieser Datei aus bestimmt
+  const BASE = (()=>{ try{ const s = document.currentScript && document.currentScript.src; return s ? s.replace(/[^/]*$/,"") : ""; }catch(e){ return ""; } })();
   const RANK_AT = [0, 20, 50, 90, 140, 200];
   const RANKS = {
-    5:  [["✨","Spark"],["🔥","Flame"],["🌶️","Blaze"],["🌋","Inferno"],["👑","Fire Lord"],["🐉","Fire Legend"]],
-    6:  [["💧","Drop"],["🌊","Wave"],["🐠","Current"],["🐬","Tide"],["⚓","Sea Captain"],["🐋","Ocean Legend"]],
-    7:  [["🪨","Pebble"],["⛏️","Miner"],["💎","Gem Finder"],["⚒️","Stonesmith"],["👑","Dwarf Lord"],["🏔️","Mountain Legend"]],
-    8:  [["🌬️","Breeze"],["☁️","Cloud Rider"],["🪁","Sky Runner"],["⭐","Star Pilot"],["🛡️","Sky Knight"],["🏰","Sky Legend"]],
-    9:  [["🌰","Seed"],["🌱","Sprout"],["🏹","Ranger"],["🧝","Elf Scout"],["👑","Elf Lord"],["🌳","Forest Legend"]],
-    10: [["❄️","Snowflake"],["🧊","Frost"],["🏔️","Glacier"],["🌨️","Blizzard"],["👑","Ice Lord"],["🐻‍❄️","Ice Legend"]]
+    5:  [["spark","Spark"],["ashmaster","Ash Master"],["flamekeeper","Flame Keeper"],["fireknight","Fire Knight"],["dragonrider","Dragon Rider"],["firelord","Fire Lord"]],
+    6:  [["droplet","Droplet"],["shellseeker","Shell Seeker"],["reefdiver","Reef Diver"],["seacaptain","Sea Captain"],["tidelord","Tide Lord"],["oceanruler","Ocean Ruler"]],
+    7:  [["pebble","Pebble Picker"],["miner","Miner"],["blacksmith","Blacksmith"],["gemmaster","Gem Master"],["dwarfchampion","Dwarf Champion"],["mountainking","Mountain King"]],
+    8:  [["leafrider","Leaf Rider"],["kiteflyer","Kite Flyer"],["windwalker","Wind Walker"],["cloudsage","Cloud Sage"],["skyguardian","Sky Guardian"],["airmonk","Air Monk"]],
+    9:  [["acorn","Acorn"],["mushroom","Mushroom"],["pathfinder","Pathfinder"],["ranger","Ranger"],["woodelf","Wood Elf"],["forestmaster","Forestmaster"]],
+    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem"],["frostwizard","Frost Wizard"]]
   };
+  const rankImgUrl = f => BASE + "lernwelt/raenge/" + f + ".webp";
+  const rankImg = (f, cls) => `<img class="${cls||"rk-img"}" src="${rankImgUrl(f)}" alt="" draggable="false">`;
+  const worldImg = k => rankImgUrl("world-k"+k);
   function rank(k, n){
     const R = RANKS[k] || RANKS[5]; let i = 0; RANK_AT.forEach((t,j)=>{ if(n >= t) i = j; });
     const nx = i < RANK_AT.length-1 ? RANK_AT[i+1] : null;
-    return { i, icon:R[i][0], name:R[i][1], at:RANK_AT[i], next:nx, nextName: nx!==null ? R[i+1][1] : null, nextIcon: nx!==null ? R[i+1][0] : null,
+    return { i, icon:rankImg(R[i][0]), img:rankImgUrl(R[i][0]), name:R[i][1], at:RANK_AT[i], next:nx, nextName: nx!==null ? R[i+1][1] : null, nextIcon: nx!==null ? rankImg(R[i+1][0]) : "",
              toNext: nx!==null ? nx-n : 0, pct: nx!==null ? (n-RANK_AT[i])/(nx-RANK_AT[i]) : 1, top: nx===null, count: RANK_AT.length };
+  }
+  function rkStyle(){ if(document.getElementById("rk-style") || !document.head) return; const st=document.createElement("style"); st.id="rk-style"; st.textContent = `
+      .rk-img{height:1.35em;width:1.35em;object-fit:contain;vertical-align:-.32em;display:inline-block}
+      .rkl-bg{position:fixed;inset:0;z-index:90;background:rgba(6,10,20,.55);display:grid;place-items:center;padding:12px;animation:rkl-in .2s ease-out}
+      .rkl{width:min(440px,100%);max-height:calc(100dvh - 24px);overflow:auto;background:rgba(18,22,36,.96);color:#fff;border:2px solid rgba(255,255,255,.7);border-radius:20px;padding:16px 16px 12px;box-shadow:0 0 30px rgba(255,255,255,.25),0 20px 50px rgba(0,0,0,.5);font-family:Lexend,system-ui,sans-serif;position:relative}
+      .rkl h2{margin:0 2.4rem .2rem 0;font:700 1.45rem Fredoka,system-ui,sans-serif}
+      .rkl .sub{margin:0 0 .7rem;color:#C8CCD8;font-size:.92rem}
+      .rkl ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column-reverse;gap:6px}
+      .rkl li{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:10px;padding:6px 10px;border-radius:14px;background:rgba(255,255,255,.07);border:2px solid transparent}
+      .rkl li img{width:52px;height:52px;object-fit:contain}
+      .rkl li b{font:700 1.1rem Fredoka,system-ui,sans-serif;display:block}
+      .rkl li small{color:#C8CCD8}
+      .rkl li.cur{border-color:#FFC24A;background:rgba(255,194,74,.18)}
+      .rkl li.cur .tag{background:#FFC24A;color:#2A1A06;border-radius:999px;padding:2px 9px;font:700 .8rem Fredoka,system-ui,sans-serif}
+      .rkl li.no{opacity:.5} .rkl li.no img{filter:grayscale(.6)}
+      .rkl .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:12px;border:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:1.4rem;cursor:pointer}
+      @keyframes rkl-in{from{opacity:0}to{opacity:1}}`; document.head.appendChild(st); }
+  try{ rkStyle(); }catch(e){}
+  // Fenster mit allen Rängen einer Welt (beim Antippen des Rangs)
+  function rankSheet(k, n, en){
+    const R = RANKS[k] || RANKS[5], cur = rank(k, n).i;
+    rkStyle();
+    const flagsTxt = en===false ? "Flaggen" : "flags";
+    const d = document.createElement("div"); d.className = "rkl-bg";
+    d.innerHTML = `<div class="rkl" role="dialog" aria-modal="true" aria-label="Ranks"><button class="x" aria-label="Close">×</button>
+      <h2>${en===false?"Alle Ränge":"All ranks"}</h2><p class="sub">${en===false?`Heute gesammelt: ${n} ${flagsTxt}`:`Collected today: ${n} ${flagsTxt}`}</p>
+      <ol>${R.map((r,j)=>`<li class="${j===cur?"cur":j>cur?"no":""}">${rankImg(r[0],"")}<span><b>${r[1]}</b><small>${en===false?"ab":"from"} ${RANK_AT[j]} ${flagsTxt}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?"✔":""}</li>`).join("")}</ol></div>`;
+    const close = () => d.remove();
+    d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); });
+    document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
+    document.body.appendChild(d); d.querySelector(".x").focus({preventScroll:true});
   }
   // "Heute gesammelt": Zähler pro Klasse und Tag
   const dayStr = () => { const d=new Date(), p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
@@ -85,5 +121,5 @@
       if(klasseId) localStorage.removeItem("insel-"+klasseId+"-name");
     }catch(e){}
   }
-  window.UH = { make, link, parse, qrImage, rank, RANK_AT, RANKS, today, addToday, resetClass };
+  window.UH = { make, link, parse, qrImage, rank, rankSheet, rankImg, worldImg, RANK_AT, RANKS, today, addToday, resetClass };
 })();

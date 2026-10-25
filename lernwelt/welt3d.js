@@ -271,9 +271,17 @@ export async function start(o){
     for(const l of pls) if(l.userData.flicker) l.intensity = l.userData.int*(.85+.15*Math.sin(now/120+l.position.x));
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);
-    for(const k in labels){ const L=labels[k]; v.copy(L.v).project(cam); const vis = v.z < 1;
-      const hw = (L.w || (L.w = L.el.offsetWidth || 160))/2 + 8, px = Math.min(innerWidth-hw, Math.max(hw, (v.x+1)/2*innerWidth));
-      L.el.style.transform = `translate(${px.toFixed(1)}px, ${((1-v.y)/2*innerHeight).toFixed(1)}px) translate(-50%,-100%)`; L.el.style.visibility = vis?"visible":"hidden"; }
+    // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander
+    const topEl = document.querySelector(".wbar"), dockEl = document.querySelector(".wdock");
+    const minY = (topEl ? topEl.getBoundingClientRect().bottom : 0) + 6, maxY = (dockEl ? dockEl.getBoundingClientRect().top : innerHeight) - 14;
+    const placed = [], list = [];
+    for(const k in labels){ const L=labels[k]; v.copy(L.v).project(cam); L.w = L.el.offsetWidth || L.w || 160; L.h = L.el.offsetHeight || 44;
+      list.push({L, vis: v.z < 1, x: Math.min(innerWidth-L.w/2-8, Math.max(L.w/2+8, (v.x+1)/2*innerWidth)), y: (1-v.y)/2*innerHeight}); }
+    list.sort((a,b)=>a.y-b.y);
+    for(const it of list){ const {L} = it; let y = Math.min(maxY, Math.max(minY + L.h, it.y));
+      for(let guard=0; guard<6; guard++){ const hit = placed.find(p => Math.abs(p.x-it.x) < (p.w+L.w)/2+4 && y > p.y-p.h-4 && y-L.h < p.y+4); if(!hit) break; y = hit.y + L.h + 6; if(y > maxY){ y = hit.y - hit.h - 6; } }
+      if(!L.el.classList.contains("hide")) placed.push({x:it.x, y, w:L.w, h:L.h});
+      L.el.style.transform = `translate(${it.x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%,-100%)`; L.el.style.visibility = it.vis?"visible":"hidden"; }
     if(o.still && !to && frames > 2) window.__stillDone = (window.__stillDone||0) + 1;
   }
   // Läuft es auf einem älteren iPad zu langsam, schalten wir Schatten und Leuchten automatisch ab
