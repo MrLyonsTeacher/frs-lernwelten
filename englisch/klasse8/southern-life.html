@@ -40,29 +40,29 @@ TH.start({
   },
   levels: [
     { id:"culture", E:{plus:[
-        {q:"Which state is called the **Lone Star State**?", o:["Texas","Georgia","Florida"], c:0},
-        {q:"Many people in Louisiana have French roots. They are called …", o:["Cajuns","Pilgrims","Yankees"], c:0},
-        {q:"Which music style was born in the South from African American music?", o:["the blues","techno","K-pop"], c:0}
+        {q:"Which state is called the **Lone Star State**?", o:["Texas","Georgia","Florida"], c:0, e:"**Texas** has one star on its flag – the Lone Star State."},
+        {q:"Many people in Louisiana have French roots. They are called …", o:["Cajuns","Pilgrims","Yankees"], c:0, e:"**Cajuns** have French roots."},
+        {q:"Which music style was born in the South from African American music?", o:["the blues","techno","K-pop"], c:0, e:"**The blues** came from African American music in the South."}
       ]},
       typ:"quiz", lernen:"south", icon:"🎺", titel:"Southern Culture", art:"Quiz",
       anleitung:"What do you know about the South?",
       anleitungDe:"Was weißt du über den Süden der USA?",
       tipp:"Denk an die Infokarten.",
       fragen:[
-        {q:"Which city is the birthplace of jazz?", o:["New Orleans","Nashville","Houston"], c:0},
-        {q:"Which city is called **Music City** – the home of country music?", o:["Nashville","Memphis","Atlanta"], c:0},
-        {q:"Where did Elvis Presley live (Graceland)?", o:["Memphis","Miami","Dallas"], c:0},
-        {q:"What is **Mardi Gras**?", o:["a big carnival in New Orleans","a type of soup","a music style"], c:0},
-        {q:"What does **y’all** mean?", o:["you all","yes, always","yellow"], c:0},
-        {q:"What is **southern hospitality**?", o:["being very friendly to guests","a hospital in the South","a type of food"], c:0},
-        {q:"Where can you see alligators in the wild?", o:["in the Everglades","in Central Park","at Niagara Falls"], c:0}
+        {q:"Which city is the birthplace of jazz?", o:["New Orleans","Nashville","Houston"], c:0, e:"Jazz was born in **New Orleans**."},
+        {q:"Which city is called **Music City** – the home of country music?", o:["Nashville","Memphis","Atlanta"], c:0, e:"**Nashville**, Tennessee = Music City (country music)."},
+        {q:"Where did Elvis Presley live (Graceland)?", o:["Memphis","Miami","Dallas"], c:0, e:"**Graceland**, Elvis’ house, is in **Memphis**."},
+        {q:"What is **Mardi Gras**?", o:["a big carnival in New Orleans","a type of soup","a music style"], c:0, e:"**Mardi Gras** is the big carnival in New Orleans."},
+        {q:"What does **y’all** mean?", o:["you all","yes, always","yellow"], c:0, e:"**y’all** = you all – typical for the South."},
+        {q:"What is **southern hospitality**?", o:["being very friendly to guests","a hospital in the South","a type of food"], c:0, e:"**hospitality** = Gastfreundschaft."},
+        {q:"Where can you see alligators in the wild?", o:["in the Everglades","in Central Park","at Niagara Falls"], c:0, e:"The **Everglades** in Florida are home to alligators."}
       ]},
     { id:"food", E:{plus:[ {t:"po’boy sandwich", k:0}, {t:"burritos", k:1}, {t:"gospel", k:2} ]},
       typ:"sortieren", lernen:"south", icon:"🍤", titel:"Southern Kitchen", art:"Food · sort",
       anleitung:"Where does it come from? Tap the right box.",
       anleitungDe:"Woher kommt es? Tippe auf das richtige Kästchen.",
       tipp:"Louisiana: französische/kreolische Küche. Texas: Tex-Mex. Musik: jazz, blues, country.",
-      koerbe:[ {t:"Louisiana food", info:"🍤"}, {t:"Tex-Mex", info:"🌮"}, {t:"Music style", info:"🎸"} ],
+      koerbe:[ {t:"Louisiana food", info:"🍤", tipp:"**Louisiana** (Cajun/Creole): gumbo, jambalaya, crawfish, beignets."}, {t:"Tex-Mex", info:"🌮", tipp:"**Tex-Mex** = Texas + Mexico: nachos, fajitas, chili, quesadillas."}, {t:"Music style", info:"🎸", tipp:"**Music from the South**: jazz, blues, country, rock ’n’ roll."} ],
       items:[
         {t:"gumbo", k:0}, {t:"jambalaya", k:0}, {t:"crawfish boil", k:0}, {t:"beignets", k:0, e:"**Beignets** are sweet fried pastries – famous in New Orleans."},
         {t:"nachos", k:1}, {t:"fajitas", k:1}, {t:"chili con carne", k:1}, {t:"quesadillas", k:1},
@@ -80,20 +80,20 @@ TH.start({
       ]},
     { id:"rq", E:{plus:[
         {q:"How long did the Montgomery bus boycott last?", o:["about a year","one day","ten years"], c:0, e:"From December 1955 to December 1956 – **381 days**."},
-        {q:"Where did Martin Luther King Jr. give his “I have a dream” speech?", o:["in Washington, D.C.","in New Orleans","in Los Angeles"], c:0},
-        {q:"What is **equal rights**?", o:["the same rights for all people","more rights for rich people","rights only for adults"], c:0}
+        {q:"Where did Martin Luther King Jr. give his “I have a dream” speech?", o:["in Washington, D.C.","in New Orleans","in Los Angeles"], c:0, e:"He gave the speech in **Washington, D.C.** in 1963."},
+        {q:"What is **equal rights**?", o:["the same rights for all people","more rights for rich people","rights only for adults"], c:0, e:"**equal rights** = gleiche Rechte für alle."}
       ]},
       typ:"quiz", lernen:"rights", icon:"✊", titel:"Civil Rights Quiz", art:"Quiz",
       anleitung:"What do you know about the civil rights movement?",
       anleitungDe:"Was weißt du über die Bürgerrechtsbewegung?",
       tipp:"Schau dir das Video an.",
       fragen:[
-        {q:"What was **segregation**?", o:["keeping Black and white people apart","a type of music","a school subject"], c:0},
-        {q:"What did Rosa Parks do in 1955?", o:["She refused to give up her bus seat.","She became president.","She wrote a song."], c:0},
-        {q:"In which city did this happen?", o:["Montgomery, Alabama","New York","Chicago"], c:0},
-        {q:"What is a **boycott**?", o:["people stop using or buying something as a protest","a type of bus","a big party"], c:0},
-        {q:"How did Martin Luther King Jr. fight for equal rights?", o:["without violence","with weapons","with money"], c:0},
-        {q:"What did the Civil Rights Act of 1964 do?", o:["It made segregation in public places illegal.","It ended the Gold Rush.","It started Thanksgiving."], c:0}
+        {q:"What was **segregation**?", o:["keeping Black and white people apart","a type of music","a school subject"], c:0, e:"**segregation** = Trennung von Schwarzen und Weißen."},
+        {q:"What did Rosa Parks do in 1955?", o:["She refused to give up her bus seat.","She became president.","She wrote a song."], c:0, e:"Rosa Parks **refused to give up her seat** for a white man."},
+        {q:"In which city did this happen?", o:["Montgomery, Alabama","New York","Chicago"], c:0, e:"It happened in **Montgomery, Alabama**."},
+        {q:"What is a **boycott**?", o:["people stop using or buying something as a protest","a type of bus","a big party"], c:0, e:"In a **boycott** people stop using something to protest."},
+        {q:"How did Martin Luther King Jr. fight for equal rights?", o:["without violence","with weapons","with money"], c:0, e:"Martin Luther King Jr. believed in **non-violent** protest."},
+        {q:"What did the Civil Rights Act of 1964 do?", o:["It made segregation in public places illegal.","It ended the Gold Rush.","It started Thanksgiving."], c:0, e:"The **Civil Rights Act** made segregation **illegal**."}
       ]},
     { id:"story", typ:"lueckentext", icon:"🎷", titel:"A Trip to New Orleans", art:"Text · fill in the gaps",
       anleitung:"Read Ben’s travel blog. Tap a gap and choose the right word.",

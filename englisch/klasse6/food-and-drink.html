@@ -49,9 +49,9 @@ TH.start({
               {a:"peas", b:"Erbsen"}, {a:"onion", b:"Zwiebel"}, {a:"pear", b:"Birne"}, {a:"cheese", b:"Käse"} ]},
     { id:"british", E:{plus:[
         {q:"What is **gravy**?", o:["a hot sauce for a Sunday roast","a sweet drink","a kind of bread"], c:0, e:"**Gravy** = Bratensoße."},
-        {q:"When do people traditionally have **afternoon tea**?", o:["at about 4 o’clock","before breakfast","at midnight"], c:0},
-        {q:"Which is NOT part of a **full English breakfast**?", o:["cornflakes","fried eggs","baked beans"], c:0},
-        {q:"In Britain, **crisps** are …", o:["Kartoffelchips","Pommes frites","Kekse"], c:0}
+        {q:"When do people traditionally have **afternoon tea**?", o:["at about 4 o’clock","before breakfast","at midnight"], c:0, e:"**Afternoon tea** is in the afternoon – at about 4 o’clock."},
+        {q:"Which is NOT part of a **full English breakfast**?", o:["cornflakes","fried eggs","baked beans"], c:0, e:"A full English is **hot**: eggs, bacon, beans – no cornflakes."},
+        {q:"In Britain, **crisps** are …", o:["Kartoffelchips","Pommes frites","Kekse"], c:0, e:"**crisps** = Kartoffelchips, chips = Pommes."}
       ]},
       lernen:"british", typ:"quiz", icon:"🇬🇧", titel:"Typically British", art:"British food · quiz",
       anleitung:"What do you know about food in Britain? Choose the right answer.",
@@ -79,8 +79,8 @@ TH.start({
               {t:"tea", k:2}, {t:"coffee", k:2}, {t:"hot chocolate", k:2},
               {t:"soup", k:3}, {t:"cereal", k:3, e:"**cereal** = Frühstücksflocken – you eat them from a bowl."}, {t:"salad", k:3} ]},
     { id:"order", E:{plus:[
-        {q:"The waiter asks: “**Would you like** some dessert?” You don’t want any. You say:", o:["No, thank you.","No, I don’t like.","Yes, I wouldn’t."], c:0},
-        {q:"You want the bill. You say:", o:["Can I have the bill, please?","Give me the money.","How many is the bill?"], c:0},
+        {q:"The waiter asks: “**Would you like** some dessert?” You don’t want any. You say:", o:["No, thank you.","No, I don’t like.","Yes, I wouldn’t."], c:0, e:"Polite no: **No, thank you.**"},
+        {q:"You want the bill. You say:", o:["Can I have the bill, please?","Give me the money.","How many is the bill?"], c:0, e:"**the bill** = die Rechnung → Can I have the bill, please?"},
         {q:"“**Would you like** …?” means …", o:["Möchtest du …?","Magst du …?","Wolltest du …?"], c:0, e:"**Would you like …?** = höfliches Angebot: Möchtest du …?"}
       ]},
       lernen:"cafe", typ:"quiz", icon:"🧾", titel:"At the Counter", art:"Ordering food · quiz",
@@ -89,15 +89,15 @@ TH.start({
       tipp:"Höflich bestellen: *Can I have …, please?* – *I’d like …, please.*",
       fragen:[
         {q:"You want to order a sandwich. You say:", o:["Can I have a cheese sandwich, please?","Give me sandwich.","I want sandwich now."], c:0, e:"Polite: **Can I have …, please?**"},
-        {q:"The waiter says: “**Anything else?**” This means …", o:["Sonst noch etwas?","Ist alles gut?","Bitte zahlen!"], c:0},
+        {q:"The waiter says: “**Anything else?**” This means …", o:["Sonst noch etwas?","Ist alles gut?","Bitte zahlen!"], c:0, e:"**Anything else?** = Sonst noch etwas? – the waiter asks if you want more."},
         {q:"You want to know the price. You ask:", o:["How much is it?","How many is it?","What costs it?"], c:0, e:"Price → **How much** is it?"},
         {q:"The waiter gives you your food. He says:", o:["Here you are.","Here you go away.","There you are not."], c:0, e:"**Here you are.** = Bitte schön (beim Geben)."},
         {q:"You want a drink. You say:", o:["I'd like an orange juice, please.","I like an orange juice.","I'd liking orange juice."], c:0, e:"**I’d like** = ich hätte gern."},
         {q:"“Eat in or take away?” – You want to eat in the café. You say:", o:["Eat in, please.","Take away, please.","Take in, please."], c:0, e:"**eat in** = hier essen, **take away** = mitnehmen."},
         {q:"The waiter says: “That’s £4.50.” How much is it?", o:["4 pounds 50","4 euros 50","45 pounds"], c:0, e:"£ = **pound(s)**. 100 pence = 1 pound."},
-        {q:"At the end you say:", o:["Thank you. Bye!","Give me the bill now.","Finished!"], c:0}
+        {q:"At the end you say:", o:["Thank you. Bye!","Give me the bill now.","Finished!"], c:0, e:"Be polite at the end: **Thank you. Bye!**"}
       ]},
-    { id:"build", typ:"satzbau", icon:"🍳", titel:"Order like a Brit", art:"Sentence builder",
+    { id:"build", regel:"Höflich bestellen: **Can I have …, please?** / **I’d like …, please.** Fragen enden mit **?**", typ:"satzbau", icon:"🍳", titel:"Order like a Brit", art:"Sentence builder",
       anleitung:"Build the sentence for the café.",
       anleitungDe:"Bau den Satz für das Café, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Bitte = *please* – steht oft am Ende.",

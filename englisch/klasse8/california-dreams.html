@@ -51,21 +51,21 @@ TH.start({
         {j:"1873", t:"Levi Strauss and Jacob Davis get a patent for jeans."}, {j:"1937", t:"The Golden Gate Bridge opens."}, {j:"1955", t:"Disneyland opens in Anaheim."}
       ]},
     { id:"gold", E:{plus:[
-        {q:"Why were they called **forty-niners**?", o:["because most of them came in 1849","because there were 49 of them","because they were 49 years old"], c:0},
+        {q:"Why were they called **forty-niners**?", o:["because most of them came in 1849","because there were 49 of them","because they were 49 years old"], c:0, e:"Most gold diggers came in **1849** → forty-niners."},
         {q:"Who often became richer than the gold diggers?", o:["people who sold food, tools and clothes to them","the Native Americans","the soldiers"], c:0, e:"Shop owners like **Levi Strauss** made a lot of money."},
-        {q:"In which year did California become a US state?", o:["1850","1776","1900"], c:0}
+        {q:"In which year did California become a US state?", o:["1850","1776","1900"], c:0, e:"California became the 31st state in **1850**."}
       ]},
       typ:"quiz", lernen:"gold", icon:"✨", titel:"Gold Rush Quiz", art:"Quiz",
       anleitung:"What do you know about the Gold Rush?",
       anleitungDe:"Was weißt du über den Goldrausch?",
       tipp:"Schau dir das Video an.",
       fragen:[
-        {q:"Where was gold found in 1848?", o:["at Sutter’s Mill","in Hollywood","in New York"], c:0},
+        {q:"Where was gold found in 1848?", o:["at Sutter’s Mill","in Hollywood","in New York"], c:0, e:"In 1848 gold was found at **Sutter’s Mill** – that started the Gold Rush."},
         {q:"Who were the **forty-niners**?", o:["people who came to find gold in 1849","a football team only","49 soldiers"], c:0, e:"Today the San Francisco football team is named after them!"},
-        {q:"Did most gold diggers become rich?", o:["No, very few did","Yes, all of them","Yes, most of them"], c:0},
-        {q:"Which city grew very fast because of the Gold Rush?", o:["San Francisco","Chicago","Boston"], c:0},
-        {q:"What did miners need – and Levi Strauss sold?", o:["strong trousers (jeans)","smartphones","surfboards"], c:0},
-        {q:"What did the Gold Rush mean for many Native Americans?", o:["they lost their land and many died","they all became rich","nothing changed"], c:0}
+        {q:"Did most gold diggers become rich?", o:["No, very few did","Yes, all of them","Yes, most of them"], c:0, e:"Only **very few** got rich – most found little gold."},
+        {q:"Which city grew very fast because of the Gold Rush?", o:["San Francisco","Chicago","Boston"], c:0, e:"**San Francisco** grew from a small town to a big city."},
+        {q:"What did miners need – and Levi Strauss sold?", o:["strong trousers (jeans)","smartphones","surfboards"], c:0, e:"Miners needed **strong trousers** – Levi Strauss sold jeans."},
+        {q:"What did the Gold Rush mean for many Native Americans?", o:["they lost their land and many died","they all became rich","nothing changed"], c:0, e:"Settlers took their **land**, and many Native Americans died."}
       ]},
     { id:"west", E:{plus:[ {a:"Route 66", b:"famous road from Chicago to L.A."}, {a:"San Diego", b:"city near the Mexican border"} ]},
       typ:"memory", lernen:"west", icon:"🎬", titel:"California Hotspots", art:"Place + fact · memory",
@@ -75,8 +75,8 @@ TH.start({
       paare:[ {a:"Hollywood", b:"film industry"}, {a:"Silicon Valley", b:"tech companies"}, {a:"Golden Gate Bridge", b:"red bridge, 1937"}, {a:"Death Valley", b:"one of the hottest places"},
               {a:"Yosemite", b:"national park with waterfalls"}, {a:"Sacramento", b:"state capital"}, {a:"Sutter's Mill", b:"gold found in 1848"}, {a:"Santa Monica", b:"end of Route 66"} ]},
     { id:"facts", E:{plus:[
-        {t:"Silicon Valley is near San Francisco.", r:"r"}, {t:"Yosemite is a big city in the south of California.", r:"l", e:"False – **Yosemite** is a **national park**."},
-        {t:"Route 66 ends in Santa Monica.", r:"r"}, {t:"Levi Strauss invented the smartphone.", r:"l", e:"False – he sold **jeans** to the miners."}
+        {t:"Silicon Valley is near San Francisco.", r:"r", e:"True – **Silicon Valley** is south of San Francisco."}, {t:"Yosemite is a big city in the south of California.", r:"l", e:"False – **Yosemite** is a **national park**."},
+        {t:"Route 66 ends in Santa Monica.", r:"r", e:"True – Route 66 goes from Chicago to **Santa Monica**."}, {t:"Levi Strauss invented the smartphone.", r:"l", e:"False – he sold **jeans** to the miners."}
       ]},
       typ:"swipe", lernen:"west", icon:"✅", titel:"True or False?", art:"California facts · swipe",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
@@ -84,10 +84,10 @@ TH.start({
       tipp:"Denk an die Infokarten.",
       links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
       karten:[
-        {t:"California has more people than any other US state.", r:"r"}, {t:"Los Angeles is the capital of California.", r:"l", e:"False – **Sacramento**."},
-        {t:"Hollywood is part of Los Angeles.", r:"r"}, {t:"The Golden Gate Bridge is in Los Angeles.", r:"l", e:"False – it is in **San Francisco**."},
-        {t:"Many people in California speak Spanish.", r:"r"}, {t:"Death Valley is one of the coldest places on Earth.", r:"l", e:"False – one of the **hottest**."},
-        {t:"Apple and Google started in Silicon Valley.", r:"r"}, {t:"California became a state in 1776.", r:"l", e:"False – in **1850**."}
+        {t:"California has more people than any other US state.", r:"r", e:"True – about **39 million** people live there."}, {t:"Los Angeles is the capital of California.", r:"l", e:"False – **Sacramento**."},
+        {t:"Hollywood is part of Los Angeles.", r:"r", e:"True – **Hollywood** is a part of L.A."}, {t:"The Golden Gate Bridge is in Los Angeles.", r:"l", e:"False – it is in **San Francisco**."},
+        {t:"Many people in California speak Spanish.", r:"r", e:"True – California was once part of **Mexico**; many people speak Spanish."}, {t:"Death Valley is one of the coldest places on Earth.", r:"l", e:"False – one of the **hottest**."},
+        {t:"Apple and Google started in Silicon Valley.", r:"r", e:"True – **Silicon Valley** is the home of many tech companies."}, {t:"California became a state in 1776.", r:"l", e:"False – in **1850**."}
       ]},
     { id:"story", typ:"lueckentext", icon:"🏄", titel:"Postcard from L.A.", art:"Text · fill in the gaps",
       anleitung:"Read the postcard. Tap a gap and choose the right word.",

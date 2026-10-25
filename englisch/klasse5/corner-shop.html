@@ -33,46 +33,46 @@ TH.start({
   },
   levels: [
     { id:"money", E:{plus:[
-        {q:"Three cans of lemonade cost 80p each. How much is that?", o:["£2.40","£2.80","£1.60"], c:0},
-        {q:"How do you say **£12.50**?", o:["twelve pounds fifty","twelve fifty pence","one pound twenty-five"], c:0},
-        {q:"You pay with a £10 note. Your shopping is £6.30. Your change is …", o:["£3.70","£4.70","£3.30"], c:0}
+        {q:"Three cans of lemonade cost 80p each. How much is that?", o:["£2.40","£2.80","£1.60"], c:0, e:"3 × 80p = 240p = **£2.40**."},
+        {q:"How do you say **£12.50**?", o:["twelve pounds fifty","twelve fifty pence","one pound twenty-five"], c:0, e:"Pounds first, then pence: **twelve pounds fifty**."},
+        {q:"You pay with a £10 note. Your shopping is £6.30. Your change is …", o:["£3.70","£4.70","£3.30"], c:0, e:"£10.00 – £6.30 = **£3.70**."}
       ]},
       typ:"quiz", lernen:"money", icon:"💷", titel:"Money, Money, Money", art:"Prices · quiz",
       anleitung:"Choose the right answer.",
       anleitungDe:"Wähle die richtige Antwort.",
       tipp:"100p = £1",
       fragen:[
-        {q:"How many pence are one pound?", o:["100","10","1,000"], c:0}, {q:"How do you say **£1.25**?", o:["one pound twenty-five","one twenty-five pence","twelve pounds five"], c:0},
-        {q:"How do you say **99p**?", o:["ninety-nine p","nine nine pounds","ninety pence nine"], c:0}, {q:"Two biscuits cost 50p each. How much is that?", o:["£1","50p","£2"], c:0},
-        {q:"What are **crisps** in German?", o:["Kartoffelchips","Pommes frites","Kekse"], c:0}, {q:"What are **chips** in Britain?", o:["Pommes frites","Kartoffelchips","Kekse"], c:0},
-        {q:"You pay £5 for something that costs £4.25. Your change is …", o:["75p","£1.75","25p"], c:0}
+        {q:"How many pence are one pound?", o:["100","10","1,000"], c:0, e:"**100 pence (p) = £1** – like 100 Cent = 1 Euro."}, {q:"How do you say **£1.25**?", o:["one pound twenty-five","one twenty-five pence","twelve pounds five"], c:0, e:"Say the **pounds** first, then the pence: one pound twenty-five."},
+        {q:"How do you say **99p**?", o:["ninety-nine p","nine nine pounds","ninety pence nine"], c:0, e:"Under £1 you only say the pence: **ninety-nine p**."}, {q:"Two biscuits cost 50p each. How much is that?", o:["£1","50p","£2"], c:0, e:"50p + 50p = **100p = £1**."},
+        {q:"What are **crisps** in German?", o:["Kartoffelchips","Pommes frites","Kekse"], c:0, e:"**crisps** = Kartoffelchips. Pommes frites are **chips** in Britain."}, {q:"What are **chips** in Britain?", o:["Pommes frites","Kartoffelchips","Kekse"], c:0, e:"In Britain **chips** = Pommes frites. Kartoffelchips are **crisps**."},
+        {q:"You pay £5 for something that costs £4.25. Your change is …", o:["75p","£1.75","25p"], c:0, e:"£5.00 – £4.25 = **75p** change (Wechselgeld)."}
       ]},
     { id:"how", E:{plus:[ {t:"cola", k:1}, {t:"potatoes", k:2} ]},
       typ:"sortieren", lernen:"money", icon:"🧺", titel:"Fill the Basket", art:"a bag of, a can of … · sort",
       anleitung:"How do you buy it? Tap the right box.",
       anleitungDe:"Wie kauft man das? Tippe auf das richtige Kästchen.",
       tipp:"bag = Tüte, can = Dose, kilogram = Kilo, loaf = Laib.",
-      koerbe:[ {t:"a bag of", info:"🛍️"}, {t:"a can of", info:"🥫"}, {t:"a kilogram of", info:"⚖️"}, {t:"a loaf of", info:"🍞"} ],
+      koerbe:[ {t:"a bag of", info:"🛍️", tipp:"**a bag of** = eine Tüte: apples, nuts, crisps …"}, {t:"a can of", info:"🥫", tipp:"**a can of** = eine Dose: peaches, pet food, tomatoes …"}, {t:"a kilogram of", info:"⚖️", tipp:"**a kilogram of** = ein Kilo: oranges, bananas …"}, {t:"a loaf of", info:"🍞", tipp:"**a loaf of** = ein Laib: bread."} ],
       items:[ {t:"apples", k:0}, {t:"nuts", k:0}, {t:"crisps", k:0}, {t:"peaches", k:1}, {t:"pet food", k:1}, {t:"tomatoes", k:1},
               {t:"oranges", k:2}, {t:"bananas", k:2}, {t:"bread", k:3} ]},
     { id:"say", E:{plus:[
-        {q:"You want two apples.", o:["Can I have two apples, please?","Two apple, please.","I have two apples?"], c:0},
-        {q:"The shop assistant gives you your change.", o:["Thank you. Bye!","Pardon? Anything else?","How much are they?"], c:0},
-        {q:"You want to know the price of the peaches.", o:["How much are the peaches?","How much is the peaches?","How many are the peaches?"], c:0}
+        {q:"You want two apples.", o:["Can I have two apples, please?","Two apple, please.","I have two apples?"], c:0, e:"Polite and correct: **Can I have two apple*s*, please?** (plural!)"},
+        {q:"The shop assistant gives you your change.", o:["Thank you. Bye!","Pardon? Anything else?","How much are they?"], c:0, e:"At the end say **Thank you. Bye!**"},
+        {q:"You want to know the price of the peaches.", o:["How much are the peaches?","How much is the peaches?","How many are the peaches?"], c:0, e:"peaches = plural → How much **are** …?"}
       ]},
       typ:"quiz", lernen:"money", icon:"🗣️", titel:"What Do You Say?", art:"Shopping phrases · quiz",
       anleitung:"You are in the corner shop. What do you say?",
       anleitungDe:"Du bist im Laden an der Ecke. Was sagst du?",
       tipp:"Höflich: please, thank you.",
       fragen:[
-        {q:"You want a bottle of milk.", o:["Can I have a bottle of milk, please?","Give milk!","I want milk now."], c:0},
-        {q:"You want to know the price.", o:["How much is it?","How many is it?","What costs?"], c:0},
-        {q:"The shop assistant says: “Anything else?” You don’t need more.", o:["No, thanks.","Yes, please.","Here you are."], c:0},
-        {q:"You give the money to the shop assistant.", o:["Here you are.","You’re welcome.","Pardon?"], c:0},
-        {q:"You didn’t understand.", o:["Can you say that again, please?","Thank you.","Anything else?"], c:0},
-        {q:"Somebody says “Thanks!” to you.", o:["You’re welcome.","Here’s your change.","How can I help you?"], c:0}
+        {q:"You want a bottle of milk.", o:["Can I have a bottle of milk, please?","Give milk!","I want milk now."], c:0, e:"Be polite: **Can I have …, please?** „Give milk!“ sounds rude."},
+        {q:"You want to know the price.", o:["How much is it?","How many is it?","What costs?"], c:0, e:"Price = **How much …?** „How many“ is for things you can count."},
+        {q:"The shop assistant says: “Anything else?” You don’t need more.", o:["No, thanks.","Yes, please.","Here you are."], c:0, e:"„Anything else?“ = Sonst noch etwas? You don’t want more → **No, thanks.**"},
+        {q:"You give the money to the shop assistant.", o:["Here you are.","You’re welcome.","Pardon?"], c:0, e:"When you give something to somebody, you say **Here you are.**"},
+        {q:"You didn’t understand.", o:["Can you say that again, please?","Thank you.","Anything else?"], c:0, e:"Ask politely for a repeat: **Can you say that again, please?**"},
+        {q:"Somebody says “Thanks!” to you.", o:["You’re welcome.","Here’s your change.","How can I help you?"], c:0, e:"The answer to „Thanks!“ is **You’re welcome.** (Gern geschehen.)"}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Shop Rush", art:"Food words · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise: z. B. **flour** (Mehl) – **flower** ist die Blume, **floor** der Boden.", typ:"rush", icon:"⚡", titel:"Shop Rush", art:"Food words · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",

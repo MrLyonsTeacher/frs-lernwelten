@@ -33,7 +33,7 @@ TH.start({
       anleitung:"Does the person **agree** or **disagree**? Tap the right box.",
       anleitungDe:"Stimmt die Person **zu** oder **nicht zu**? Tippe auf das richtige Kästchen.",
       tipp:"Achte auf Wörter wie *exactly, absolutely* oder *I don’t think so*.",
-      koerbe:[ {t:"agree", info:"👍"}, {t:"disagree", info:"👎"} ],
+      koerbe:[ {t:"agree", info:"👍", tipp:"**Zustimmen**: I agree, Exactly!, That’s a good point, You’re right."}, {t:"disagree", info:"👎", tipp:"**Widersprechen**: I don’t think so, I disagree, That’s not true, No way!"} ],
       items:[
         {t:"I totally agree with you.", k:0}, {t:"Exactly!", k:0}, {t:"That’s a good point.", k:0}, {t:"You’re absolutely right.", k:0}, {t:"I think so, too.", k:0},
         {t:"I don’t think so.", k:1}, {t:"I’m afraid I disagree.", k:1}, {t:"That’s not true.", k:1}, {t:"I see it differently.", k:1}, {t:"No way!", k:1, e:"Here **No way!** means: I don’t agree at all."}
@@ -43,16 +43,16 @@ TH.start({
       anleitungDe:"Welches Wort passt zur Erklärung?",
       tipp:"Viele Wörter kennst du aus dem Internet.",
       fragen:[
-        {q:"Something that a lot of people like or do at the same time.", o:["trend","tradition","trailer"], c:0},
-        {q:"A person who makes money by posting content and has many followers.", o:["influencer","inventor","instructor"], c:0},
-        {q:"Something that many people like is very …", o:["popular","popularity","poplar"], c:0},
-        {q:"A video or post that spreads very fast online.", o:["it goes viral","it goes virus","it goes vital"], c:0, alt:["viral","goes viral","it went viral"]},
+        {q:"Something that a lot of people like or do at the same time.", o:["trend","tradition","trailer"], c:0, e:"A **trend** is something many people do at the same time."},
+        {q:"A person who makes money by posting content and has many followers.", o:["influencer","inventor","instructor"], c:0, e:"An **influencer** posts content and has many followers."},
+        {q:"Something that many people like is very …", o:["popular","popularity","poplar"], c:0, e:"**popular** = beliebt (Adjektiv). popularity is the noun."},
+        {q:"A video or post that spreads very fast online.", o:["it goes viral","it goes virus","it goes vital"], c:0, alt:["viral","goes viral","it went viral"], e:"A post that spreads fast **goes viral**."},
         {q:"A short text that tries to make people buy something.", o:["ad / advertisement","article","adventure"], c:0, e:"Design an **ad** = eine Werbeanzeige gestalten."},
         {q:"A habit or tradition of a group of people.", o:["custom","costume","customer"], c:0, e:"**custom** = Brauch."},
-        {q:"Treating people badly because of their skin colour, religion or gender.", o:["discrimination","decoration","destination"], c:0},
-        {q:"From many different cultures.", o:["multicultural","multiple","multimedia"], c:0}
+        {q:"Treating people badly because of their skin colour, religion or gender.", o:["discrimination","decoration","destination"], c:0, e:"**discrimination** = Diskriminierung."},
+        {q:"From many different cultures.", o:["multicultural","multiple","multimedia"], c:0, e:"**multicultural** = multikulturell."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Opinion Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **opinion**, **agree**, **custom**.", typ:"rush", icon:"⚡", titel:"Opinion Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",

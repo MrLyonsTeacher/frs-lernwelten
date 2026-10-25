@@ -35,7 +35,7 @@ TH.start({
       anleitung:"What does the verb look like with **he/she/it**? Tap the right box.",
       anleitungDe:"Wie heißt das Verb mit **he/she/it**? Tippe auf das richtige Kästchen.",
       tipp:"Meist -s. Nach o, sh, ch, s, x: -es. Konsonant + y: -ies.",
-      koerbe:[ {t:"+ s", info:"play → plays"}, {t:"+ es", info:"go → goes"}, {t:"y → ies", info:"fly → flies"} ],
+      koerbe:[ {t:"+ s", info:"play → plays", tipp:"Die meisten Verben: **+ s** (plays, likes, reads)."}, {t:"+ es", info:"go → goes", tipp:"Endet das Verb auf **o, sh, ch, s, x** → **+ es** (goes, watches)."}, {t:"y → ies", info:"fly → flies", tipp:"Mitlaut + **y** → **ies** (flies, studies)."} ],
       items:[ {t:"play", k:0, e:"Vowel + y → just **-s**: plays."}, {t:"like", k:0}, {t:"read", k:0}, {t:"eat", k:0},
               {t:"go", k:1}, {t:"watch", k:1}, {t:"wash", k:1}, {t:"do", k:1, e:"do → **does**."},
               {t:"fly", k:2}, {t:"study", k:2}, {t:"cry", k:2}, {t:"carry", k:2} ]},
@@ -44,12 +44,12 @@ TH.start({
       anleitungDe:"Wähle die richtige Form.",
       tipp:"he, she, it – das s muss mit!",
       fragen:[
-        {q:"Flamy the dragon **___** up at six o’clock.", o:["gets","get","getting"], c:0}, {q:"I **___** my teeth every morning.", o:["brush","brushes","brushs"], c:0},
-        {q:"My sister **___** to school by bus.", o:["goes","go","gos"], c:0}, {q:"We **___** pizza on Fridays.", o:["eat","eats","eating"], c:0},
-        {q:"Holly **___** her dog after school.", o:["walks","walk","walkes"], c:0}, {q:"The bird **___** over the volcano.", o:["flies","flys","fly"], c:0},
-        {q:"They **___** TV in the evening.", o:["watch","watches","watchs"], c:0}, {q:"Luke **___** his homework at four.", o:["does","do","dos"], c:0}
+        {q:"Flamy the dragon **___** up at six o’clock.", o:["gets","get","getting"], c:0, e:"Flamy = **he/it** → Verb **+ s**: gets."}, {q:"I **___** my teeth every morning.", o:["brush","brushes","brushs"], c:0, e:"Bei **I** kein s: I brush."},
+        {q:"My sister **___** to school by bus.", o:["goes","go","gos"], c:0, e:"she → **+ es** nach o: goes."}, {q:"We **___** pizza on Fridays.", o:["eat","eats","eating"], c:0, e:"Bei **we** kein s: we eat."},
+        {q:"Holly **___** her dog after school.", o:["walks","walk","walkes"], c:0, e:"Holly = **she** → walk**s**."}, {q:"The bird **___** over the volcano.", o:["flies","flys","fly"], c:0, e:"it → fly: Mitlaut + y → **flies**."},
+        {q:"They **___** TV in the evening.", o:["watch","watches","watchs"], c:0, e:"Bei **they** kein s: they watch."}, {q:"Luke **___** his homework at four.", o:["does","do","dos"], c:0, e:"he → do + es → **does**."}
       ]},
-    { id:"order", typ:"satzbau", lernen:"sp", icon:"📍", titel:"Word Order", art:"always · often · never · sentence builder",
+    { id:"order", regel:"Häufigkeitswörter (always, often, never …) stehen **vor dem Verb** – aber **nach am/is/are**.", typ:"satzbau", lernen:"sp", icon:"📍", titel:"Word Order", art:"always · often · never · sentence builder",
       anleitung:"Build the sentence. Where do **always, often, sometimes, never** go?",
       anleitungDe:"Bau den Satz. Wo stehen **always, often, sometimes, never**?",
       tipp:"Vor dem Verb – aber nach am/is/are.",
@@ -59,7 +59,7 @@ TH.start({
         {w:["My","dad","never","gets","up","late"], hint:"🇩🇪 Mein Papa steht nie spät auf."}, {w:["She","is","always","happy"], hint:"🇩🇪 Sie ist immer glücklich."},
         {w:["I","sometimes","go","to","the","cinema"], alt:[["Sometimes", "I", "go", "to", "the", "cinema"]], hint:"🇩🇪 Ich gehe manchmal ins Kino."}, {w:["Sherlock","always","sleeps","on","my","bed"], hint:"🇩🇪 Sherlock schläft immer auf meinem Bett."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Dragon Rush", art:"he/she/it form · 60 seconds",
+    { id:"rush", regel:"he/she/it: **+ s** · nach o/sh/ch/s/x **+ es** · Mitlaut + y → **ies**.", typ:"rush", icon:"⚡", titel:"Dragon Rush", art:"he/she/it form · 60 seconds",
       anleitung:"Choose the **he/she/it** form – fast! **Goal: 12** in 60 seconds.",
       anleitungDe:"Wähle schnell die Form für **he/she/it**! **Ziel: 12** in 60 Sekunden.",
       tipp:"-s, -es oder -ies?",

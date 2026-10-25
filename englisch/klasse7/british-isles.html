@@ -49,8 +49,8 @@ TH.start({
   lob: {3:"Brilliant! You know the British Isles really well.", 2:"Well done! Can you get three stars next time?", 1:"Good start – read the tips and try again.", 0:"Don’t give up! Have a look at the answers and try again."},
   levels: [
     { id:"names", E:{plus:[
-        {q:"Which part of the UK is NOT on the island of Great Britain?", o:["Northern Ireland","Wales","Scotland","England"], c:0},
-        {q:"What is the capital of the Republic of Ireland?", o:["Dublin","Belfast","Cork","Galway"], c:0},
+        {q:"Which part of the UK is NOT on the island of Great Britain?", o:["Northern Ireland","Wales","Scotland","England"], c:0, e:"**Northern Ireland** is on the island of Ireland."},
+        {q:"What is the capital of the Republic of Ireland?", o:["Dublin","Belfast","Cork","Galway"], c:0, e:"The capital of Ireland is **Dublin**. Belfast is in Northern Ireland."},
         {q:"Which language is spoken in Wales next to English?", o:["Welsh","Gaelic only","Irish","Scots"], c:0, e:"**Welsh** – *Croeso* means “welcome”."}
       ]},
       lernen:"isles", typ:"quiz", icon:"🧭", titel:"UK, GB or British Isles?", art:"Quiz · the basics",
@@ -72,8 +72,8 @@ TH.start({
       anleitungDe:"In welchem Land liegt dieser Ort? Tippe auf das richtige Kästchen.",
       tipp:"Northern Ireland gehört zum UK, die Republic of Ireland nicht. Beide liegen auf der Insel Irland.",
       koerbe:[
-        {t:"England", info:"capital: London"}, {t:"Scotland", info:"capital: Edinburgh"}, {t:"Wales", info:"capital: Cardiff"},
-        {t:"Northern Ireland", info:"capital: Belfast"}, {t:"Republic of Ireland", info:"capital: Dublin"}
+        {t:"England", info:"capital: London", tipp:"**England** – capital London; e.g. Manchester, Oxford, Stonehenge."}, {t:"Scotland", info:"capital: Edinburgh", tipp:"**Scotland** – capital Edinburgh; e.g. Glasgow, Loch Ness, Ben Nevis."}, {t:"Wales", info:"capital: Cardiff", tipp:"**Wales** – capital Cardiff; e.g. Swansea, Snowdon (Yr Wyddfa)."},
+        {t:"Northern Ireland", info:"capital: Belfast", tipp:"**Northern Ireland** (part of the UK) – capital Belfast; Giant’s Causeway."}, {t:"Republic of Ireland", info:"capital: Dublin", tipp:"**Republic of Ireland** (own country, euro) – capital Dublin; Galway, Cliffs of Moher."}
       ],
       items:[
         {t:"London", k:0}, {t:"Manchester", k:0}, {t:"Stonehenge", k:0, e:"**Stonehenge** is a very old stone circle in the south of England."}, {t:"Oxford", k:0},
@@ -91,7 +91,7 @@ TH.start({
         {a:"Edinburgh", b:"capital of Scotland"}, {a:"Cardiff", b:"capital of Wales"}, {a:"Belfast", b:"capital of Northern Ireland"}, {a:"Dublin", b:"capital of Ireland"},
         {a:"red dragon", b:"symbol of Wales"}, {a:"thistle", b:"symbol of Scotland"}, {a:"shamrock", b:"symbol of Ireland"}, {a:"rose", b:"symbol of England"}
       ]},
-    { id:"rush", lernen:"countries", typ:"rush", icon:"⚡", titel:"Country rush", art:"Speed game · 60 seconds",
+    { id:"rush", regel:"Remember the capitals: **London** (England), **Edinburgh** (Scotland), **Cardiff** (Wales), **Belfast** (N. Ireland), **Dublin** (Ireland).", lernen:"countries", typ:"rush", icon:"⚡", titel:"Country rush", art:"Speed game · 60 seconds",
       anleitung:"Which country is it? Be fast! **Goal: 12** in 60 seconds.",
       anleitungDe:"Zu welchem Land gehört das? Sei schnell! **Ziel: 12 richtige** in 60 Sekunden.",
       tipp:"N. Ireland = Nordirland (UK) · Ireland = Republik Irland.",
@@ -128,8 +128,8 @@ TH.start({
         {j:"2023", t:"Charles III is crowned king."}
       ]},
     { id:"traditions", E:{plus:[
-        {q:"On **Burns Night** in January, Scottish people remember …", o:["the poet Robert Burns","a big fire in Edinburgh","the first Scottish king","a famous football match"], c:0},
-        {q:"What do many people wear on St Patrick’s Day?", o:["something green","something red","a kilt","a crown"], c:0},
+        {q:"On **Burns Night** in January, Scottish people remember …", o:["the poet Robert Burns","a big fire in Edinburgh","the first Scottish king","a famous football match"], c:0, e:"Burns Night remembers the poet **Robert Burns**."},
+        {q:"What do many people wear on St Patrick’s Day?", o:["something green","something red","a kilt","a crown"], c:0, e:"Green is the colour of **Ireland**."},
         {q:"What is a **leek**?", o:["a vegetable – a symbol of Wales","a Welsh castle","an Irish dance","a Scottish lake"], c:0, e:"**leek** = Lauch."}
       ]},
       lernen:"culture", typ:"quiz", icon:"🎉", titel:"Traditions & food", art:"Quiz · culture",
@@ -148,8 +148,8 @@ TH.start({
       ]},
     { id:"facts", E:{plus:[
         {t:"Hadrian’s Wall was built by the Vikings.", r:"l", e:"It was built by the **Romans** (AD 122)."},
-        {t:"William the Conqueror won the Battle of Hastings in 1066.", r:"r"},
-        {t:"The Magna Carta says that even the king must follow the law.", r:"r"},
+        {t:"William the Conqueror won the Battle of Hastings in 1066.", r:"r", e:"True – in **1066** William became King of England."},
+        {t:"The Magna Carta says that even the king must follow the law.", r:"r", e:"True – the **Magna Carta** (1215) limited the king’s power."},
         {t:"The Cliffs of Moher are in Scotland.", r:"l", e:"They are in the **Republic of Ireland**."}
       ]},
       typ:"swipe", icon:"✅", titel:"True or false?", art:"Swipe · fun facts",

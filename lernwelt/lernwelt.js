@@ -496,9 +496,9 @@ GAMES.quiz = (l, A, done) => {
     const q = qs[i], ok = j===q.c;
     A.querySelectorAll(".opt").forEach(b=>{ const k=+b.dataset.j; b.disabled=true; if(k===q.c) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
     res.push(ok);
-    if(ok){ pts+=P; award([["q"+l.fragen.indexOf(q), P]], A.querySelector(`.opt[data-j="${q.c}"]`)); } else { A.querySelector(".qpanel").classList.add("shake"); miss((q.szene?q.szene+" – ":"")+q.q, q.o[q.c], q.e); }
+    if(ok){ pts+=P; award([["q"+l.fragen.indexOf(q), P]], A.querySelector(`.opt[data-j="${q.c}"]`)); } else { A.querySelector(".qpanel").classList.add("shake"); miss((q.szene?q.szene+" – ":"")+q.q, q.o[q.c], q.e||l.regel); }
     const head = ok ? `${l.richtigText||T.right} +${P}` : `${j===-1?T.timeUp:T.wrong} ${T.correctIs} „${q.o[q.c]}“`;
-    sheet(ok?"ok":"no", esc(head), rich(q.e||""), i<qs.length-1?T.next:T.result, ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); });
+    sheet(ok?"ok":"no", esc(head), rich(q.e||(!ok&&l.regel)||""), i<qs.length-1?T.next:T.result, ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); });
   }
   A.onclick = e => { const o = e.target.closest(".opt"); if(o) answer(+o.dataset.j); };
   show();
@@ -532,9 +532,9 @@ GAMES.swipe = (l, A, done) => {
     el.style.transition="transform .3s, opacity .3s"; el.style.transform=`translateX(${d==="l"?-420:420}px) rotate(${d==="l"?-18:18}deg)`; el.style.opacity="0";
     A.querySelectorAll("#sbtn .btn").forEach(b=>b.disabled=true);
     const corr = c.r==="l"?l.links.t:l.rechts.t;
-    if(!ok) miss(c.t, corr, c.e);
+    if(!ok) miss(c.t, corr, c.e||l.regel);
     const head = c.r==="beide" ? T.grey+" +1" : ok ? T.right+" +1" : `${T.wrong} ${T.correctIs} „${corr}“`;
-    sheet(ok?"ok":"no", esc(head), `<span class="quote">„${rich(c.t)}“</span> ${rich(c.e||"")}`, i<cs.length-1?T.next:T.result,
+    sheet(ok?"ok":"no", esc(head), `<span class="quote">„${rich(c.t)}“</span> ${rich(c.e||(!ok&&l.regel)||"")}`, i<cs.length-1?T.next:T.result,
       ()=>{ i++; if(i<cs.length) show(); else done(pts, T.correctN(pts)+" / "+cs.length); });
   }
   A.onclick = e => { const b = e.target.closest("[data-d]"); if(b) decide(b.dataset.d); };
@@ -560,8 +560,8 @@ GAMES.sortieren = (l, A, done) => {
     if(ok){ pts++; award([["i"+l.items.indexOf(it), 1]], b);
       if(it.e){ sheet("ok", esc(T.right+" +1"), rich(it.e)); tm=setTimeout(nextItem, 1600); } else tm=setTimeout(nextItem, 650);
     } else {
-      b.classList.add("miss","shake"); $("#si").classList.add("shake"); miss(it.t, l.koerbe[it.k].t, it.e||l.koerbe[it.k].tipp);
-      sheet("no", esc(`${T.wrong} ${T.correctIs} „${l.koerbe[it.k].t}“`), rich(it.e||l.koerbe[it.k].tipp||""), i<its.length-1?T.next:T.result, nextItem);
+      b.classList.add("miss","shake"); $("#si").classList.add("shake"); miss(it.t, l.koerbe[it.k].t, it.e||l.koerbe[it.k].tipp||l.regel);
+      sheet("no", esc(`${T.wrong} ${T.correctIs} „${l.koerbe[it.k].t}“`), rich(it.e||l.koerbe[it.k].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);
     }
   };
   show();
@@ -599,7 +599,7 @@ GAMES.rush = (l, A, done) => {
       if(hits<=l.ziel) award([["hits", hits]], o); else pop(o, "🔥");
       $("#rs").textContent=hits; $("#rbar").style.width=Math.min(100,hits/l.ziel*100)+"%";
       $("#cb").textContent = combo>=3 ? `🔥 ×${combo}` : ""; setTimeout(next, 280);
-    } else { combo=0; $("#cb").textContent=""; o.classList.add("wrong","shake"); miss(cur.q, cur.o[cur.c], cur.e);
+    } else { combo=0; $("#cb").textContent=""; o.classList.add("wrong","shake"); miss(cur.q, cur.o[cur.c], cur.e||l.regel);
       A.querySelector(`.opt[data-j="${cur.c}"]`).classList.add("right"); setTimeout(next, 900); }
   };
 };
@@ -657,8 +657,8 @@ GAMES.satzbau = (l, A, done) => {
       const ok = okList.includes(got); res.push(ok); checked=true; if(ok) pts+=P; show();
       if(ok) award([["s"+l.saetze.indexOf(s), P]], $("#ans"));
       const sol = s.w.join(" ").replace(/\s+([?.!,])/g,"$1");
-      if(!ok) miss(s.hint||s.aufgabe||"", sol, s.e);
-      sheet(ok?"ok":"no", esc(ok?T.right+" +"+P:T.wrong), `${ok?"":`${T.solution} <strong>${esc(sol)}</strong> `}${s.e?rich(s.e):""}`, i<ss.length-1?T.next:T.result,
+      if(!ok) miss(s.hint||s.aufgabe||"", sol, s.e||l.regel);
+      sheet(ok?"ok":"no", esc(ok?T.right+" +"+P:T.wrong), `${ok?"":`${T.solution} <strong>${esc(sol)}</strong> `}${(s.e||(!ok&&l.regel))?rich(s.e||l.regel):""}`, i<ss.length-1?T.next:T.result,
         ()=>{ i++; if(i<ss.length) setup(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+ss.length); });
     }
   };
@@ -712,8 +712,8 @@ GAMES.eingabe = (l, A, done) => {
   }
   A.onclick = e => { if(!e.target.closest("#chk") || locked) return; const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
     locked=true; $("#ans").disabled=true; const ok = same(v, q.a, q.strict); res.push(ok);
-    if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e); }
-    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||""), i<qs.length-1?T.next:T.result,
+    if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e||l.regel); }
+    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||(!ok&&l.regel)||""), i<qs.length-1?T.next:T.result,
       ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); }); };
   show();
 };

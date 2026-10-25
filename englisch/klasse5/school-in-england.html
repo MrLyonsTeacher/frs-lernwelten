@@ -34,8 +34,8 @@ TH.start({
   },
   levels: [
     { id:"cmp", E:{plus:[
-        {t:"Students are in a tutor group.", r:"r"}, {t:"Many students go home for lunch.", r:"l"},
-        {t:"Students often eat a packed lunch in the cafeteria.", r:"r"}, {t:"Students stay in the same class from Klasse 5 to Klasse 10.", r:"l"}
+        {t:"Students are in a tutor group.", r:"r", e:"**Tutor groups** are typical for England."}, {t:"Many students go home for lunch.", r:"l", e:"In Germany many go home. In England they eat at school."},
+        {t:"Students often eat a packed lunch in the cafeteria.", r:"r", e:"**Packed lunch** in the cafeteria is typical for England."}, {t:"Students stay in the same class from Klasse 5 to Klasse 10.", r:"l", e:"Staying in one **Klasse** is typical for Germany."}
       ]},
       typ:"swipe", lernen:"sch", icon:"🏫", titel:"England or Germany?", art:"Swipe",
       anleitung:"Typical for a school in England or in Germany? Swipe **left for Germany** and **right for England**.",
@@ -43,24 +43,24 @@ TH.start({
       tipp:"Denk an Uniform, Tutor und lange Schultage.",
       links:{t:"Germany", icon:"🇩🇪"}, rechts:{t:"England", icon:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
       karten:[
-        {t:"Students wear a school uniform with a tie.", r:"r"}, {t:"School often ends at lunchtime.", r:"l"}, {t:"The first year at secondary school is Year 7.", r:"r"},
-        {t:"The first year at secondary school is Klasse 5.", r:"l"}, {t:"In the morning there is registration with the tutor.", r:"r"},
-        {t:"Students are in houses and win points.", r:"r"}, {t:"Grades go from 1 to 6.", r:"l"}, {t:"Students have assembly in the big hall.", r:"r"}
+        {t:"Students wear a school uniform with a tie.", r:"r", e:"In England most students wear a **school uniform**."}, {t:"School often ends at lunchtime.", r:"l", e:"In Germany school often ends at lunchtime. In England it ends at about **3:30 pm**."}, {t:"The first year at secondary school is Year 7.", r:"r", e:"In England secondary school starts with **Year 7**."},
+        {t:"The first year at secondary school is Klasse 5.", r:"l", e:"In Germany (BW) secondary school starts with **Klasse 5**."}, {t:"In the morning there is registration with the tutor.", r:"r", e:"**Registration** with the tutor is typical for England."},
+        {t:"Students are in houses and win points.", r:"r", e:"**Houses** (teams that win points) are typical for English schools."}, {t:"Grades go from 1 to 6.", r:"l", e:"German grades go from **1 to 6**. In England grades are often letters or numbers 9–1."}, {t:"Students have assembly in the big hall.", r:"r", e:"**Assembly** in the big hall is typical for England."}
       ]},
     { id:"quiz", E:{plus:[
-        {q:"What is an **assembly**?", o:["a meeting of many students in the big hall","a test","a lesson in the playground"], c:0},
-        {q:"Which year comes after **Year 7**?", o:["Year 8","Year 6","Klasse 6"], c:0},
-        {q:"Who checks who is there in the morning?", o:["the tutor","the head teacher","the cook"], c:0}
+        {q:"What is an **assembly**?", o:["a meeting of many students in the big hall","a test","a lesson in the playground"], c:0, e:"**Assembly** = many students meet in the big hall."},
+        {q:"Which year comes after **Year 7**?", o:["Year 8","Year 6","Klasse 6"], c:0, e:"After Year 7 comes **Year 8**."},
+        {q:"Who checks who is there in the morning?", o:["the tutor","the head teacher","the cook"], c:0, e:"The **tutor** checks at registration."}
       ]},
       typ:"quiz", lernen:"sch", icon:"👔", titel:"School Quiz", art:"Quiz",
       anleitung:"What do you know about school in England?",
       anleitungDe:"Was weißt du über die Schule in England?",
       tipp:"Schau dir das Video an.",
       fragen:[
-        {q:"How old are students in Year 7?", o:["11 or 12","9","15"], c:0}, {q:"What do most students wear?", o:["a school uniform","pyjamas","sports clothes all day"], c:0},
-        {q:"What is a **tutor group**?", o:["a class with a tutor","a sports team","a school trip"], c:0}, {q:"What happens at **registration**?", o:["The tutor checks who is there.","Students eat lunch.","Students play football."], c:0},
-        {q:"When does school usually end?", o:["at about 3:30 pm","at 12 o’clock","at 6 pm"], c:0}, {q:"What is a **packed lunch**?", o:["food you bring from home","a big dinner","a school bag"], c:0},
-        {q:"What are **houses** at school?", o:["teams that win points","buildings for teachers","classrooms"], c:0}
+        {q:"How old are students in Year 7?", o:["11 or 12","9","15"], c:0, e:"Year 7 students are **11 or 12** – like Klasse 5/6."}, {q:"What do most students wear?", o:["a school uniform","pyjamas","sports clothes all day"], c:0, e:"Most students in England wear a **school uniform**."},
+        {q:"What is a **tutor group**?", o:["a class with a tutor","a sports team","a school trip"], c:0, e:"A **tutor group** is your class with your tutor (Klassenlehrer)."}, {q:"What happens at **registration**?", o:["The tutor checks who is there.","Students eat lunch.","Students play football."], c:0, e:"At **registration** the tutor checks who is there."},
+        {q:"When does school usually end?", o:["at about 3:30 pm","at 12 o’clock","at 6 pm"], c:0, e:"English schools usually end at about **3:30 pm**."}, {q:"What is a **packed lunch**?", o:["food you bring from home","a big dinner","a school bag"], c:0, e:"A **packed lunch** is food you bring from home."},
+        {q:"What are **houses** at school?", o:["teams that win points","buildings for teachers","classrooms"], c:0, e:"**Houses** are teams – students win points for their house."}
       ]},
     { id:"uni", E:{plus:[ {a:"shirt", b:"Hemd"}, {a:"break", b:"Pause"} ]},
       typ:"memory", lernen:"sch", icon:"👕", titel:"Uniform Memory", art:"English – German · memory",

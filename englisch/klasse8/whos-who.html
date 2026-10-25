@@ -35,7 +35,7 @@ TH.start({
       anleitung:"Does **who** ask about the subject or the object? Tap the right box.",
       anleitungDe:"Fragt **who** nach dem Subjekt (wer?) oder nach dem Objekt (wen/wem?)? Tippe auf das richtige Kästchen.",
       tipp:"Ohne do/does/did → Subjekt. Mit do/does/did → Objekt.",
-      koerbe:[ {t:"subject", info:"Who likes you?"}, {t:"object", info:"Who do you like?"} ],
+      koerbe:[ {t:"subject", info:"Who likes you?", tipp:"**Who** fragt nach dem **Subjekt** (wer tut es?) → **kein do/did**: Who lives here?"}, {t:"object", info:"Who do you like?", tipp:"**Who** fragt nach dem **Objekt** (wen?) → mit **do/does/did**: Who did you meet?"} ],
       items:[
         {t:"Who lives in this apartment?", k:0}, {t:"Who did you meet in Times Square?", k:1}, {t:"Who called the police?", k:0},
         {t:"Who does Mia text every day?", k:1}, {t:"Who won the game?", k:0}, {t:"Who did they invite?", k:1},
@@ -49,14 +49,14 @@ TH.start({
       fragen:[
         {q:"Answer: **Sam** ate the last bagel.", o:["Who ate the last bagel?","Who did eat the last bagel?","Who did Sam eat?"], c:0, e:"Asking about the subject → **no did**."},
         {q:"Answer: Lisa called **her grandma**.", o:["Who did Lisa call?","Who called Lisa?","Who Lisa called?"], c:0, e:"Asking about the object → **did + base form**."},
-        {q:"Answer: He works **in a bakery**.", o:["Where does he work?","Where he works?","Where does he works?"], c:0},
-        {q:"Answer: They moved to New York **in 2019**.", o:["When did they move to New York?","When they moved to New York?","When did they moved to New York?"], c:0},
-        {q:"Answer: **My cousin** lives in Queens.", o:["Who lives in Queens?","Who does live in Queens?","Who do live in Queens?"], c:0},
-        {q:"Answer: I like **pizza** best.", o:["What do you like best?","What you like best?","What likes you best?"], c:0},
-        {q:"Answer: **The Yankees** won.", o:["Who won?","Who did win?","Who did they win?"], c:0},
-        {q:"Answer: She saw **a famous rapper**.", o:["Who did she see?","Who saw she?","Who did she saw?"], c:0}
+        {q:"Answer: He works **in a bakery**.", o:["Where does he work?","Where he works?","Where does he works?"], c:0, e:"Frage: **Where + does + he + work** (Verb ohne s)."},
+        {q:"Answer: They moved to New York **in 2019**.", o:["When did they move to New York?","When they moved to New York?","When did they moved to New York?"], c:0, e:"Vergangenheit: **When did they move** (Grundform nach did)."},
+        {q:"Answer: **My cousin** lives in Queens.", o:["Who lives in Queens?","Who does live in Queens?","Who do live in Queens?"], c:0, e:"Frage nach dem **Subjekt** → kein do: **Who lives …?**"},
+        {q:"Answer: I like **pizza** best.", o:["What do you like best?","What you like best?","What likes you best?"], c:0, e:"Frage nach dem Objekt → **What do you like …?**"},
+        {q:"Answer: **The Yankees** won.", o:["Who won?","Who did win?","Who did they win?"], c:0, e:"Frage nach dem Subjekt → kein did: **Who won?**"},
+        {q:"Answer: She saw **a famous rapper**.", o:["Who did she see?","Who saw she?","Who did she saw?"], c:0, e:"Frage nach dem Objekt → **Who did she see** (Grundform)."}
       ]},
-    { id:"build", typ:"satzbau", icon:"🗽", titel:"Ask the New Yorker", art:"Sentence builder",
+    { id:"build", regel:"Fragewort + **do/does/did** + Person + Grundform. Fragt **who** nach dem Subjekt → ohne do.", typ:"satzbau", icon:"🗽", titel:"Ask the New Yorker", art:"Sentence builder",
       anleitung:"Build the question.",
       anleitungDe:"Bau die Frage, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Fragewort – Hilfsverb – Person – Verb.",
@@ -69,7 +69,7 @@ TH.start({
         {w:["What","does","your","dad","do","?"], hint:"🇩🇪 Was macht dein Vater (beruflich)?"},
         {w:["Who","told","you","about","this","place","?"], hint:"🇩🇪 Wer hat dir von diesem Ort erzählt?"}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Question Rush", art:"do / does / did / – · 60 seconds",
+    { id:"rush", regel:"Fragt **who/what** nach dem Subjekt, steht **kein** do/does/did (–).", typ:"rush", icon:"⚡", titel:"Question Rush", art:"do / does / did / – · 60 seconds",
       anleitung:"Which word fits in the gap? **Goal: 12** in 60 seconds. (–) means: no extra word.",
       anleitungDe:"Welches Wort passt in die Lücke? **Ziel: 12** in 60 Sekunden. (–) heißt: kein Hilfswort.",
       tipp:"who als Subjekt → (–).",

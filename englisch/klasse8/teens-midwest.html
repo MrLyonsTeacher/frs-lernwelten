@@ -42,8 +42,8 @@ TH.start({
   },
   levels: [
     { id:"compare", E:{plus:[
-        {t:"Many students have a part-time job after school.", r:"r"}, {t:"Students choose their own schedule with many electives.", r:"r"},
-        {t:"Most students go home for lunch.", r:"l"}, {t:"There are different school types like Realschule and Gymnasium.", r:"l"}
+        {t:"Many students have a part-time job after school.", r:"r", e:"**Part-time jobs** for teens are typical for the USA."}, {t:"Students choose their own schedule with many electives.", r:"r", e:"Choosing your **schedule** is typical for US high schools."},
+        {t:"Most students go home for lunch.", r:"l", e:"In Germany many go home. US students eat in the **cafeteria**."}, {t:"There are different school types like Realschule and Gymnasium.", r:"l", e:"Different **school types** are German. In the US most go to one high school."}
       ]},
       typ:"swipe", lernen:"school", icon:"🏫", titel:"USA or Germany?", art:"School life · swipe",
       anleitung:"Typical for a US high school or for a German school? Swipe **left for Germany** and **right for USA**.",
@@ -51,47 +51,47 @@ TH.start({
       tipp:"Denk an Schulbus, Spinde, Wahlfächer und Prom.",
       links:{t:"Germany", icon:"🇩🇪"}, rechts:{t:"USA", icon:"🇺🇸"},
       karten:[
-        {t:"Students take a yellow school bus.", r:"r"}, {t:"Students stay in the same class with the same classmates in most lessons.", r:"l"},
-        {t:"Students keep their things in lockers in the hallway.", r:"r"}, {t:"There is a big dance called prom.", r:"r"},
-        {t:"Many schools end at lunchtime.", r:"l"}, {t:"School teams are very important – with cheerleaders and big games.", r:"r"},
+        {t:"Students take a yellow school bus.", r:"r", e:"The **yellow school bus** is typical for the USA."}, {t:"Students stay in the same class with the same classmates in most lessons.", r:"l", e:"In Germany you stay in your **class**. In the US you have a different group in each class."},
+        {t:"Students keep their things in lockers in the hallway.", r:"r", e:"**Lockers** in the hallway are typical for US high schools."}, {t:"There is a big dance called prom.", r:"r", e:"**Prom** is the big dance at US high schools."},
+        {t:"Many schools end at lunchtime.", r:"l", e:"In Germany many schools end at lunchtime. US schools end at about 3 pm."}, {t:"School teams are very important – with cheerleaders and big games.", r:"r", e:"**School sports** with cheerleaders are typical for the USA."},
         {t:"Students say the Pledge of Allegiance in the morning.", r:"r", e:"In many US schools students promise loyalty to the flag."}, {t:"Grades go from 1 (very good) to 6.", r:"l", e:"In the US grades are letters: **A** is the best, **F** means fail."},
-        {t:"Students graduate with cap and gown.", r:"r"}, {t:"You can do an Ausbildung after grade 9 or 10.", r:"l"}
+        {t:"Students graduate with cap and gown.", r:"r", e:"**Cap and gown** at graduation are typical for the USA."}, {t:"You can do an Ausbildung after grade 9 or 10.", r:"l", e:"The **Ausbildung** is a German system."}
       ]},
     { id:"school", E:{plus:[
-        {q:"A student in **grade 10** is a …", o:["sophomore","junior","freshman"], c:0},
-        {q:"What is **homecoming**?", o:["a school celebration with a football game and a dance","the last day of school","a test at home"], c:0},
-        {q:"What does **GPA** stand for?", o:["grade point average","great people award","general practice area"], c:0}
+        {q:"A student in **grade 10** is a …", o:["sophomore","junior","freshman"], c:0, e:"Grade 10 = **sophomore**."},
+        {q:"What is **homecoming**?", o:["a school celebration with a football game and a dance","the last day of school","a test at home"], c:0, e:"**Homecoming** = big school party with a football game and a dance."},
+        {q:"What does **GPA** stand for?", o:["grade point average","great people award","general practice area"], c:0, e:"**GPA** = grade point average (Notendurchschnitt)."}
       ]},
       typ:"quiz", lernen:"school", icon:"🎓", titel:"High School Quiz", art:"Quiz",
       anleitung:"What do you know about high school in the USA?",
       anleitungDe:"Was weißt du über die High School in den USA?",
       tipp:"freshman – sophomore – junior – senior",
       fragen:[
-        {q:"A student in **grade 9** is a …", o:["freshman","senior","junior"], c:0},
-        {q:"A student in **grade 12** is a …", o:["senior","sophomore","freshman"], c:0},
-        {q:"What is an **elective**?", o:["a subject you can choose","a school election","an exam"], c:0},
-        {q:"What do students get at graduation?", o:["a diploma","a driver's license","a locker"], c:0},
+        {q:"A student in **grade 9** is a …", o:["freshman","senior","junior"], c:0, e:"Grade 9 = **freshman**, 10 = sophomore, 11 = junior, 12 = senior."},
+        {q:"A student in **grade 12** is a …", o:["senior","sophomore","freshman"], c:0, e:"Grade 12 = **senior** – the last year."},
+        {q:"What is an **elective**?", o:["a subject you can choose","a school election","an exam"], c:0, e:"An **elective** is a subject you choose (Wahlfach)."},
+        {q:"What do students get at graduation?", o:["a diploma","a driver's license","a locker"], c:0, e:"At graduation you get a **diploma**."},
         {q:"What is the best grade in a US school?", o:["A","1","F"], c:0, e:"**A** = excellent, **F** = fail."},
-        {q:"In many states teens can get a driver's license at …", o:["16","18","21"], c:0},
-        {q:"Where do students eat lunch?", o:["in the cafeteria","in the gym","in the locker room"], c:0}
+        {q:"In many states teens can get a driver's license at …", o:["16","18","21"], c:0, e:"In many states you can drive at **16**."},
+        {q:"Where do students eat lunch?", o:["in the cafeteria","in the gym","in the locker room"], c:0, e:"Lunch is in the **cafeteria**."}
       ]},
     { id:"storms", E:{plus:[
-        {q:"Which river flows through the Midwest to the Gulf of Mexico?", o:["the Mississippi","the Hudson","the Colorado"], c:0},
-        {q:"What is a **siren** for?", o:["to warn people of danger","to play music","to start a race"], c:0},
-        {q:"Why is the Midwest called **the Heartland**?", o:["it is in the middle of the USA and has lots of farms","it has many hospitals","people love Valentine’s Day there"], c:0}
+        {q:"Which river flows through the Midwest to the Gulf of Mexico?", o:["the Mississippi","the Hudson","the Colorado"], c:0, e:"The **Mississippi** flows south to the Gulf of Mexico."},
+        {q:"What is a **siren** for?", o:["to warn people of danger","to play music","to start a race"], c:0, e:"A **siren** warns people – e.g. before a tornado."},
+        {q:"Why is the Midwest called **the Heartland**?", o:["it is in the middle of the USA and has lots of farms","it has many hospitals","people love Valentine’s Day there"], c:0, e:"It is in the **middle** of the country and full of farms."}
       ]},
       typ:"quiz", lernen:"storms", icon:"🌪️", titel:"Tornado Alley", art:"Midwest · quiz",
       anleitung:"What do you know about the Midwest and tornadoes?",
       anleitungDe:"Was weißt du über den Mittleren Westen und Tornados?",
       tipp:"Schau dir das Video und die Infokarten an.",
       fragen:[
-        {q:"Why are there so many tornadoes in tornado alley?", o:["warm, wet air meets cold, dry air","there are many volcanoes","it is close to the North Pole"], c:0},
-        {q:"When do most tornadoes happen?", o:["in spring and early summer","in winter","only at night"], c:0},
-        {q:"Where should you go when there is a tornado warning?", o:["to the basement","into your car","onto the roof"], c:0},
-        {q:"Which city is called “the Windy City”?", o:["Chicago","New York","Miami"], c:0},
-        {q:"Iowa and Illinois are famous for …", o:["corn","oranges","gold"], c:0},
-        {q:"How many Great Lakes are there?", o:["5","3","10"], c:0},
-        {q:"What can you see at Mount Rushmore?", o:["four presidents’ faces","a huge waterfall","the biggest mall"], c:0}
+        {q:"Why are there so many tornadoes in tornado alley?", o:["warm, wet air meets cold, dry air","there are many volcanoes","it is close to the North Pole"], c:0, e:"**Warm, wet air** from the south meets **cold, dry air** from the north."},
+        {q:"When do most tornadoes happen?", o:["in spring and early summer","in winter","only at night"], c:0, e:"Most tornadoes come in **spring and early summer**."},
+        {q:"Where should you go when there is a tornado warning?", o:["to the basement","into your car","onto the roof"], c:0, e:"Go **down to the basement** – it’s the safest place."},
+        {q:"Which city is called “the Windy City”?", o:["Chicago","New York","Miami"], c:0, e:"**Chicago** is the Windy City."},
+        {q:"Iowa and Illinois are famous for …", o:["corn","oranges","gold"], c:0, e:"The Midwest grows lots of **corn**."},
+        {q:"How many Great Lakes are there?", o:["5","3","10"], c:0, e:"There are **five** Great Lakes."},
+        {q:"What can you see at Mount Rushmore?", o:["four presidents’ faces","a huge waterfall","the biggest mall"], c:0, e:"**Mount Rushmore** shows the faces of four presidents."}
       ]},
     { id:"day", E:{auto:true, items:[
         {j:"6:45 am", t:"Emma takes the yellow school bus."}, {j:"7:45 am", t:"She puts her books in her locker."}, {j:"8:00 am", t:"Everybody says the Pledge of Allegiance."},

@@ -33,7 +33,7 @@ TH.start({
       anleitung:"Where does the word belong? Tap the right box.",
       anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
       tipp:"Schulfach, Wochentag oder Schulsache?",
-      koerbe:[ {t:"subjects", info:"📚"}, {t:"days", info:"📅"}, {t:"school things", info:"✏️"} ],
+      koerbe:[ {t:"subjects", info:"📚", tipp:"Schulfächer: Maths, Science, History, PE …"}, {t:"days", info:"📅", tipp:"Wochentage – immer **groß** geschrieben: Wednesday, Thursday …"}, {t:"school things", info:"✏️", tipp:"Dinge für die Schule: pen, bag, pencil, workbook …"} ],
       items:[ {t:"Maths", k:0}, {t:"Science", k:0}, {t:"History", k:0}, {t:"PE", k:0}, {t:"Wednesday", k:1}, {t:"Thursday", k:1}, {t:"Saturday", k:1}, {t:"Tuesday", k:1},
               {t:"pen", k:2}, {t:"bag", k:2}, {t:"pencil", k:2}, {t:"workbook", k:2} ]},
     { id:"class", typ:"quiz", icon:"🏫", titel:"In the Classroom", art:"Phrases · quiz",
@@ -41,13 +41,13 @@ TH.start({
       anleitungDe:"Was bedeutet das? Wähle die richtige Antwort.",
       tipp:"Diese Sätze hörst du jeden Tag.",
       fragen:[
-        {q:"“Put your hands up.”", o:["Meldet euch.","Hände waschen.","Steht auf."], c:0}, {q:"“Take out your books, please.”", o:["Holt bitte eure Bücher heraus.","Bringt die Bücher weg.","Lest die Bücher."], c:0},
-        {q:"“Excuse me, can you close the window, please?”", o:["Entschuldigung, kannst du bitte das Fenster schließen?","Öffne bitte das Fenster.","Schau aus dem Fenster."], c:0},
-        {q:"“Sorry, I forgot my homework.”", o:["Entschuldigung, ich habe meine Hausaufgaben vergessen.","Ich habe keine Lust.","Ich bin krank."], c:0},
-        {q:"What’s **Sportunterricht** in English?", o:["PE","DT","RE"], c:0}, {q:"What’s **DT**?", o:["Technik","Deutsch","Religion"], c:0},
-        {q:"What’s **Klassenlehrer** in an English school?", o:["tutor","caretaker","singer"], c:0}, {q:"What’s **Hausmeister**?", o:["caretaker","teacher","tutor"], c:0}
+        {q:"“Put your hands up.”", o:["Meldet euch.","Hände waschen.","Steht auf."], c:0, e:"**hands up** = Hände hoch → Meldet euch."}, {q:"“Take out your books, please.”", o:["Holt bitte eure Bücher heraus.","Bringt die Bücher weg.","Lest die Bücher."], c:0, e:"**take out** = herausnehmen."},
+        {q:"“Excuse me, can you close the window, please?”", o:["Entschuldigung, kannst du bitte das Fenster schließen?","Öffne bitte das Fenster.","Schau aus dem Fenster."], c:0, e:"**close** = schließen, **open** = öffnen."},
+        {q:"“Sorry, I forgot my homework.”", o:["Entschuldigung, ich habe meine Hausaufgaben vergessen.","Ich habe keine Lust.","Ich bin krank."], c:0, e:"**forgot** = vergessen (forget)."},
+        {q:"What’s **Sportunterricht** in English?", o:["PE","DT","RE"], c:0, e:"**PE** = Physical Education = Sport."}, {q:"What’s **DT**?", o:["Technik","Deutsch","Religion"], c:0, e:"**DT** = Design and Technology = Technik."},
+        {q:"What’s **Klassenlehrer** in an English school?", o:["tutor","caretaker","singer"], c:0, e:"Klassenlehrer(in) = **tutor**."}, {q:"What’s **Hausmeister**?", o:["caretaker","teacher","tutor"], c:0, e:"Hausmeister = **caretaker**."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Word Test Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – Wochentage schreibt man **groß**: Wednesday, Thursday.", typ:"rush", icon:"⚡", titel:"Word Test Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",

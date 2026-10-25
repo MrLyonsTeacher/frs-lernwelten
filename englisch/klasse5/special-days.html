@@ -43,23 +43,23 @@ TH.start({
       tipp:"August → Oktober → November → Dezember.",
       items:[ {j:"August", t:"Notting Hill Carnival"}, {j:"31 October", t:"Halloween"}, {j:"5 November", t:"Bonfire Night"}, {j:"25 December", t:"Christmas Day"}, {j:"26 December", t:"Boxing Day"} ]},
     { id:"quiz", E:{plus:[
-        {q:"Where is the big **carnival** in August?", o:["in Notting Hill, London","in Greenwich Park","in Edinburgh"], c:0},
-        {q:"Why do people celebrate **Bonfire Night**?", o:["Guy Fawkes didn’t blow up Parliament.","It’s the King’s birthday.","It’s the first day of winter."], c:0},
-        {q:"Where do children find small presents on Christmas morning?", o:["in their stockings","in the oven","in their school bags"], c:0}
+        {q:"Where is the big **carnival** in August?", o:["in Notting Hill, London","in Greenwich Park","in Edinburgh"], c:0, e:"The **Notting Hill Carnival** is in London in August."},
+        {q:"Why do people celebrate **Bonfire Night**?", o:["Guy Fawkes didn’t blow up Parliament.","It’s the King’s birthday.","It’s the first day of winter."], c:0, e:"In 1605 **Guy Fawkes** was caught – Parliament was safe."},
+        {q:"Where do children find small presents on Christmas morning?", o:["in their stockings","in the oven","in their school bags"], c:0, e:"Small presents are in the **stockings** (Strümpfe)."}
       ]},
       typ:"quiz", lernen:"days", icon:"🎃", titel:"Special Days Quiz", art:"Quiz",
       anleitung:"What do you know about special days in Britain?",
       anleitungDe:"Was weißt du über besondere Tage in Großbritannien?",
       tipp:"Schau dir die Infokarten an.",
       fragen:[
-        {q:"What do children say at Halloween?", o:["Trick or treat!","Happy Easter!","Merry Christmas!"], c:0},
-        {q:"What do people have on Bonfire Night?", o:["fires and fireworks","Easter eggs","pancakes"], c:0},
-        {q:"Who wanted to blow up Parliament in 1605?", o:["Guy Fawkes","Father Christmas","King Charles"], c:0},
-        {q:"When do British children open their Christmas presents?", o:["on the morning of 25 December","on 24 December in the evening","on 6 December"], c:0},
-        {q:"What is inside a Christmas cracker?", o:["a paper crown, a joke and a small present","a real fire","a pancake"], c:0},
-        {q:"What do people wear on Red Nose Day?", o:["a red nose","a green hat","a scary costume"], c:0},
-        {q:"Eid is a special day for …", o:["Muslims","football fans","teachers"], c:0},
-        {q:"The day after Christmas is …", o:["Boxing Day","Pancake Day","Bonfire Night"], c:0}
+        {q:"What do children say at Halloween?", o:["Trick or treat!","Happy Easter!","Merry Christmas!"], c:0, e:"At Halloween children go from door to door and say **“Trick or treat!”**"},
+        {q:"What do people have on Bonfire Night?", o:["fires and fireworks","Easter eggs","pancakes"], c:0, e:"On **5 November** there are big **fires and fireworks**."},
+        {q:"Who wanted to blow up Parliament in 1605?", o:["Guy Fawkes","Father Christmas","King Charles"], c:0, e:"**Guy Fawkes** wanted to blow up Parliament in 1605."},
+        {q:"When do British children open their Christmas presents?", o:["on the morning of 25 December","on 24 December in the evening","on 6 December"], c:0, e:"In Britain presents come on the **morning of 25 December**."},
+        {q:"What is inside a Christmas cracker?", o:["a paper crown, a joke and a small present","a real fire","a pancake"], c:0, e:"A **cracker** has a paper crown, a joke and a small present inside."},
+        {q:"What do people wear on Red Nose Day?", o:["a red nose","a green hat","a scary costume"], c:0, e:"On **Red Nose Day** people wear a red nose and collect money for charity."},
+        {q:"Eid is a special day for …", o:["Muslims","football fans","teachers"], c:0, e:"**Eid** is a big festival for **Muslims**."},
+        {q:"The day after Christmas is …", o:["Boxing Day","Pancake Day","Bonfire Night"], c:0, e:"**26 December** is **Boxing Day**."}
       ]},
     { id:"words", E:{plus:[ {a:"pumpkin", b:"Kürbis"}, {a:"guest", b:"Gast"} ]},
       typ:"memory", lernen:"days", icon:"🎈", titel:"Party Words", art:"English – German · memory",
@@ -73,7 +73,7 @@ TH.start({
       anleitung:"Which special day is it? Tap the right box.",
       anleitungDe:"Welcher besondere Tag ist gemeint? Tippe auf das richtige Kästchen.",
       tipp:"Halloween = Kostüme, Bonfire Night = Feuer, Christmas = Geschenke.",
-      koerbe:[ {t:"Halloween", info:"🎃"}, {t:"Bonfire Night", info:"🎆"}, {t:"Christmas", info:"🎄"} ],
+      koerbe:[ {t:"Halloween", info:"🎃", tipp:"**Halloween** (31 October): costumes, pumpkins, trick or treat."}, {t:"Bonfire Night", info:"🎆", tipp:"**Bonfire Night** (5 November): Guy Fawkes, big fires, fireworks."}, {t:"Christmas", info:"🎄", tipp:"**Christmas**: Father Christmas, crackers, stockings."} ],
       items:[ {t:"Trick or treat!", k:0}, {t:"scary costumes", k:0}, {t:"pumpkins", k:0}, {t:"Guy Fawkes", k:1}, {t:"big fires", k:1}, {t:"5 November", k:1},
               {t:"Father Christmas", k:2}, {t:"crackers", k:2}, {t:"stockings", k:2} ]},
     { id:"story", typ:"lueckentext", icon:"🎂", titel:"Jay’s Birthday Party", art:"Text · fill in the gaps",

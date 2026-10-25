@@ -36,9 +36,9 @@ TH.start({
       tipp:"Was macht ein guter Schüler?",
       links:{t:"Don't", icon:"✋"}, rechts:{t:"Do", icon:"👍"},
       karten:[
-        {t:"… put your hands up.", r:"r"}, {t:"… eat in the classroom.", r:"l"}, {t:"… listen to your teacher.", r:"r"}, {t:"… shout.", r:"l"},
-        {t:"… open your exercise book.", r:"r"}, {t:"… forget your homework.", r:"l"}, {t:"… say “please” and “thank you”.", r:"r"}, {t:"… chew gum at school.", r:"l"},
-        {t:"… help your friends.", r:"r"}, {t:"… run in the classroom.", r:"l"}
+        {t:"… put your hands up.", r:"r", e:"Etwas Gutes, das man tun soll → **Do** …"}, {t:"… eat in the classroom.", r:"l", e:"Im Klassenzimmer isst man nicht → **Don’t** eat."}, {t:"… listen to your teacher.", r:"r", e:"Gute Regel → **Do** listen."}, {t:"… shout.", r:"l", e:"Schreien ist nicht erlaubt → **Don’t** shout."},
+        {t:"… open your exercise book.", r:"r", e:"Das sollst du tun → **Do** open."}, {t:"… forget your homework.", r:"l", e:"Das sollst du nicht tun → **Don’t** forget."}, {t:"… say “please” and “thank you”.", r:"r", e:"Höflich sein ist gut → **Do** say."}, {t:"… chew gum at school.", r:"l", e:"Kaugummi in der Schule? → **Don’t** chew gum."},
+        {t:"… help your friends.", r:"r", e:"Helfen ist gut → **Do** help."}, {t:"… run in the classroom.", r:"l", e:"Rennen im Klassenzimmer ist gefährlich → **Don’t** run."}
       ]},
     { id:"phr", typ:"memory", lernen:"imp", icon:"🏫", titel:"Classroom Phrases", art:"English – German · memory",
       anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
@@ -51,14 +51,14 @@ TH.start({
       anleitungDe:"Was sagst du? Wähle den richtigen Satz.",
       tipp:"Imperativ: Verb an den Anfang. Verbot: Don’t + Verb.",
       fragen:[
-        {q:"It’s cold. Your friend is next to the window.", o:["Close the window, please.","You close window.","Closing the window."], c:0},
-        {q:"Your little brother wants to touch the hot lava.", o:["Don't touch it!","Not touch it!","You don't touch!"], c:0},
-        {q:"The teacher wants the students to look at the board.", o:["Look at the board, please.","Looks at the board.","Don't look at the board."], c:0},
-        {q:"Your friend talks in the test.", o:["Don't talk, please!","No talking you!","Talk, please!"], c:0},
+        {q:"It’s cold. Your friend is next to the window.", o:["Close the window, please.","You close window.","Closing the window."], c:0, e:"Befehl = **Verb in der Grundform am Anfang**: Close … – ohne „you“."},
+        {q:"Your little brother wants to touch the hot lava.", o:["Don't touch it!","Not touch it!","You don't touch!"], c:0, e:"Verbot = **Don’t + Verb**: Don’t touch it!"},
+        {q:"The teacher wants the students to look at the board.", o:["Look at the board, please.","Looks at the board.","Don't look at the board."], c:0, e:"Befehl = Grundform **Look** – ohne s."},
+        {q:"Your friend talks in the test.", o:["Don't talk, please!","No talking you!","Talk, please!"], c:0, e:"Verbot = **Don’t + Verb**: Don’t talk!"},
         {q:"You want to play football with your friends.", o:["Let's play football!","Plays football!","Don't play football!"], c:0, e:"**Let’s** (= let us) + verb: Lass uns …"},
-        {q:"Your dog is on the table.", o:["Get down, Sherlock!","Gets down, Sherlock!","Don't get down!"], c:0}
+        {q:"Your dog is on the table.", o:["Get down, Sherlock!","Gets down, Sherlock!","Don't get down!"], c:0, e:"Befehl = Grundform **Get** down – ohne s."}
       ]},
-    { id:"build", typ:"satzbau", icon:"🧱", titel:"Instructions", art:"Sentence builder",
+    { id:"build", regel:"Befehl: **Verb (Grundform) am Satzanfang** – Verbot: **Don’t + Verb**.", typ:"satzbau", icon:"🧱", titel:"Instructions", art:"Sentence builder",
       anleitung:"Build the instruction.",
       anleitungDe:"Bau die Anweisung, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Das Verb steht am Anfang.",

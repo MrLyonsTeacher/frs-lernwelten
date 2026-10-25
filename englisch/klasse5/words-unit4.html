@@ -33,7 +33,7 @@ TH.start({
       anleitung:"How do you buy it? Tap the right box.",
       anleitungDe:"Wie kauft man das? Tippe auf das richtige Kästchen.",
       tipp:"bottle = Flasche, packet = Packung, bar = Tafel, box = Schachtel.",
-      koerbe:[ {t:"a bottle of", info:"🍼"}, {t:"a packet of", info:"📦"}, {t:"a bar of", info:"🍫"}, {t:"a box of", info:"🥚"} ],
+      koerbe:[ {t:"a bottle of", info:"🍼", tipp:"**a bottle of** = eine Flasche: milk, water, lemonade."}, {t:"a packet of", info:"📦", tipp:"**a packet of** = eine Packung: butter, biscuits, tea, candles."}, {t:"a bar of", info:"🍫", tipp:"**a bar of** = eine Tafel/ein Riegel: chocolate."}, {t:"a box of", info:"🥚", tipp:"**a box of** = eine Schachtel: eggs, chocolates."} ],
       items:[ {t:"milk", k:0}, {t:"water", k:0}, {t:"lemonade", k:0}, {t:"butter", k:1}, {t:"biscuits", k:1}, {t:"tea", k:1}, {t:"candles", k:1},
               {t:"chocolate", k:2, e:"**a bar of chocolate** = eine Tafel Schokolade."}, {t:"eggs", k:3}, {t:"chocolates", k:3, e:"**a box of chocolates** = eine Schachtel Pralinen."} ]},
     { id:"dates", typ:"quiz", icon:"📅", titel:"Birthday Dates", art:"Months & ordinal numbers · quiz",
@@ -41,12 +41,12 @@ TH.start({
       anleitungDe:"Wähle die richtige Antwort.",
       tipp:"Man schreibt *7th July* und sagt *on the seventh of July*.",
       fragen:[
-        {q:"What comes after **April**?", o:["May","March","June"], c:0}, {q:"The **3rd** is …", o:["the third","the three","the thirdth"], c:0, alt:["third"]},
-        {q:"The **1st** is …", o:["the first","the oneth","the one"], c:0, alt:["first"]}, {q:"The **12th** is …", o:["the twelfth","the twelveth","the twelve"], c:0, alt:["twelfth"]},
-        {q:"How do you say **7th July**?", o:["the seventh of July","seven July","July the seven"], c:0, alt:["seventh of July","July the seventh","the seventh July","seventh July"]}, {q:"My birthday is **___** 7th July.", o:["on","in","at"], c:0, e:"Date → **on**: on 7th July. Month → **in**: in July."},
-        {q:"The Notting Hill Carnival is **___** August.", o:["in","on","at"], c:0}, {q:"Halloween is in …", o:["October","December","March"], c:0}
+        {q:"What comes after **April**?", o:["May","March","June"], c:0, e:"Die Monate: March – April – **May** – June."}, {q:"The **3rd** is …", o:["the third","the three","the thirdth"], c:0, alt:["third"], e:"3rd = **the third** (der Dritte)."},
+        {q:"The **1st** is …", o:["the first","the oneth","the one"], c:0, alt:["first"], e:"1st = **the first**."}, {q:"The **12th** is …", o:["the twelfth","the twelveth","the twelve"], c:0, alt:["twelfth"], e:"12th = **the twelfth** – mit **f**!"},
+        {q:"How do you say **7th July**?", o:["the seventh of July","seven July","July the seven"], c:0, alt:["seventh of July","July the seventh","the seventh July","seventh July"], e:"Datum sprechen: **the seventh of July**."}, {q:"My birthday is **___** 7th July.", o:["on","in","at"], c:0, e:"Date → **on**: on 7th July. Month → **in**: in July."},
+        {q:"The Notting Hill Carnival is **___** August.", o:["in","on","at"], c:0, e:"Monat → **in** August. Datum → **on** 7th July."}, {q:"Halloween is in …", o:["October","December","March"], c:0, e:"Halloween ist am **31 October**."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Word Test Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **celebrate**, **costume**, **scary**.", typ:"rush", icon:"⚡", titel:"Word Test Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",

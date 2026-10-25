@@ -43,14 +43,14 @@ TH.start({
       anleitungDe:"Lies die Erklärung. Welches Wort ist gemeint?",
       tipp:"Lies jedes Wort der Erklärung – oft hilft ein Schlüsselwort.",
       fragen:[
-        {q:"You wear them on your feet when you do sport.", o:["trainers","gloves","shorts"], c:0},
-        {q:"You need it when it is raining.", o:["an umbrella","sunglasses","a scarf"], c:0},
-        {q:"You feel like this before a big test.", o:["nervous","proud","bored"], c:0},
-        {q:"It is very cold and white things fall from the sky.", o:["It's snowing.","It's sunny.","It's windy."], c:0, alt:["snowing","snow","it snows"]},
-        {q:"You play it with a racket and a ball.", o:["tennis","football","chess"], c:0},
-        {q:"You feel like this when you win a prize.", o:["proud","angry","tired"], c:0},
-        {q:"You wear it around your neck when it is cold.", o:["a scarf","a belt","a cap"], c:0},
-        {q:"There is nothing to do. You feel …", o:["bored","excited","surprised"], c:0}
+        {q:"You wear them on your feet when you do sport.", o:["trainers","gloves","shorts"], c:0, e:"**trainers** = Turnschuhe (für die Füße). gloves = Handschuhe."},
+        {q:"You need it when it is raining.", o:["an umbrella","sunglasses","a scarf"], c:0, e:"Regen → **umbrella** (Regenschirm)."},
+        {q:"You feel like this before a big test.", o:["nervous","proud","bored"], c:0, e:"Vor einem Test ist man oft **nervous** (nervös)."},
+        {q:"It is very cold and white things fall from the sky.", o:["It's snowing.","It's sunny.","It's windy."], c:0, alt:["snowing","snow","it snows"], e:"Weiße Flocken vom Himmel = Schnee → **It’s snowing.**"},
+        {q:"You play it with a racket and a ball.", o:["tennis","football","chess"], c:0, e:"Schläger (**racket**) + Ball → **tennis**."},
+        {q:"You feel like this when you win a prize.", o:["proud","angry","tired"], c:0, e:"Wenn man gewinnt, ist man **proud** (stolz)."},
+        {q:"You wear it around your neck when it is cold.", o:["a scarf","a belt","a cap"], c:0, e:"Um den Hals → **scarf** (Schal)."},
+        {q:"There is nothing to do. You feel …", o:["bored","excited","surprised"], c:0, e:"Nichts zu tun → **bored** (gelangweilt)."}
       ]},
     { id:"feel", typ:"swipe", icon:"😊", titel:"Good or Bad Mood?", art:"Feelings · swipe",
       anleitung:"Is it a good or a bad feeling? Swipe **right for 😊 good** and **left for 😟 bad**.",
@@ -63,7 +63,7 @@ TH.start({
         {t:"relaxed", r:"r", e:"**relaxed** = entspannt."}, {t:"scared", r:"l", e:"**scared** = ängstlich."}, {t:"lucky", r:"r", e:"**lucky** = glücklich (Glück haben)."},
         {t:"lonely", r:"l", e:"**lonely** = einsam."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Starfish Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **jumper** (Pullover), **trousers** (Hose), **trainers** (Turnschuhe).", typ:"rush", icon:"⚡", titel:"Starfish Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? Choose fast! **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? Wähle schnell! **Ziel: 12 richtige** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",

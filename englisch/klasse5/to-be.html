@@ -36,7 +36,7 @@ TH.start({
       anleitung:"Which word fits: **am**, **is** or **are**? Tap the right box.",
       anleitungDe:"Welches Wort passt: **am**, **is** oder **are**? Tippe auf das richtige Kästchen.",
       tipp:"I → am · he/she/it → is · we/you/they → are",
-      koerbe:[ {t:"am", info:"I"}, {t:"is", info:"he · she · it"}, {t:"are", info:"we · you · they"} ],
+      koerbe:[ {t:"am", info:"I", tipp:"**I am** – nur bei I."}, {t:"is", info:"he · she · it", tipp:"**he, she, it** (und ein Name/ein Ding) → **is**."}, {t:"are", info:"we · you · they", tipp:"**you, we, they** (und mehrere Personen) → **are**."} ],
       items:[ {t:"I ___ Olivia.", k:0}, {t:"Sherlock ___ a dog.", k:1, e:"*Sherlock* = he → **is**."}, {t:"We ___ in the park.", k:2}, {t:"You ___ my friend.", k:2},
               {t:"It ___ a cat.", k:1}, {t:"They ___ my pets.", k:2}, {t:"My sister ___ five.", k:1}, {t:"I ___ eleven.", k:0},
               {t:"Luke and David ___ friends.", k:2, e:"*Luke and David* = they → **are**."}, {t:"The bike ___ red.", k:1}, {t:"Mum and I ___ at home.", k:2, e:"*Mum and I* = we → **are**."}, {t:"Greenwich ___ in London.", k:1} ]},
@@ -52,12 +52,12 @@ TH.start({
       anleitungDe:"Wähle die richtige **verneinte** Form.",
       tipp:"I’m not · isn’t · aren’t",
       fragen:[
-        {q:"I **___** late.", o:["'m not","isn't","aren't"], c:0}, {q:"She **___** at school today.", o:["isn't","aren't","'m not"], c:0},
-        {q:"They **___** in the garden.", o:["aren't","isn't","'m not"], c:0}, {q:"It **___** a bat. It’s a bird.", o:["isn't","aren't","not is"], c:0},
-        {q:"We **___** twelve. We’re eleven.", o:["aren't","isn't","not are"], c:0}, {q:"My room **___** a mess!", o:["isn't","aren't","am not"], c:0},
-        {q:"– Are you ready? – No, I **___**.", o:["'m not","isn't","aren't"], c:0, e:"Short answer: No, I’m not."}, {q:"– Is Sherlock crazy? – Yes, he **___**.", o:["is","are","am"], c:0}
+        {q:"I **___** late.", o:["'m not","isn't","aren't"], c:0, e:"Bei **I** → **I’m not** (I am not)."}, {q:"She **___** at school today.", o:["isn't","aren't","'m not"], c:0, e:"she → **isn’t** (is not)."},
+        {q:"They **___** in the garden.", o:["aren't","isn't","'m not"], c:0, e:"they → **aren’t** (are not)."}, {q:"It **___** a bat. It’s a bird.", o:["isn't","aren't","not is"], c:0, e:"it → **isn’t**."},
+        {q:"We **___** twelve. We’re eleven.", o:["aren't","isn't","not are"], c:0, e:"we → **aren’t**."}, {q:"My room **___** a mess!", o:["isn't","aren't","am not"], c:0, e:"my room = **it** → **isn’t**."},
+        {q:"– Are you ready? – No, I **___**.", o:["'m not","isn't","aren't"], c:0, e:"Short answer: No, I’m not."}, {q:"– Is Sherlock crazy? – Yes, he **___**.", o:["is","are","am"], c:0, e:"Frage mit **is** → Kurzantwort: Yes, he **is**."}
       ]},
-    { id:"build", typ:"satzbau", icon:"🧱", titel:"Lava Sentences", art:"Sentence builder",
+    { id:"build", regel:"Aussage: **Person + am/is/are** … – Frage: **(Fragewort) + am/is/are + Person?**", typ:"satzbau", icon:"🧱", titel:"Lava Sentences", art:"Sentence builder",
       anleitung:"Build the sentence or question.",
       anleitungDe:"Bau den Satz oder die Frage, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Fragen beginnen mit dem Fragewort oder mit am/is/are.",

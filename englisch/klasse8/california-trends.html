@@ -35,7 +35,7 @@ TH.start({
       anleitung:"**since** or **for**? Tap the right box.",
       anleitungDe:"**since** oder **for**? Tippe auf das richtige Kästchen.",
       tipp:"since + Zeitpunkt, for + Zeitraum.",
-      koerbe:[ {t:"since", info:"point in time"}, {t:"for", info:"period of time"} ],
+      koerbe:[ {t:"since", info:"point in time", tipp:"**since** + Zeitpunkt (seit wann?): since 2019, since Monday, since I was 13."}, {t:"for", info:"period of time", tipp:"**for** + Zeitraum (wie lange?): for three years, for ten minutes."} ],
       items:[
         {t:"2019", k:0}, {t:"three years", k:1}, {t:"last summer", k:0}, {t:"a long time", k:1}, {t:"Monday", k:0}, {t:"two weeks", k:1},
         {t:"I was 13", k:0}, {t:"ages", k:1}, {t:"8 o’clock", k:0}, {t:"ten minutes", k:1}, {t:"my birthday", k:0}, {t:"half an hour", k:1}
@@ -47,12 +47,12 @@ TH.start({
       fragen:[
         {q:"Look! That surfer **___** a huge wave.", o:["is riding","rides","ride"], c:0, e:"**Look!** → right now."},
         {q:"It **___** much in Los Angeles.", o:["doesn't rain","isn't raining","don't rain"], c:0, e:"A general fact → simple present."},
-        {q:"My sister **___** a video right now.", o:["is posting","posts","post"], c:0},
+        {q:"My sister **___** a video right now.", o:["is posting","posts","post"], c:0, e:"**right now** → present progressive: is post**ing**."},
         {q:"Influencers usually **___** new content every day.", o:["post","are posting","posts"], c:0, e:"**usually** → simple present."},
-        {q:"What **___** you **___** at the moment?", o:["are – doing","do – do","did – do"], c:0},
+        {q:"What **___** you **___** at the moment?", o:["are – doing","do – do","did – do"], c:0, e:"**at the moment** → are you do**ing**?"},
         {q:"Tom never **___** his skateboard at home.", o:["leaves","is leaving","leave"], c:0, e:"**never** + he → **leaves**."},
-        {q:"Shh! The baby **___**.", o:["is sleeping","sleeps","sleep"], c:0},
-        {q:"In California it **___** always a lot sunnier than in Germany.", o:["is","is being","are"], c:0}
+        {q:"Shh! The baby **___**.", o:["is sleeping","sleeps","sleep"], c:0, e:"Shh! = es passiert gerade → **is sleeping**."},
+        {q:"In California it **___** always a lot sunnier than in Germany.", o:["is","is being","are"], c:0, e:"Allgemeine Tatsache + always → simple present: it **is**."}
       ]},
     { id:"since", typ:"quiz", lernen:"pres", icon:"📈", titel:"Trend Report", art:"Present perfect · since/for · quiz",
       anleitung:"Choose the right words.",
@@ -62,13 +62,13 @@ TH.start({
         {q:"I **___** this account since I was 13.", o:["have had","had","have"], c:0, e:"Still true today → present perfect."},
         {q:"She has lived in San Diego **___** five years.", o:["for","since","ago"], c:0, e:"five years = a period → **for**."},
         {q:"The internet **___** the world.", o:["has changed","have changed","changed since"], c:0, e:"the internet = it → **has changed**."},
-        {q:"I **___** Tom for a long time.", o:["haven't seen","didn't see","haven't saw"], c:0},
-        {q:"How long **___** you **___** skateboarding?", o:["have – been","did – be","are – being"], c:0},
+        {q:"I **___** Tom for a long time.", o:["haven't seen","didn't see","haven't saw"], c:0, e:"**for a long time** bis jetzt → present perfect: haven’t **seen** (3. Form)."},
+        {q:"How long **___** you **___** skateboarding?", o:["have – been","did – be","are – being"], c:0, e:"How long … bis heute → present perfect: **have** you **been** …?"},
         {q:"This app has been popular **___** 2022.", o:["since","for","from"], c:0, e:"2022 = a point in time → **since**."},
-        {q:"Why **___** these videos been so successful?", o:["have","has","did"], c:0},
-        {q:"We have known each other **___** primary school.", o:["since","for","ago"], c:0}
+        {q:"Why **___** these videos been so successful?", o:["have","has","did"], c:0, e:"these videos = Mehrzahl → **have** … been."},
+        {q:"We have known each other **___** primary school.", o:["since","for","ago"], c:0, e:"primary school = Zeitpunkt (seit wann?) → **since**."}
       ]},
-    { id:"build", typ:"satzbau", icon:"🌴", titel:"Present a Region", art:"Sentence builder",
+    { id:"build", regel:"Gerade jetzt: **am/is/are + -ing**. Seit/wie lange: **have/has + 3. Form** + since/for.", typ:"satzbau", icon:"🌴", titel:"Present a Region", art:"Sentence builder",
       anleitung:"Build the sentence.",
       anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Achte auf die Signalwörter.",

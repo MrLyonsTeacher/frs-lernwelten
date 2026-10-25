@@ -35,20 +35,20 @@ TH.start({
   },
   levels: [
     { id:"quiz", E:{plus:[
-        {q:"Where in London is Greenwich?", o:["in the south-east","in the north-west","in the city centre"], c:0},
-        {q:"What can you find at the **Royal Observatory**?", o:["the Prime Meridian","Big Ben","the Tube"], c:0},
-        {q:"Where did the Cutty Sark bring tea from?", o:["China","India","America"], c:0},
-        {q:"Who is the **head of state** of the UK?", o:["King Charles III","the Mayor of London","the Prime Minister"], c:0}
+        {q:"Where in London is Greenwich?", o:["in the south-east","in the north-west","in the city centre"], c:0, e:"Greenwich is in the **south-east** of London."},
+        {q:"What can you find at the **Royal Observatory**?", o:["the Prime Meridian","Big Ben","the Tube"], c:0, e:"The **Prime Meridian** (0°) is at the Royal Observatory."},
+        {q:"Where did the Cutty Sark bring tea from?", o:["China","India","America"], c:0, e:"The Cutty Sark brought tea from **China**."},
+        {q:"Who is the **head of state** of the UK?", o:["King Charles III","the Mayor of London","the Prime Minister"], c:0, e:"The head of state is the king: **Charles III**."}
       ]},
       typ:"quiz", lernen:"gre", icon:"🕰️", titel:"Greenwich Quiz", art:"Quiz",
       anleitung:"What do you know about Greenwich? Choose the right answer.",
       anleitungDe:"Was weißt du über Greenwich? Wähle die richtige Antwort.",
       tipp:"Schau dir die Infokarten an.",
       fragen:[
-        {q:"Greenwich is a part of …", o:["London","Manchester","New York"], c:0}, {q:"Which river is next to Greenwich?", o:["the Thames","the Rhine","the Nile"], c:0},
-        {q:"What does **GMT** mean?", o:["Greenwich Mean Time","Great Morning Tea","Green Map Town"], c:0},
-        {q:"What is the **Cutty Sark**?", o:["an old ship","a park","a shop"], c:0}, {q:"What did the Cutty Sark bring to Britain?", o:["tea","cars","bananas"], c:0},
-        {q:"What can you see from **Greenwich Park**?", o:["London’s skyscrapers","the sea","mountains"], c:0}
+        {q:"Greenwich is a part of …", o:["London","Manchester","New York"], c:0, e:"Greenwich is a part of **London**, in the south-east of the city."}, {q:"Which river is next to Greenwich?", o:["the Thames","the Rhine","the Nile"], c:0, e:"London’s river is **the Thames** (Themse)."},
+        {q:"What does **GMT** mean?", o:["Greenwich Mean Time","Great Morning Tea","Green Map Town"], c:0, e:"**GMT = Greenwich Mean Time** – the world’s time zones start in Greenwich."},
+        {q:"What is the **Cutty Sark**?", o:["an old ship","a park","a shop"], c:0, e:"The **Cutty Sark** is a famous old sailing ship. Today it is a museum."}, {q:"What did the Cutty Sark bring to Britain?", o:["tea","cars","bananas"], c:0, e:"It brought **tea** from China to Britain."},
+        {q:"What can you see from **Greenwich Park**?", o:["London’s skyscrapers","the sea","mountains"], c:0, e:"The park is on a hill – you can see **London’s skyscrapers**."}
       ]},
     { id:"uk", E:{plus:[ {a:"the Thames", b:"London’s river"}, {a:"Greenwich Park", b:"a park on a hill"} ]},
       typ:"memory", lernen:"gre", icon:"🇬🇧", titel:"UK Memory", art:"Pairs · memory",
@@ -58,7 +58,7 @@ TH.start({
       paare:[ {a:"England", b:"London"}, {a:"Scotland", b:"Edinburgh"}, {a:"Wales", b:"Cardiff"}, {a:"Northern Ireland", b:"Belfast"},
               {a:"Big Ben", b:"a big bell"}, {a:"the Tube", b:"London’s underground"}, {a:"double-decker", b:"a bus with two floors"}, {a:"Charles III", b:"the King"} ]},
     { id:"tf", E:{plus:[
-        {t:"The Prime Meridian is at the Royal Observatory.", r:"r"}, {t:"The Cutty Sark brought tea from China.", r:"r"},
+        {t:"The Prime Meridian is at the Royal Observatory.", r:"r", e:"True – the 0° line is at the **Royal Observatory**."}, {t:"The Cutty Sark brought tea from China.", r:"r", e:"True – it was a fast **tea ship**."},
         {t:"Edinburgh is the capital of Wales.", r:"l", e:"Edinburgh is in **Scotland**. The capital of Wales is **Cardiff**."},
         {t:"Greenwich is in the north of London.", r:"l", e:"It is in the **south-east**."}
       ]},
@@ -68,9 +68,9 @@ TH.start({
       tipp:"Lies genau.",
       links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
       karten:[
-        {t:"Greenwich is in London.", r:"r"}, {t:"The Cutty Sark is a plane.", r:"l", e:"It’s a **ship**."}, {t:"London buses are red.", r:"r"},
-        {t:"The UK has six countries.", r:"l", e:"It has **four**."}, {t:"In Greenwich you can stand in the east and in the west at the same time.", r:"r"},
-        {t:"The capital of the UK is Paris.", r:"l", e:"It’s **London**."}, {t:"Big Ben is a bell.", r:"r"}, {t:"The Tube is a river.", r:"l", e:"The Tube is London’s **underground**."}
+        {t:"Greenwich is in London.", r:"r", e:"True – Greenwich is a part of **London**."}, {t:"The Cutty Sark is a plane.", r:"l", e:"It’s a **ship**."}, {t:"London buses are red.", r:"r", e:"True – London’s famous buses are **red double-deckers**."},
+        {t:"The UK has six countries.", r:"l", e:"It has **four**."}, {t:"In Greenwich you can stand in the east and in the west at the same time.", r:"r", e:"True – on the **Prime Meridian** one foot is in the east, one in the west."},
+        {t:"The capital of the UK is Paris.", r:"l", e:"It’s **London**."}, {t:"Big Ben is a bell.", r:"r", e:"True – **Big Ben** is the big bell in the clock tower."}, {t:"The Tube is a river.", r:"l", e:"The Tube is London’s **underground**."}
       ]},
     { id:"story", typ:"lueckentext", icon:"✉️", titel:"Olivia’s Email", art:"Text · fill in the gaps",
       anleitung:"Read Olivia’s email. Tap a gap and choose the right word.",

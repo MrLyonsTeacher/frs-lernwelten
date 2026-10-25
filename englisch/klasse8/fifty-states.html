@@ -40,12 +40,12 @@ TH.start({
       anleitung:"In which region is the state? Tap the right box.",
       anleitungDe:"In welcher Region liegt der Staat? Tippe auf das richtige Kästchen.",
       tipp:"Northeast = oben rechts, Midwest = Mitte oben, South = unten, West = links.",
-      koerbe:[ {t:"Northeast", info:"↗️"}, {t:"Midwest", info:"⬆️"}, {t:"South", info:"⬇️"}, {t:"West", info:"⬅️"} ],
+      koerbe:[ {t:"Northeast", info:"↗️", tipp:"**Northeast**: New York, Massachusetts, Pennsylvania – the first colonies."}, {t:"Midwest", info:"⬆️", tipp:"**Midwest**: Illinois, Ohio, Michigan – the heartland around the Great Lakes."}, {t:"South", info:"⬇️", tipp:"**South**: Texas, Florida, Louisiana."}, {t:"West", info:"⬅️", tipp:"**West**: California, Nevada, Colorado."} ],
       items:[
         {t:"New York", k:0}, {t:"Massachusetts", k:0}, {t:"Pennsylvania", k:0}, {t:"Illinois", k:1}, {t:"Ohio", k:1}, {t:"Michigan", k:1},
         {t:"Texas", k:2}, {t:"Florida", k:2}, {t:"Louisiana", k:2}, {t:"California", k:3}, {t:"Nevada", k:3}, {t:"Colorado", k:3}
       ]},
-    { id:"capitals", typ:"rush", lernen:"usa", icon:"🏛️", titel:"Capital Rush", art:"State capitals · 60 seconds",
+    { id:"capitals", regel:"The biggest city is often **not** the capital: California → **Sacramento** (not L.A.), New York → **Albany**.", typ:"rush", lernen:"usa", icon:"🏛️", titel:"Capital Rush", art:"State capitals · 60 seconds",
       anleitung:"What’s the capital of the state? **Goal: 10** in 60 seconds.",
       anleitungDe:"Wie heißt die Hauptstadt des Staates? **Ziel: 10** in 60 Sekunden.",
       tipp:"Vorsicht: Die größte Stadt ist oft nicht die Hauptstadt!",
@@ -69,8 +69,8 @@ TH.start({
       paare:[ {a:"California", b:"Golden State"}, {a:"Texas", b:"Lone Star State"}, {a:"Florida", b:"Sunshine State"}, {a:"New York", b:"Empire State"},
               {a:"Hawaii", b:"Aloha State"}, {a:"Alaska", b:"Last Frontier"}, {a:"Illinois", b:"Land of Lincoln"}, {a:"New Jersey", b:"Garden State"} ]},
     { id:"facts", E:{plus:[
-        {t:"The 50 stars on the flag stand for the 50 states.", r:"r"}, {t:"Alaska is next to Mexico.", r:"l", e:"False – Alaska is next to **Canada**."},
-        {t:"The mainland USA has four time zones.", r:"r"}, {t:"New York City is the capital of the state of New York.", r:"l", e:"False – the capital is **Albany**."}
+        {t:"The 50 stars on the flag stand for the 50 states.", r:"r", e:"True – **one star for each state**."}, {t:"Alaska is next to Mexico.", r:"l", e:"False – Alaska is next to **Canada**."},
+        {t:"The mainland USA has four time zones.", r:"r", e:"True – Eastern, Central, Mountain and Pacific."}, {t:"New York City is the capital of the state of New York.", r:"l", e:"False – the capital is **Albany**."}
       ]},
       typ:"swipe", lernen:"usa", icon:"✅", titel:"True or False?", art:"USA facts · swipe",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
@@ -78,11 +78,11 @@ TH.start({
       tipp:"Denk an die Infokarten.",
       links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
       karten:[
-        {t:"The USA has 52 states.", r:"l", e:"False – **50** states."}, {t:"Washington, D.C. is the capital of the USA.", r:"r"},
-        {t:"Washington, D.C. is a state.", r:"l", e:"False – it is a special **district**."}, {t:"Alaska is the biggest state.", r:"r"},
-        {t:"The 13 stripes on the flag stand for the first 13 colonies.", r:"r"}, {t:"Los Angeles is the capital of California.", r:"l", e:"False – **Sacramento** is."},
-        {t:"Independence Day is on 4 July.", r:"r"}, {t:"Texas is the smallest state.", r:"l", e:"False – **Rhode Island** is the smallest. Texas is the second biggest."},
-        {t:"Hawaii is in the Pacific Ocean.", r:"r"}, {t:"Most people in the USA live in Alaska.", r:"l", e:"False – **California** has the most people."}
+        {t:"The USA has 52 states.", r:"l", e:"False – **50** states."}, {t:"Washington, D.C. is the capital of the USA.", r:"r", e:"True – **Washington, D.C.** is the capital (not a state)."},
+        {t:"Washington, D.C. is a state.", r:"l", e:"False – it is a special **district**."}, {t:"Alaska is the biggest state.", r:"r", e:"True – **Alaska** is the biggest state, more than twice as big as Texas."},
+        {t:"The 13 stripes on the flag stand for the first 13 colonies.", r:"r", e:"True – **13 stripes** = 13 colonies, **50 stars** = 50 states."}, {t:"Los Angeles is the capital of California.", r:"l", e:"False – **Sacramento** is."},
+        {t:"Independence Day is on 4 July.", r:"r", e:"True – on **4 July 1776** the colonies declared independence."}, {t:"Texas is the smallest state.", r:"l", e:"False – **Rhode Island** is the smallest. Texas is the second biggest."},
+        {t:"Hawaii is in the Pacific Ocean.", r:"r", e:"True – **Hawaii** is a group of islands in the Pacific."}, {t:"Most people in the USA live in Alaska.", r:"l", e:"False – **California** has the most people."}
       ]},
     { id:"guess", typ:"schaetzen", icon:"📏", titel:"USA in Numbers", art:"Estimate · slider",
       anleitung:"Guess the number! Move the slider and tap **OK**. The closer you are, the more flags you get.",

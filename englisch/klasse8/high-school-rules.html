@@ -36,7 +36,7 @@ TH.start({
       anleitung:"What does the sentence mean? Tap the right box.",
       anleitungDe:"Was bedeutet der Satz? Tippe auf das richtige Kästchen.",
       tipp:"Erlaubt – Pflicht – Verbot – nicht nötig.",
-      koerbe:[ {t:"allowed", info:"✅ may / be allowed to"}, {t:"necessary", info:"❗ must / have to"}, {t:"forbidden", info:"⛔ mustn’t"}, {t:"not necessary", info:"😌 don’t have to"} ],
+      koerbe:[ {t:"allowed", info:"✅ may / be allowed to", tipp:"**erlaubt**: may, can, be allowed to."}, {t:"necessary", info:"❗ must / have to", tipp:"**notwendig/Pflicht**: must, have to, had to."}, {t:"forbidden", info:"⛔ mustn’t", tipp:"**verboten**: mustn’t, not be allowed to."}, {t:"not necessary", info:"😌 don’t have to", tipp:"**nicht nötig**: don’t have to, needn’t – aber erlaubt!"} ],
       items:[
         {t:"You may use the computer room.", k:0}, {t:"We were allowed to choose an elective.", k:0}, {t:"Students can eat in the cafeteria.", k:0},
         {t:"You must be on time.", k:1}, {t:"We had to put our things in lockers.", k:1}, {t:"You have to wear sports clothes in PE.", k:1},
@@ -74,7 +74,7 @@ TH.start({
         {t:"You ___ shout in the library.", r:"l", e:"Forbidden → **mustn’t**."},
         {t:"You ___ buy a ticket online – you can pay on the bus.", r:"r", e:"Not necessary → **don’t have to**."}
       ]},
-    { id:"build", typ:"satzbau", icon:"🔒", titel:"Locker Talk", art:"Sentence builder",
+    { id:"build", regel:"Ersatzformen: must → **have to/had to**, can → **be able to**, may → **be allowed to**.", typ:"satzbau", icon:"🔒", titel:"Locker Talk", art:"Sentence builder",
       anleitung:"Build the sentence about school rules.",
       anleitungDe:"Bau den Satz über Schulregeln, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Nach *can, must, may, should* steht die Grundform ohne *to*.",

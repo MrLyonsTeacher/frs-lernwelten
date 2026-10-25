@@ -35,7 +35,7 @@ TH.start({
       anleitung:"Which word fits in the gap? Tap the right box.",
       anleitungDe:"Welches Wort passt in die Lücke? Tippe auf das richtige Kästchen.",
       tipp:"Beschreibt das Wort ein Nomen oder nach be/look/sound → Adjektiv. Beschreibt es ein Verb → Adverb.",
-      koerbe:[ {t:"adjective", info:"quick, good"}, {t:"adverb", info:"quickly, well"} ],
+      koerbe:[ {t:"adjective", info:"quick, good", tipp:"**Adjektiv** beschreibt ein Nomen – auch nach **be, look, taste, sound** (The pizza tastes good)."}, {t:"adverb", info:"quickly, well", tipp:"**Adverb** beschreibt, **wie** jemand etwas tut (walked slowly, plays well)."} ],
       items:[
         {t:"The escalator is very ___ (slow / slowly).", k:0}, {t:"She walked ___ through the mall. (slow / slowly)", k:1},
         {t:"This pizza tastes ___ (good / well).", k:0}, {t:"He plays basketball very ___ (good / well).", k:1},
@@ -49,12 +49,12 @@ TH.start({
       tipp:"good → well, fast → fast, hard → hard.",
       fragen:[
         {q:"The roller coaster in the mall goes really **___**.", o:["fast","fastly","faster"], c:0, e:"fast → adverb **fast** (no -ly)."},
-        {q:"You speak English very **___**!", o:["well","good","goodly"], c:0},
+        {q:"You speak English very **___**!", o:["well","good","goodly"], c:0, e:"Wie sprichst du? → Adverb. good → **well**."},
         {q:"The shoes were **___** expensive.", o:["terribly","terrible","terribler"], c:0, e:"An adverb can also describe an adjective: **terribly** expensive."},
         {q:"She worked **___** to save money for a new phone.", o:["hard","hardly","hardy"], c:0, e:"Careful: *hardly* = kaum!"},
         {q:"The music in that shop sounds **___**.", o:["loud","loudly","louded"], c:0, e:"After *sound* → adjective."},
-        {q:"The flight was **___**.", o:["quick","quickly","quicker than"], c:0},
-        {q:"They fly us there **___**.", o:["quickly","quick","quicky"], c:0},
+        {q:"The flight was **___**.", o:["quick","quickly","quicker than"], c:0, e:"Nach **was** (be) steht das Adjektiv: quick."},
+        {q:"They fly us there **___**.", o:["quickly","quick","quicky"], c:0, e:"Wie fliegen sie? → Adverb: quick**ly**."},
         {q:"He smiled **___** when he saw the price.", o:["happily","happy","happyly"], c:0, e:"happy → **happily** (y → i)."}
       ]},
     { id:"ones", typ:"quiz", lernen:"adj", icon:"👟", titel:"This One or That One?", art:"one / ones · quiz",
@@ -63,13 +63,13 @@ TH.start({
       tipp:"Einzahl → one, Mehrzahl → ones.",
       fragen:[
         {q:"I need new jeans. The old **___** are too short.", o:["ones","one","it"], c:0, e:"jeans = plural → **ones**."},
-        {q:"Do you like the red cap or the black **___**?", o:["one","ones","it"], c:0},
-        {q:"These sneakers are nice, but I prefer the white **___**.", o:["ones","one","them"], c:0},
-        {q:"My phone is old. I want a new **___**.", o:["one","ones","it"], c:0},
-        {q:"Which T-shirts do you want? – The cheap **___**.", o:["ones","one","it"], c:0},
-        {q:"This store is big, but the **___** next to it is even bigger.", o:["one","ones","it"], c:0}
+        {q:"Do you like the red cap or the black **___**?", o:["one","ones","it"], c:0, e:"**one** ersetzt ein Nomen in der Einzahl (cap)."},
+        {q:"These sneakers are nice, but I prefer the white **___**.", o:["ones","one","them"], c:0, e:"**ones** ersetzt ein Nomen in der Mehrzahl (sneakers)."},
+        {q:"My phone is old. I want a new **___**.", o:["one","ones","it"], c:0, e:"phone = Einzahl → **one**."},
+        {q:"Which T-shirts do you want? – The cheap **___**.", o:["ones","one","it"], c:0, e:"T-shirts = Mehrzahl → **ones**."},
+        {q:"This store is big, but the **___** next to it is even bigger.", o:["one","ones","it"], c:0, e:"store = Einzahl → **one**."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Shopping Rush", art:"Adverbs · 60 seconds",
+    { id:"rush", regel:"Adverb = Adjektiv **+ ly** (quickly) · y → **ily** (easily) · Ausnahme: good → **well**.", typ:"rush", icon:"⚡", titel:"Shopping Rush", art:"Adverbs · 60 seconds",
       anleitung:"Choose the right **adverb**. **Goal: 12** in 60 seconds.",
       anleitungDe:"Wähle das richtige **Adverb**. **Ziel: 12** in 60 Sekunden.",
       tipp:"Meist -ly. Aber: good → well, fast → fast, hard → hard.",

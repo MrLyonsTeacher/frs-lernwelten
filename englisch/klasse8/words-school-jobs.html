@@ -34,11 +34,11 @@ TH.start({
       anleitungDe:"Welcher Job ist gemeint?",
       tipp:"Lies, was die Person macht.",
       fragen:[
-        {q:"You look after small children when their parents are out.", o:["babysitter","lifeguard","cashier"], c:0},
-        {q:"You watch swimmers at the pool and help in an emergency.", o:["lifeguard","waiter","dog walker"], c:0},
-        {q:"You take money from customers in a store.", o:["cashier","customer","manager"], c:0},
-        {q:"You bring food and drinks to people in a restaurant.", o:["server / waiter","chef","guest"], c:0},
-        {q:"You cut the grass in other people’s gardens.", o:["mow lawns","wash cars","deliver papers"], c:0},
+        {q:"You look after small children when their parents are out.", o:["babysitter","lifeguard","cashier"], c:0, e:"A **babysitter** looks after small children."},
+        {q:"You watch swimmers at the pool and help in an emergency.", o:["lifeguard","waiter","dog walker"], c:0, e:"A **lifeguard** watches swimmers (Rettungsschwimmer)."},
+        {q:"You take money from customers in a store.", o:["cashier","customer","manager"], c:0, e:"A **cashier** works at the cash register (Kasse)."},
+        {q:"You bring food and drinks to people in a restaurant.", o:["server / waiter","chef","guest"], c:0, e:"A **server/waiter** brings food. The chef cooks it."},
+        {q:"You cut the grass in other people’s gardens.", o:["mow lawns","wash cars","deliver papers"], c:0, e:"**mow lawns** = Rasen mähen."},
         {q:"A person who buys something in a shop.", o:["customer","costumer","custom"], c:0, e:"Careful: *costume* = Kostüm!"},
         {q:"What do you do if a customer **complains**?", o:["listen and try to help","laugh","go home"], c:0, e:"**complain** = sich beschweren."},
         {q:"Money that you earn for your work.", o:["wage / salary","tip only","pocket money"], c:0, e:"A **tip** is extra money from happy customers."}
@@ -47,13 +47,13 @@ TH.start({
       anleitung:"Where does the word belong? Tap the right box.",
       anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
       tipp:"Wetter – Schule – Arbeit.",
-      koerbe:[ {t:"Weather", info:"🌪️"}, {t:"School", info:"🏫"}, {t:"Work", info:"💼"} ],
+      koerbe:[ {t:"Weather", info:"🌪️", tipp:"**Weather**: tornado, thunderstorm, hail, flood."}, {t:"School", info:"🏫", tipp:"**School**: locker, report card, homework, semester."}, {t:"Work", info:"💼", tipp:"**Work**: customer, part-time job, boss, shift."} ],
       items:[
         {t:"tornado", k:0}, {t:"thunderstorm", k:0}, {t:"hail", k:0, e:"**hail** = Hagel."}, {t:"flood", k:0},
         {t:"locker", k:1}, {t:"report card", k:1}, {t:"homework", k:1}, {t:"semester", k:1},
         {t:"customer", k:2}, {t:"part-time job", k:2}, {t:"boss", k:2}, {t:"shift", k:2, e:"A **shift** = Schicht (at work)."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Bell Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **locker**, **elective**, **principal**.", typ:"rush", icon:"⚡", titel:"Bell Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",

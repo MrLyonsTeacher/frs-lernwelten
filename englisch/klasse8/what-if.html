@@ -38,11 +38,11 @@ TH.start({
       tipp:"Typ I: if + present, will. Typ II: if + past, would.",
       links:{t:"Type I", icon:"☔"}, rechts:{t:"Type II", icon:"💭"},
       karten:[
-        {t:"If it rains, we’ll go to a museum.", r:"l"}, {t:"If I had a million dollars, I would buy a plane.", r:"r"},
-        {t:"If you hurry, you’ll catch the bus.", r:"l"}, {t:"If I were president, I would make school shorter.", r:"r"},
-        {t:"We won’t get lost if we use the map.", r:"l"}, {t:"She would visit Hawaii if she had more time.", r:"r"},
-        {t:"If they win, they’ll celebrate all night.", r:"l"}, {t:"If I could fly, I would cross the Rockies.", r:"r"},
-        {t:"If you don’t study, you won’t pass.", r:"l"}, {t:"What would you do if you met a bear?", r:"r"}
+        {t:"If it rains, we’ll go to a museum.", r:"l", e:"If + **present**, **will** → Type I (real/possible)."}, {t:"If I had a million dollars, I would buy a plane.", r:"r", e:"If + **past**, **would** → Type II (unreal)."},
+        {t:"If you hurry, you’ll catch the bus.", r:"l", e:"If + present, **’ll** → Type I."}, {t:"If I were president, I would make school shorter.", r:"r", e:"If + **were**, would → Type II."},
+        {t:"We won’t get lost if we use the map.", r:"l", e:"**won’t** + if + present → Type I."}, {t:"She would visit Hawaii if she had more time.", r:"r", e:"**would** + if + past → Type II."},
+        {t:"If they win, they’ll celebrate all night.", r:"l", e:"If + present, **’ll** → Type I."}, {t:"If I could fly, I would cross the Rockies.", r:"r", e:"If + **could**, would → Type II."},
+        {t:"If you don’t study, you won’t pass.", r:"l", e:"If + present, **won’t** → Type I."}, {t:"What would you do if you met a bear?", r:"r", e:"**would** + if + past (met) → Type II."}
       ]},
     { id:"one", typ:"quiz", lernen:"ifs", icon:"☔", titel:"Motel or Campsite?", art:"Type I · quiz",
       anleitung:"Choose the right form for **if-clauses type I**.",
@@ -53,7 +53,7 @@ TH.start({
         {q:"If we leave early, we **___** the Grand Canyon by noon.", o:["will reach","reach","would reached"], c:0, e:"Main clause → **will + base form**."},
         {q:"If you **___** sunscreen, you’ll get a sunburn.", o:["don't use","won't use","didn't use"], c:0, e:"Negative simple present: **don’t use**."},
         {q:"What **___** if the car breaks down?", o:["will we do","we will do","do we will"], c:0, e:"Question: **will + subject + verb**."},
-        {q:"If Dad **___** tired, Mom will drive.", o:["is","will be","were"], c:0},
+        {q:"If Dad **___** tired, Mom will drive.", o:["is","will be","were"], c:0, e:"Typ I: Im **if-Satz** steht das **simple present** – kein will!"},
         {q:"I’ll send you a photo if I **___** a bison.", o:["see","will see","saw"], c:0, e:"if-clause second → still **simple present**."}
       ]},
     { id:"two", typ:"quiz", lernen:"ifs", icon:"💭", titel:"Dream Trip", art:"Type II · quiz",
@@ -64,13 +64,13 @@ TH.start({
         {q:"If I **___** a car, I would drive around town.", o:["had","have","would have"], c:0, e:"if-clause → **simple past**: had."},
         {q:"If she lived in California, she **___** every day.", o:["would surf","will surf","surfed"], c:0, e:"Main clause → **would + base form**."},
         {q:"If I **___** you, I would take the train.", o:["were","am","will be"], c:0, e:"**If I were you …** – a typical piece of advice."},
-        {q:"We **___** to New York if the tickets weren’t so expensive.", o:["would fly","will fly","flew"], c:0},
+        {q:"We **___** to New York if the tickets weren’t so expensive.", o:["would fly","will fly","flew"], c:0, e:"Typ II: if + past → Hauptsatz mit **would** + Grundform."},
         {q:"What would you do if you **___** a famous actor?", o:["met","meet","would meet"], c:0, e:"if-clause → **simple past**: met."},
-        {q:"If they **___** English, they would understand the guide.", o:["spoke","speak","would speak"], c:0},
-        {q:"I **___** happier if I didn’t have so much homework.", o:["would be","will be","were"], c:0},
+        {q:"If they **___** English, they would understand the guide.", o:["spoke","speak","would speak"], c:0, e:"Typ II: im if-Satz **simple past**: speak → **spoke**."},
+        {q:"I **___** happier if I didn’t have so much homework.", o:["would be","will be","were"], c:0, e:"Typ II: Hauptsatz **would + Grundform**: would be."},
         {q:"If it **___** so hot, we would hike in Death Valley.", o:["weren't","isn't","won't be"], c:0, e:"Unreal (it **is** hot) → **weren’t**."}
       ]},
-    { id:"build", typ:"satzbau", icon:"🗺️", titel:"Travel Talk", art:"Sentence builder",
+    { id:"build", regel:"Typ I: **if + present, will** … · Typ II: **if + past, would** …", typ:"satzbau", icon:"🗺️", titel:"Travel Talk", art:"Sentence builder",
       anleitung:"Build the if-sentence.",
       anleitungDe:"Bau den if-Satz, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Steht der if-Satz vorne, kommt ein Komma.",

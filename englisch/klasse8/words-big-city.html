@@ -33,7 +33,7 @@ TH.start({
       anleitung:"Is the word **British English** or **American English**? Tap the right box.",
       anleitungDe:"Ist das Wort **britisches** oder **amerikanisches Englisch**? Tippe auf das richtige Kästchen.",
       tipp:"Paare: flat – apartment, underground – subway, pavement – sidewalk …",
-      koerbe:[ {t:"British English", info:"🇬🇧"}, {t:"American English", info:"🇺🇸"} ],
+      koerbe:[ {t:"British English", info:"🇬🇧", tipp:"**British English**: flat, underground, pavement, lift, holiday, queue, chips, autumn."}, {t:"American English", info:"🇺🇸", tipp:"**American English**: apartment, subway, sidewalk, elevator, vacation, line, French fries, fall."} ],
       items:[
         {t:"flat", k:0}, {t:"apartment", k:1}, {t:"underground", k:0}, {t:"subway", k:1}, {t:"pavement", k:0}, {t:"sidewalk", k:1},
         {t:"lift", k:0}, {t:"elevator", k:1}, {t:"holiday", k:0}, {t:"vacation", k:1}, {t:"queue", k:0}, {t:"line", k:1},
@@ -44,16 +44,16 @@ TH.start({
       anleitungDe:"Welches Wort passt zur Erklärung?",
       tipp:"Lies die Erklärung genau.",
       fragen:[
-        {q:"A person who comes to live in a new country.", o:["immigrant","tourist","citizen"], c:0},
+        {q:"A person who comes to live in a new country.", o:["immigrant","tourist","citizen"], c:0, e:"An **immigrant** comes to live in a new country (Einwanderer)."},
         {q:"A person who has all the rights of a country, e.g. can vote.", o:["citizen","visitor","refugee"], c:0, e:"**citizen** = Staatsbürger(in)."},
         {q:"A person who must leave their home because of war or danger.", o:["refugee","settler","passenger"], c:0, e:"**refugee** = Flüchtling."},
-        {q:"To become a US citizen you have to pass a …", o:["citizenship test","driving test","school test"], c:0},
-        {q:"The official document you need to travel to another country.", o:["passport","ticket","license"], c:0},
+        {q:"To become a US citizen you have to pass a …", o:["citizenship test","driving test","school test"], c:0, e:"To become a citizen you pass a **citizenship test**."},
+        {q:"The official document you need to travel to another country.", o:["passport","ticket","license"], c:0, e:"You travel with a **passport** (Reisepass)."},
         {q:"To leave your country and live in another one.", o:["emigrate","immigrate","celebrate"], c:0, e:"**emigrate** = auswandern (from), **immigrate** = einwandern (to)."},
         {q:"To get **used to** something means …", o:["sich an etwas gewöhnen","etwas benutzen","etwas vermissen"], c:0, e:"*I slowly got used to it.*"},
-        {q:"A feeling of being sad because you are far away from home.", o:["homesick","excited","jealous"], c:0}
+        {q:"A feeling of being sad because you are far away from home.", o:["homesick","excited","jealous"], c:0, e:"**homesick** = Heimweh haben."}
       ]},
-    { id:"rush", typ:"rush", icon:"⚡", titel:"Subway Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **skyscraper**, **immigrant**, **sight**.", typ:"rush", icon:"⚡", titel:"Subway Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",
