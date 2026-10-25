@@ -198,6 +198,23 @@ export async function start(o){
       ...(p.square ? {} : {map:softTex}), ...(p.add||p.blink?{blending:THREE.AdditiveBlending}:{}) }));
     scene.add(m); parts.push({p, g, sp, ph, m, n, base});
   }
+  // Echte Wolken: Haufen aus weichen Bällchen (oben hell, unten grau-blau). Sie verdecken Tiere, die hineinfliegen, nach und nach.
+  const cloudParts = [];
+  if(world.clouds){ const ct = (() => { const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d");
+      for(let i=0;i<14;i++){ const x=30+api.rand()*68, y=30+api.rand()*68, r=18+api.rand()*26, gr=g.createRadialGradient(x,y,0,x,y,r); gr.addColorStop(0,"rgba(255,255,255,.55)"); gr.addColorStop(.6,"rgba(255,255,255,.25)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,128,128); }
+      const m=g.createRadialGradient(64,64,20,64,64,64); m.addColorStop(0,"rgba(0,0,0,0)"); m.addColorStop(1,"rgba(0,0,0,1)"); g.globalCompositeOperation="destination-out"; g.fillStyle=m; g.fillRect(0,0,128,128);
+      const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t; })();
+    const lo = new THREE.Color(), hi = new THREE.Color(), col = new THREE.Color();
+    for(const cl of world.clouds){ const [cx,cy,cz] = cl.pos, R = cl.r||20, n = Math.round((cl.n||40)*(o.lite?.6:1)), sx = cl.sx||1.6, sy = cl.sy||.7, sz = cl.sz||1;
+      lo.set(cl.lo||0xAFC0DA); hi.set(cl.hi||0xFFFFFF);
+      for(let i=0;i<n;i++){ // Blumenkohl-Form: viele Bällchen in einem abgeflachten Ellipsoid, flache Unterseite
+        let x,y,z; do{ x=api.rand()*2-1; y=api.rand()*2-1; z=api.rand()*2-1; } while(x*x+y*y+z*z>1);
+        y = Math.abs(y)*(cl.flat ? .5 : 1) - (cl.flat ? 0 : .15);
+        const h = Math.max(0, Math.min(1, (y+.15)/1.15)), size = R*(.45+api.rand()*.45)*(1-h*.35);
+        col.copy(lo).lerp(hi, Math.pow(h,.6)*.9+.1);
+        const m = new THREE.SpriteMaterial({map:ct, color:col.clone(), transparent:true, depthWrite:false, opacity:(cl.opacity||.9), fog:true});
+        const sp = new THREE.Sprite(m); sp.position.set(cx+x*R*sx, cy+y*R*sy, cz+z*R*sz); sp.scale.set(size*1.3, size, 1); sp.material.rotation = api.rand()*6.28;
+        sp.renderOrder = 4; scene.add(sp); cloudParts.push({sp, base:sp.position.clone(), drift:cl.drift||0, ph:api.rand()*6}); } } }
   // Vulkanausbruch: in Schüben fliegen glühende Lavabrocken im Bogen aus dem Krater
   const bombs = [];
   if(world.bombs){ const bw = world.bombs, mat = new THREE.MeshBasicMaterial({color:bw.color||0xFFB040}), geo = new THREE.BoxGeometry(1,1,1);
@@ -316,6 +333,7 @@ export async function start(o){
         else b.visible = false; }
       { const s0 = ((tt % P) + P) % P; flash = s0 < 2.2 ? Math.sin(s0/2.2*Math.PI) : 0; }
       if(bombs.light) bombs.light.intensity = bw.light[1]*flash; }
+    for(const c of cloudParts){ if(c.drift){ c.sp.position.x = c.base.x + Math.sin(tt*.02*c.drift + c.ph*.05)*c.drift*6; } }
     for(const r of rays){ r.material.opacity = .08 + .08*Math.sin(now/1500 + r.userData.ph); }
     for(const {b, pivot, m} of beams){ const tb = o.still ? (o.stillTime||12) : (now-clock0)/1000, ph=b.ph||0, sp=b.speed||.25;
       pivot.rotation.z = (b.tilt??.35)*Math.sin(tb*sp+ph); pivot.rotation.x = (b.tilt??.35)*.6*Math.cos(tb*sp*.8+ph); m.material.opacity = (b.opacity||.22)*(.75+.25*Math.sin(tb*1.3+ph*2)); }

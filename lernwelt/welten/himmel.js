@@ -194,13 +194,6 @@ export function build(A){
   // kleine Inseln nahe am Bild
   for(const [cx,cz,r,y,d] of [[34,62,4,10,"tree"],[60,64,5,8,"tree"],[90,34,3,26,"rock"],[2,30,3,22,"tree"],[26,8,4,36,"tree"],[68,6,4,38,"rock"]]){ island(cx,cz,r,y,{deep:1.1});
     const t=topAt(cx,cz,y+4); if(d==="tree") tree(cx,t+1,cz,4,2.2, rand()<.5?"blossom":"leaves"); else for(let k=1;k<=3;k++) set(cx,t+k,cz,"crystal"); }
-  // Wolkenbänke für den Adler (hinten links und rechts)
-  for(const a0 of [1.18, 1.62]) for(let i=0;i<7;i++){ const a = Math.PI*(a0 + i*.035), rr = 44 + (rand()-.5)*8, cx = 46 + Math.cos(a)*58*rr/44, cz = 24 + Math.sin(a)*rr, cy = 46 + (rand()-.5)*3;
-    ellip(cx, cy, cz, 10+rand()*4, 7+rand()*2, 12+rand()*3, "cloudS"); ellip(cx+(rand()-.5)*8, cy+5, cz+(rand()-.5)*6, 7, 4, 7, "cloudS"); }
-  // kleine Wolkenbausche
-  for(let i=0;i<10;i++){ const cx=rand()*W, cz=rand()*D, cy=6+rand()*12; if(Object.values(S).some(s=>Math.hypot(s.x-cx,s.z-cz)<s.r+5)) continue;
-    for(let k=0;k<3;k++) ellip(cx+(rand()-.5)*8, cy+(rand()-.5)*2, cz+(rand()-.5)*5, 3+rand()*2, 1.6, 2.4, "cloudS"); }
-
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
   const farIsle = (cx,cz,r,y,deco) => { island(cx,cz,r,y,{deep:1.3, bare:true}); const t=topAt(cx,cz,y+4)+1;
     if(deco==="tree"){ tree(cx-1,t,cz,5,3,"leaves"); tree(cx+r*.5,t,cz+1,4,2.4,"blossom"); }
@@ -217,18 +210,30 @@ export function build(A){
     top:(x,z,y,hc)=> y*3 > 36 ? "snowP" : (y*3 > 20 && rand()<.4 ? "snowP" : "rock"), fill:(x,z,y,hc)=> y*3 > 40 ? "snowP" : "rock" });
 
   // ---------- Tiere ----------
-  const creatures = [{ ...eagle(), orbit:{c:[46,46,24], r:[58,44], speed:.09, ph:3.6, bob:2, wander:{f:.27, r:.18, y:6, eight:6, dx:10, dz:10, span:10, clear:5}}, scale:.42, cloudHide:"cloudS" }];
+  const creatures = [{ ...eagle(), orbit:{c:[46,46,24], r:[58,44], speed:.09, ph:3.6, bob:2, wander:{f:.27, r:.18, y:6, eight:6, dx:10, dz:10, span:10, clear:5}}, scale:.42 }];
   for(let i=0;i<9;i++) creatures.push({ ...bird(i%3?0xFFFFFF:0xE8EEF8), orbit:{c:[46+(i%3)*2,34+(i%4),30+(i%2)*3], r:[40,24], speed:.12, ph:i*.1, bob:1}, scale:.5, noShadow:true });
 
   return {
     W, D, blocks, spots:S, exposure:1.1, fov:40,
-    sky:[[0,"#2E7BE8"],[.45,"#7EC0FF"],[.75,"#FFD8C0"],[1,"#FFF2E6"]], fog:[0xE6F0FF, 130, 460],
+    sky:[[0,"#1E62D0"],[.45,"#6AB0FA"],[.72,"#FFD2B4"],[1,"#F4E8E0"]], fog:[0xC8DCF4, 170, 560],
     hemi:[0xDDEBFF, 0x8A9AB0, 1.7], sun:{color:0xFFF4E0, int:2.1, pos:[60,120,90]}, bloom:[.3,.5,.9],
     lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}],
-    planes:[{y:2, tex:T.cloud, repeat:150, size:1100, color:0xFFFFFF, em:.35, anim:[.01,0]}],
-    puffs:[{n:20, pos:[-160,10,-160], dx:400, dy:2, dz:0, s0:30, s1:30, color:0xFFFFFF, opacity:.8, speed:.008, spread:120, flat:.4},
-           {n:26, pos:[-60,3,-40], dx:220, dy:2, dz:0, s0:16, s1:20, color:0xFFFFFF, opacity:.85, speed:.012, spread:60, flat:.45},
-           {n:18, pos:[-60,8,40], dx:220, dy:1, dz:0, s0:12, s1:14, color:0xFFFFFF, opacity:.7, speed:.016, spread:50, flat:.5}],
+    planes:[{y:-30, size:1400, color:0xB8CCE6, em:0}],
+    // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
+    puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
+           {n:14, pos:[10,6,D/2], dx:W-20, dy:2, dz:0, s0:14, s1:18, color:0xFFFFFF, opacity:.35, speed:.01, spread:20, flat:.4}],
+    clouds:[
+      // Wolkenmeer weit unten
+      ...[[-160,-14,-120],[-40,-16,-140],[90,-14,-150],[220,-16,-120],[-180,-15,0],[260,-14,10],[-120,-12,110],[200,-12,120],[46,-18,150],[-30,-14,-30],[130,-15,-40]].map(p=>({pos:p, r:46, n:28, sx:1.8, sy:.35, sz:1.4, flat:true, lo:0xC8D6EA, opacity:.95})),
+      // Nebelbänke direkt unter den Inseln
+      ...[[20,-2,30],[70,-3,26],[46,-4,64],[-6,-6,10],[100,-5,0]].map(p=>({pos:p, r:20, n:16, sx:1.6, sy:.35, sz:1.2, flat:true, lo:0xDCE6F4, opacity:.6})),
+      // Haufenwolken mit Detail (in die der Adler hineinfliegen kann)
+      {pos:[-18,44,-8], r:13, n:46, sx:1.5, sy:.8, sz:1.1, drift:.6},
+      {pos:[112,50,8], r:14, n:50, sx:1.6, sy:.85, sz:1.1, drift:.5},
+      {pos:[30,58,-46], r:11, n:38, sx:1.5, sy:.75, sz:1, drift:.4},
+      {pos:[150,30,-80], r:20, n:44, sx:1.7, sy:.8, sz:1.2},
+      {pos:[-90,36,-70], r:18, n:40, sx:1.6, sy:.8, sz:1.2}
+    ],
     particles:[{n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
     home:{pos:[W/2,64,D+96], look:[W/2,28,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},
