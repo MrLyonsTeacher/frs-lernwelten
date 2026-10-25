@@ -193,7 +193,7 @@ function englisch(){
     const bereiche = FRS.bereicheFuer(c.k);
     const list = bereiche.flatMap(b=>c.themen.filter(t=>t.kat===b));
     return `<article class="cls">
-      <div class="cls-map"><img src="englisch/welten/vorschau-k${c.k}.jpg" alt="" loading="lazy"><span class="cls-k">Klasse ${c.k}</span><span class="cls-w">${esc(FRS.welt(c.k).name)}</span></div>
+      <div class="cls-map"><img src="englisch/welten/vorschau-k${c.k}.jpg" alt="" loading="lazy"><span class="cls-k">Klasse ${c.k}</span></div>
       <div class="cls-body">
         <div class="cls-t"><b>${esc(FRS.welt(c.k).name)}</b><span>${list.length} ${list.length===1?"Lernwelt":"Lernwelten"} · ${bereiche.length} Bereiche</span></div>
         ${list.length ? `<details class="tdet" data-k="${c.k}"${OPEN.has(c.k)?" open":""}><summary><span class="ts-n">${bereiche.filter(b=>c.themen.some(t=>t.kat===b)).map(b=>`<span>${FRS.kategorien[b].icon} ${c.themen.filter(t=>t.kat===b).length}</span>`).join("")}</span><span class="ts-l">Lernwelten anzeigen</span><span class="ts-a" aria-hidden="true">▾</span></summary>

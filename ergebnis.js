@@ -60,7 +60,10 @@
   /* ---------- Ränge der Klassenwelten (pro Stunde, nach heute gesammelten Flaggen) ---------- */
   // Bilder liegen in lernwelt/raenge/<datei>.webp – der Pfad wird vom Ort dieser Datei aus bestimmt
   const BASE = (()=>{ try{ const s = document.currentScript && document.currentScript.src; return s ? s.replace(/[^/]*$/,"") : ""; }catch(e){ return ""; } })();
-  const RANK_AT = [0, 20, 50, 90, 140, 200];
+  const RANK_AT = [0, 30, 70, 120, 180, 250];
+  // Geheimer Rang: ab 350 Flaggen an einem Tag, erscheint erst nach dem Freischalten in der Rangliste
+  const HIDDEN_AT = 350, GODS = {5:["fire","Fire God"],6:["ocean","Ocean God"],7:["mountain","Mountain God"],8:["sky","Sky God"],9:["forest","Forest God"],10:["ice","Ice God"]};
+  const godImg = k => BASE + "lernwelt/raenge/god-" + (GODS[k]||GODS[5])[0] + "-m.webp";
   const RANKS = {
     5:  [["spark","Spark"],["ashmaster","Ash Master"],["flamekeeper","Flame Keeper"],["fireknight","Fire Knight"],["dragonrider","Dragon Rider"],["firelord","Fire Lord"]],
     6:  [["droplet","Droplet"],["shellseeker","Shell Seeker"],["reefdiver","Reef Diver"],["seacaptain","Sea Captain"],["tidelord","Tide Lord"],["oceanruler","Ocean Ruler"]],
@@ -73,6 +76,8 @@
   const rankImg = (f, cls) => `<img class="${cls||"rk-img"}" src="${rankImgUrl(f)}" alt="" draggable="false">`;
   const worldImg = k => rankImgUrl("world-k"+k);
   function rank(k, n){
+    if(n >= HIDDEN_AT){ const g = GODS[k]||GODS[5];
+      return { i:RANK_AT.length, icon:`<img class="rk-img rk-god" src="${godImg(k)}" alt="" draggable="false">`, img:godImg(k), name:g[1], at:HIDDEN_AT, next:null, nextName:null, nextIcon:"", toNext:0, pct:1, top:true, hidden:true, count:RANK_AT.length+1 }; }
     const R = RANKS[k] || RANKS[5]; let i = 0; RANK_AT.forEach((t,j)=>{ if(n >= t) i = j; });
     const nx = i < RANK_AT.length-1 ? RANK_AT[i+1] : null;
     return { i, icon:rankImg(R[i][0]), img:rankImgUrl(R[i][0]), name:R[i][1], at:RANK_AT[i], next:nx, nextName: nx!==null ? R[i+1][1] : null, nextIcon: nx!==null ? rankImg(R[i+1][0]) : "",
@@ -92,6 +97,11 @@
       .rkl li.cur{border-color:#FFC24A;background:rgba(255,194,74,.18)}
       .rkl li.cur .tag{background:#FFC24A;color:#2A1A06;border-radius:999px;padding:2px 9px;font:700 .8rem Fredoka,system-ui,sans-serif}
       .rkl li.no{opacity:.5} .rkl li.no img{filter:grayscale(.6)}
+.rk-god{object-fit:cover;border-radius:6px}
+      .rk-hid{display:flex;gap:12px;align-items:center;margin:0 0 8px;padding:8px;border-radius:16px;border:2px solid #FFD95A;background:linear-gradient(135deg,rgba(255,217,90,.25),rgba(180,120,255,.2));box-shadow:0 0 18px rgba(255,217,90,.4)}
+      .rk-hid img{width:96px;height:auto;border-radius:10px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+      .rk-hid b{display:block;font:700 1.35rem Fredoka,system-ui,sans-serif;color:#FFE27A}
+      .rk-hid small{display:block;color:#E8E0C8}
       .rkl .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:12px;border:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:1.4rem;cursor:pointer}
       @keyframes rkl-in{from{opacity:0}to{opacity:1}}`; document.head.appendChild(st); }
   try{ rkStyle(); }catch(e){}
@@ -103,6 +113,7 @@
     const d = document.createElement("div"); d.className = "rkl-bg";
     d.innerHTML = `<div class="rkl" role="dialog" aria-modal="true" aria-label="Ranks"><button class="x" aria-label="Close">×</button>
       <h2>${en===false?"Alle Ränge":"All ranks"}</h2><p class="sub">${en===false?`Heute gesammelt: ${n} ${flagsTxt}`:`Collected today: ${n} ${flagsTxt}`}</p>
+      ${n>=HIDDEN_AT?`<div class="rk-hid"><img src="${godImg(k)}" alt=""><div><small>${en===false?"Geheimer Rang freigeschaltet!":"Secret rank unlocked!"}</small><b>${(GODS[k]||GODS[5])[1]}</b><small>${en===false?"ab":"from"} ${HIDDEN_AT} ${flagsTxt}</small></div></div>`:""}
       <ol>${R.map((r,j)=>`<li class="${j===cur?"cur":j>cur?"no":""}">${rankImg(r[0],"")}<span><b>${r[1]}</b><small>${en===false?"ab":"from"} ${RANK_AT[j]} ${flagsTxt}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?"✔":""}</li>`).join("")}</ol></div>`;
     const close = () => d.remove();
     d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); });

@@ -631,7 +631,7 @@ GAMES.zeitstrahl = (l, A, done) => {
 
 GAMES.satzbau = (l, A, done) => {
   const ss = l.mischen===false ? l.saetze.slice() : shuffle(l.saetze), P=l.punkte||2, res=[]; let i=0, pts=0, picked=[], tiles=[], checked=false;
-  const norm = a => a.join(" ").replace(/\s+([?.!,])/g,"$1").toLowerCase();
+  const norm = a => a.join(" ").replace(/,/g," ").replace(/\s+/g," ").replace(/\s+([?.!])/g,"$1").trim().toLowerCase();
   function setup(){
     const s=ss[i]; picked=[]; checked=false;
     do { tiles = shuffle(s.w.map((w,k)=>({w,k}))); } while(s.w.length>2 && tiles.every((t,k)=>t.k===k));
@@ -654,7 +654,7 @@ GAMES.satzbau = (l, A, done) => {
       const s=ss[i], got=norm(picked.map(k=>tiles[k].w)), okList=[s.w].concat(s.alt||[]).map(norm);
       const ok = okList.includes(got); res.push(ok); checked=true; if(ok) pts+=P; show();
       if(ok) award([["s"+l.saetze.indexOf(s), P]], $("#ans"));
-      const sol = norm(s.w).replace(/^./,c=>c.toUpperCase());
+      const sol = s.w.join(" ").replace(/\s+([?.!,])/g,"$1");
       if(!ok) miss(s.hint||s.aufgabe||"", sol, s.e);
       sheet(ok?"ok":"no", esc(ok?T.right+" +"+P:T.wrong), `${ok?"":`${T.solution} <strong>${esc(sol)}</strong> `}${s.e?rich(s.e):""}`, i<ss.length-1?T.next:T.result,
         ()=>{ i++; if(i<ss.length) setup(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+ss.length); });
