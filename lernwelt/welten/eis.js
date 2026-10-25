@@ -90,6 +90,12 @@ export function build(A){
     for(let a=-9;a<=9;a+=6) pinnacle(x+a,m+12,z+7,4,.6);
     for(const a of [-22,-14,14,22]) pinnacle(x+a,y+5,z+14,4,.6);
     for(const [a,c] of [[-18,-8],[18,-8],[-18,10],[18,10]]) pinnacle(x+a,b+13,z+c,8,1.2);
+    // hinterer, höherer Palastflügel mit drei Riesentürmen
+    fill(x-16,y,z-22,x+16,y+20,z-10,(a,yy,c)=> (yy-y)%7===0 ? "iceTrim" : "iceBrick");
+    for(let a=-14;a<=14;a+=4){ gothic(x+a,y+6,z-9,2,5,"win"); gothic(x+a,y+14,z-9,2,4,"win"); }
+    spireTower(x-12,y+20,z-16,3.4,22,18); spireTower(x+12,y+20,z-16,3.4,22,18); spireTower(x,y+20,z-17,4.2,34,24);
+    for(let a=-15;a<=15;a+=5) pinnacle(x+a,y+21,z-10,5,.7);
+    S.grammar.beams = [[x,y+20+34+24,z-17],[x-12,y+20+22+18,z-16],[x+12,y+20+22+18,z-16],[x-19,b+22+16,z-2],[x+19,b+22+16,z-2],[x,t+37,z]];
     S.grammar.top=[x, b+16, z+13]; S.grammar.base=b+8; S.grammar.cam={pos:[50,26,82], look:[46,19,33]}; }
 
   // ---------- Riesige Eissäulen und Bögen (wie eine Halle) ----------
@@ -126,11 +132,23 @@ export function build(A){
   for(let i=0;i<70;i++){ const x=3+Math.floor(rand()*(W-6)), z=8+Math.floor(rand()*(D-9)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1;
     const r=rand(); if(r<.35) ellip(x,t-1,z,1.5+rand()*1.5,1.2,1.5+rand(),"snowB"); else if(r<.6){ const h=3+Math.floor(rand()*6); for(let k=0;k<h;k++) disk(x,t+k,z,Math.max(0,(h-k)*.25),"icicle"); } else if(r<.75) set(x,t,z, rand()<.5?"crystal":"violet"); else if(r<.85){ fill(x,t,z,x,t+3,z,"silver"); set(x,t+4,z,"lamp"); } }
 
+  for(let z=-22; z<D+12; z++) for(let x=-58; x<W+58; x++) if(x<0||x>=W||z<0||z>=D){ set(x,G-1,z,"snow"); if(z<-6) for(let y=G; y<G+Math.min(18,(-6-z)*1.2); y++) set(x,y,z, y%3?"frost":"snowB"); }
+  // ---------- Eisstadt ringsum: Häuser mit Spitzdächern, Türme, Mauern ----------
+  const iceHouse = (x,z,w,d,h) => { const y0=Math.max(G,topAt(x,z,40)+1), hw=Math.floor(w/2), hd=Math.floor(d/2);
+    fill(x-hw,y0,z-hd,x+hw,y0+h,z+hd,(a,b,c)=> (b-y0)%5===0 ? "iceTrim" : "iceBrick");
+    for(let a=-hw+1;a<hw;a+=2) for(let b=2;b<h;b+=4){ set(x+a,y0+b,z+hd,"win"); set(x+a,y0+b,z-hd,"win"); }
+    for(let i=0;i<=hd+2;i++) fill(x-hw-1,y0+h+1+i,z-hd-1+i,x+hw+1,y0+h+1+i,z+hd+1-i, i>hd ? "snowB" : "spire");
+    pinnacle(x+hw,y0+h+1,z,3+Math.floor(rand()*3),.6); icicles(x-hw,x+hw,y0+h,z+hd+1,z+hd+1,2); };
+  for(let i=0;i<46;i++){ const side = i%2 ? 1 : -1, x = side<0 ? -8-Math.floor(rand()*44) : W+8+Math.floor(rand()*44), z = -16+Math.floor(rand()*(D+20));
+    iceHouse(x,z,5+2*Math.floor(rand()*3),5+2*Math.floor(rand()*2),5+Math.floor(rand()*9)); }
+  for(const [tx,tz,h] of [[-20,4,30],[-40,30,24],[W+20,6,30],[W+40,32,24],[-30,58,20],[W+30,58,20]]) spireTower(tx,Math.max(G,topAt(tx,tz,40)+1),tz,3,h,14);
+  // Stadtmauern mit Zinnen von den Säulen nach außen
+  for(const sx of [-1,1]) for(let k=0;k<60;k++){ const x = sx<0 ? 2-k : W-2+k, z = 70+Math.round(Math.sin(k*.08)*4); fill(x,G,z,x,G+7,z+1,"iceBrick"); if(k%2===0) set(x,G+8,z,"iceTrim"); }
   // ---------- Landschaft bis zum Horizont: Eisklippen, weitere Säulenreihen, ferne Spitztürme ----------
   const F = A.far; F.cell = 3;
   const away = (x,z) => Math.hypot(Math.max(0,-x,x-W), Math.max(0,-z,z-D));
   const fh = (x,z) => { let h = G + fbm(x*.04,z*.04)*4; if(z<0) h += Math.min(90, -z*.9)*(.6+.6*fbm(x*.03,z*.03)); h += Math.max(0, away(x,z)-30)*.5*(.6+fbm(x*.05,z*.05)); return h; };
-  A.farTerrain({ x0:-120, x1:W+120, z0:-130, z1:D+50, base:0, skip:(x,z)=> (x>-1 && x<W+1 && z>-1 && z<D+1) || (fh(x,z)<G+3 && away(x,z)<40),
+  A.farTerrain({ x0:-120, x1:W+120, z0:-130, z1:D+50, base:0, skip:(x,z)=> (x>-58 && x<W+58 && z>-22 && z<D+12) || (fh(x,z)<G+3 && away(x,z)<40),
     h: fh, top:(x,z,y,hc)=> y*3 > 40 ? (rand()<.5?"snowB":"frost") : "snowB", fill:(x,z,y,hc)=> rand()<.04 ? "crystal" : "frost" });
   const fset = (x,y,z,t) => F.set(Math.floor(x/3),Math.floor(y/3),Math.floor(z/3),t);
   // Säulenreihen setzen sich in der Ferne fort
@@ -160,6 +178,7 @@ export function build(A){
             {pos:[20,G+30,30], color:0x5AD8FF, int:160, dist:30, flicker:900}, {pos:[72,G+30,30], color:0x5AD8FF, int:160, dist:30, flicker:900},
             {pos:[S.vocabulary.x,G+5,S.vocabulary.z+6], color:0xC8A0FF, int:180, dist:22},
             {pos:[S.country.x,G+8,S.country.z], color:0xBFF4FF, int:180, dist:24}],
+    beams: S.grammar.beams ? S.grammar.beams.map((p,i)=>({pos:p, len:70+i*6, w:6, color:0x7FE6FF, opacity:.3, tilt:.45, speed:.18+i*.03, ph:i*1.3})) : [],
     ribbons:[{w:300, h:34, pos:[W/2,104,-90], rot:0, color:0xA87AFF, opacity:.2}, {w:240, h:24, pos:[W/2-30,118,-120], rot:.25, color:0x7A6AF0, opacity:.16}, {w:200, h:18, pos:[W/2+40,96,-70], rot:-.2, color:0xC890FF, opacity:.12}],
     rays:{n:16, color:0xFFFFFF, area:[16,76,0,40], y:60, len:100},
     particles:[{n:1500, area:[-40,W+40,0,90,-40,D+60], vy:-3, wob:2.4, color:0xFFFFFF, size:.85, opacity:.95, soft:true},
@@ -171,7 +190,7 @@ export function build(A){
            {n:10, pos:[-60,70,-10], dx:220, dy:3, dz:30, s0:30, s1:20, color:0xFFFFFF, opacity:.35, speed:.012, spread:40, flat:.3},
            {n:16, pos:[-120,80,-30], dx:300, dy:2, dz:40, s0:46, s1:24, color:0xE6EEFA, opacity:.55, speed:.009, spread:70, flat:.3},
            {n:12, pos:[10,50,-40], dx:70, dy:20, dz:0, s0:30, s1:30, color:0xFFFFFF, opacity:.45, speed:.008, spread:40, flat:.7}],
-    home:{pos:[W/2,64,D+60], look:[W/2,14,D/2]}, homePortrait:{pos:[W/2,86,D+112], look:[W/2,24,D/2-10]},
+    home:{pos:[W/2,84,D+104], look:[W/2,22,D/2-14]}, homePortrait:{pos:[W/2,86,D+112], look:[W/2,24,D/2-10]},
     ui:{bg:"rgba(10,30,62,.86)", border:"#8AE6FF", glow:"rgba(138,230,255,.55)", text:"#EAF6FF", sub:"#A8C8E6", accent:"#8AE6FF", "accent-ink":"#06182E", chip:"rgba(8,26,54,.8)"}
   };
 }

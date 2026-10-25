@@ -29,7 +29,7 @@ const FRS = {
     7:  { file:"stein",  name:"Dwarven Caves",  icon:"⛏️", theme:"stein" },
     8:  { file:"himmel", name:"Sky Castle",   icon:"☁️", theme:"himmel" },
     9:  { file:"wald",   name:"Woodlands", icon:"🌿", theme:"wald" },
-    10: { file:"eis",    name:"Ice Region",    icon:"❄️", theme:"eis" }
+    10: { file:"eis",    name:"Ice Citadel",    icon:"❄️", theme:"eis" }
   },
 
   englisch: {

@@ -170,6 +170,15 @@ export async function start(o){
     const rt = new THREE.CanvasTexture(c), ar = world.rays.area || [0,world.W,0,world.D];
     for(let i=0;i<world.rays.n;i++){ const m=new THREE.Mesh(new THREE.PlaneGeometry(2+api.rand()*4, world.rays.len||70), new THREE.MeshBasicMaterial({map:rt, color:world.rays.color, transparent:true, opacity:.16, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, fog:false}));
       m.position.set(ar[0]+api.rand()*(ar[1]-ar[0]), world.rays.y||34, ar[2]+api.rand()*(ar[3]-ar[2])); m.rotation.set(0, api.rand()*Math.PI, .25); m.userData.ph = api.rand()*6; scene.add(m); rays.push(m); } }
+  // Lichtkegel (Scheinwerfer an Türmen): weiche, additive Kegel, die langsam schwenken
+  const beams = [];
+  if(world.beams){ const c=document.createElement("canvas"); c.width=32; c.height=128; const g=c.getContext("2d");
+    const gr=g.createLinearGradient(0,0,0,128); gr.addColorStop(0,"rgba(255,255,255,0)"); gr.addColorStop(.25,"rgba(255,255,255,.35)"); gr.addColorStop(1,"rgba(255,255,255,1)"); g.fillStyle=gr; g.fillRect(0,0,32,128);
+    const sg=g.createLinearGradient(0,0,32,0); sg.addColorStop(0,"rgba(0,0,0,1)"); sg.addColorStop(.5,"rgba(0,0,0,0)"); sg.addColorStop(1,"rgba(0,0,0,1)"); g.globalCompositeOperation="destination-out"; g.fillStyle=sg; g.fillRect(0,0,32,128);
+    const bt = new THREE.CanvasTexture(c);
+    for(const b of world.beams){ const geo = new THREE.ConeGeometry(b.w||4, b.len||60, 24, 1, true); geo.translate(0, -(b.len||60)/2, 0);
+      const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map:bt, color:b.color||0xBFF8FF, transparent:true, opacity:b.opacity||.22, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, fog:false}));
+      const pivot = new THREE.Group(); pivot.position.set(...b.pos); pivot.add(m); m.rotation.x = Math.PI; scene.add(pivot); beams.push({b, pivot, m}); } }
   // Bänder (Polarlicht)
   const ribbons = [];
   for(const r of (world.ribbons||[])){ const m=new THREE.Mesh(new THREE.PlaneGeometry(r.w, r.h, 40, 1), new THREE.MeshBasicMaterial({color:r.color, transparent:true, opacity:r.opacity||.35, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, fog:false}));
@@ -294,6 +303,8 @@ export async function start(o){
       s.position.set(pf.pos[0]+(pf.dx||0)*t+Math.sin(t*6+s.userData.ox*9)*(pf.spread||2), pf.pos[1]+(pf.dy||0)*t + (pf.ry? (s.userData.oz-.5)*pf.ry : 0), pf.pos[2]+(pf.dz||0)*t+s.userData.ox*(pf.spread||2)*(pf.sz||1));
       const sc=(pf.s0||4)+t*(pf.s1||12); s.scale.set(sc,sc*(pf.flat||1),1); s.material.opacity=(pf.opacity||.5)*Math.sin(Math.PI*t); }
     for(const r of rays){ r.material.opacity = .08 + .08*Math.sin(now/1500 + r.userData.ph); }
+    for(const {b, pivot, m} of beams){ const tb = o.still ? (o.stillTime||12) : (now-clock0)/1000, ph=b.ph||0, sp=b.speed||.25;
+      pivot.rotation.z = (b.tilt??.35)*Math.sin(tb*sp+ph); pivot.rotation.x = (b.tilt??.35)*.6*Math.cos(tb*sp*.8+ph); m.material.opacity = (b.opacity||.22)*(.75+.25*Math.sin(tb*1.3+ph*2)); }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
     for(const {cr, outer, movers, safe:sf} of creatures){
       let move = 1;
