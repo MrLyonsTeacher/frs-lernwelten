@@ -48,7 +48,12 @@ TH.start({
   },
   lob: {3:"Brilliant! You know the British Isles really well.", 2:"Well done! Can you get three stars next time?", 1:"Good start – read the tips and try again.", 0:"Don’t give up! Have a look at the answers and try again."},
   levels: [
-    { id:"names", lernen:"isles", typ:"quiz", icon:"🧭", titel:"UK, GB or British Isles?", art:"Quiz · the basics",
+    { id:"names", E:{plus:[
+        {q:"Which part of the UK is NOT on the island of Great Britain?", o:["Northern Ireland","Wales","Scotland","England"], c:0},
+        {q:"What is the capital of the Republic of Ireland?", o:["Dublin","Belfast","Cork","Galway"], c:0},
+        {q:"Which language is spoken in Wales next to English?", o:["Welsh","Gaelic only","Irish","Scots"], c:0, e:"**Welsh** – *Croeso* means “welcome”."}
+      ]},
+      lernen:"isles", typ:"quiz", icon:"🧭", titel:"UK, GB or British Isles?", art:"Quiz · the basics",
       anleitung:"What is the difference between the UK, Great Britain and the British Isles? Choose the right answer.",
       anleitungDe:"Was ist der Unterschied zwischen dem UK, Großbritannien und den Britischen Inseln? Wähle die richtige Antwort.",
       tipp:"Great Britain ist die große Insel. Das UK ist ein Staat. Die British Isles sind eine Inselgruppe.",
@@ -61,7 +66,8 @@ TH.start({
         {q:"Which money do people use in Dublin?", o:["The euro","The pound","The dollar","The franc"], c:0, e:"Ireland is in the EU and uses the **euro**. In Northern Ireland (UK) people pay with **pounds**."},
         {q:"Who is the head of state of the UK today?", o:["King Charles III","The Prime Minister","Queen Elizabeth II","The Mayor of London"], c:0, e:"**Charles III** became king in 2022 after Queen Elizabeth II died."}
       ]},
-    { id:"where", lernen:"countries", typ:"sortieren", icon:"🗺️", titel:"Where is it?", art:"Sort · places",
+    { id:"where", E:{plus:[ {t:"Liverpool", k:0}, {t:"Hadrian’s Wall", k:0}, {t:"the Highlands", k:1}, {t:"Conwy Castle", k:2}, {t:"Derry/Londonderry", k:3}, {t:"Cork", k:4} ]},
+      lernen:"countries", typ:"sortieren", icon:"🗺️", titel:"Where is it?", art:"Sort · places",
       anleitung:"In which country is this place? Tap the right box.",
       anleitungDe:"In welchem Land liegt dieser Ort? Tippe auf das richtige Kästchen.",
       tipp:"Northern Ireland gehört zum UK, die Republic of Ireland nicht. Beide liegen auf der Insel Irland.",
@@ -76,7 +82,8 @@ TH.start({
         {t:"Belfast", k:3}, {t:"Giant’s Causeway", k:3, e:"The **Giant’s Causeway** has about 40,000 stone columns. A legend says a giant built it."},
         {t:"Dublin", k:4}, {t:"Cliffs of Moher", k:4}, {t:"Galway", k:4}
       ]},
-    { id:"symbols", lernen:"countries", typ:"memory", icon:"🐉", titel:"Capitals & symbols", art:"Memory · 8 pairs",
+    { id:"symbols", E:{plus:[ {a:"daffodil", b:"flower of Wales on St David’s Day"}, {a:"tartan", b:"cloth for a kilt"} ]},
+      lernen:"countries", typ:"memory", icon:"🐉", titel:"Capitals & symbols", art:"Memory · 8 pairs",
       anleitung:"Find the pairs: **capital or symbol + country**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Hauptstadt oder Symbol + Land**. Je weniger Züge du brauchst, desto mehr Flaggen bekommst du.",
       tipp:"Wales: roter Drache · Schottland: Distel · Irland: Kleeblatt (shamrock) · England: Rose.",
@@ -120,7 +127,12 @@ TH.start({
         {j:"1605", t:"Guy Fawkes tries to blow up Parliament."},
         {j:"2023", t:"Charles III is crowned king."}
       ]},
-    { id:"traditions", lernen:"culture", typ:"quiz", icon:"🎉", titel:"Traditions & food", art:"Quiz · culture",
+    { id:"traditions", E:{plus:[
+        {q:"On **Burns Night** in January, Scottish people remember …", o:["the poet Robert Burns","a big fire in Edinburgh","the first Scottish king","a famous football match"], c:0},
+        {q:"What do many people wear on St Patrick’s Day?", o:["something green","something red","a kilt","a crown"], c:0},
+        {q:"What is a **leek**?", o:["a vegetable – a symbol of Wales","a Welsh castle","an Irish dance","a Scottish lake"], c:0, e:"**leek** = Lauch."}
+      ]},
+      lernen:"culture", typ:"quiz", icon:"🎉", titel:"Traditions & food", art:"Quiz · culture",
       anleitung:"Festivals, food and sport: what do you know? Choose the right answer.",
       anleitungDe:"Feste, Essen und Sport: Was weißt du? Wähle die richtige Antwort.",
       tipp:"Patron saint = Schutzheiliger. Jedes Land hat einen eigenen Tag für ihn.",
@@ -134,7 +146,13 @@ TH.start({
         {q:"Which fast Irish sport is played with sticks and a small ball?", o:["Hurling","Cricket","Golf","Tennis"], c:0, e:"**Hurling** is one of the oldest field sports in the world."},
         {q:"What is “afternoon tea”?", o:["Tea with sandwiches, scones and cakes","Tea for breakfast","A tea shop","Cold tea with ice"], c:0, e:"**Afternoon tea** is a small meal in the afternoon. Scones with cream and jam are a must!"}
       ]},
-    { id:"facts", typ:"swipe", icon:"✅", titel:"True or false?", art:"Swipe · fun facts",
+    { id:"facts", E:{plus:[
+        {t:"Hadrian’s Wall was built by the Vikings.", r:"l", e:"It was built by the **Romans** (AD 122)."},
+        {t:"William the Conqueror won the Battle of Hastings in 1066.", r:"r"},
+        {t:"The Magna Carta says that even the king must follow the law.", r:"r"},
+        {t:"The Cliffs of Moher are in Scotland.", r:"l", e:"They are in the **Republic of Ireland**."}
+      ]},
+      typ:"swipe", icon:"✅", titel:"True or false?", art:"Swipe · fun facts",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
       anleitungDe:"Stimmt das? Wische nach **rechts für True** (wahr) und nach **links für False** (falsch).",
       tipp:"Lies genau: Oft ist nur das Land falsch.",

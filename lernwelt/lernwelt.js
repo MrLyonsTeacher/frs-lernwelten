@@ -796,7 +796,9 @@ function autoNiveau(l, nv, world){
           return Object.assign(q, {o: idx.map(j=>q.o[j]), c: idx.indexOf(q.c)}); }); if(c.zeit) c.zeit = Math.round(c.zeit*1.5); break;
       case "lueckentext": c.text = c.text.replace(/\[\[([^\]]+)\]\]/g, (m,x)=>{ const o=x.split("|"); return "[["+o.slice(0,2).join("|")+"]]"; }); break;
       case "memory": c.paare = cut(c.paare, 6); break;
-      case "sortieren": c.items = cut(c.items, 8); break;
+      case "sortieren": { const by = {}; c.items.forEach(x=>(by[x.k]=by[x.k]||[]).push(x)); const ks = Object.keys(by), out=[];
+        for(let r=0; out.length<Math.min(8,c.items.length); r++) ks.forEach(k=>{ if(by[k][r] && out.length<8) out.push(by[k][r]); });
+        c.items = c.items.filter(x=>out.includes(x)); break; }
       case "swipe": c.karten = cut(c.karten, 8); break;
       case "satzbau": c.saetze = cut(c.saetze, 4); break;
       case "zeitstrahl": c.items = even(c.items, Math.min(c.items.length, 5)); break;
