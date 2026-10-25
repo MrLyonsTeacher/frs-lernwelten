@@ -22,8 +22,15 @@ TH.start({
   k:6, kat:"grammar", id:"gt6", icon:"🤿", kartenSymbol:"🤿",
   titel:"Dive Plans", untertitel:"going to-future: plans",
   text:"Pack your bag – we are going to explore the ocean! Talk about plans with am / is / are going to.",
+  lernen: {
+    going: { titel:"going to – plans", folien:[
+      {"bild": "🗓️", "titel": "Plans for the future", "formel": ["Person | am / is / are | going to | Grundform"], "bsp": ["I**’m going to** learn to dive.", "She **is going to** buy flippers."], "de": "Pläne: **am/is/are + going to + Grundform**."},
+      {"bild": "🚫", "titel": "Negatives", "formel": ["Person | ’m not / isn’t / aren’t | going to | Grundform"], "bsp": ["She **isn’t going to** stay at home.", "They **aren’t going to** sail today."], "de": "Verneinung mit **not**: isn’t / aren’t going to."},
+      {"bild": "❓", "titel": "Questions", "formel": ["(What) | Am / Is / Are | Person | going to | Grundform?"], "bsp": ["**Are** you **going to** come?", "What **is** he **going to** do?"], "de": "Frage: **am/is/are** nach vorne."}
+    ]}
+  },
   levels: [
-    { id:"amisare", typ:"sortieren", icon:"🎒", titel:"Pack your Bag", art:"am / is / are going to · sort",
+    { id:"amisare", lernen:"going", typ:"sortieren", icon:"🎒", titel:"Pack your Bag", art:"am / is / are going to · sort",
       anleitung:"Which word fits: **am**, **is** or **are** + going to? Tap the right box.",
       anleitungDe:"Welches Wort passt vor *going to*: **am**, **is** oder **are**? Tippe auf das richtige Kästchen.",
       tipp:"I **am** going to … · he / she / it **is** going to … · we / you / they **are** going to …",
@@ -39,7 +46,7 @@ TH.start({
         {t:"___ you going to dive?", k:2, e:"Question with **you** → **Are** you going to …?"}, {t:"___ he going to come?", k:1, e:"Question with **he** → **Is** he going to …?"},
         {t:"The kids ___ going to build a sandcastle.", k:2}
       ]},
-    { id:"plans", regel:"Pläne: **am/is/are + going to + Grundform** (I’m going to learn). Verneinung: isn’t/aren’t going to.", typ:"satzbau", icon:"🗺️", titel:"Plan the Trip", art:"Sentence builder · statements, negatives, questions",
+    { id:"plans", lernen:"going", regel:"Pläne: **am/is/are + going to + Grundform** (I’m going to learn). Verneinung: isn’t/aren’t going to.", typ:"satzbau", icon:"🗺️", titel:"Plan the Trip", art:"Sentence builder · statements, negatives, questions",
       anleitung:"Build the sentence with **going to**.",
       anleitungDe:"Bau den Satz mit **going to**, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"am / is / are + going to + Grundform. Frage: *Are you going to …?* Verneinung: *isn’t / aren’t / I’m not going to …*",
@@ -52,7 +59,7 @@ TH.start({
         {w:["What","are","you","going","to","do","?"], hint:"🇩🇪 Was hast du vor? / Was wirst du machen?"},
         {w:["They","aren't","going","to","sail","today"], alt:[["Today","they","aren't","going","to","sail"]], hint:"🇩🇪 Sie werden heute nicht segeln."}
       ]},
-    { id:"look", typ:"quiz", icon:"⛈️", titel:"What’s going to happen?", art:"Plans & clear signs · quiz",
+    { id:"look", lernen:"going", typ:"quiz", icon:"⛈️", titel:"What’s going to happen?", art:"Plans & clear signs · quiz",
       anleitung:"Look at the situation and choose the right sentence.",
       anleitungDe:"Schau dir die Situation an und wähle den richtigen Satz.",
       tipp:"*going to* für Pläne (*I’ve bought a ticket.*) und wenn man schon sieht, was gleich passiert (*Look at the clouds!*).",

@@ -345,7 +345,7 @@ function learnScreen(l){
     return pool.sort((a,b)=>score(b)-score(a))[0] || null; }catch(e){ return null; } }
   function sayTTS(f, then){
     if(!hasTTS){ then && then(); return; }
-    try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(plain((f.titel?f.titel+". ":"")+(f.text||"")));
+    try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(plain((f.titel?f.titel+". ":"")+(f.text||"")+(f.bsp?" "+f.bsp.join(" "):"")));
       const v = voiceFor(); if(v) u.voice = v; u.lang = v ? v.lang : ACC; u.rate = .92;
       u.onend = () => then && then(); speechSynthesis.speak(u); }catch(e){ then && then(); }
   }
@@ -379,7 +379,16 @@ function learnScreen(l){
     const prev = F[i]; i = k; const f = F[i]; cancelAnimationFrame(raf); hush();
     const vb = $("#lnVoice"); if(vb) vb.hidden = !!f.video;
     const st = $("#lnStage");
-    st.innerHTML = f.video
+    // Regel-Folie (Grammatik): Formel als Bausteine, Beispiele mit ✔, typischer Fehler mit ✘, kurze deutsche Regel immer sichtbar
+    const ruleSlide = !f.video && (f.formel || f.bsp);
+    if(ruleSlide){ const chips = row => `<div class="rl-f">${row.split(/\s*\|\s*/).map((c,n)=> /^(\+|→|=)$/.test(c) ? `<span class="rl-p">${c}</span>` : `<span class="rl-c rl-c${n%4}">${rich(c)}</span>`).join("")}</div>`;
+      st.innerHTML = `<div class="rl">
+        <h2 class="disp ln-t"><span class="rl-i" aria-hidden="true">${f.bild||"📌"}</span>${rich(f.titel||"")}</h2>
+        ${f.text?`<p class="rl-x">${rich(f.text)}</p>`:""}
+        ${[].concat(f.formel||[]).map(chips).join("")}
+        ${f.bsp?`<ul class="rl-b">${f.bsp.map(b=>`<li><span class="rl-ok" aria-hidden="true">✔</span><span>${rich(b)}</span></li>`).join("")}${[].concat(f.falsch||[]).map(b=>`<li class="no"><span class="rl-no" aria-hidden="true">✘</span><span>${rich(b)}</span></li>`).join("")}</ul>`:""}
+        ${f.de?`<p class="rl-de">${FLAG_DE}<span>${rich(f.de)}</span></p>`:""}</div>`; }
+    else st.innerHTML = f.video
       ? `<div class="ln-video"><div class="ln-vbox" id="lnV"><button class="ln-play" data-yt="${esc(f.video)}" aria-label="Play video">▶</button><p>${T.videoNote}</p></div>
           <div class="ln-body"><h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div></div>`
       : `<div class="ln-art"><span>${f.bild||"📌"}</span></div>

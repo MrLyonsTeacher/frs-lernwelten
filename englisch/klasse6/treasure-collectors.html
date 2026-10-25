@@ -22,14 +22,21 @@ TH.start({
   k:6, kat:"grammar", id:"pp6", icon:"💎", kartenSymbol:"🐚",
   titel:"Treasure Collectors", untertitel:"Present perfect: statements, negatives, questions",
   text:"What have you ever found under the sea? Learn have/has + past participle and collect the treasures of the reef.",
+  lernen: {
+    pp: { titel:"The present perfect", folien:[
+      {"bild": "💎", "titel": "Something happened – it matters now", "formel": ["Person | have / has | 3. Form"], "bsp": ["I **have found** a shell.", "She **has seen** a whale."], "de": "Present perfect: **have/has + 3. Form**. Wann genau, ist nicht wichtig."},
+      {"bild": "✏️", "titel": "The 3rd form", "bsp": ["play → play**ed** (regelmäßig)", "go → **gone**, see → **seen**, eat → **eaten**"], "de": "Regelmäßig: **-ed** · unregelmäßig: 3. Spalte der Verbliste."},
+      {"bild": "🚫", "titel": "Negatives and questions", "bsp": ["I **haven’t** cleaned the boat.", "**Have** you **ever** swum with dolphins?", "He has **never** been to Spain."], "de": "Verneinung: haven’t/hasn’t. Frage: **Have/Has** nach vorne. Signalwörter: ever, never, already, just."}
+    ]}
+  },
   levels: [
-    { id:"pearls", typ:"memory", icon:"🦪", titel:"Pearl Pairs", art:"Past participles · memory",
+    { id:"pearls", lernen:"pp", typ:"memory", icon:"🦪", titel:"Pearl Pairs", art:"Past participles · memory",
       anleitung:"Find the pairs: **verb + past participle** (3rd form). Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Verb + 3. Form** (past participle). Je weniger Züge, desto mehr Flaggen.",
       tipp:"Regelmäßige Verben: 3. Form mit -ed (*played*). Unregelmäßige musst du lernen: *go – went – gone*.",
       paare:[ {a:"see", b:"seen"}, {a:"go", b:"gone"}, {a:"eat", b:"eaten"}, {a:"write", b:"written"},
               {a:"be", b:"been"}, {a:"do", b:"done"}, {a:"swim", b:"swum"}, {a:"take", b:"taken"} ]},
-    { id:"hashave", typ:"sortieren", icon:"⚖️", titel:"Has or have?", art:"have / has · sort",
+    { id:"hashave", lernen:"pp", typ:"sortieren", icon:"⚖️", titel:"Has or have?", art:"have / has · sort",
       anleitung:"Which word fits: **have** or **has**? Tap the right box.",
       anleitungDe:"Welches Wort passt: **have** oder **has**? Tippe auf das richtige Kästchen.",
       tipp:"*has* bei he, she, it (und bei einer Person/Sache). *have* bei I, you, we, they.",
@@ -44,7 +51,7 @@ TH.start({
         {t:"___ you ever swum with dolphins?", k:0, e:"Question with **you** → **Have** you …?"}, {t:"___ he eaten his lunch?", k:1, e:"Question with **he** → **Has** he …?"},
         {t:"My friends ___ gone home.", k:0, e:"*My friends* = they → **have**."}
       ]},
-    { id:"rush", regel:"Present perfect braucht die **3. Form**: go → **gone**, see → **seen**, eat → **eaten** …", typ:"rush", icon:"🐬", titel:"Dolphin Dash", art:"Speed game · 60 seconds",
+    { id:"rush", lernen:"pp", regel:"Present perfect braucht die **3. Form**: go → **gone**, see → **seen**, eat → **eaten** …", typ:"rush", icon:"🐬", titel:"Dolphin Dash", art:"Speed game · 60 seconds",
       anleitung:"Choose the right **past participle** (3rd form) – fast! **Goal: 12** in 60 seconds.",
       anleitungDe:"Wähle schnell die richtige **3. Form** (past participle)! **Ziel: 12 richtige** in 60 Sekunden.",
       tipp:"Bei unregelmäßigen Verben ist die 3. Form oft anders als die 2. Form: *write – wrote – written*.",
@@ -59,7 +66,7 @@ TH.start({
         {q:"try", o:["tried","tryed","tryen"], c:0}, {q:"win", o:["won","winned","wan"], c:0}, {q:"lose", o:["lost","losed","losen"], c:0},
         {q:"speak", o:["spoken","spoke","speaked"], c:0}, {q:"drink", o:["drunk","drank","drinked"], c:0}, {q:"fly", o:["flown","flew","flied"], c:0}
       ]},
-    { id:"chest", regel:"Present perfect: **have/has + 3. Form** (She has found). Verneinung: haven’t/hasn’t. Frage: **Have/Has + Person + 3. Form?**", typ:"satzbau", icon:"🧰", titel:"Treasure Chest Sentences", art:"Sentence builder · statements, negatives, questions",
+    { id:"chest", lernen:"pp", regel:"Present perfect: **have/has + 3. Form** (She has found). Verneinung: haven’t/hasn’t. Frage: **Have/Has + Person + 3. Form?**", typ:"satzbau", icon:"🧰", titel:"Treasure Chest Sentences", art:"Sentence builder · statements, negatives, questions",
       anleitung:"Build the sentence: **have / has + past participle**.",
       anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst: **have / has + 3. Form**.",
       tipp:"Verneinung: *haven’t / hasn’t* + 3. Form. Frage: *Have / Has* + Person + 3. Form …? *ever* und *never* stehen vor der 3. Form.",
@@ -72,7 +79,7 @@ TH.start({
         {w:["He","hasn't","been","to","London"], hint:"🇩🇪 Er ist (noch) nicht in London gewesen."},
         {w:["Has","she","ever","swum","in","the","sea","?"], hint:"🇩🇪 Ist sie jemals im Meer geschwommen?"}
       ]},
-    { id:"ever", typ:"quiz", icon:"🐙", titel:"Have you ever …?", art:"Questions & short answers · quiz",
+    { id:"ever", lernen:"pp", typ:"quiz", icon:"🐙", titel:"Have you ever …?", art:"Questions & short answers · quiz",
       anleitung:"Choose the right answer.",
       anleitungDe:"Wähle die richtige Antwort.",
       tipp:"Kurzantworten: *Yes, I have. / No, I haven’t.* – *Yes, she has. / No, she hasn’t.*",

@@ -22,14 +22,21 @@ TH.start({
   k:6, kat:"grammar", id:"wf6", icon:"🔮", kartenSymbol:"🔮",
   titel:"Ocean Oracle", untertitel:"will-future: predictions",
   text:"The old sea oracle can see the future. What will happen? Learn will and won’t and make your own predictions.",
+  lernen: {
+    will: { titel:"will – predictions", folien:[
+      {"bild": "🔮", "titel": "Saying what will happen", "formel": ["Person | will | Grundform"], "bsp": ["I think it **will rain** tomorrow.", "Robots **will clean** our houses."], "de": "Vorhersage: **will + Grundform** – für alle Personen gleich."},
+      {"bild": "✂️", "titel": "Short forms", "formel": ["I will | = | I’ll", "will not | = | won’t"], "bsp": ["**I’ll** help you.", "We **won’t** go to school on Saturday."], "de": "Kurzformen: **’ll** und **won’t**."},
+      {"bild": "❓", "titel": "Questions", "formel": ["(What) | Will | Person | Grundform?"], "bsp": ["**Will** you help me? – Yes, I **will**.", "What **will** the weather be like?"], "de": "Frage: **Will** nach vorne."}
+    ]}
+  },
   levels: [
-    { id:"short", typ:"memory", icon:"🫧", titel:"Bubble Pairs", art:"Short forms · memory",
+    { id:"short", lernen:"will", typ:"memory", icon:"🫧", titel:"Bubble Pairs", art:"Short forms · memory",
       anleitung:"Find the pairs: **long form + short form**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Langform + Kurzform**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"*will* wird zu *’ll*: I’ll, she’ll … *will not* wird zu *won’t*.",
       paare:[ {a:"I will", b:"I'll"}, {a:"will not", b:"won't"}, {a:"you will", b:"you'll"}, {a:"she will", b:"she'll"},
               {a:"we will", b:"we'll"}, {a:"they will", b:"they'll"}, {a:"it will", b:"it'll"}, {a:"he will", b:"he'll"} ]},
-    { id:"when", typ:"swipe", icon:"⏳", titel:"Past or Future?", art:"Signal words · swipe",
+    { id:"when", lernen:"will", typ:"swipe", icon:"⏳", titel:"Past or Future?", art:"Signal words · swipe",
       anleitung:"Past or future? Swipe **right for Future** and **left for Past**.",
       anleitungDe:"Vergangenheit oder Zukunft? Wische nach **rechts für Future** (Zukunft) und nach **links für Past** (Vergangenheit).",
       tipp:"Zukunft: tomorrow, next …, soon, in 2050. Vergangenheit: yesterday, last …, … ago.",
@@ -41,7 +48,7 @@ TH.start({
         {t:"soon", r:"r", e:"**soon** = bald → future."}, {t:"in 1912", r:"l", e:"A year in the past → past."},
         {t:"one day", r:"r", e:"**one day** = eines Tages → future."}, {t:"when I was little", r:"l", e:"**when I was …** → past."}
       ]},
-    { id:"predict", typ:"quiz", icon:"🌊", titel:"The Oracle Predicts", art:"will / won’t · quiz",
+    { id:"predict", lernen:"will", typ:"quiz", icon:"🌊", titel:"The Oracle Predicts", art:"will / won’t · quiz",
       anleitung:"Choose the right words for the oracle’s prediction.",
       anleitungDe:"Wähle die richtigen Wörter für die Vorhersage des Orakels.",
       tipp:"*will* + Grundform: *it will rain*. Verneinung: *won’t* + Grundform. Nie: ~~will rains~~ oder ~~will to rain~~.",
@@ -55,7 +62,7 @@ TH.start({
         {q:"I’m sure you **___** the test. You learned a lot!", o:["will pass","will passed","pass will"], c:0, e:"**will pass**."},
         {q:"What **___** the weather be like at the weekend?", o:["will","is","does"], c:0, e:"Question word + **will** + subject + base form: What **will** the weather **be** like?"}
       ]},
-    { id:"build", regel:"Zukunft: **will + Grundform** (it will rain). Verneinung: **won’t**. Frage: **Will + Person + Grundform?**", typ:"satzbau", icon:"🐚", titel:"Message in a Shell", art:"Sentence builder",
+    { id:"build", lernen:"will", regel:"Zukunft: **will + Grundform** (it will rain). Verneinung: **won’t**. Frage: **Will + Person + Grundform?**", typ:"satzbau", icon:"🐚", titel:"Message in a Shell", art:"Sentence builder",
       anleitung:"Build the oracle’s sentence with **will** or **won’t**.",
       anleitungDe:"Bau den Satz des Orakels mit **will** oder **won’t**, indem du die Wörter in der richtigen Reihenfolge antippst.",
       tipp:"Aussage: Person + *will* + Grundform. Frage: *Will* + Person + Grundform …?",

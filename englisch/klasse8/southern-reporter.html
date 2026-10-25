@@ -24,12 +24,10 @@ TH.start({
   text:"You are a reporter on a trip through the South. Tell your readers what people said – with reported speech.",
   lernen: {
     rep: { titel:"Reported speech", folien:[
-      {bild:"💬", titel:"What is reported speech?", text:"Direct speech: *“I like New York,” she says.* – Reported speech: *She says (that) she **likes** New York.* We report what somebody said.", de:"Mit **indirekter Rede** gibt man wieder, was jemand gesagt hat."},
-      {bild:"▶️", titel:"Without backshift", text:"If the reporting verb is in the **present** (*says, tells, wants to know*), the tense **does not change**: *He says the jungle trail **sounds** interesting.*", de:"Steht das einleitende Verb in der **Gegenwart** (says), bleibt die Zeit **gleich**."},
-      {bild:"⏪", titel:"With backshift", text:"If the reporting verb is in the **past** (*said, told, asked*), the tense goes **one step back**: *“I **have** a problem.” → He said (that) he **had** a problem.*", de:"Steht das einleitende Verb in der **Vergangenheit** (said), rückt die Zeit **einen Schritt zurück**."},
-      {bild:"📋", titel:"Backshift table", text:"am/is → **was** · present → **past** · present progressive → **past progressive** · past / present perfect → **past perfect** · will → **would** · can → **could**", de:"Zeitverschiebung: is → was, present → past, will → would, can → could, past/present perfect → past perfect."},
-      {bild:"👉", titel:"Pronouns and places change", text:"*“**I** love **my** dog.” → She said **she** loved **her** dog.* Often *here → there, today → that day, tomorrow → the next day*.", de:"Auch Pronomen und Orts-/Zeitangaben ändern sich: I → she, here → there, tomorrow → the next day."},
-      {bild:"❓", titel:"Reported questions", text:"*“Can your dad drive us?” → He wants to know **if** your dad **can** drive us.* – No question order, no question mark!", de:"Fragen: mit **if/whether** oder Fragewort – **ohne** Fragestellung und ohne Fragezeichen."}
+      {"bild": "🗣️", "titel": "says → no change", "bsp": ["“I like jazz.” → She **says** she **likes** jazz."], "de": "Einleitung in der **Gegenwart** (says) → Zeit bleibt gleich (nur Person anpassen)."},
+      {"bild": "⏪", "titel": "said → one step back", "formel": ["am / is | → | was", "present | → | past", "will | → | would", "can | → | could", "past / have done | → | had done"], "bsp": ["“I **have** a problem.” → He said he **had** a problem."], "de": "Einleitung in der **Vergangenheit** (said, told) → Zeit eine Stufe zurück."},
+      {"bild": "🔁", "titel": "Pronouns and places", "bsp": ["“**I** love **my** dog.” → She said **she** loved **her** dog.", "here → **there**, tomorrow → **the next day**"], "de": "Pronomen, Orte und Zeiten passen sich an."},
+      {"bild": "❓", "titel": "Reported questions", "formel": ["asked | if / Fragewort | Person | Verb"], "bsp": ["“Is it far?” → He asked **if** it **was** far.", "She asked **where** I **lived**."], "falsch": ["She asked where ~~did I live~~."], "de": "Indirekte Frage: **if** oder Fragewort – normale Wortstellung, kein Fragezeichen."}
     ]}
   },
   levels: [

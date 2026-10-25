@@ -22,8 +22,16 @@ TH.start({
   k:6, kat:"grammar", id:"spn6", icon:"🔎", kartenSymbol:"⚓",
   titel:"Shipwreck Detectives", untertitel:"Simple past: was/were, didn’t, Did …?",
   text:"What happened to the old ship? Ask questions, find the mistakes and solve the case with was/were, didn’t and Did …?",
+  lernen: {
+    neg: { titel:"was/were, didn’t, Did …?", folien:[
+      {"bild": "🚫", "titel": "Negatives: didn’t", "formel": ["Person | didn’t | Grundform"], "bsp": ["I **didn’t play** football.", "She **didn’t go** to school."], "falsch": ["She didn’t ~~went~~ to school."], "de": "Nach **didn’t** kommt die **Grundform** – nicht die Vergangenheitsform."},
+      {"bild": "❓", "titel": "Questions: Did …?", "formel": ["(Where) | Did | Person | Grundform …?"], "bsp": ["**Did** you **see** the film?", "Where **did** you **go**?"], "de": "Frage mit **Did** + Person + **Grundform**."},
+      {"bild": "👍", "titel": "Short answers", "bsp": ["Did you like it? – Yes, I **did**. / No, I **didn’t**.", "Was it dark? – Yes, it **was**. / No, it **wasn’t**."], "de": "Kurzantwort mit **did/didn’t** oder **was/wasn’t, were/weren’t**."},
+      {"bild": "🏰", "titel": "wasn’t / weren’t", "formel": ["I / he / she / it | wasn’t", "you / we / they | weren’t"], "bsp": ["The sea **wasn’t** calm.", "**Were** you on the ship?"], "de": "Bei was/were **kein** did: ~~didn’t be~~."}
+    ]}
+  },
   levels: [
-    { id:"waswere", typ:"sortieren", icon:"⚖️", titel:"Was or were?", art:"to be · sort",
+    { id:"waswere", lernen:"neg", typ:"sortieren", icon:"⚖️", titel:"Was or were?", art:"to be · sort",
       anleitung:"Which word fits in the gap: **was** or **were**? Tap the right box.",
       anleitungDe:"Welches Wort passt in die Lücke: **was** oder **were**? Tippe auf das richtige Kästchen.",
       tipp:"*was* bei I, he, she, it (und bei einem Namen). *were* bei we, you, they (und bei mehreren Personen).",
@@ -38,7 +46,7 @@ TH.start({
         {t:"She ___ scared of the shark.", k:0}, {t:"They ___ in the old lighthouse.", k:1}, {t:"___ he a good sailor?", k:0, e:"Question with **he** → **Was** he …?"},
         {t:"Tom and I ___ in the same team.", k:1, e:"*Tom and I* = we → **were**."}
       ]},
-    { id:"wasnt", typ:"quiz", icon:"🧭", titel:"Captain’s Log", art:"wasn’t / weren’t · quiz",
+    { id:"wasnt", lernen:"neg", typ:"quiz", icon:"🧭", titel:"Captain’s Log", art:"wasn’t / weren’t · quiz",
       anleitung:"Choose the right form of **to be** in the simple past.",
       anleitungDe:"Wähle die richtige Form von **to be** in der Vergangenheit.",
       tipp:"Verneinung: *wasn’t* (= was not) und *weren’t* (= were not). Fragen: *Was …?* / *Were …?*",
@@ -52,7 +60,7 @@ TH.start({
         {q:"– Was the parrot loud? – Yes, it **___**.", o:["was","were","did"], c:0, e:"Short answer: Yes, it **was**."},
         {q:"Where **___** the map? – It was under the bed.", o:["was","were","did"], c:0, e:"*the map* = it → Where **was** the map?"}
       ]},
-    { id:"interview", typ:"quiz", icon:"🎙️", titel:"Interview the Witness", art:"Did …? · short answers",
+    { id:"interview", lernen:"neg", typ:"quiz", icon:"🎙️", titel:"Interview the Witness", art:"Did …? · short answers",
       anleitung:"Read the question and choose the right **short answer**.",
       anleitungDe:"Lies die Frage und wähle die richtige **Kurzantwort**.",
       tipp:"Frage mit *Did …?* → Antwort mit *did* / *didn’t*. Frage mit *Was / Were …?* → Antwort mit *was / wasn’t / were / weren’t*.",
@@ -66,7 +74,7 @@ TH.start({
         {q:"Was your sister on the boat? (✔)", o:["Yes, she was.","Yes, she did.","Yes, she were."], c:0, e:"Was …? → Yes, she **was**."},
         {q:"Did the dog bark? (✘)", o:["No, it didn't.","No, it doesn't.","No, it wasn't."], c:0, e:"Did …? → No, it **didn’t**."}
       ]},
-    { id:"pirate", regel:"Verneinung: **didn’t + Grundform** (I didn’t play). Frage: **Did + Person + Grundform?** (Did you see …?)", typ:"satzbau", icon:"🏴‍☠️", titel:"Pirate Code", art:"Sentence builder · didn’t & Did …?",
+    { id:"pirate", lernen:"neg", regel:"Verneinung: **didn’t + Grundform** (I didn’t play). Frage: **Did + Person + Grundform?** (Did you see …?)", typ:"satzbau", icon:"🏴‍☠️", titel:"Pirate Code", art:"Sentence builder · didn’t & Did …?",
       anleitung:"Build the sentence. After **did / didn’t** the verb stays in its base form: *I didn’t go*.",
       anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst. Nach **did / didn’t** steht das Verb in der Grundform: *I didn’t go* – nicht ~~I didn’t went~~.",
       tipp:"Verneinung: didn’t + Grundform. Frage: Did + Person + Grundform …?",
@@ -79,7 +87,7 @@ TH.start({
         {w:["We","didn't","have","breakfast","this","morning"], alt:[["This","morning","we","didn't","have","breakfast"]], hint:"🇩🇪 Wir haben heute Morgen nicht gefrühstückt."},
         {w:["Where","did","you","go","last","weekend","?"], hint:"🇩🇪 Wohin bist du letztes Wochenende gegangen?"}
       ]},
-    { id:"mistake", typ:"quiz", icon:"🕵️", titel:"Spot the Mistake", art:"Quiz · which sentence is right?",
+    { id:"mistake", lernen:"neg", typ:"quiz", icon:"🕵️", titel:"Spot the Mistake", art:"Quiz · which sentence is right?",
       anleitung:"Only **one** sentence is correct. Find it!",
       anleitungDe:"Nur **ein** Satz ist richtig. Finde ihn!",
       tipp:"Achte auf did/didn’t + Grundform, auf was/were und auf die Schreibweise.",

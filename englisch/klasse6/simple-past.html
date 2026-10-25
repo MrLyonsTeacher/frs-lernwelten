@@ -22,8 +22,16 @@ TH.start({
   k:6, kat:"grammar", id:"sp6", icon:"⏰", kartenSymbol:"⏳",
   titel:"Time Travel Agency", untertitel:"Simple past",
   text:"Travel back in time: signal words, -ed forms and irregular verbs. Collect British flags and win a medal!",
+  lernen: {
+    past: { titel:"The simple past", folien:[
+      {"bild": "⏳", "titel": "Finished in the past", "text": "Use it for things that happened **yesterday, last week, in 2010, … ago**.", "bsp": ["I **played** football yesterday.", "We **went** to London last summer."], "de": "Simple past: abgeschlossen in der Vergangenheit. Signalwörter: yesterday, last …, … ago."},
+      {"bild": "➕", "titel": "Regular verbs: -ed", "formel": ["Verb | + | **-ed**"], "bsp": ["play → play**ed**, live → live**d**", "study → stud**ied**, stop → sto**pped**"], "de": "Regelmäßig: **-ed** · nach e nur **-d** · Mitlaut + y → **-ied** · kurzes Wort: letzten Buchstaben **verdoppeln**."},
+      {"bild": "⭐", "titel": "Irregular verbs", "bsp": ["go → **went**, see → **saw**", "eat → **ate**, have → **had**"], "de": "Unregelmäßige Verben muss man **auswendig** lernen. Die Form ist für alle Personen gleich."},
+      {"bild": "🏰", "titel": "was / were", "formel": ["I / he / she / it | was", "you / we / they | were"], "bsp": ["I **was** at home.", "They **were** tired."], "de": "to be in der Vergangenheit: **was** oder **were**."}
+    ]}
+  },
   levels: [
-    { id:"signal", typ:"swipe", icon:"🦖", titel:"Dino Valley", art:"Signal words · swipe",
+    { id:"signal", lernen:"past", typ:"swipe", icon:"🦖", titel:"Dino Valley", art:"Signal words · swipe",
       anleitung:"Past or present? Swipe **right for Past** and **left for Present**.",
       anleitungDe:"Vergangenheit oder Gegenwart? Wische nach **rechts für Past** (Vergangenheit) und nach **links für Present** (Gegenwart). Du kannst auch auf die Knöpfe tippen.",
       tipp:"Signalwörter wie *yesterday* oder *ago* zeigen dir: Das ist Vergangenheit.",
@@ -42,7 +50,7 @@ TH.start({
         {t:"often", r:"l", e:"**Often** → a habit: simple present."},
         {t:"an hour ago", r:"r", e:"**ago** → simple past."}
       ]},
-    { id:"edlab", typ:"sortieren", icon:"🏛️", titel:"Roman -ed Lab", art:"Regular verbs · sort",
+    { id:"edlab", lernen:"past", typ:"sortieren", icon:"🏛️", titel:"Roman -ed Lab", art:"Regular verbs · sort",
       anleitung:"How do you write the **-ed** form? Tap the right box.",
       anleitungDe:"Wie schreibt man die **-ed**-Form? Tippe auf das richtige Kästchen.",
       tipp:"Achte auf das Ende des Verbs: -e, Konsonant + y, oder kurzes Verb mit Vokal + Konsonant.",
@@ -59,7 +67,7 @@ TH.start({
         {t:"study", k:2}, {t:"carry", k:2}, {t:"cry", k:2}, {t:"try", k:2},
         {t:"stop", k:3}, {t:"plan", k:3}, {t:"drop", k:3}, {t:"hug", k:3}
       ]},
-    { id:"memory", typ:"memory", icon:"🏰", titel:"Castle Memory", art:"Irregular verbs · memory",
+    { id:"memory", lernen:"past", typ:"memory", icon:"🏰", titel:"Castle Memory", art:"Irregular verbs · memory",
       anleitung:"Find the pairs: **verb + past form**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Verb + Vergangenheitsform**. Je weniger Züge du brauchst, desto mehr Flaggen bekommst du.",
       tipp:"Diese Verben sind unregelmäßig. Sie bekommen kein -ed – du musst sie auswendig lernen.",
@@ -67,7 +75,7 @@ TH.start({
         {a:"go", b:"went"}, {a:"see", b:"saw"}, {a:"eat", b:"ate"}, {a:"have", b:"had"},
         {a:"buy", b:"bought"}, {a:"take", b:"took"}, {a:"come", b:"came"}, {a:"write", b:"wrote"}
       ]},
-    { id:"rush", regel:"Unregelmäßige Verben muss man lernen: go → **went**, see → **saw**, eat → **ate** …", typ:"rush", icon:"🚀", titel:"Moon Rush", art:"Speed game · 60 seconds",
+    { id:"rush", lernen:"past", regel:"Unregelmäßige Verben muss man lernen: go → **went**, see → **saw**, eat → **ate** …", typ:"rush", icon:"🚀", titel:"Moon Rush", art:"Speed game · 60 seconds",
       anleitung:"Choose the right **past form** – fast! **Goal: 12** in 60 seconds.",
       anleitungDe:"Wähle so schnell wie möglich die richtige **Vergangenheitsform**! **Ziel: 12 richtige** in 60 Sekunden.",
       tipp:"Regelmäßig oder unregelmäßig? Achte genau auf die Schreibweise.",

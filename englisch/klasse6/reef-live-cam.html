@@ -22,8 +22,16 @@ TH.start({
   k:6, kat:"grammar", id:"pg6", icon:"📹", kartenSymbol:"🐠",
   titel:"Reef Live Cam", untertitel:"Present progressive: statements, negatives, questions",
   text:"Switch on the live cam! What is happening on the reef right now? Use am / is / are + -ing.",
+  lernen: {
+    ing: { titel:"The present progressive", folien:[
+      {"bild": "📹", "titel": "Happening right now", "formel": ["Person | am / is / are | Verb**-ing**"], "bsp": ["Look! The whale **is singing**.", "We **are diving** near the reef."], "de": "Gerade jetzt: **am/is/are + -ing**. Signalwörter: now, Look!, at the moment."},
+      {"bild": "✏️", "titel": "Spelling", "formel": ["make → mak**ing**", "swim → swi**mming**", "lie → l**ying**"], "bsp": ["dance → danc**ing**, run → ru**nning**"], "de": "Stummes e fällt weg · kurzes Wort: Buchstaben verdoppeln · ie → **y**."},
+      {"bild": "🚫", "titel": "Negatives and questions", "bsp": ["I**’m not** sleep**ing**.", "**Are** the children swimm**ing**? – Yes, they **are**.", "What **is** the octopus do**ing**?"], "de": "Verneinung mit **not**, Frage: **am/is/are** nach vorne."},
+      {"bild": "⚖️", "titel": "Now or always?", "bsp": ["Dolphins **eat** fish. (always)", "The dolphin **is eating** now. (right now)"], "de": "Immer/oft → simple present · gerade jetzt → present progressive."}
+    ]}
+  },
   levels: [
-    { id:"ing", typ:"sortieren", icon:"✍️", titel:"-ing Workshop", art:"Spelling · sort",
+    { id:"ing", lernen:"ing", typ:"sortieren", icon:"✍️", titel:"-ing Workshop", art:"Spelling · sort",
       anleitung:"How do you write the **-ing** form? Tap the right box.",
       anleitungDe:"Wie schreibt man die **-ing**-Form? Tippe auf das richtige Kästchen.",
       tipp:"Stummes -e fällt weg (make → making). Kurzer Vokal + Konsonant: Konsonant verdoppeln (swim → swimming). -ie wird zu -y (lie → lying).",
@@ -39,7 +47,7 @@ TH.start({
         {t:"swim", k:2}, {t:"run", k:2}, {t:"sit", k:2}, {t:"get", k:2},
         {t:"lie", k:3}, {t:"die", k:3}, {t:"tie", k:3}, {t:"dive", k:1, e:"dive ends in -e → **diving**."}
       ]},
-    { id:"nowvs", typ:"swipe", icon:"⏱️", titel:"Now or Always?", art:"Signal words · swipe",
+    { id:"nowvs", lernen:"ing", typ:"swipe", icon:"⏱️", titel:"Now or Always?", art:"Signal words · swipe",
       anleitung:"Right now or a habit? Swipe **right for Now (-ing)** and **left for Always (simple present)**.",
       anleitungDe:"Passiert es gerade oder immer wieder? Wische nach **rechts für Now** (present progressive) und nach **links für Always** (simple present).",
       tipp:"Signalwörter für *gerade jetzt*: now, right now, at the moment, Look!, Listen!",
@@ -56,7 +64,7 @@ TH.start({
         {t:"now", r:"r", e:"**now** → present progressive."},
         {t:"often", r:"l", e:"**often** → simple present."}
       ]},
-    { id:"amisare", typ:"quiz", icon:"🐢", titel:"Live from the Reef", art:"am / is / are · quiz",
+    { id:"amisare", lernen:"ing", typ:"quiz", icon:"🐢", titel:"Live from the Reef", art:"am / is / are · quiz",
       anleitung:"What is happening on the live cam? Choose the right form.",
       anleitungDe:"Was passiert gerade auf der Live-Kamera? Wähle die richtige Form.",
       tipp:"I **am** … · he / she / it **is** … · we / you / they **are** … + Verb mit -ing.",
@@ -70,7 +78,7 @@ TH.start({
         {q:"We **___** the octopus. It is hiding.", o:["aren't filming","isn't filming","don't filming"], c:0, e:"we → **aren’t** + -ing."},
         {q:"What **___** the shark doing?", o:["is","are","does"], c:0, e:"*the shark* = it → What **is** the shark doing?"}
       ]},
-    { id:"build", regel:"Gerade jetzt: **am/is/are + Verb-ing** (The whale is singing). Frage: **Is/Are + Person + Verb-ing?**", typ:"satzbau", icon:"🎬", titel:"Director’s Cut", art:"Sentence builder · statements, negatives, questions",
+    { id:"build", lernen:"ing", regel:"Gerade jetzt: **am/is/are + Verb-ing** (The whale is singing). Frage: **Is/Are + Person + Verb-ing?**", typ:"satzbau", icon:"🎬", titel:"Director’s Cut", art:"Sentence builder · statements, negatives, questions",
       anleitung:"Build the sentence: **am / is / are + -ing**.",
       anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst: **am / is / are + -ing**.",
       tipp:"Frage: *Is / Are* steht vorne. Verneinung: *isn’t / aren’t / I’m not*.",
@@ -83,7 +91,7 @@ TH.start({
         {w:["What","is","the","octopus","doing","?"], hint:"🇩🇪 Was macht der Tintenfisch gerade?"},
         {w:["She","isn't","wearing","a","wetsuit"], hint:"🇩🇪 Sie trägt (gerade) keinen Neoprenanzug."}
       ]},
-    { id:"which", typ:"quiz", icon:"🦈", titel:"Now or Every Day?", art:"Present progressive or simple present · quiz",
+    { id:"which", lernen:"ing", typ:"quiz", icon:"🦈", titel:"Now or Every Day?", art:"Present progressive or simple present · quiz",
       anleitung:"Which sentence is right? Look at the signal words.",
       anleitungDe:"Welcher Satz ist richtig? Achte auf die Signalwörter.",
       tipp:"*now, at the moment, Look!* → am/is/are + -ing. *every day, usually, often* → simple present (he/she/it: -s!).",
