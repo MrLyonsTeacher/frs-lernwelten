@@ -7,7 +7,7 @@ export function build(A){
   const STONE = ["#7A746C","#6E6862","#857F76","#645E58"];
   const T = {
     stone: noise(STONE, 6, ["#5A544E"]), deep: noise(["#5E5852","#68625A","#58524C","#6E6860"], 8, ["#4E4842"]),
-    flag: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x===0||y===0||(x===8&&y<8)||(y===8&&x>4)) ? "#3E3A36" : pick(["#8A847A","#7E786E","#948E84"])); P(g,3,5,"#5A544E"); P(g,4,6,"#5A544E"); P(g,11,12,"#5A544E"); }),
+    flag: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x===0||y===0||(x===8&&y<8)||(y===8&&x>4)) ? "#2E2A26" : pick(["#7A746A","#6E685E","#847E74","#6A645A"])); P(g,3,5,"#5A544E"); P(g,4,6,"#5A544E"); P(g,11,12,"#5A544E"); }),
     sbrick: bricks(["#8A847A","#7E786E","#948E84"], "#4E4842"), chisel: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const e=x<1||y<1||x>14||y>14, i=x>3&&x<12&&y>3&&y<12, k=x>5&&x<10&&y>5&&y<10; P(g,x,y, e?"#4E4842":k?"#A49E94":i?"#7A746A":"#8E887E"); } }),
     statue: noise(["#A8A49C","#B4B0A8","#9C988F","#ACA8A0"], 4, ["#8C887F"]),
     gold: noise(["#F5C542","#FFE27A","#E8B030","#FFD95A"]),
@@ -22,7 +22,12 @@ export function build(A){
     sapphire: crystal(["#D2E6FF","#6AA8FF","#2A62E0"]), ruby: crystal(["#FFD2DA","#FF6A80","#D2203A"]),
     goldOre: ore(STONE, ["#FFD24A","#E8A81C"]), diaOre: ore(["#3A3634","#45403C","#302C2A"], ["#8AF0FF","#3FC8E8"]),
     woolR: noise(["#B8302A","#C83A32","#A8261F"]), woolB: noise(["#2F5DA8","#3A6AC0","#244E90"]), woolY: noise(["#E8B030","#F5C542"]),
-    shroom: noise(["#5AF0FF","#8AF6FF","#2AC8E8"], 6, ["#E6FFFF"]), chain: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y, (x>5&&x<10&&(y%6<4)) ? "#5A5E66" : "rgba(0,0,0,0)"); })
+    shroom: noise(["#5AF0FF","#8AF6FF","#2AC8E8"], 6, ["#E6FFFF"]),
+    roofD: noise(["#6A2A22","#5A2420","#7A3228"]), sbrickD: bricks(["#5E5850","#6A645A","#544E48"], "#2E2A26"), tileR: noise(["#8A3A2E","#9A4434","#7A3228"]), tileB: noise(["#2E4A6A","#36567A","#28405E"]),
+    carpet: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x<2||x>13) ? "#E8B030" : ((x+y)%8===0 ? "#7A1A1A" : pick(["#A8261F","#B8302A"]))); }),
+    banR: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x<2||x>13) ? "#E8B030" : (Math.abs(x-7.5)+Math.abs(y-8)<4 ? "#E8B030" : pick(["#A8261F","#B8302A"]))); }),
+    banB: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x<2||x>13) ? "#E8B030" : (Math.abs(x-7.5)<1.2||Math.abs(y-8)<1.2 ? "#E8B030" : pick(["#2F5DA8","#3A6AC0"]))); }),
+    gear: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=Math.hypot(x-7.5,y-7.5), a=Math.atan2(y-7.5,x-7.5); P(g,x,y, d<2 ? "#3A3A40" : d<5.5 || (d<7.5 && Math.sin(a*8)>0) ? pick(["#B8862A","#C8963A"]) : "rgba(0,0,0,0)"); } }), chain: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y, (x>5&&x<10&&(y%6<4)) ? "#5A5E66" : "rgba(0,0,0,0)"); })
   };
   const blocks = {
     stone:{side:T.stone}, deep:{side:T.deep}, flag:{side:T.sbrick, top:T.flag}, sbrick:{side:T.sbrick}, chisel:{side:T.chisel, top:T.sbrick}, statue:{side:T.statue},
@@ -30,7 +35,10 @@ export function build(A){
     lava:{side:T.lava, em:1.25, anim:[.1,.06]}, glow:{side:T.glow, em:1.3, halo:[0xFFB84A,3.6,.6]}, door:{side:T.door, em:.75}, win:{side:T.win, em:1.0}, rune:{side:T.rune, top:T.sbrick, em:.6},
     amethyst:{side:T.amethyst, em:1.0}, emerald:{side:T.emerald, em:.9}, sapphire:{side:T.sapphire, em:1.0}, ruby:{side:T.ruby, em:.95},
     goldOre:{side:T.goldOre}, diaOre:{side:T.diaOre, em:.15}, woolR:{side:T.woolR}, woolB:{side:T.woolB}, woolY:{side:T.woolY}, shroom:{side:T.shroom, em:1.0},
-    chain:{side:T.chain, alpha:.99, cross:true}
+    chain:{side:T.chain, alpha:.99, cross:true},
+    sbrickD:{side:T.sbrickD}, roofD:{side:T.roofD}, tileR:{side:T.tileR}, tileB:{side:T.tileB}, carpet:{side:T.carpet}, banR:{side:T.banR}, banB:{side:T.banB},
+    lavaFall:{side:T.lava, em:1.4, anim:[0,-.5], soft:true}, lamp:{side:T.glow, em:1.4, halo:[0xFFB84A,3.2,.55]}, cyan:{side:T.shroom, em:1.2, halo:[0x5AF0FF,3,.5]},
+    gear:{side:T.gear, alpha:.99, cross:true}
   };
   const W=88, D=68, L0=5, L1=13, L2=21, TOP=54, OPEN=40;
   // Gelände: drei Terrassen, hinten die Felswand, an den Seiten Wände (vorne offen zu weiteren Höhlen)
@@ -140,6 +148,7 @@ export function build(A){
   // Laternen an Ketten von der Decke
   for(const [lx,lz,len] of [[30,20,14],[58,20,14],[44,32,10],[24,36,16],[64,36,16]]){ for(let k=0;k<len;k++) set(lx,TOP-1-k,lz,"chain"); fill(lx-1,TOP-1-len,lz-1,lx+1,TOP-2-len,lz+1,"iron"); set(lx,TOP-2-len,lz,"glow"); }
   // Steinhäuser links und rechts – damit es nach einer Stadt aussieht (Vorderseite zeigt zur Kamera)
+  const chim = [];
   const stoneHouse = (x,y,z,w,d,h,opt={}) => { const hw=Math.floor(w/2), hd=Math.floor(d/2);
     fill(x-hw-1,y,z-hd-1,x+hw+1,y,z+hd+1,"flag");
     walls(x-hw,y+1,z-hd,x+hw,y+h,z+hd,(a,b,c)=> ((a===x-hw||a===x+hw)&&(c===z-hd||c===z+hd)) || b===y+h || b===y+1 ? "chisel" : "sbrick");
@@ -147,9 +156,9 @@ export function build(A){
     if(d>=5){ set(x-hw,y+3,z,"win"); set(x+hw,y+3,z,"win"); }
     fill(x,y+1,z+hd,x,y+2,z+hd,"door"); set(x-1,y+3,z+hd,"chisel"); set(x+1,y+3,z+hd,"chisel"); set(x,y+3,z+hd,"chisel"); set(x,y+4,z+hd+1,"gold");
     set(x+(hw>2?2:1),y+3,z+hd+1,"glow");
-    const R = hd+2; for(let i=0;i<=R;i++){ const zz=R-i; for(const sg of [-1,1]) fill(x-hw-1,y+h+1+i,z+sg*zz,x+hw+1,y+h+1+i,z+sg*zz, i===R ? "gold" : (i%2?"deep":"stone"));
+    const R = hd+2; for(let i=0;i<=R;i++){ const zz=R-i; for(const sg of [-1,1]) fill(x-hw-1,y+h+1+i,z+sg*zz,x+hw+1,y+h+1+i,z+sg*zz, i===R ? "gold" : (i%2?"tileR":"roofD"));
       if(zz>0) for(const a of [-hw,hw]) fill(x+a,y+h+1+i,z-zz+1,x+a,y+h+1+i,z+zz-1, i===1 && zz>1 ? "win" : "sbrick"); }
-    fill(x+hw-1,y+h+1,z-1,x+hw-1,y+h+R+3,z-1,"sbrick"); set(x+hw-1,y+h+R+4,z-1,"glow");
+    fill(x+hw-1,y+h+1,z-1,x+hw-1,y+h+R+3,z-1,"sbrick"); set(x+hw-1,y+h+R+4,z-1,"magma"); chim.push([x+hw-.5,y+h+R+5,z-.5]);
     if(opt.balcony){ for(let a=-hw;a<=hw;a++){ set(a+x,y+h-2,z+hd+1,"chisel"); if(a%2===0) set(a+x,y+h-1,z+hd+1,"iron"); } } };
   stoneHouse(75, L1, 30, 9, 6, 7, {balcony:true});
   stoneHouse(29, L1, 30, 7, 5, 5);
@@ -191,6 +200,47 @@ export function build(A){
   for(let i=0;i<40;i++){ const x = rand()<.5 ? -20-rand()*120 : W+20+rand()*120, z = OPEN+rand()*(D-OPEN+40); const cx=Math.floor(x/3), cz=Math.floor(z/3), base=Math.ceil(fh(x,z)/3);
     const hh = 2+Math.floor(rand()*5); for(let k=0;k<hh;k++) F.set(cx,base+k,cz,"stone"); }
 
+  // ================= Mehr Details =================
+  const FN = A.fine, fs = (x,y,z,t) => FN.set(Math.round(x*2),Math.round(y*2),Math.round(z*2),t);
+  const freeAbove = (x,y,z) => !get(x,y,z) && !get(x,y+1,z);
+  // 1) Bodenmosaike auf den Plätzen (Rauten in Rot/Blau/Gold)
+  for(const [cx,cz,L,r] of [[44,59,L0,8],[44,38,L1,5],[44,Z0+18,LM,7]]) for(let x=cx-r-2;x<=cx+r+2;x++) for(let z=cz-r;z<=cz+r;z++){
+    if(get(x,L-1,z)!=="flag" || !freeAbove(x,L,z)) continue; const d=Math.abs(x-cx)+Math.abs(z-cz);
+    if(d<=r) set(x,L-1,z, d===r ? "gold" : d===r-1 ? "chisel" : (d%3===0 ? "tileR" : d%3===1 ? "tileB" : "flag")); }
+  // 2) roter Teppich von der Treppe zum Tempeltor
+  for(let z=12; z<=25; z++) for(let x=41;x<=47;x++){ if(get(x,L2-1,z) && freeAbove(x,L2,z)) set(x,L2-1,z, (x===41||x===47) ? "gold" : "carpet"); }
+  // 3) Lavarinne vor der Terrassenmauer der Unterstadt, mit Brücken an den Treppen
+  for(let x=7;x<W-7;x++){ const z=46; if(x>=36&&x<=52) continue; if(get(x,L0-1,z)==="flag" && freeAbove(x,L0,z) && freeAbove(x,L0,z+1)){ set(x,L0-1,z,"lava"); set(x,L0-1,z+1,"chisel"); set(x,L0-2,z,"chisel"); } }
+  for(const bx of [12,61]) for(let x=bx-1;x<=bx+2;x++){ fs(x,L0+.25,46,"planks"); fs(x+.5,L0+.25,46,"planks"); }
+  // 4) Lavafälle aus der Rückwand in Becken
+  for(const fx of [9,79]){ for(let y=L2; y<46; y++){ set(fx,y,10,"lavaFall"); set(fx+1,y,10,"lavaFall"); } fill(fx-2,L2-1,10,fx+3,L2-1,13,"chisel"); fill(fx-1,L2-1,10,fx+2,L2-1,12,"lava");
+    for(let y=44;y<50;y++) set(fx,y,9,null), set(fx+1,y,9,null); fill(fx-1,46,10,fx+2,46,10,"chisel"); }
+  // 5) Mächtige Säulen von der Mittelterrasse bis zur Decke, mit Ringen, Runen und Feuerschalen
+  for(const [px,pz] of [[33,31],[55,31]]){ for(let y=L1; y<TOP; y++){ const band=(y-L1)%8; disk(px,y,pz, band===0||band===7 ? 2.6 : 2, band===0||band===7 ? "chisel" : band===4 ? "rune" : (y%2?"sbrickD":"sbrick")); }
+    for(const y of [L1+8, L1+24]){ ring(px,y,pz,3.3,"iron"); for(const [a,b] of [[3,0],[-3,0],[0,3],[0,-3]]) set(px+a,y+1,pz+b,"lamp"); }
+    for(let k=0;k<5;k++) disk(px,TOP-1-k,pz,2.4+k*.9,"stone"); }
+  // Obelisken auf dem unteren Platz
+  for(const ox of [28,60]){ fill(ox-1,L0,48,ox+1,L0,50,"chisel"); for(let y=L0+1;y<L0+12;y++){ const w = y<L0+9 ? 1 : 0; fill(ox-w,y,49-w,ox+w,y,49+w, y%3===0 ? "gold" : "sbrickD"); } set(ox,L0+12,49,"gold"); fill(ox-1,L0+13,48,ox+1,L0+13,50,"iron"); set(ox,L0+14,49,"lamp"); }
+  // 6) Banner an den Terrassenmauern (feine Blöcke, hängen vor der Wand)
+  for(const [wz,yTop,yBot] of [[43.75+0.5,L1-1,L0+2],[25.75+0.5,L2-1,L1+2]]) for(let bx=10; bx<W-10; bx+=9){ if(Math.abs(bx-44)<8) continue; const t = (bx/9|0)%2 ? "banR" : "banB";
+    for(let y=yBot; y<=yTop; y+=.5) for(let k=0;k<4;k++) fs(bx+k*.5, y, wz, y===yBot ? "gold" : t); fs(bx-.5,yTop+.5,wz,"iron"); for(let k=0;k<5;k++) fs(bx-.5+k*.5,yTop+.5,wz,"iron"); }
+  // 7) Runen, Gold- und Diamantadern in den Seitenwänden
+  for(let i=0;i<260;i++){ const side = rand()<.5, x = side ? 4 : W-5, z = 2+Math.floor(rand()*(OPEN-2)), y = L2+Math.floor(rand()*(TOP-L2-2));
+    if(get(x,y,z) && !get(x+(side?1:-1),y,z)) set(x,y,z, pick(["goldOre","goldOre","diaOre","rune","sbrickD","sbrickD"])); }
+  // 8) Tropfsteine mit leuchtenden Kristallspitzen, Kristallpilze an Wänden
+  for(let i=0;i<40;i++){ const x=8+Math.floor(rand()*(W-16)), z=4+Math.floor(rand()*(OPEN-6)); if(Math.hypot(x-44,z-18)<9) continue; const top=TOP+Math.round(fbm(x*.09,z*.09)*3)-1, len=3+Math.floor(rand()*7);
+    for(let k=0;k<len;k++) set(x,top-k,z, "deep"); }
+  for(let i=0;i<60;i++){ const x=6+Math.floor(rand()*(W-12)), z=11+Math.floor(rand()*(D-12)); const t=topAt(x,z,60); if(t<0||t>L2+1) continue; if(get(x,t+1,z)) continue;
+    const near = [[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=> get(x+a,t+1,z+b) && get(x+a,t+2,z+b)); if(!near) continue;
+    set(x,t+1,z,"stem"==="x"?"log":"cyan"); if(rand()<.5) fs(x+.5,t+2.25,z,"cyan"); }
+  // 9) Zahnräder und Kran an der Mine
+  { const gx=8, gz=26, gy=L1+6; for(let a=-2;a<=2;a+=.5) for(let b=-2;b<=2;b+=.5){ const d=Math.hypot(a,b), an=Math.atan2(b,a); if(d<1.9 || (d<2.4 && Math.sin(an*8)>0)) fs(gx+.25, gy+b, gz+a, d<.5?"iron":"gold"); }
+    fill(10,L1,30,10,L1+10,30,"log"); fill(10,L1+10,30,18,L1+10,30,"log"); for(let k=1;k<7;k++) set(18,L1+10-k,30,"chain"); fill(17,L1+2,29,19,L1+3,31,"iron"); set(18,L1+4,30,"goldOre"); }
+  // 10) Laternen an den Terrassenkanten
+  for(let x=9;x<W-9;x+=6){ if(Math.abs(x-44)<8) continue; for(const [z,L] of [[44,L0],[26,L1]]) if(!get(x,L,z) && get(x,L-1,z)){ set(x,L,z,"iron"); set(x,L+1,z,"lamp"); } }
+  // 11) Ziegelbänder: jede 6. Lage der Mauern dunkler
+  for(const [, b] of A.near.V){ if(b[3]==="sbrick" && b[1]%6===0) b[3]="sbrickD"; }
+
   // Zwerge: einige laufen über die Plätze, einer schmiedet, andere stehen
   const creatures = [];
   // Fledermausschwärme fliegen ab und zu quer durch die Höhle
@@ -210,11 +260,15 @@ export function build(A){
     lights:[{pos:[44,L2+8,16], color:0xFFB84A, int:700, dist:46},
             {pos:[S.country.x,L0+4,S.country.z-2], color:0xFF7A2A, int:340, dist:30, flicker:true},
             {pos:[S.vocabulary.x,L1+5,S.vocabulary.z], color:0xB88AFF, int:260, dist:26},
-            {pos:[44,L0+8,52], color:0xFFC870, int:300, dist:40}],
+            {pos:[44,L0+8,52], color:0xFFC870, int:300, dist:40},
+            {pos:[10,L2+6,12], color:0xFF7A2A, int:220, dist:26, flicker:true}, {pos:[80,L2+6,12], color:0xFF7A2A, int:220, dist:26, flicker:true},
+            {pos:[33,L1+10,34], color:0xFFB050, int:140, dist:20}, {pos:[55,L1+10,34], color:0xFFB050, int:140, dist:20}],
     rays:{n:10, color:0xFFE6B8, area:[38,50,12,26], y:40, len:70},
     particles:[{n:420, area:[0,W,3,TOP,0,D], vy:0, wob:.25, color:0xFFE6A8, size:.16, opacity:.8, add:true, twinkle:true},
                {n:200, area:[S.country.x-3,S.country.x+3,L0+8,L0+32,S.country.z-8,S.country.z-4], vy:3, wob:.5, color:0xFF9A3A, size:.25, add:true}],
-    puffs:[{n:8, pos:[S.country.x,L0+31,S.country.z-6], dx:2, dy:14, dz:2, s0:3, s1:8, color:0x4A4040, opacity:.4, speed:.05}],
+    puffs:[{n:8, pos:[S.country.x,L0+31,S.country.z-6], dx:2, dy:14, dz:2, s0:3, s1:8, color:0x4A4040, opacity:.4, speed:.05},
+           ...chim.map(c=>({n:3, pos:c, dx:1, dy:7, dz:-1, s0:1, s1:3.5, color:0x4A4440, opacity:.35, speed:.07, spread:.5})),
+           ...[9,79].map(fx=>({n:5, pos:[fx+1,L2,11.5], dx:0, dy:12, dz:2, s0:2, s1:6, color:0xFF8A4A, opacity:.18, speed:.08, spread:1.5, add:true}))],
     home:{pos:[W/2,62,D+84], look:[W/2,12,D/2+2]}, homePortrait:{pos:[W/2,74,D+130], look:[W/2,14,D/2]},
     ui:{bg:"rgba(26,20,30,.9)", border:"#C9A6FF", glow:"rgba(184,138,255,.5)", text:"#F4EEFF", sub:"#C8BCD8", accent:"#FFC24A", "accent-ink":"#24180A", chip:"rgba(20,14,24,.82)"}
   };
