@@ -204,6 +204,30 @@ export async function start(o){
     scene.add(outer); creatures.push({cr, outer, movers});
   }
 
+  // Sicherheits-Höhenfeld für frei fliegende Tiere: höchster Block in der Umgebung (+ Spannweite), weich geglättet
+  const safeFields = new Map();
+  function safeField(R){ if(safeFields.has(R)) return safeFields.get(R);
+    const pad = R+12, x0 = -pad-60, z0 = -pad-60, X = world.W+2*pad+120, Z = world.D+2*pad+120, top = new Float32Array(X*Z).fill(-50);
+    const put = (x,z,y) => { const i=Math.round(x)-x0, k=Math.round(z)-z0; if(i>=0&&k>=0&&i<X&&k<Z){ const j=k*X+i; if(y>top[j]) top[j]=y; } };
+    for(const [, b] of api.near.V) put(b[0], b[2], b[1]+1);
+    const fc = world.farCell || api.far.cell || 4; for(const [, b] of api.far.V) for(let a=0;a<fc;a++) for(let c=0;c<fc;c++) put(b[0]*fc+a, b[2]*fc+c, (b[1]+1)*fc);
+    const maxPass = (src, r, horiz) => { const out = new Float32Array(src.length);
+      for(let k=0;k<Z;k++) for(let i=0;i<X;i++){ let m=-50; for(let d=-r; d<=r; d++){ const ii = horiz ? i+d : i, kk = horiz ? k : k+d; if(ii<0||kk<0||ii>=X||kk>=Z) continue; const v=src[kk*X+ii]; if(v>m) m=v; } out[k*X+i]=m; } return out; };
+    const box = (src, r, horiz) => { const out = new Float32Array(src.length);
+      for(let k=0;k<Z;k++) for(let i=0;i<X;i++){ let sum=0, n=0; for(let d=-r; d<=r; d++){ const ii = horiz ? i+d : i, kk = horiz ? k : k+d; if(ii<0||kk<0||ii>=X||kk>=Z) continue; sum+=src[kk*X+ii]; n++; } out[k*X+i]=sum/n; } return out; };
+    let f = maxPass(maxPass(top, R+6, true), R+6, false); f = box(box(f, 6, true), 6, false);
+    const get = (x,z) => { const i=Math.round(x)-x0, k=Math.round(z)-z0; if(i<0||k<0||i>=X||k>=Z) return -50; return f[k*X+i]; };
+    safeFields.set(R, get); return get; }
+  for(const c of creatures) if(c.cr.orbit && c.cr.orbit.wander) c.safe = safeField(Math.round(c.cr.orbit.wander.span || 12));
+
+  // Prüfung (nur im Testmodus): kommt ein Bodentier mit seiner Bahn einem Block zu nahe?
+  if(o.still){ window.__pathHits = [];
+    creatures.forEach((c,ci)=>{ const ob=c.cr.orbit; if(!ob || !ob.cycle || ob.wander) return; const [cx,cy,cz]=ob.c, [rx,rz]=ob.r, rad=c.cr.clearR||3; let hits=0; const types={};
+      for(let k=0;k<240;k++){ const t=k/240*Math.PI*2, x=cx+Math.cos(t)*rx, z=cz+Math.sin(t)*rz;
+        let hit=false; for(let a=-rad;a<=rad&&!hit;a++) for(let b=-rad;b<=rad&&!hit;b++) for(let y=Math.ceil(cy);y<cy+(c.cr.clearH||5)&&!hit;y++) if(a*a+b*b<=rad*rad && api.near.get(Math.round(x+a),y,Math.round(z+b))){ hit=true; const tp=api.near.get(Math.round(x+a),y,Math.round(z+b)); types[tp]=(types[tp]||0)+1; }
+        if(hit) hits++; }
+      window.__pathHits.push([ci, hits, JSON.stringify(types)]); }); }
+
   // Leuchten
   let composer = null;
   if(world.bloom && !o.lite){ composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, cam));
@@ -261,7 +285,7 @@ export async function start(o){
       const sc=(pf.s0||4)+t*(pf.s1||12); s.scale.set(sc,sc*(pf.flat||1),1); s.material.opacity=(pf.opacity||.5)*Math.sin(Math.PI*t); }
     for(const r of rays){ r.material.opacity = .08 + .08*Math.sin(now/1500 + r.userData.ph); }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
-    for(const {cr, outer, movers} of creatures){
+    for(const {cr, outer, movers, safe:sf} of creatures){
       let move = 1;
       if(cr.orbit){ const ob=cr.orbit, [cx,cy,cz]=ob.c, [rx,rz]=ob.r;
         // cycle: [Periode, Anteil Laufen, Versatz] – das Tier läuft nur einen Teil der Zeit und steht sonst
@@ -269,9 +293,22 @@ export async function start(o){
         if(ob.cycle){ const [P, fr, off=0] = ob.cycle, R = P*fr, x = tt + off, k = Math.floor(x/P), f = x - k*P;
           if(f < R){ const u = f/R; et = k*R + R*(u - Math.sin(2*Math.PI*u)/(2*Math.PI)); move = (1-Math.cos(2*Math.PI*u))/2; } else { et = (k+1)*R; move = 0; } }
         const t=et*(ob.speed||.1)*(ob.dir||1)+(ob.ph||0);
+        if(ob.wander){
+          // abwechslungsreicher Flug: Abstand, Höhe und Bahnform ändern sich langsam (Achter, Schleifen, nah heran, weit weg)
+          const P = th => { const w=ob.wander, a=th*w.f, f = 1 + w.r*Math.sin(a+.7) + w.r*.5*Math.sin(a*2.3+1.9);
+            const eight = w.eight ? Math.sin(th*2)*w.eight*(.5+.5*Math.sin(a*1.3)) : 0;
+            return [cx + Math.cos(th)*rx*f + Math.sin(a*1.7)*(w.dx||0), cy + Math.sin(a*1.4+.3)*(w.y||0) + Math.sin(th*2)*(ob.bob??.6), cz + Math.sin(th)*rz*f + eight + Math.cos(a*1.1)*(w.dz||0)]; };
+          const lift = q => { if(sf){ const m = sf(q[0], q[2]) + (ob.wander.clear ?? 10); if(q[1] < m) q[1] = m; } return q; };
+          const p0 = lift(P(t)), p1 = lift(P(t + .02*(ob.dir||1))), p2 = lift(P(t + .04*(ob.dir||1)));
+          outer.position.set(p0[0], p0[1], p0[2]);
+          const h0 = Math.atan2(-(p1[2]-p0[2]), p1[0]-p0[0]), h1 = Math.atan2(-(p2[2]-p1[2]), p2[0]-p1[0]);
+          let turn = h1-h0; if(turn>Math.PI) turn-=2*Math.PI; if(turn<-Math.PI) turn+=2*Math.PI;
+          outer.rotation.y = h0; outer.rotation.x = Math.max(-.6, Math.min(.6, -turn*14)); 
+          outer.rotation.z = Math.max(-.35, Math.min(.35, Math.atan2(p1[1]-p0[1], Math.hypot(p1[0]-p0[0], p1[2]-p0[2]))));
+        } else {
         outer.position.set(cx+Math.cos(t)*rx, cy+Math.sin(t*2)*(ob.bob??.6)*move, cz+Math.sin(t)*rz);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;
-        else { const vx=-Math.sin(t)*rx*(ob.dir||1), vz=Math.cos(t)*rz*(ob.dir||1); outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } }
+        else { const vx=-Math.sin(t)*rx*(ob.dir||1), vz=Math.cos(t)*rz*(ob.dir||1); outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } } }
       else if(cr.pass){ // Vorbeiflug von a nach b, nur während des Flugs sichtbar (z. B. Fledermausschwarm)
         const p=cr.pass, P=p.period||30, x=(tt+(p.ph||0))%P, u=x/p.dur;
         outer.visible = u < 1;
@@ -280,7 +317,7 @@ export async function start(o){
           outer.rotation.y = Math.atan2(-dz, dx); } }
       else if(cr.at && cr.hover){ outer.position.y = cr.at[1] + Math.sin(tt*(cr.hover[1]||1))*cr.hover[0]; }
       for(const m of movers){ if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
-    for(const l of pls) if(l.userData.flicker) l.intensity = l.userData.int*(.85+.15*Math.sin(now/120+l.position.x));
+    for(const l of pls) if(l.userData.flicker){ const fs = typeof l.userData.flicker==="number" ? l.userData.flicker : 120, fa = fs>300 ? .35 : .15; l.intensity = l.userData.int*(1-fa+fa*Math.sin(now/fs+l.position.x)); }
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);
     // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander

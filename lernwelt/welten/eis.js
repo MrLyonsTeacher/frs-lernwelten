@@ -112,7 +112,7 @@ export function build(A){
 
   // ---------- Country & people: Eisgarten mit gefrorenem Brunnen und Eisfiguren ----------
   { const {x,z} = S.country, y=G;
-    disk(x,y-1,z,9,"floorIce"); ring(x,y,z,9,(a,b,c)=>((a+c)%3===0?"carved":null));
+    disk(x,y-1,z,9,"floorIce");
     ring(x,y,z,3.4,"carved"); ring(x,y+1,z,3.4,"iceTrim"); disk(x,y,z,2.4,"floorIce"); cyl(x,y,z,1,6,"pillar"); disk(x,y+6,z,2.2,"carved"); ring(x,y+7,z,2.2,"iceTrim");
     cyl(x,y+7,z,.6,4,"pillar"); disk(x,y+11,z,1.2,"carved"); set(x,y+12,z,"lamp"); icicles(x-2,x+2,y+6,z-2,z+2,3);
     // Eisfiguren: Schwan, Stern, Kristallbaum
@@ -140,28 +140,38 @@ export function build(A){
 
   // Frostfüchse und Eisbär laufen herum
   const creatures = [
-    { ...frostFox({walk:true, speed:11}), orbit:{c:[46,G,52], r:[14,7], speed:.32, ph:0, bob:.15, cycle:[16,.32,0]}, scale:.28 },
-    { ...frostFox({walk:true, speed:11, col:0xF4FAFF}), orbit:{c:[46,G,52], r:[14,7], speed:.32, ph:.5, bob:.15, cycle:[16,.32,0]}, scale:.25 },
-    { ...frostFox({walk:true, speed:10}), orbit:{c:[30,G,40], r:[9,5], speed:.28, ph:2, bob:.15, dir:-1, cycle:[19,.3,6]}, scale:.25 },
-    { ...frostFox({walk:true, speed:12, col:0xDCEEFF}), orbit:{c:[62,G,60], r:[10,6], speed:.35, ph:4, bob:.15, dir:-1, cycle:[22,.28,11]}, scale:.25 },
+    { ...frostFox({walk:true, speed:11}), orbit:{c:[46,G,57], r:[13,5], speed:.32, ph:0, bob:.15, cycle:[16,.32,0]}, scale:.28 },
+    { ...frostFox({walk:true, speed:11, col:0xF4FAFF}), orbit:{c:[46,G,57], r:[13,5], speed:.32, ph:.5, bob:.15, cycle:[16,.32,0]}, scale:.25 },
+    { ...frostFox({walk:true, speed:10}), orbit:{c:[34,G,63], r:[6,3], speed:.28, ph:2, bob:.15, dir:-1, cycle:[19,.3,6]}, scale:.25 },
+    { ...frostFox({walk:true, speed:12, col:0xDCEEFF}), orbit:{c:[56,G,65], r:[6,3], speed:.35, ph:4, bob:.15, dir:-1, cycle:[22,.28,11]}, scale:.25 },
     { ...frostFox({walk:false}), at:[S.vocabulary.x+7, G, S.vocabulary.z+7], yaw:-.6, scale:.25 },
-    { ...polarBear({walk:true, speed:3.4}), orbit:{c:[S.country.x,G,S.country.z], r:[13,12], speed:.12, ph:1, bob:.05, cycle:[26,.35,4]}, scale:.42 }
+    { ...polarBear({walk:true, speed:3.4}), orbit:{c:[68,G,64], r:[10,4], speed:.18, ph:1, bob:.05, cycle:[26,.35,4]}, scale:.42, clearR:4 }
   ];
+  // Laufwege der Tiere freiräumen (Schneehaufen, Eisspitzen, Kristalle, Laternen), damit nichts durch Blöcke läuft
+  const CLR = ["snowB","snow","frost","floorIce","icicle","crystal","violet","silver","lamp"];
+  for(const c of creatures){ const ob=c.orbit; if(!ob) continue; const rad = c.clearR = c.clearR || Math.max(3, Math.round(30*(c.scale||1)*.5)); c.clearH = 7;
+    for(let k=0;k<360;k++){ const t=k/360*Math.PI*2, x=ob.c[0]+Math.cos(t)*ob.r[0], z=ob.c[2]+Math.sin(t)*ob.r[1];
+      for(let a=-rad;a<=rad;a++) for(let b=-rad;b<=rad;b++) if(a*a+b*b<=rad*rad) for(let y=G;y<G+8;y++){ const bt=get(Math.round(x+a),y,Math.round(z+b)); if(CLR.includes(bt)) set(Math.round(x+a),y,Math.round(z+b),null); } } }
   return {
     W, D, blocks, spots:S, exposure:.95, fov:42, creatures,
     sky:[[0,"#1E4A8A"],[.4,"#4A80C0"],[.75,"#8AB8E4"],[1,"#BCD8F0"]], fog:[0x7EA6D2, 80, 290],
     hemi:[0xCFE6FF, 0x22406E, 1.05], sun:{color:0xEAF6FF, int:1.25, pos:[-40,90,70]}, bloom:[.35,.45,.85],
-    lights:[{pos:[46,G+12,40], color:0x7FE6FF, int:200, dist:34},
+    lights:[{pos:[46,G+12,40], color:0x7FE6FF, int:200, dist:34, flicker:700},
+            {pos:[20,G+30,30], color:0x5AD8FF, int:160, dist:30, flicker:900}, {pos:[72,G+30,30], color:0x5AD8FF, int:160, dist:30, flicker:900},
             {pos:[S.vocabulary.x,G+5,S.vocabulary.z+6], color:0xC8A0FF, int:180, dist:22},
             {pos:[S.country.x,G+8,S.country.z], color:0xBFF4FF, int:180, dist:24}],
     ribbons:[{w:300, h:34, pos:[W/2,104,-90], rot:0, color:0xA87AFF, opacity:.2}, {w:240, h:24, pos:[W/2-30,118,-120], rot:.25, color:0x7A6AF0, opacity:.16}, {w:200, h:18, pos:[W/2+40,96,-70], rot:-.2, color:0xC890FF, opacity:.12}],
     rays:{n:16, color:0xFFFFFF, area:[16,76,0,40], y:60, len:100},
-    particles:[{n:800, area:[-30,W+30,0,80,-30,D+30], vy:-2.2, wob:1.2, color:0xFFFFFF, size:.24, opacity:.9},
+    particles:[{n:1500, area:[-40,W+40,0,90,-40,D+60], vy:-3, wob:2.4, color:0xFFFFFF, size:.85, opacity:.95, soft:true},
+               {n:500, area:[-120,W+120,0,110,-160,-40], vy:-3.5, wob:2.5, color:0xFFFFFF, size:1.1, opacity:.8, soft:true},
                {n:260, area:[0,W,4,50,0,D], vy:0, wob:.25, color:0xBFF8FF, size:.14, add:true, twinkle:true},
                {n:160, area:[30,62,G+14,G+40,24,36], vy:.6, wob:.4, color:0x9AF0FF, size:.22, add:true, twinkle:true}],
     puffs:[{n:18, pos:[-40,G+2,10], dx:170, dy:2, dz:20, s0:20, s1:18, color:0xD8E8F8, opacity:.3, speed:.01, spread:50, flat:.35},
+           {n:26, pos:[-160,78,-150], dx:360, dy:4, dz:40, s0:70, s1:30, color:0xF4F8FF, opacity:.8, speed:.006, spread:70, flat:.35, sz:1.2},
+           {n:10, pos:[-60,70,-10], dx:220, dy:3, dz:30, s0:30, s1:20, color:0xFFFFFF, opacity:.35, speed:.012, spread:40, flat:.3},
+           {n:16, pos:[-120,80,-30], dx:300, dy:2, dz:40, s0:46, s1:24, color:0xE6EEFA, opacity:.55, speed:.009, spread:70, flat:.3},
            {n:12, pos:[10,50,-40], dx:70, dy:20, dz:0, s0:30, s1:30, color:0xFFFFFF, opacity:.45, speed:.008, spread:40, flat:.7}],
-    home:{pos:[W/2,34,D+62], look:[W/2,30,D/2-14]}, homePortrait:{pos:[W/2,40,D+116], look:[W/2,34,D/2-14]},
+    home:{pos:[W/2,64,D+60], look:[W/2,14,D/2]}, homePortrait:{pos:[W/2,86,D+112], look:[W/2,24,D/2-10]},
     ui:{bg:"rgba(10,30,62,.86)", border:"#8AE6FF", glow:"rgba(138,230,255,.55)", text:"#EAF6FF", sub:"#A8C8E6", accent:"#8AE6FF", "accent-ink":"#06182E", chip:"rgba(8,26,54,.8)"}
   };
 }

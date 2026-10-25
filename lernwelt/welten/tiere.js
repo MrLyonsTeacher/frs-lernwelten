@@ -178,18 +178,42 @@ export function polarBear(o={}){
   return { parts };
 }
 
-/* ---------- Hirsch (Waldwelt) ---------- */
+/* ---------- Hirsch (Waldwelt) – detailliert (doppelte Auflösung, im Spiel scale ≈ .38) ---------- */
 export function stag(){
-  const BR=0x8A5A32, BR2=0x7A4E2A, LIGHT=0xD8B88A, WHITE=0xF4EEE2, ANT=0xE8D6B0, DARK=0x2A1A10;
-  const body = M(); body.ell(0,7,0,4,2,1.7,(x,y,z)=> y<6 ? LIGHT : ((x+y+z)%4===0?BR2:BR));
-  for(const [lx,lz] of [[2.6,-1],[2.6,1],[-2.6,-1],[-2.6,1]]){ body.box(lx,1,lz,lx,5,lz,BR2); body.put(lx,0,lz,DARK); }
-  body.put(-4,8,0,WHITE).put(-5,8,0,WHITE).put(-5,9,0,BR);
-  body.seg([3,8,0],[5,11,0],1.3,1,BR);
-  const head = M(); head.box(5,11,-1,7,13,1,BR).box(8,11,-1,9,12,1,BR2).put(10,11,0,DARK).put(8,13,-1,DARK).put(8,13,1,DARK).put(7,13,-2,LIGHT).put(7,13,2,LIGHT);
-  head.put(6,14,-2,BR).put(6,14,2,BR);
-  for(const s of [-1,1]){ head.line([6,14,s],[5,18,3*s],ANT).line([5,18,3*s],[4,22,4*s],ANT).line([5,16,2*s],[8,18,2*s],ANT).line([5,19,3*s],[7,21,4*s],ANT).line([4,20,4*s],[2,22,5*s],ANT).line([4,22,4*s],[5,24,4*s],ANT); }
-  const tail = M().put(-5,9,0,BR).put(-5,8,0,WHITE);
-  return { parts:[ part(body,[0,0,0]), part(head,[5,11,0],["z",.28,.7,0,-.25]), part(tail,[-4,9,0],["y",.5,3,0]) ] };
+  const BR=0x8A5630, BR2=0x74462A, BR3=0x9E663A, DARK=0x5A3820, BELLY=0xD8BC90, RUMP=0xF4EEE2, MANE=0x6A4228, HOOF=0x2A1A10, NOSE=0x1A1210, ANT=0xE8D8B0, ANT2=0xC8B48A, TIP=0xFAF4E4, EYE=0x140C08;
+  const coat = (x,y,z) => { if(y < 12.5) return BELLY; const k=((Math.round(x*1.5)+Math.round(y)*2+Math.round(z))%6+6)%6; return y > 16.5 ? (k===0?DARK:BR2) : k===0 ? BR3 : k===3 ? BR2 : BR; };
+  const body = M();
+  body.ell(0,15,0,8.5,4,3.6,coat);                         // Rumpf
+  body.ell(5.5,15.5,0,3.8,4.3,3.5,coat);                   // Brust
+  body.ell(-6,15.5,0,3.6,4,3.5,coat);                      // Keule
+  body.ell(-8.5,15,0,1.6,3,3,(x,y,z)=> y<17 ? RUMP : coat(x,y,z));   // heller Spiegel
+  // Beine: Oberschenkel, Knie, schlanker Lauf, Huf
+  for(const [lx,lz,fr] of [[5,-2,1],[5,2,1],[-6,-2,0],[-6,2,0]]){
+    body.ell(lx, 11, lz, 1.6, 2.6, 1.3, coat);
+    body.seg([lx,9,lz],[lx+(fr?0:-1),5,lz],1.0,.8,BR2).seg([lx+(fr?0:-1),5,lz],[lx,1,lz],.8,.7,(x,y,z)=> y<3 ? DARK : BR2);
+    body.box(lx,0,lz,lx+1,0,lz,HOOF).put(lx,1,lz,HOOF); }
+  // Hals mit Mähne
+  body.seg([7,17,0],[10,22,0],2.8,2.2,coat).seg([10,22,0],[12,25,0],2.2,1.9,coat);
+  body.ell(8.5,17.5,0,2.4,3,2.6,(x,y,z)=> y<17 ? MANE : coat(x,y,z));
+  for(let i=0;i<7;i++) body.put(8+i*.6,15+i*.5,0,MANE).put(8.5+i*.6,14.5+i*.5,-1,MANE).put(8.5+i*.6,14.5+i*.5,1,MANE);
+  // Kopf: Schädel, Schnauze, Nase, Augen, Ohren, Geweih
+  const head = M();
+  head.ell(13,26,0,2.4,2.2,2,coat);
+  for(let x=14;x<=18;x++){ const w = x<17 ? 1 : 0, y0 = 24 + (x>16?0:0); head.box(x,y0,-w,x,y0+2-(x>16?1:0),w,(xx,yy,zz)=> yy===y0 ? BELLY : (x>16 ? BR3 : BR)); }
+  head.box(18,24,-1,18,24,1,BR3).box(19,24,-1,19,25,1,NOSE).box(16,23,-1,18,23,1,BELLY);
+  for(const s of [-1,1]){ head.put(14,27,2*s,EYE).put(14,28,2*s,DARK).put(15,27,2*s,0xF0E0C0);
+    head.line([12,27,2*s],[11,29,4.5*s],BR).line([12,28,2*s],[11,30,4*s],BR3).put(11,29,4*s,BELLY);             // Ohren
+    // Geweih: Hauptstange mit mehreren Enden
+    head.line([12.5,28,1.2*s],[12,31,2.5*s],ANT2).line([12,31,2.5*s],[10,35,4.5*s],ANT).line([10,35,4.5*s],[8,39,6*s],ANT).line([8,39,6*s],[7,43,6.5*s],ANT);
+    head.line([12.2,30,2*s],[15,32,2.5*s],ANT).put(16,33,2.6*s,TIP);                                                // Augspross
+    head.line([11,33,3.5*s],[14,36,4*s],ANT).put(15,37,4*s,TIP);
+    head.line([9,37,5.2*s],[12,41,5.5*s],ANT).put(12,42,5.5*s,TIP);
+    head.line([8,40,6.2*s],[6,44,8*s],ANT).put(6,45,8*s,TIP);
+    head.line([7,43,6.5*s],[9,46,6*s],ANT).put(9,47,6*s,TIP).put(7,44,6.5*s,TIP);
+    head.line([10,35,4.5*s],[8,36,7*s],ANT2).put(7,36,7.5*s,TIP); }
+  const tail = M().ell(-9.5,17,0,.8,1.3,.8,RUMP).put(-10,18,0,BR2);
+  const ear = null;
+  return { parts:[ part(body,[0,0,0]), part(head,[11,24,0],["z",.26,.6,0,-.22]), part(tail,[-9,17,0],["y",.6,3,0]) ] };
 }
 
 /* ---------- Frostfuchs (Eiswelt) – detailliert (doppelte Auflösung, scale ≈ .25) ---------- */
