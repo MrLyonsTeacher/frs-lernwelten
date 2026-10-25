@@ -25,7 +25,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .wri .rk-img{width:34px;height:34px;vertical-align:middle;margin:-6px 0}
 .wchip .wrk{min-width:110px}
 .wchip .wrk b{font-size:14px}
-.clean .wbar,.clean .wdock,.clean #labels,.clean .wpanel{display:none!important}
+.clean .wbar,.clean .wdock,.clean .wfoot,.clean #labels,.clean .wpanel{display:none!important}
 /* Kopfzeile */
 .wbar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0)) 14px 10px;pointer-events:none}
 .wbar>*{pointer-events:auto}
@@ -42,7 +42,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .qr-card .rank-l{margin:.15rem 0 0;font:700 1.25rem Fredoka}
 .wfin{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 14px 0 0;border-radius:12px;border:2px dashed #fff;background:var(--ui-accent);color:var(--ui-accent-ink);font:700 16px Fredoka;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.35)}
 .wfin .chk{align-self:stretch;width:26px;background:repeating-conic-gradient(#1A1A1A 0 25%,#fff 0 50%) 0 0/12px 12px}
-@media (max-width:760px){ .wfin .long{display:none} } @media (min-width:761px){ .wfin .short{display:none} }
+@media (max-width:440px){ .wfin .long{display:none} } @media (min-width:441px){ .wfin .short{display:none} }
 @media (max-width:560px){
   .wbar{flex-wrap:wrap;gap:6px 8px;padding:calc(8px + env(safe-area-inset-top,0)) 10px 8px}
   .wn{font-size:13px} .wfl{font-size:15px} .wri .rk-img{width:28px;height:28px} .wchip .wrk{min-width:62px} .wchip .wrk b{font-size:11px}
@@ -50,7 +50,8 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
   .wchip{padding:3px 8px;font-size:14px;gap:4px}
   .wrk{min-width:58px} .wrk b{font-size:11px;max-width:84px;overflow:hidden;text-overflow:ellipsis}
   .wreset{min-height:38px;padding:0 10px}
-  .wfin{min-height:40px;margin-left:auto;font-size:14px;padding:0 10px 0 0;gap:6px} .wfin .chk{width:18px}
+  .wfoot .wfin{min-height:44px;font-size:15px;padding:0 12px 0 0;gap:6px} .wfin .chk{width:18px}
+  .wfoot .wreset{left:10px} .wdock{bottom:calc(66px + env(safe-area-inset-bottom,0))}
   .wlbl{min-height:40px;font-size:15px;padding:4px 9px 4px 6px;gap:6px;border-radius:13px} .wl-ic{width:26px;height:26px;font-size:16px} .wl-n{min-width:20px;height:20px;font-size:12px}
 }
 
@@ -66,7 +67,12 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .wlbl.hide{opacity:0;pointer-events:none}
 
 /* Dock unten: alle Bereiche immer erreichbar */
-.wdock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0));transform:translateX(-50%);z-index:5;display:flex;gap:10px;padding:8px;border-radius:20px;background:var(--ui-chip);border:2px solid var(--ui-border);box-shadow:0 0 18px var(--ui-glow);max-width:calc(100vw - 24px)}
+/* Fußzeile: Reset links, Finished in der Mitte */
+.wfoot{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;align-items:center;padding:0 14px calc(12px + env(safe-area-inset-bottom,0));pointer-events:none}
+.wfoot>*{pointer-events:auto}
+.wfoot .wreset{position:absolute;left:14px;bottom:calc(12px + env(safe-area-inset-bottom,0))}
+.wfoot .wfin{min-height:50px;font-size:18px}
+.wdock{position:fixed;left:50%;bottom:calc(74px + env(safe-area-inset-bottom,0));transform:translateX(-50%);z-index:5;display:flex;gap:10px;padding:8px;border-radius:20px;background:var(--ui-chip);border:2px solid var(--ui-border);box-shadow:0 0 18px var(--ui-glow);max-width:calc(100vw - 24px)}
 .wdock button{display:flex;align-items:center;gap:8px;min-height:54px;padding:6px 16px;border-radius:14px;border:0;background:rgba(255,255,255,.12);color:var(--ui-text);font:700 17px Fredoka;white-space:nowrap}
 .wdock button[aria-pressed="true"]{background:var(--ui-accent);color:var(--ui-accent-ink)}
 .wdock .n{min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:rgba(0,0,0,.25);font-size:13px;padding:0 5px}
@@ -110,7 +116,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .qt.played .qt-p{color:var(--ui-text)}
 .wpanel{width:min(480px,calc(100vw - 32px))}
 body.area-open .wlbl{opacity:0;pointer-events:none}
-@media (max-aspect-ratio:1/1){ .wpanel{width:min(560px,calc(100vw - 24px));bottom:108px !important} }
+@media (max-aspect-ratio:1/1){ .wpanel{width:min(560px,calc(100vw - 24px));bottom:168px !important} }
 @media (max-width:420px){ .qgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .empty{padding:.8rem;border:1.5px dashed var(--ui-border);border-radius:14px;color:var(--ui-sub);text-align:center}
 .wback{margin-top:14px;min-height:48px;padding:.4rem 1rem;border:0;border-radius:12px;background:var(--ui-accent);color:var(--ui-accent-ink);font:700 16px Fredoka}
@@ -161,6 +167,7 @@ body.area-open .wlbl{opacity:0;pointer-events:none}
 <header class="wbar" id="bar"></header>
 <div id="labels"></div>
 <nav class="wdock" id="dock" aria-label="Areas"></nav>
+<footer class="wfoot" id="foot"></footer>
 <aside class="wpanel" id="panel" aria-live="polite"></aside>
 <div class="fin" id="fin" hidden></div>
 
@@ -206,8 +213,8 @@ async function main(){
 
   $("#bar").innerHTML = `<span class="wid"><span class="wk">Class ${K}</span><span class="wn">${esc(WI.name)}</span></span>
     <span class="wchip" id="rkChip" role="button" tabindex="0" title="${esc(RK().top?"Top rank!":RK().toNext+" more to "+RK().nextName)}"><span class="wfl">${UK} ${UH.today(K)}</span><span class="wri">${RK().icon}</span><span class="wrk"><b>${esc(RK().name)}</b><i><u style="width:${Math.round(RK().pct*100)}%"></u></i></span></span>
-    ${UH.prefsHTML()}<span class="wsp"></span>
-    <button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
+    ${UH.prefsHTML()}<span class="wsp"></span>`;
+  $("#foot").innerHTML = `<button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
     <button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="long">If you’re finished, click here</span><span class="short">Finished?</span></button>`;
   $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${counts[b]}</span></button>`).join("");
 
