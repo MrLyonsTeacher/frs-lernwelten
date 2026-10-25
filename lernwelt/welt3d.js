@@ -199,7 +199,7 @@ export async function start(o){
       if(glow.length){ const m = new THREE.Mesh(cubesGeo(glow, piv), new THREE.MeshBasicMaterial({vertexColors:true})); pg.add(m); }
       (pt.parent !== undefined ? movers[pt.parent].g : inner).add(pg);
       if(pt.parent !== undefined){ const pp = cr.parts[pt.parent].pivot || [0,0,0]; pg.position.set(piv[0]-pp[0], piv[1]-pp[1], piv[2]-pp[2]); }
-      movers.push({g:pg, rot:pt.rot}); }
+      movers.push({g:pg, rot:pt.rot, gait:!!pt.gait}); }
     if(cr.at){ outer.position.set(...cr.at); outer.rotation.y = cr.yaw||0; }
     scene.add(outer); creatures.push({cr, outer, movers});
   }
@@ -262,12 +262,24 @@ export async function start(o){
     for(const r of rays){ r.material.opacity = .08 + .08*Math.sin(now/1500 + r.userData.ph); }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
     for(const {cr, outer, movers} of creatures){
-      if(cr.orbit){ const ob=cr.orbit, t=tt*(ob.speed||.1)*(ob.dir||1)+(ob.ph||0), [cx,cy,cz]=ob.c, [rx,rz]=ob.r;
-        outer.position.set(cx+Math.cos(t)*rx, cy+Math.sin(t*2)*(ob.bob??.6), cz+Math.sin(t)*rz);
+      let move = 1;
+      if(cr.orbit){ const ob=cr.orbit, [cx,cy,cz]=ob.c, [rx,rz]=ob.r;
+        // cycle: [Periode, Anteil Laufen, Versatz] – das Tier läuft nur einen Teil der Zeit und steht sonst
+        let et = tt;
+        if(ob.cycle){ const [P, fr, off=0] = ob.cycle, R = P*fr, x = tt + off, k = Math.floor(x/P), f = x - k*P;
+          if(f < R){ const u = f/R; et = k*R + R*(u - Math.sin(2*Math.PI*u)/(2*Math.PI)); move = (1-Math.cos(2*Math.PI*u))/2; } else { et = (k+1)*R; move = 0; } }
+        const t=et*(ob.speed||.1)*(ob.dir||1)+(ob.ph||0);
+        outer.position.set(cx+Math.cos(t)*rx, cy+Math.sin(t*2)*(ob.bob??.6)*move, cz+Math.sin(t)*rz);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;
-        else { const vx=-Math.sin(t)*rx*(ob.dir||1), vz=Math.cos(t)*rz*(ob.dir||1); outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1); outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } }
+        else { const vx=-Math.sin(t)*rx*(ob.dir||1), vz=Math.cos(t)*rz*(ob.dir||1); outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } }
+      else if(cr.pass){ // Vorbeiflug von a nach b, nur während des Flugs sichtbar (z. B. Fledermausschwarm)
+        const p=cr.pass, P=p.period||30, x=(tt+(p.ph||0))%P, u=x/p.dur;
+        outer.visible = u < 1;
+        if(u < 1){ const w=p.wave||[0,1], a=p.a, b=p.b, dx=b[0]-a[0], dz=b[2]-a[2];
+          outer.position.set(a[0]+dx*u, a[1]+(b[1]-a[1])*u + Math.sin(u*Math.PI*2*w[1]+(p.wph||0))*w[0], a[2]+dz*u + Math.cos(u*Math.PI*2*w[1]*.7+(p.wph||0))*w[0]*.6);
+          outer.rotation.y = Math.atan2(-dz, dx); } }
       else if(cr.at && cr.hover){ outer.position.y = cr.at[1] + Math.sin(tt*(cr.hover[1]||1))*cr.hover[0]; }
-      for(const m of movers){ if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*Math.sin(tt*spd+ph); } }
+      for(const m of movers){ if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
     for(const l of pls) if(l.userData.flicker) l.intensity = l.userData.int*(.85+.15*Math.sin(now/120+l.position.x));
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);

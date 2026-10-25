@@ -1,5 +1,5 @@
 // Klasse 6 · Water World – Unterwasser-Königreich mit Korallen, Kelp und Schiffswrack; ringsum Meeresboden mit Felsen, Bögen und einem großen Wrack
-import { whale, fish, jelly } from "./tiere.js";
+import { whale, fish, dolphin } from "./tiere.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, dome, line, topAt, tex, P, noise, stripes, bricks, rings, planks, glassT } = A;
   const T = {
@@ -136,7 +136,9 @@ export function build(A){
   const creatures = [];
   [["clown",[44,16,36],[26,18],.25,0],["yellow",[30,12,44],[14,10],.32,1.5],["tang",[60,14,30],[18,12],.28,3],["pink",[48,20,48],[30,16],.2,4.2],["tang",[-20,14,14],[22,12],.22,2],["yellow",[110,12,20],[20,14],.26,5]].forEach(([k,ctr,rad,sp,ph])=>{
     for(let i=0;i<6;i++) creatures.push({ ...fish(k), orbit:{c:[ctr[0]+((i*3)%5)-2, ctr[1]+(i%3)*1.4, ctr[2]+((i*7)%5)-2], r:rad, speed:sp, ph:ph+i*.12, bob:.5}, scale:.42, noShadow:true }); });
-  for(const [jx,jy,jz,col] of [[30,24,22,0xFF8AD8],[58,28,18,0xB8A0FF],[36,30,40,0x8AE6FF],[62,22,44,0xFF8AD8]]) creatures.push({ ...jelly(col), at:[jx,jy,jz], hover:[1.2,.8], scale:.7 });
+  // zwei Delfine: große Bahn, die zeitweise weit nach hinten in den Dunst und hinter die Kamera führt – so sind sie nicht immer zu sehen
+  creatures.push({ ...dolphin(), orbit:{c:[44,22,24], r:[78,52], speed:.085, ph:.6, bob:3.5, bank:.2}, scale:.55 });
+  creatures.push({ ...dolphin(), orbit:{c:[44,22,24], r:[78,52], speed:.085, ph:.78, bob:3.5, bank:.2}, scale:.5 });
   creatures.push({ ...whale(), orbit:{c:[44,30,-14], r:[74,26], speed:.05, ph:2.6, bob:1.4, bank:.12, dir:-1}, scale:1.1 });
 
   return {

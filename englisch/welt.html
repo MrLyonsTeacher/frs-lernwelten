@@ -209,7 +209,7 @@ async function main(){
     const mod = await import(`../lernwelt/welten/${WI.file}.js`);
     const { start } = await import("../lernwelt/welt3d.js");
     let ui = null;
-    W3 = await start({ seed:K*101, canvasHost:$("#stage"), labelHost:$("#labels"), names, counts, icons, lite: new URLSearchParams(location.search).has("lite"), still: new URLSearchParams(location.search).has("still"), banner: new URLSearchParams(location.search).has("banner"),
+    W3 = await start({ seed:K*101, canvasHost:$("#stage"), labelHost:$("#labels"), names, counts, icons, lite: new URLSearchParams(location.search).has("lite"), still: new URLSearchParams(location.search).has("still"), stillTime: +new URLSearchParams(location.search).get("tt") || undefined, banner: new URLSearchParams(location.search).has("banner"),
       build: api => { const w = mod.build(api); ui = w.ui; spotsInfo = w.spots; return w; }, onSelect: k => openArea(k) });
     if(ui) for(const k in ui) document.documentElement.style.setProperty("--ui-"+k, ui[k]);
     window.__blocks = W3.count;

@@ -90,7 +90,7 @@ export function build(A){
     for(let a=-9;a<=9;a+=6) pinnacle(x+a,m+12,z+7,4,.6);
     for(const a of [-22,-14,14,22]) pinnacle(x+a,y+5,z+14,4,.6);
     for(const [a,c] of [[-18,-8],[18,-8],[-18,10],[18,10]]) pinnacle(x+a,b+13,z+c,8,1.2);
-    S.grammar.top=[x, t+8, z+6]; S.grammar.base=y+20; S.grammar.cam={dist:72, up:.12, lookY:y+26, side:0}; }
+    S.grammar.top=[x, b+16, z+13]; S.grammar.base=b+8; S.grammar.cam={pos:[50,26,82], look:[46,19,33]}; }
 
   // ---------- Riesige Eissäulen und Bögen (wie eine Halle) ----------
   const cols = [[6,12],[86,12],[6,40],[86,40],[2,66],[90,66],[20,30],[72,30]];
@@ -140,12 +140,12 @@ export function build(A){
 
   // Frostfüchse und Eisbär laufen herum
   const creatures = [
-    { ...frostFox({walk:true, speed:10}), orbit:{c:[46,G,52], r:[14,7], speed:.32, ph:0, bob:.15}, scale:.55 },
-    { ...frostFox({walk:true, speed:10, col:0xF4FAFF}), orbit:{c:[46,G,52], r:[14,7], speed:.32, ph:.5, bob:.15}, scale:.5 },
-    { ...frostFox({walk:true, speed:9}), orbit:{c:[30,G,40], r:[9,5], speed:.28, ph:2, bob:.15, dir:-1}, scale:.5 },
-    { ...frostFox({walk:true, speed:11, col:0xDCEEFF}), orbit:{c:[62,G,60], r:[10,6], speed:.35, ph:4, bob:.15, dir:-1}, scale:.5 },
-    { ...frostFox({walk:false}), at:[S.vocabulary.x+7, G, S.vocabulary.z+7], yaw:-.6, scale:.5 },
-    { ...polarBear({walk:true, speed:3.2}), orbit:{c:[S.country.x,G,S.country.z], r:[13,12], speed:.09, ph:1, bob:.08}, scale:.8 }
+    { ...frostFox({walk:true, speed:11}), orbit:{c:[46,G,52], r:[14,7], speed:.32, ph:0, bob:.15, cycle:[16,.32,0]}, scale:.28 },
+    { ...frostFox({walk:true, speed:11, col:0xF4FAFF}), orbit:{c:[46,G,52], r:[14,7], speed:.32, ph:.5, bob:.15, cycle:[16,.32,0]}, scale:.25 },
+    { ...frostFox({walk:true, speed:10}), orbit:{c:[30,G,40], r:[9,5], speed:.28, ph:2, bob:.15, dir:-1, cycle:[19,.3,6]}, scale:.25 },
+    { ...frostFox({walk:true, speed:12, col:0xDCEEFF}), orbit:{c:[62,G,60], r:[10,6], speed:.35, ph:4, bob:.15, dir:-1, cycle:[22,.28,11]}, scale:.25 },
+    { ...frostFox({walk:false}), at:[S.vocabulary.x+7, G, S.vocabulary.z+7], yaw:-.6, scale:.25 },
+    { ...polarBear({walk:true, speed:3.4}), orbit:{c:[S.country.x,G,S.country.z], r:[13,12], speed:.12, ph:1, bob:.05, cycle:[26,.35,4]}, scale:.42 }
   ];
   return {
     W, D, blocks, spots:S, exposure:.95, fov:42, creatures,
@@ -154,6 +154,7 @@ export function build(A){
     lights:[{pos:[46,G+12,40], color:0x7FE6FF, int:200, dist:34},
             {pos:[S.vocabulary.x,G+5,S.vocabulary.z+6], color:0xC8A0FF, int:180, dist:22},
             {pos:[S.country.x,G+8,S.country.z], color:0xBFF4FF, int:180, dist:24}],
+    ribbons:[{w:300, h:34, pos:[W/2,104,-90], rot:0, color:0xA87AFF, opacity:.2}, {w:240, h:24, pos:[W/2-30,118,-120], rot:.25, color:0x7A6AF0, opacity:.16}, {w:200, h:18, pos:[W/2+40,96,-70], rot:-.2, color:0xC890FF, opacity:.12}],
     rays:{n:16, color:0xFFFFFF, area:[16,76,0,40], y:60, len:100},
     particles:[{n:800, area:[-30,W+30,0,80,-30,D+30], vy:-2.2, wob:1.2, color:0xFFFFFF, size:.24, opacity:.9},
                {n:260, area:[0,W,4,50,0,D], vy:0, wob:.25, color:0xBFF8FF, size:.14, add:true, twinkle:true},

@@ -1,5 +1,5 @@
 // Klasse 7 · Dwarven Caves – Zwergenstadt in einer Riesenhöhle: Terrassen mit Treppen, Tempelfassade, Zwergenstatue, Kristallmine und Schmiede
-import { dwarf } from "./tiere.js";
+import { dwarf, bat } from "./tiere.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, tex, P, noise, stripes, bricks, rings, planks } = A;
   const ore = (base, spot) => tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y,pick(base)); for(let i=0;i<5;i++){ const x=1+Math.floor(rand()*13), y=1+Math.floor(rand()*13); P(g,x,y,spot[0]); P(g,x+1,y,spot[1]); P(g,x,y+1,spot[1]); } });
@@ -139,6 +139,24 @@ export function build(A){
     archZ(hx,y,hz+4,3,3); for(const a of [-4,4]){ set(hx+a,y+5,hz+4,"win"); set(hx+a,y+6,hz+4,"win"); } }
   // Laternen an Ketten von der Decke
   for(const [lx,lz,len] of [[30,20,14],[58,20,14],[44,32,10],[24,36,16],[64,36,16]]){ for(let k=0;k<len;k++) set(lx,TOP-1-k,lz,"chain"); fill(lx-1,TOP-1-len,lz-1,lx+1,TOP-2-len,lz+1,"iron"); set(lx,TOP-2-len,lz,"glow"); }
+  // Steinhäuser links und rechts – damit es nach einer Stadt aussieht (Vorderseite zeigt zur Kamera)
+  const stoneHouse = (x,y,z,w,d,h,opt={}) => { const hw=Math.floor(w/2), hd=Math.floor(d/2);
+    fill(x-hw-1,y,z-hd-1,x+hw+1,y,z+hd+1,"flag");
+    walls(x-hw,y+1,z-hd,x+hw,y+h,z+hd,(a,b,c)=> ((a===x-hw||a===x+hw)&&(c===z-hd||c===z+hd)) || b===y+h || b===y+1 ? "chisel" : "sbrick");
+    for(const a of [-hw+2, hw-2]) if(Math.abs(a)>1){ set(x+a,y+3,z+hd,"win"); set(x+a,y+4,z+hd,"win"); set(x+a,y+5,z+hd+1,"chisel"); if(h>=8){ set(x+a,y+7,z+hd,"win"); } }
+    if(d>=5){ set(x-hw,y+3,z,"win"); set(x+hw,y+3,z,"win"); }
+    fill(x,y+1,z+hd,x,y+2,z+hd,"door"); set(x-1,y+3,z+hd,"chisel"); set(x+1,y+3,z+hd,"chisel"); set(x,y+3,z+hd,"chisel"); set(x,y+4,z+hd+1,"gold");
+    set(x+(hw>2?2:1),y+3,z+hd+1,"glow");
+    const R = hd+2; for(let i=0;i<=R;i++){ const zz=R-i; for(const sg of [-1,1]) fill(x-hw-1,y+h+1+i,z+sg*zz,x+hw+1,y+h+1+i,z+sg*zz, i===R ? "gold" : (i%2?"deep":"stone"));
+      if(zz>0) for(const a of [-hw,hw]) fill(x+a,y+h+1+i,z-zz+1,x+a,y+h+1+i,z+zz-1, i===1 && zz>1 ? "win" : "sbrick"); }
+    fill(x+hw-1,y+h+1,z-1,x+hw-1,y+h+R+3,z-1,"sbrick"); set(x+hw-1,y+h+R+4,z-1,"glow");
+    if(opt.balcony){ for(let a=-hw;a<=hw;a++){ set(a+x,y+h-2,z+hd+1,"chisel"); if(a%2===0) set(a+x,y+h-1,z+hd+1,"iron"); } } };
+  stoneHouse(75, L1, 30, 9, 6, 7, {balcony:true});
+  stoneHouse(29, L1, 30, 7, 5, 5);
+  stoneHouse(20, L0, 62, 9, 6, 6, {balcony:true});
+  stoneHouse(8,  L0, 58, 5, 6, 8);
+  stoneHouse(79, L2, 18, 6, 6, 8);
+  stoneHouse(84, L0, 50, 5, 5, 6);
   // Kleinkram: Felsbrocken, Pilze, Kisten, Laternenpfähle auf dem Vorplatz
   const busy = (x,z) => Math.abs(x-44)<9 || (Math.hypot(x-S.country.x,z-S.country.z)<15) || (x<26 && z<44 && z>24) || Math.abs(x-12)<4 || (x>58 && x<65) || (x<30 && z<24);
   for(let i=0;i<70;i++){ const x=7+Math.floor(rand()*(W-14)), z=11+Math.floor(rand()*(D-12)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1; if(t>L2+1 || get(x,t,z)) continue;
@@ -160,9 +178,13 @@ export function build(A){
 
   // Zwerge: einige laufen über die Plätze, einer schmiedet, andere stehen
   const creatures = [];
+  // Fledermausschwärme fliegen ab und zu quer durch die Höhle
+  for(const [pa,pb,P,ph0] of [[[-14,34,30],[102,30,22],27,0],[[102,40,16],[-14,36,36],33,14]]) for(let i=0;i<9;i++){
+    const o = [(i%3-1)*3 + (i*1.7)%2, ((i*5)%3-1)*2, (Math.floor(i/3)-1)*3];
+    creatures.push({ ...bat(), pass:{a:[pa[0]+o[0]-i*.8,pa[1]+o[1],pa[2]+o[2]], b:[pb[0]+o[0]-i*.8,pb[1]+o[1],pb[2]+o[2]], period:P, dur:8.5, ph:ph0+i*.12, wave:[1.6,2+i%3], wph:i}, scale:.3 }); }
   const tun = [0x2F5DA8,0xA83A2A,0x3A8A4A,0x7A4AA8,0x8A6A2A], brd = [0xC86A2A,0xE8E2D8,0x6A4A2A,0xD8B060,0x2A2A2A];
   creatures.push({ ...dwarf({tunic:0x6A3A2A, beard:0xE8E2D8, hammer:true}), at:[S.country.x-4, L0, S.country.z-1], yaw:0, scale:.5 });
-  for(let i=0;i<5;i++) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[i], walk:true}), orbit:{c:[44+(i-2)*14, L0, 56+(i%2)*4], r:[5+i, 3+(i%3)], speed:.18+(i%3)*.05, ph:i*1.3, bob:.1, dir:i%2?1:-1}, scale:.42 });
+  for(let i=0;i<5;i++) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[i], walk:true}), orbit:{c:[44+(i-2)*6, L0, 55+(i%2)*3], r:[4+i, 2+(i%3)], speed:.18+(i%3)*.05, ph:i*1.3, bob:.1, dir:i%2?1:-1}, scale:.42 });
   for(let i=0;i<3;i++) creatures.push({ ...dwarf({tunic:tun[(i+2)%5], beard:brd[(i+1)%5], walk:true}), orbit:{c:[30+i*14, L1, 36], r:[6, 2], speed:.2, ph:i*2, bob:.1, dir:i%2?1:-1}, scale:.42 });
   for(const [dx,dz,yaw,i] of [[38,18,1.6,0],[52,20,1.3,1],[9,48,.3,2],[80,40,2.6,3]]) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[(i+2)%5]}), at:[dx, level(dz)>=TOP?L2:level(dz), dz], yaw, scale:.42 });
 

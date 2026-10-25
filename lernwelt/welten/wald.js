@@ -26,7 +26,7 @@ export function build(A){
     bark:{side:T.bark, top:T.barkTop}, leaves:{side:T.leaves}, leaves2:{side:T.leaves2}, leafRoof:{side:T.leafRoof}, mossRoof:{side:T.mossRoof},
     elfWood:{side:T.elfWood}, elfWoodD:{side:T.elfWoodD}, elfStone:{side:T.elfStone}, elfPillar:{side:T.elfPillar, top:T.elfFloor}, elfFloor:{side:T.elfStone, top:T.elfFloor},
     win:{side:T.win, em:.95}, lantern:{side:T.lantern, em:1.25}, gold:{side:T.gold, em:.25},
-    water:{side:T.water, anim:[.04,.02], em:.12}, fall:{side:T.fall, alpha:.8, anim:[0,-.9], em:.35}, moon:{side:T.moon, em:.6, anim:[.02,.03]},
+    water:{side:T.water, anim:[.04,.02], em:.12}, fall:{side:T.fall, alpha:.8, anim:[0,-.9], em:.35}, moon:{side:T.moon, em:.3, anim:[.02,.03]},
     planks:{side:T.planks}, rope:{side:T.rope}, flowerB:{side:T.flowerB, em:.6}, flowerW:{side:T.flowerW, em:.3}, mush:{side:T.mush}, glowMush:{side:T.glowMush, em:1.0},
     rune:{side:T.rune, top:T.stone, em:.35}
   };
@@ -166,14 +166,14 @@ export function build(A){
   for(let i=0;i<28;i++){ const x=-150+rand()*(W+340), z=-170+rand()*(D+200); const aw=away(x,z); if(aw<14 || z>D+10 && Math.abs(x-W/2)<W*.7) continue; farTree(x,z, 4+Math.floor(rand()*2)*3, 46+Math.floor(rand()*36)); }
 
   // Glühwürmchen, Nebel, Lichtstrahlen, Einhorn, Vögel
-  const creatures = [{ ...stag(), at:[S.vocabulary.x+1, 13, S.vocabulary.z-5], yaw:.35, scale:.75 }];
+  const creatures = [{ ...stag(), at:[S.vocabulary.x-5, 13, S.vocabulary.z+1], yaw:-1.88, scale:.7 }];
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:40, creatures,
     sky:[[0,"#0E2A34"],[.35,"#2A5A5E"],[.7,"#9AB89A"],[1,"#E8D8A0"]], fog:[0x3E625A, 70, 300],
     hemi:[0xCFE8D8, 0x2A3A22, 1.45], sun:{color:0xFFDCA8, int:1.8, pos:[-60,80,50]}, bloom:[.55,.5,.8],
     lights:[{pos:[TX,24,TZ+14], color:0xFFC870, int:300, dist:36},
-            {pos:[S.vocabulary.x,15,S.vocabulary.z], color:0x7FF0FF, int:110, dist:20},
+            {pos:[S.vocabulary.x,15,S.vocabulary.z], color:0x7FF0FF, int:50, dist:16},
             {pos:[V1[0],28,V1[1]+6], color:0xFFB84A, int:220, dist:30, flicker:true}],
     planes:[{y:WL+.4, tex:T.water, repeat:300, size:1000, em:.1, anim:[.02,.01]}],
     rays:{n:18, color:0xFFE6A8, area:[-30,W+30,-30,D], y:46, len:90},

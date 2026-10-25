@@ -143,7 +143,7 @@ export function build(A){
            {n:10, pos:[146,60,-40], dx:-20, dy:50, dz:-10, s0:12, s1:34, color:0x4A3A36, opacity:.45, speed:.035, spread:6},
            {n:10, pos:[-46,52,-26], dx:20, dy:46, dz:-10, s0:12, s1:30, color:0x4A3A36, opacity:.45, speed:.035, spread:6},
            {n:8, pos:[48,96,-120], dx:0, dy:6, dz:0, s0:22, s1:10, color:0xFF6A1A, opacity:.35, speed:.05, spread:4, add:true}],
-    creatures:[{ ...dragon(), orbit:{c:[48,40,14], r:[50,26], speed:.16, ph:1.2, bob:2.5, bank:-.28} }],
+    creatures:[{ ...dragon(), orbit:{c:[48,40,14], r:[50,26], speed:.16, ph:1.2, bob:2.5, bank:-.28}, scale:.55 }],
     home:{pos:[W/2+4,54,D+66], look:[W/2,15,D/2-6]}, homePortrait:{pos:[W/2+4,84,D+116], look:[W/2,10,D/2-6]},
     ui:{bg:"rgba(34,8,4,.9)", border:"#FF9A4A", glow:"rgba(255,110,30,.55)", text:"#FFF1E2", sub:"#E8B48C", accent:"#FFB23A", "accent-ink":"#2A0A04", chip:"rgba(30,8,4,.8)"}
   };

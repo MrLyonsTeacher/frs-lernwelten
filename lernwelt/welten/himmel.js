@@ -1,7 +1,7 @@
 // Klasse 8 · Sky Castle – schwebende Inseln über einem Wolkenmeer; am Horizont Berggipfel und ferne Inseln, ein riesiger Adler kreist
 import { eagle, bird } from "./tiere.js";
 export function build(A){
-  const { rand, fbm, vn, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, dome, cone, line, topAt, tex, P, noise, stripes, bricks, rings, topEdge, planks, glassT } = A;
+  const { rand, fbm, vn, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, tex, P, noise, stripes, bricks, rings, topEdge, planks, glassT } = A;
   const T = {
     grass: noise(["#6BCB4A","#7AD858","#5FBE40","#86E063"], 10, ["#A8F07A"]), grassSide: topEdge(["#8A6A44","#7C5E3A","#96744C"], ["#6BCB4A","#7AD858"], 4),
     dirt: noise(["#8A6A44","#7C5E3A","#96744C","#6E5232"]), rock: noise(["#A4A8B4","#9498A4","#B2B6C0","#8A8E9A"], 6, ["#C8CCD4"]),
@@ -109,6 +109,9 @@ export function build(A){
   // Wolken als Blöcke
   for(let i=0;i<16;i++){ const cx=rand()*W, cz=rand()*D, cy=6+rand()*30; if(Object.values(S).some(s=>Math.hypot(s.x-cx,s.z-cz)<s.r+4)) continue;
     for(let k=0;k<4;k++){ const ox=cx+(rand()-.5)*8, oz=cz+(rand()-.5)*5; fill(Math.round(ox-2),Math.round(cy),Math.round(oz-1),Math.round(ox+2),Math.round(cy+1),Math.round(oz+1),"cloud"); } }
+  // dichte Wolkenbank hinter dem Schloss – der Adler fliegt ab und zu hindurch
+  for(let i=0;i<26;i++){ const a = Math.PI*(1.18 + i*.025), cx = 46 + Math.cos(a)*30, cz = 16 + Math.sin(a)*22 + (rand()-.5)*3, cy = 44 + (rand()-.5)*4;
+    ellip(cx, cy, cz, 4+rand()*3, 2.2+rand()*1.6, 3+rand()*2, "cloud"); }
   // Kristalle unter den Inseln
   for(const s of Object.values(S)) for(let i=0;i<6;i++){ const a=rand()*Math.PI*2, x=Math.round(s.x+Math.cos(a)*s.r*.5), z=Math.round(s.z+Math.sin(a)*s.r*.5); let y=s.y-4; while(get(x,y,z) && y>s.y-40) y--; for(let k=0;k<3;k++) set(x,y-k,z,"crystal"); }
 
@@ -127,8 +130,8 @@ export function build(A){
   for(const [x,y,z,r,d] of [[-44,30,-24,9,"tree"],[146,38,-14,10,"tower"],[96,52,-74,12,"fall"],[0,46,-94,9,"tree"],[-96,26,40,8,"fall"],[186,30,58,9,"tree"],[60,64,-150,14,"tower"],[-120,58,-110,12,"tree"],[230,50,-60,11,"fall"],[-70,40,-48,6,"tower"]]) farIsland(x,y,z,r,d);
 
   // Riesiger Adler und kleine Vögel
-  const creatures = [{ ...eagle(), orbit:{c:[46,46,16], r:[30,22], speed:.11, ph:3.6, bob:2, bank:-.32}, scale:.85 },
-                     { ...eagle(), orbit:{c:[60,70,-90], r:[90,40], speed:.06, ph:3, bob:4, bank:-.25}, scale:1.2, noShadow:true }];
+  const creatures = [{ ...eagle(), orbit:{c:[46,46,16], r:[30,22], speed:.11, ph:3.6, bob:2, bank:-.32}, scale:.42 },
+                     { ...eagle(), orbit:{c:[60,70,-90], r:[90,40], speed:.06, ph:3, bob:4, bank:-.25}, scale:.6, noShadow:true }];
   for(let i=0;i<9;i++) creatures.push({ ...bird(i%3?0xFFFFFF:0xE8EEF8), orbit:{c:[46+(i%3)*2,30+(i%4),30+(i%2)*3], r:[40,24], speed:.12, ph:i*.1, bob:1}, scale:.5, noShadow:true });
   const ship=[]; for(let a=-4;a<=4;a++){ ship.push([a,0,0,0xC08A50],[a,0,1,0xC08A50],[a,0,-1,0xC08A50]); for(let b=-2;b<=2;b++) for(let c=-2;c<=2;c++) if((a/4.6)**2+(b/2.2)**2+(c/2.2)**2<=1) ship.push([a,4+b,c, (a+8)%3?0xF4F4F4:0x3A78E0]); }
   const movers = [{cubes:ship, center:[46,40,-16], radius:[56,8], speed:.04, ph:1, scale:1, bob:1.5, face:Math.PI/2}];

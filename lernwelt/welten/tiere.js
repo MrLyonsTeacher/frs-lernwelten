@@ -27,56 +27,86 @@ export function M(){
 }
 const part = (m, pivot, rot, extra) => ({ cubes: m.list(), pivot, rot, ...(extra||{}) });
 
-/* ---------- Drache (Feuerwelt) ---------- */
+/* ---------- Drache (Feuerwelt) – feiner gebaut (doppelte Auflösung, im Spiel mit scale ≈ .55) ---------- */
 export function dragon(){
-  const RED=0x9A1E16, RED2=0x7A1410, BELLY=0xE8A848, SPIKE=0x2A0A08, HORN=0xEFE2C4, MEM=0xC8481E, MEM2=0xA8361A, BONE=0x4A0E0C;
-  const body = M(), scales = (x,y,z) => y < -1.2 ? BELLY : ((x+z+y)%3===0 ? RED2 : RED);
-  body.ell(0,0,0,7,3,3.2,scales);
-  for(let x=-6;x<=6;x+=2){ body.put(x,4,0,SPIKE); if(Math.abs(x)<5) body.put(x,5,0,SPIKE); }
-  body.seg([6,1,0],[11,5,0],2.1,1.6,scales);
-  for(let i=0;i<3;i++) body.put(7+i*2,4+i*1.6,0, SPIKE), body.put(7+i*2,5+i*1.6,0, SPIKE);
-  // Kopf
-  body.ell(13,6,0,2.4,1.7,1.7,RED).box(14,4,-1,17,6,1,RED).box(14,4,-1,16,4,1,BELLY);
-  body.put(17,6,-1,0x1A0606).put(17,6,1,0x1A0606);                // Nüstern
-  body.put(14,7,-2,0xFFE040,1).put(14,7,2,0xFFE040,1);              // Augen
-  body.put(13,7,-2,0x2A0A08).put(13,7,2,0x2A0A08);
-  body.line([12,8,-1],[9,11,-2],HORN).line([12,8,1],[9,11,2],HORN);  // Hörner
-  body.box(15,4,0,16,4,0,0xFFB030,1);                                // Glut im Maul
-  for(let x=14;x<=16;x++) body.put(x,3,-1,0xF4EEDC), body.put(x,3,1,0xF4EEDC); // Zähne
-  // Beine (angelegt) mit Krallen
-  for(const s of [-1,1]){ body.seg([4,-2,2*s],[5,-5,2.4*s],1.2,1,RED); body.put(6,-6,2.4*s,HORN); body.put(5,-6,2.4*s,HORN);
-    body.seg([-4,-2,2.4*s],[-2,-5,2.8*s],1.4,1,RED); body.put(-1,-6,2.8*s,HORN); body.put(-2,-6,2.8*s,HORN); }
-  // Schwanz
-  const tail = M(); const pts = [[-6,0,0],[-11,-.5,0],[-16,-1.5,0],[-21,-2,0]];
-  for(let i=0;i<pts.length-1;i++) tail.seg(pts[i],pts[i+1], 2.2-i*.55, 1.6-i*.5, scales);
-  for(let x=-8;x<=-18;x-=2) tail.put(x,2-Math.max(0,(-x-8)*.12),0,SPIKE);
-  tail.poly([[-21,0],[-24,-2.4],[-27,0],[-24,2.4]], ()=>-2, SPIKE);
-  // Flügel
-  const wing = M(), shape = [[3,2],[1,11],[-1,22],[-7,19],[-11,14],[-9,8],[-7,2]];
-  wing.poly(shape, (x,z)=>2+Math.round(z*.1), (x,y,z)=> (x+z)%4===0 ? MEM2 : MEM);
-  wing.line([3,3,2],[1,4,11],BONE).line([1,4,11],[-1,5,22],BONE);
-  for(const tip of [[-7,4,19],[-11,3,14],[-9,3,8]]) wing.line([1,4,11],tip,BONE);
-  wing.put(-1,6,22,HORN).put(1,5,11,HORN);
-  const wingR = wing.mirrorZ();
-  return { parts:[ part(body,[0,0,0]), part(tail,[-6,0,0],["y",.22,1.1,0]),
-    part(wing,[3,2,2],["x",.6,2.0,0,-.05]), part(wingR,[3,2,-2],["x",-.6,2.0,0,.05]) ] };
+  const R1=0xA4241A, R2=0x7E1912, R3=0xC43A22, BEL=0xE8B050, BEL2=0xC88E34, SP=0x2A0E0A, HORN=0xF0E6CC, HORN2=0xC8B890, EYE=0xFFE860, MEM=0xD8562A, MEM2=0xB8401E, VEIN=0x7A1E12, BONE=0x5A1410;
+  const scale = (x,y,z) => { if(y < -2.6) return (Math.round(x)%3===0) ? BEL2 : BEL; const k=((Math.round(x)+2*Math.round(z)+Math.round(y))%5+5)%5; return k===0 ? R2 : k===3 ? R3 : R1; };
+  const body = M();
+  body.ell(0,0,0,13,6,6.5,scale);
+  body.ell(9,1,0,5,5.5,5.8,scale);                                   // Brust
+  for(let x=-12;x<=12;x+=3){ const h = 3 + (x>-6 && x<8 ? 1 : 0); for(let k=1;k<=h;k++) body.put(x,6+k,0,SP).put(x-1,6+k-1,0,SP); }
+  // Hals
+  body.seg([11,3,0],[17,8,0],4.6,3.8,scale).seg([17,8,0],[22,12,0],3.8,3.2,scale);
+  for(let i=0;i<4;i++){ const x=13+i*3, y=8+i*1.6; body.put(x,y+4,0,SP).put(x,y+5,0,SP); }
+  // Kopf: Schädel, Schnauze, Kiefer, Zähne, Augen, Hörner, Nüstern
+  const head = M();
+  head.ell(25,13,0,4.6,3.4,3.6,scale);
+  for(let x=27;x<=34;x++){ const w = x<31 ? 2 : 1, t = x<32 ? 3 : 2; head.box(x,11,-w,x,11+t-1,w,(xx,yy,zz)=> yy===11 ? BEL : scale(xx,yy,zz)); }
+  head.box(26,8,-2,33,9,2,(x,y,z)=> y===9 ? BEL2 : R2);                       // Unterkiefer
+  for(let x=27;x<=33;x+=2){ head.put(x,10,-2,0xFFFFFF).put(x,10,2,0xFFFFFF); }       // Zähne
+  head.box(27,10,-1,32,10,1,0xFF9A30,1);                                            // Glut im Maul
+  head.put(34,13,-1,0x140404).put(34,13,1,0x140404);                                // Nüstern
+  head.box(28,14,-4,29,14,-4,EYE,1).box(28,14,4,29,14,4,EYE,1).put(29,14,-4,0x220000).put(29,14,4,0x220000);
+  head.box(27,15,-4,30,15,-3,SP).box(27,15,3,30,15,4,SP);                           // Brauenwulst
+  for(const s of [-1,1]){ head.line([24,15,2*s],[20,19,4*s],HORN).line([20,19,4*s],[16,20,5*s],HORN2).line([16,20,5*s],[14,19,5*s],HORN2);
+    head.line([23,10,4*s],[20,9,6*s],SP).line([22,12,4*s],[19,12,6*s],SP); }
+  // Beine mit Krallen
+  for(const s of [-1,1]){
+    body.seg([8,-4,5*s],[10,-9,6*s],2.4,1.8,scale).seg([10,-9,6*s],[13,-12,6*s],1.8,1.4,scale);
+    for(const dz of [-1,0,1]) body.line([13,-12,6*s+dz],[15,-13,6*s+dz*1.5],HORN);
+    body.ell(-8,-3,5.5*s,4,4,3,scale).seg([-8,-6,6*s],[-6,-11,6.5*s],2.2,1.6,scale);
+    for(const dz of [-1,0,1]) body.line([-6,-11,6.5*s+dz],[-3,-12,6.5*s+dz*1.5],HORN); }
+  // Schwanz in zwei Gliedern (wellt sich)
+  const tail1 = M(), tail2 = M();
+  tail1.seg([-12,0,0],[-20,-1,0],5,4,scale).seg([-20,-1,0],[-28,-3,0],4,3,scale);
+  for(let x=-14;x>=-28;x-=3) tail1.put(x,4-(x+14)*-.05,0,SP).put(x,5-(x+14)*-.05,0,SP);
+  tail2.seg([-28,-3,0],[-36,-4,0],3,2,scale).seg([-36,-4,0],[-44,-4,0],2,1.2,scale);
+  for(let x=-30;x>=-42;x-=3) tail2.put(x,-1,0,SP);
+  tail2.poly([[-44,0],[-48,-4],[-54,0],[-48,4]], ()=>-4, SP).poly([[-46,0],[-48,-2],[-51,0],[-48,2]], ()=>-3, R2);
+  // Flügel: Knochen, Haut mit Adern, gezackter Hinterrand; Außenflügel schwingt nach
+  const inner = M(), outer = M();
+  const shape = [[6,6],[3,18],[-1,30],[-3,34],[-17,24],[-14,14],[-6,6]];
+  const shapeO = [[-1,30],[-6,46],[-9,40],[-16,40],[-15,32],[-24,30],[-17,24],[-3,34]];
+  const memCol = (x,y,z) => { const r = Math.abs(Math.sin(x*.5+z*.18)); return r>.93 ? VEIN : ((Math.round(x)+Math.round(z))%5===0 ? MEM2 : MEM); };
+  const wy = (x,z) => 8 + Math.round(z*.12);
+  inner.poly(shape, wy, memCol); outer.poly(shapeO, wy, memCol);
+  const bone = (m,a,b,r) => m.seg(a,b,r,r*.8,BONE);
+  bone(inner,[6,9,6],[2,10,20],1.2); bone(inner,[2,10,20],[-1,12,30],1); inner.line([2,10,20],[-14,10,14],BONE).line([-1,12,30],[-17,11,24],BONE);
+  bone(outer,[-1,12,30],[-2,12,34],1); outer.line([-2,12,34],[-6,12,46],BONE).line([-2,12,34],[-16,11,40],BONE).line([-2,12,34],[-24,10,30],BONE);
+  outer.put(-2,13,34,HORN).put(-3,14,35,HORN).put(-6,13,46,HORN);
+  const innerR = inner.mirrorZ(), outerR = outer.mirrorZ();
+  return { parts:[ part(body,[0,0,0]), part(head,[22,12,0],["z",.08,1.1,0]), part(tail1,[-12,0,0],["y",.16,1.1,0]), {...part(tail2,[-28,-3,0],["y",.28,1.1,-.8]), parent:2},
+    part(inner,[4,8,5],["x",.55,2.0,0,-.05]), {...part(outer,[-1,12,30],["x",.35,2.0,-.6]), parent:4},
+    part(innerR,[4,8,-5],["x",-.55,2.0,0,.05]), {...part(outerR,[-1,12,-30],["x",-.35,2.0,-.6]), parent:6} ] };
 }
 
-/* ---------- Adler (Luftwelt) ---------- */
+/* ---------- Adler (Luftwelt) – mit einzelnen Federn (doppelte Auflösung, scale ≈ .5) ---------- */
 export function eagle(){
-  const BR=0x6A4426, BR2=0x5A3820, GOLD=0xC8963E, LIGHT=0xE0B866, DARK=0x2E1E10, BEAK=0xF0C040;
+  const B1=0x5E3A1E, B2=0x4A2C16, B3=0x7A4E28, GOLD=0xD8A84E, GOLD2=0xB8863A, LIGHT=0xF0D49A, DARK=0x24160C, BEAK=0xF2C238, BEAK2=0x8A6A20, TAL=0xE8B830;
+  const fe = (x,y,z) => { const k=((Math.round(x)+(Math.round(y)%2?1:0)*2+Math.round(z))%3+3)%3; return y < -2 ? (k===0?B3:0x6A4422) : k===0 ? B2 : k===1 ? B1 : B3; };
   const body = M();
-  body.ell(0,0,0,5,2,2.2,(x,y,z)=> y<-1 ? 0x8A6034 : ((x+z)%3===0?BR2:BR));
-  body.ell(5.5,1,0,2.2,1.8,1.7,(x,y,z)=> (x+y)%3===0 ? LIGHT : GOLD);           // Kopf
-  body.box(8,0,0,8,1,0,BEAK).put(9,0,0,BEAK).put(9,-1,0,0x8A6A20).put(8,-1,0,BEAK); // Schnabel
-  body.put(7,2,-2,0x101010).put(7,2,2,0x101010).put(7,3,-2,LIGHT).put(7,3,2,LIGHT); // Augen, Brauen
-  body.poly([[-4,-1.5],[-10,-3.5],[-10,3.5],[-4,1.5]], ()=>0, (x,y,z)=> x<-8 ? DARK : BR2); // Schwanzfächer
-  for(const s of [-1,1]) body.box(0,-3,s,1,-2,s,BEAK).put(2,-3,s,DARK);           // Krallen
-  const wing = M(), shape=[[3,2],[2.5,9],[1,15],[-1,20],[-4,22],[-6,20],[-6,15],[-5,9],[-4,2]];
-  wing.poly(shape, (x,z)=>1+Math.round(z*.09), (x,y,z)=> z>15 || x<-4 ? DARK : (x>1 ? LIGHT : ((x+z)%3===0?BR2:BR)));
-  for(const [fx,fz] of [[-5,22],[-7,21],[-8,19],[-8,17]]) wing.line([-3,3,fz-2],[fx,3,fz],DARK); // Schwungfedern
-  const wingR = wing.mirrorZ();
-  return { parts:[ part(body,[0,0,0]), part(wing,[1,1,2],["x",.22,1.3,0,-.12]), part(wingR,[1,1,-2],["x",-.22,1.3,0,.12]) ] };
+  body.ell(0,0,0,10,4.5,4.6,fe);
+  body.ell(6,0,0,4.5,4.2,4.2,(x,y,z)=> y<-1 ? 0x7A5230 : fe(x,y,z));
+  body.ell(10,2.5,0,3.4,3.6,3.4,(x,y,z)=> (Math.round(x+y)%3===0) ? GOLD2 : GOLD);   // Hals mit Federkrause
+  body.ell(12,4,0,4,3.6,3.4,(x,y,z)=> (Math.round(x*2+z)%4===0) ? GOLD2 : (y>5 ? LIGHT : GOLD));
+  body.box(15,3,-1,17,5,1,BEAK).box(18,3,0,18,5,0,BEAK).put(18,2,0,BEAK2).put(17,2,0,BEAK).put(19,4,0,BEAK2);  // Hakenschnabel
+  body.box(15,5,-1,15,5,1,0xF4D060);
+  for(const s of [-1,1]){ body.box(13,5,3*s,14,5,3*s,0xE89A20).put(14,5,3*s,0x101010).box(12,6,3*s,15,6,3*s,0x3A2410); }   // Augen mit Brauen
+  // Schwanzfächer aus Einzelfedern
+  for(let i=-5;i<=5;i++){ const len = 9 + (Math.abs(i)<2?2:0); for(let k=0;k<len;k++){ const x=-9-k, z=i*.7*(1+k/len*.8); body.put(x,0,z, k>len-3 ? DARK : (i%2? B2 : B1)); if(k>len-3 && k%2) body.put(x,0,z+.4,LIGHT); } }
+  // Fänge
+  for(const s of [-1,1]){ body.box(-1,-6,2*s,0,-5,2*s,TAL).box(1,-7,2*s,1,-6,2*s,TAL); for(const dz of [-1,0,1]) body.put(2,-7,2*s+dz,DARK); body.put(-2,-7,2*s,DARK); }
+  // Flügel: Deckfedern, helle Vorderkante, Armschwingen als Zacken, gespreizte Handschwingen
+  const wing = M(), tip = M();
+  const wy = z => 1 + Math.round(z*.06);
+  wing.poly([[7,4],[6,14],[4,24],[2,30],[-8,30],[-9,20],[-8,10],[-6,4]], (x,z)=>wy(z), (x,y,z)=> x>4 ? GOLD : x>1 ? ((Math.round(x)+Math.round(z))%3===0?B3:GOLD2) : fe(x,y,z));
+  for(let z=4; z<=30; z+=2){ const len = 5 + (z%4===0?2:0); for(let k=0;k<len;k++) wing.put(-8-k, wy(z), z, k>len-2 ? DARK : (k%3===0?B2:B1)); }
+  const fingers = [[30,0],[32,1],[34,2],[36,3],[38,4],[40,5],[42,6]];
+  for(const [z0,i] of fingers){ const len = 12 + i*1.2; for(let k=0;k<len;k++){ const x = 1 - k*.95, z = z0 + k*(.25+i*.06), y = wy(z0) + Math.max(0,(z0-36))*.12 + k*.05; tip.put(x,y,z, k<3 ? B1 : DARK); } }
+  tip.poly([[4,28],[2,38],[-4,36],[-6,30]], (x,z)=>wy(z), (x,y,z)=> x>2 ? GOLD : B1);
+  const wingR = wing.mirrorZ(), tipR = tip.mirrorZ();
+  return { parts:[ part(body,[0,0,0]), part(wing,[2,1,4],["x",.2,1.3,0,-.1]), {...part(tip,[2,2,28],["x",.16,1.3,-.5,-.04]), parent:1},
+    part(wingR,[2,1,-4],["x",-.2,1.3,0,.1]), {...part(tipR,[2,2,-28],["x",-.16,1.3,-.5,.04]), parent:3} ] };
 }
 
 /* ---------- Wal (Wasserwelt) ---------- */
@@ -129,15 +159,22 @@ export function unicorn(){
   return { parts:[ part(body,[0,0,0]), part(head,[5,9,0],["z",.22,.8,0,-.2]), part(tail,[-4,7,0],["y",.35,1.6,0]) ] };
 }
 
-/* ---------- Eisbär (Eiswelt) ---------- */
+/* ---------- Eisbär (Eiswelt) – detailliert (doppelte Auflösung, scale ≈ .45) ---------- */
 export function polarBear(o={}){
-  const F=0xF2EEE0, F2=0xE4DECC, DARK=0x1A1A1A, step=o.walk ? (o.speed||5) : 0;
-  const body = M(); body.ell(0,5,0,4.5,2.6,2.4,(x,y,z)=> (x+y+z)%4===0 ? F2 : F);
-  body.ell(-1,6,0,2,2.6,2.4,F); body.put(-5,6,0,F);
-  const head = M(); head.ell(6,6,0,1.8,1.5,1.4,F).box(8,5,-1,9,6,1,F).put(10,6,0,DARK).put(10,5,0,F2);
-  head.put(8,7,-1,DARK).put(8,7,1,DARK).put(5,8,-1,F2).put(5,8,1,F2);
-  const parts = [ part(body,[0,0,0]), part(head,[4,6,0], step ? ["z",.12,step,0] : ["y",.4,.6,0]) ];
-  [[2.5,-1.5,0],[2.5,1.5,Math.PI],[-2.5,-1.5,Math.PI],[-2.5,1.5,0]].forEach(([lx,lz,ph])=>{ const l=M().box(lx,0,lz,lx+1,3,lz,F).box(lx,0,lz,lx+1,0,lz,F2); parts.push(part(l,[lx+.5,3.5,lz], step?["z",.45,step,ph]:null)); });
+  const F=0xF4F0E2, F2=0xE6DFCA, F3=0xD8D0B8, DARK=0x16181C, PAD=0x2A2A30, step=o.walk ? (o.speed||5) : 0;
+  const fur = (x,y,z) => { const k=((Math.round(x*1.3)+Math.round(y)*2+Math.round(z))%5+5)%5; return y < 2 ? F3 : k===0 ? F2 : F; };
+  const body = M();
+  body.ell(0,12,0,10,6,5.6,fur); body.ell(5,13,0,5,6.4,5.4,fur); body.ell(-6,12,0,5,6,5.4,fur);   // Rumpf, Schulterbuckel, Hinterteil
+  body.ell(-10,13,0,1.4,1.4,1.2,F2);                                                                   // Stummelschwanz
+  const head = M();
+  head.ell(12,14,0,3.6,3.4,3.2,fur).ell(15,13,0,2.6,2.2,2.1,fur).box(17,12,-1,18,13,1,F2);              // Kopf, Schnauze
+  head.box(19,13,-1,19,13,1,DARK).put(19,12,0,DARK).box(16,11,-1,17,11,1,0x8A8070);                     // Nase, Maul
+  head.put(14,16,-3,DARK).put(14,16,3,DARK);                                                             // Augen
+  head.box(10,17,-3,11,18,-2,F2).box(10,17,2,11,18,3,F2).put(10,17,-3,F3).put(10,17,3,F3);               // Ohren
+  const parts = [ part(body,[0,0,0]), part(head,[9,14,0],["y",.42,.5,0]) ];
+  [[5,-3,0],[5,3,Math.PI],[-6,-3,Math.PI],[-6,3,0]].forEach(([lx,lz,ph])=>{ const l=M();
+    l.ell(lx,6,lz,2.4,4,2.2,fur).box(lx-1,0,lz-1,lx+2,2,lz+1,fur).box(lx+2,0,lz-1,lx+2,0,lz+1,PAD).put(lx+3,0,lz,F3);
+    parts.push({...part(l,[lx,9,lz], step?["z",.42,step,ph]:null), gait:true}); });
   return { parts };
 }
 
@@ -155,15 +192,21 @@ export function stag(){
   return { parts:[ part(body,[0,0,0]), part(head,[5,11,0],["z",.28,.7,0,-.25]), part(tail,[-4,9,0],["y",.5,3,0]) ] };
 }
 
-/* ---------- Frostfuchs (Eiswelt) ---------- */
+/* ---------- Frostfuchs (Eiswelt) – detailliert (doppelte Auflösung, scale ≈ .25) ---------- */
 export function frostFox(o={}){
-  const F=o.col||0xEAF4FF, F2=0xC8DEF4, TIP=0x9ACCF0, DARK=0x1A2230, step=o.walk ? (o.speed||9) : 0;
-  const body = M(); body.ell(0,4,0,3,1.4,1.2,(x,y,z)=> (x+y)%3===0 ? F2 : F);
-  const head = M(); head.ell(4,5,0,1.4,1.2,1.1,F).box(5,4,0,7,4,0,F).put(7,5,0,F).put(8,4,0,DARK).put(5,6,-1,DARK).put(5,6,1,DARK);
-  head.box(3,6,-1,3,8,-1,F2).box(3,6,1,3,8,1,F2).put(3,8,-1,TIP).put(3,8,1,TIP);
-  const tail = M().seg([-3,5,0],[-6,6,0],1.1,1.5,F).seg([-6,6,0],[-8,5,0],1.5,1,TIP);
-  const parts = [ part(body,[0,0,0]), part(head,[3,5,0],["y",.15,step||1.2,0]), part(tail,[-3,5,0],["y",.35,step?step*.5:1.5,0]) ];
-  [[2,-1,0],[2,1,Math.PI],[-2,-1,Math.PI],[-2,1,0]].forEach(([lx,lz,ph])=>{ const l=M().box(lx,0,lz,lx,3,lz,F2).put(lx,0,lz,TIP); parts.push(part(l,[lx,3,lz], step?["z",.7,step,ph]:null)); });
+  const F=o.col||0xF2F8FF, F2=0xD6E6F6, F3=0xB8D2EC, BLUE=0x5AB8F0, DARK=0x141C28, step=o.walk ? (o.speed||9) : 0;
+  const fur = (x,y,z) => { const k=((Math.round(x)+Math.round(y)*2+Math.round(z))%4+4)%4; return y > 11 && k===0 ? F3 : k===1 ? F2 : F; };
+  const body = M(); body.ell(0,9,0,6,3,2.7,fur); body.ell(5,8.5,0,2.8,3.2,2.6,(x,y,z)=> y<8 ? 0xFFFFFF : fur(x,y,z));   // Rumpf, flauschige Brust
+  const head = M();
+  head.ell(9,12,0,3,2.6,2.4,fur);
+  for(let x=11;x<=14;x++){ const w = x<13 ? 1 : 0; head.box(x,10,-w,x,11 - (x>13?1:0),w,F); }
+  head.put(15,10,0,DARK);                                                                             // Nase
+  for(const s of [-1,1]){ head.put(11,13,2*s,BLUE).put(11,13,2*s+(s>0?.6:-.6),DARK).put(10,14,2*s,F2);
+    head.box(8,14,1.6*s,9,15,1.6*s,F).box(8,16,1.8*s,8,17,1.8*s,F2).put(8,18,1.8*s,F3).put(9,15,1.2*s,0xCFE6FF); // Ohren
+    head.put(9,10,2.6*s,0xFFFFFF).put(8,9,2.4*s,0xFFFFFF); }                                          // Wangenfell
+  const tail = M(); tail.seg([-6,10,0],[-11,11,0],1.8,2.6,fur).seg([-11,11,0],[-16,10,0],2.6,2.8,fur).seg([-16,10,0],[-19,8,0],2.6,1.4,(x,y,z)=> x<-17 ? 0xE6F4FF : fur(x,y,z));
+  const parts = [ part(body,[0,0,0]), part(head,[7,11,0],["y",.5,.65,0]), part(tail,[-6,10,0],["y",.3,1.6,0]) ];
+  [[4,-1.5,0],[4,1.5,Math.PI],[-4,-1.5,Math.PI],[-4,1.5,0]].forEach(([lx,lz,ph])=>{ const l=M().box(lx,1,lz,lx+1,7,lz+(lz>0?-.5:.5),F2).box(lx,0,lz,lx+2,0,lz,F3); parts.push({...part(l,[lx,7,lz], step?["z",.75,step,ph]:null), gait:true}); });
   return { parts };
 }
 
@@ -190,4 +233,27 @@ export function bird(col=0xFFFFFF){
   const b = M().ell(0,0,0,1.2,.6,.6,col).put(2,0,0,0xF0A030);
   const w = M().poly([[1,0],[0,4],[-1,4],[-1,0]],()=>0,col); const wR = w.mirrorZ();
   return { parts:[ part(b,[0,0,0]), part(w,[0,0,1],["x",.7,6,0]), part(wR,[0,0,-1],["x",-.7,6,0]) ] };
+}
+
+/* ---------- Delfin (Wasserwelt, scale ≈ .5) ---------- */
+export function dolphin(){
+  const TOP=0x5A7A9A, TOP2=0x4A6888, SIDE=0x8AA4BC, BELLY=0xE2EAF2, DARK=0x18202A;
+  const body = M();
+  for(let x=-12;x<=10;x++){ const f=(x+1)/12, r = x>=-1 ? 3.6*Math.sqrt(Math.max(0,1-f*f*.85)) : 3.6*Math.max(.25, 1-((-x-1)/12)**1.4), ry=r*.9;
+    for(let y=Math.floor(-ry-1);y<=Math.ceil(ry+1);y++) for(let z=Math.floor(-r-1);z<=Math.ceil(r+1);z++){ if((y/(ry+.35))**2+(z/(r+.35))**2>1) continue;
+      body.put(x,y,z, y < -ry*.3 ? BELLY : y < ry*.2 ? SIDE : ((x+z)%4===0 ? TOP2 : TOP)); } }
+  body.box(11,-1,-1,14,0,1,(x,y,z)=> y<0 ? BELLY : SIDE).put(15,0,0,SIDE);                              // Schnabel
+  body.put(9,1,-3,DARK).put(9,1,3,DARK);                                                               // Augen
+  body.line([-1,3,0],[-4,7,0],TOP2).line([-2,3,0],[-5,6,0],TOP2).line([0,3,0],[-3,6,0],TOP);          // Rückenflosse
+  for(const s of [-1,1]) body.line([4,-2,3*s],[1,-4,6*s],SIDE).line([3,-2,3*s],[0,-4,5*s],SIDE);       // Brustflossen
+  const fluke = M(); fluke.poly([[-12,-1.2],[-15,-4],[-17,-6],[-16,-2],[-15,0],[-16,2],[-17,6],[-15,4],[-12,1.2]], ()=>0, TOP2);
+  return { parts:[ part(body,[0,0,0]), part(fluke,[-12,0,0],["z",.45,2.6,0]) ] };
+}
+
+/* ---------- Fledermaus (Zwergenstadt, scale ≈ .45) ---------- */
+export function bat(){
+  const B=0x2A2230, B2=0x3E3446, MEM=0x4A3A52, EYE=0xFF4A3A;
+  const body = M().ell(0,0,0,2,1.2,1.2,B).ell(2,.5,0,1.2,1.2,1.1,B2).put(3,1,-1,EYE,1).put(3,1,1,EYE,1).put(2,2,-1,B).put(2,2,1,B).put(2,3,-1,B).put(2,3,1,B);
+  const w = M().poly([[1.5,1],[0,5],[-1,8],[-2,9],[-3,6],[-3,4],[-2,1]], ()=>0, (x,y,z)=> (Math.round(z)%3===0) ? B : MEM); w.line([1,0,1],[-1,0,8],B);
+  return { parts:[ part(body,[0,0,0]), part(w,[0,0,1],["x",1.0,14,0]), part(w.mirrorZ(),[0,0,-1],["x",-1.0,14,0]) ], noShadow:true };
 }
