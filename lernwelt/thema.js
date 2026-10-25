@@ -29,7 +29,7 @@
         punkteName: "flags", kartenSymbol: c.kartenSymbol || c.icon || "⭐", konfetti: c.k==8 ? ["#B22234","#3C3B6E","#FFFFFF","#FFC24A"] : KONF[th],
         lob: c.lob || {3:"Amazing! You are a real expert.", 2:"Great job! Can you get three stars next time?", 1:"Good start – try again and you will get better.", 0:"Don’t give up! Read the tips and try again."},
         audio: `../audio/${c.id}/`, akzent: c.k==8 ? "en-US" : "en-GB",
-        lernen: c.lernen, levels: c.levels
+        lernen: c.lernen, levels: c.levels, kat: c.kat, G: c.G, E: c.E
       });
     }
   };

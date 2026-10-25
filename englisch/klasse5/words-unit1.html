@@ -37,7 +37,13 @@ TH.start({
       items:[ {t:"table", k:0}, {t:"chair", k:0}, {t:"shelf", k:0}, {t:"wardrobe", k:0}, {t:"carpet", k:0},
               {t:"purple", k:1}, {t:"grey", k:1}, {t:"orange", k:1}, {t:"brown", k:1},
               {t:"parents", k:2}, {t:"grandfather", k:2}, {t:"cousin", k:2} ]},
-    { id:"quiz", typ:"quiz", icon:"👋", titel:"Hello, Greenwich!", art:"Phrases · quiz",
+    { id:"quiz", E:{auto:false, plus:[
+        {q:"Somebody says: “Nice to meet you.” You answer:", o:["Nice to meet you, too.","See you later.","I’m fine."], c:0},
+        {q:"What is **20** in English?", o:["twenty","twelve","twentieth"], c:0},
+        {q:"Somebody asks: “How do you spell your name?” You say:", o:["B – E – N.","My name is Ben.","I’m eleven."], c:0},
+        {q:"What’s **neben** in English?", o:["next to","under","behind"], c:0}
+      ]},
+      typ:"quiz", icon:"👋", titel:"Hello, Greenwich!", art:"Phrases · quiz",
       anleitung:"What do you say? Choose the right answer.",
       anleitungDe:"Was sagst du? Wähle die richtige Antwort.",
       tipp:"Ganze Sätze lernen hilft!",

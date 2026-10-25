@@ -32,7 +32,12 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"money", typ:"quiz", lernen:"money", icon:"💷", titel:"Money, Money, Money", art:"Prices · quiz",
+    { id:"money", E:{plus:[
+        {q:"Three cans of lemonade cost 80p each. How much is that?", o:["£2.40","£2.80","£1.60"], c:0},
+        {q:"How do you say **£12.50**?", o:["twelve pounds fifty","twelve fifty pence","one pound twenty-five"], c:0},
+        {q:"You pay with a £10 note. Your shopping is £6.30. Your change is …", o:["£3.70","£4.70","£3.30"], c:0}
+      ]},
+      typ:"quiz", lernen:"money", icon:"💷", titel:"Money, Money, Money", art:"Prices · quiz",
       anleitung:"Choose the right answer.",
       anleitungDe:"Wähle die richtige Antwort.",
       tipp:"100p = £1",
@@ -42,14 +47,20 @@ TH.start({
         {q:"What are **crisps** in German?", o:["Kartoffelchips","Pommes frites","Kekse"], c:0}, {q:"What are **chips** in Britain?", o:["Pommes frites","Kartoffelchips","Kekse"], c:0},
         {q:"You pay £5 for something that costs £4.25. Your change is …", o:["75p","£1.75","25p"], c:0}
       ]},
-    { id:"how", typ:"sortieren", lernen:"money", icon:"🧺", titel:"Fill the Basket", art:"a bag of, a can of … · sort",
+    { id:"how", E:{plus:[ {t:"cola", k:1}, {t:"potatoes", k:2} ]},
+      typ:"sortieren", lernen:"money", icon:"🧺", titel:"Fill the Basket", art:"a bag of, a can of … · sort",
       anleitung:"How do you buy it? Tap the right box.",
       anleitungDe:"Wie kauft man das? Tippe auf das richtige Kästchen.",
       tipp:"bag = Tüte, can = Dose, kilogram = Kilo, loaf = Laib.",
       koerbe:[ {t:"a bag of", info:"🛍️"}, {t:"a can of", info:"🥫"}, {t:"a kilogram of", info:"⚖️"}, {t:"a loaf of", info:"🍞"} ],
       items:[ {t:"apples", k:0}, {t:"nuts", k:0}, {t:"crisps", k:0}, {t:"peaches", k:1}, {t:"pet food", k:1}, {t:"tomatoes", k:1},
               {t:"oranges", k:2}, {t:"bananas", k:2}, {t:"bread", k:3} ]},
-    { id:"say", typ:"quiz", lernen:"money", icon:"🗣️", titel:"What Do You Say?", art:"Shopping phrases · quiz",
+    { id:"say", E:{plus:[
+        {q:"You want two apples.", o:["Can I have two apples, please?","Two apple, please.","I have two apples?"], c:0},
+        {q:"The shop assistant gives you your change.", o:["Thank you. Bye!","Pardon? Anything else?","How much are they?"], c:0},
+        {q:"You want to know the price of the peaches.", o:["How much are the peaches?","How much is the peaches?","How many are the peaches?"], c:0}
+      ]},
+      typ:"quiz", lernen:"money", icon:"🗣️", titel:"What Do You Say?", art:"Shopping phrases · quiz",
       anleitung:"You are in the corner shop. What do you say?",
       anleitungDe:"Du bist im Laden an der Ecke. Was sagst du?",
       tipp:"Höflich: please, thank you.",

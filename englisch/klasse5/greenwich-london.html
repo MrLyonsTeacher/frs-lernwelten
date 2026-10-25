@@ -34,7 +34,13 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"quiz", typ:"quiz", lernen:"gre", icon:"🕰️", titel:"Greenwich Quiz", art:"Quiz",
+    { id:"quiz", E:{plus:[
+        {q:"Where in London is Greenwich?", o:["in the south-east","in the north-west","in the city centre"], c:0},
+        {q:"What can you find at the **Royal Observatory**?", o:["the Prime Meridian","Big Ben","the Tube"], c:0},
+        {q:"Where did the Cutty Sark bring tea from?", o:["China","India","America"], c:0},
+        {q:"Who is the **head of state** of the UK?", o:["King Charles III","the Mayor of London","the Prime Minister"], c:0}
+      ]},
+      typ:"quiz", lernen:"gre", icon:"🕰️", titel:"Greenwich Quiz", art:"Quiz",
       anleitung:"What do you know about Greenwich? Choose the right answer.",
       anleitungDe:"Was weißt du über Greenwich? Wähle die richtige Antwort.",
       tipp:"Schau dir die Infokarten an.",
@@ -44,13 +50,19 @@ TH.start({
         {q:"What is the **Cutty Sark**?", o:["an old ship","a park","a shop"], c:0}, {q:"What did the Cutty Sark bring to Britain?", o:["tea","cars","bananas"], c:0},
         {q:"What can you see from **Greenwich Park**?", o:["London’s skyscrapers","the sea","mountains"], c:0}
       ]},
-    { id:"uk", typ:"memory", lernen:"gre", icon:"🇬🇧", titel:"UK Memory", art:"Pairs · memory",
+    { id:"uk", E:{plus:[ {a:"the Thames", b:"London’s river"}, {a:"Greenwich Park", b:"a park on a hill"} ]},
+      typ:"memory", lernen:"gre", icon:"🇬🇧", titel:"UK Memory", art:"Pairs · memory",
       anleitung:"Find the pairs. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Länder und Hauptstädte, London-Symbole.",
       paare:[ {a:"England", b:"London"}, {a:"Scotland", b:"Edinburgh"}, {a:"Wales", b:"Cardiff"}, {a:"Northern Ireland", b:"Belfast"},
               {a:"Big Ben", b:"a big bell"}, {a:"the Tube", b:"London’s underground"}, {a:"double-decker", b:"a bus with two floors"}, {a:"Charles III", b:"the King"} ]},
-    { id:"tf", typ:"swipe", lernen:"gre", icon:"✅", titel:"True or False?", art:"Swipe",
+    { id:"tf", E:{plus:[
+        {t:"The Prime Meridian is at the Royal Observatory.", r:"r"}, {t:"The Cutty Sark brought tea from China.", r:"r"},
+        {t:"Edinburgh is the capital of Wales.", r:"l", e:"Edinburgh is in **Scotland**. The capital of Wales is **Cardiff**."},
+        {t:"Greenwich is in the north of London.", r:"l", e:"It is in the **south-east**."}
+      ]},
+      typ:"swipe", lernen:"gre", icon:"✅", titel:"True or False?", art:"Swipe",
       anleitung:"Is it true? Swipe **right for True** and **left for False**.",
       anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
       tipp:"Lies genau.",

@@ -185,7 +185,7 @@ if(!KL){
 
 function prog(t){
   try{
-    const r = JSON.parse(localStorage.getItem("lw-"+t.id+"-v1") || "null"), meta = JSON.parse(localStorage.getItem("lw-meta-"+t.id) || "null");
+    const r = JSON.parse(localStorage.getItem("lw-"+t.id+"-v1") || "null"), meta = JSON.parse(localStorage.getItem("lw-meta-"+t.id+(UH.niv()!=="M"?"-"+UH.niv():"")) || localStorage.getItem("lw-meta-"+t.id) || "null");
     if(!r || !r.lv) return null;
     const ids = meta && meta.ids ? meta.ids : Object.keys(r.lv).filter(id => !["urkunde","certificate"].includes(id));
     const played = ids.filter(id => r.lv[id]); if(!played.length) return null;
@@ -206,7 +206,7 @@ async function main(){
 
   $("#bar").innerHTML = `<span class="wid"><span class="wk">Class ${K}</span><span class="wn">${esc(WI.name)}</span></span>
     <span class="wchip" id="rkChip" role="button" tabindex="0" title="${esc(RK().top?"Top rank!":RK().toNext+" more to "+RK().nextName)}"><span class="wfl">${UK} ${UH.today(K)}</span><span class="wri">${RK().icon}</span><span class="wrk"><b>${esc(RK().name)}</b><i><u style="width:${Math.round(RK().pct*100)}%"></u></i></span></span>
-    <span class="wsp"></span>
+    ${UH.prefsHTML()}<span class="wsp"></span>
     <button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
     <button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="long">If you’re finished, click here</span><span class="short">Finished?</span></button>`;
   $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${counts[b]}</span></button>`).join("");
@@ -280,6 +280,7 @@ async function main(){
   });
   F.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="nm"){ e.preventDefault(); $("#mk").click(); } });
   document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!F.hidden) F.hidden=true; else closeArea(); } });
+  UH.bindPrefs();
   $("#finBtn").addEventListener("click", openFinish);
   const rkc = $("#rkChip"); if(rkc){ const op=()=>UH.rankSheet(K, UH.today(K), true); rkc.addEventListener("click", op); rkc.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); op(); } }); }
   $("#resetBtn").addEventListener("click", ()=>{

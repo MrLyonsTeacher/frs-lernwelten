@@ -101,6 +101,7 @@ function maxOf(lv){
     case "satzbau": return lv.saetze.length*(lv.punkte||2);
     case "schaetzen": return lv.fragen.length*2;
     case "lueckentext": return (lv.text.match(/\[\[/g)||[]).length;
+    case "eingabe": return lv.fragen.length*(lv.punkte||1);
   }
   return 0;
 }
@@ -240,6 +241,7 @@ function topbar(o){
     ${o.island?`<button class="back" data-href="${esc(W.insel.href)}" aria-label="${T.island}"><span aria-hidden="true">${W.insel.icon||"🗺️"}</span><span class="bl"> ${T.island}</span></button>`:""}
     ${o.title?`<div class="tb-title"><span class="ic" aria-hidden="true">${o.icon||"🎯"}</span><div style="min-width:0">${o.art?`<p class="tb-art">${esc(o.art)}</p>`:""}<h1 class="disp">${esc(o.title)}</h1></div></div>`:`<span class="sp"></span>`}
     ${o.pill?`<button class="pill-fin" ${finTarget()}><span aria-hidden="true">🏁</span> ${T.finishPill}</button>`:""}
+    ${RANKED && UH.prefsHTML ? UH.prefsHTML() : ""}
     <span class="chip${RANKED?" rchip":""}" id="ptsChip"${RANKED?` role="button" tabindex="0" aria-label="${esc(T.allRanks)}"`:""}>${chipInner()}</span></div>`;
 }
 function howBox(text, de, tip, extra){
@@ -634,12 +636,12 @@ GAMES.satzbau = (l, A, done) => {
   const norm = a => a.join(" ").replace(/,/g," ").replace(/\s+/g," ").replace(/\s+([?.!])/g,"$1").trim().toLowerCase();
   function setup(){
     const s=ss[i]; picked=[]; checked=false;
-    do { tiles = shuffle(s.w.map((w,k)=>({w,k}))); } while(s.w.length>2 && tiles.every((t,k)=>t.k===k));
+    do { tiles = shuffle(s.w.map((w,k)=>({w,k})).concat((s.extra||[]).map(w=>({w,k:-1})))); } while(s.w.length>2 && tiles.every((t,k)=>t.k===k));
     show();
   }
   function show(){
     closeSheet();
-    const s=ss[i], full = picked.length===tiles.length;
+    const s=ss[i], full = picked.length>=s.w.length;
     A.innerHTML = progressBar(fill(res,ss.length), i) +
       `<div class="panel"><p class="q sm">${rich(s.aufgabe||T.tiles)}</p>${s.hint?`<p class="hint">${rich(s.hint)}</p>`:""}
       <div class="answer${checked?(res[i]?" ok":" no"):""}" id="ans">${picked.map((t,p)=>`<button class="tile" ${checked?"disabled":`data-rm="${p}"`}>${esc(tiles[t].w)}</button>`).join("")}</div>
@@ -691,6 +693,29 @@ GAMES.schaetzen = (l, A, done) => {
   show();
 };
 
+// tolerante Prüfung getippter Antworten: Groß/klein, Satzzeichen, Apostrophe, Kurzformen
+const normA = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/\bshan't\b/g,"shall not")
+  .replace(/n't\b/g," not").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ve\b/g," have").replace(/'ll\b/g," will").replace(/'d\b/g," would").replace(/\b(it|he|she|that|what|there|who|where|here|how)'s\b/g,"$1 is")
+  .replace(/can not/g,"cannot").replace(/[.,!?;:"“”()–—-]/g," ").replace(/\s+/g," ").trim();
+const same = (v, ans) => v!==null && v!==undefined && [].concat(ans).some(a => normA(a)===normA(v));
+
+GAMES.eingabe = (l, A, done) => {
+  const qs = l.mischen===false ? l.fragen.slice() : shuffle(l.fragen), P = l.punkte||1, res=[]; let i=0, pts=0, locked=false;
+  function show(){
+    closeSheet(); locked=false; const q=qs[i];
+    A.innerHTML = progressBar(fill(res,qs.length), i) + `<div class="panel qpanel">
+      ${q.szene?`<p class="scene">${rich(q.szene)}</p>`:""}<p class="q">${rich(q.q)}</p>${q.hilfe?`<p class="hint">${rich(q.hilfe)}</p>`:""}
+      <div class="row type-row"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer" placeholder="…"><button class="btn big" id="chk">${T.check}</button></div></div>`;
+    const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } });
+  }
+  A.onclick = e => { if(!e.target.closest("#chk") || locked) return; const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
+    locked=true; $("#ans").disabled=true; const ok = same(v, q.a); res.push(ok);
+    if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e); }
+    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||""), i<qs.length-1?T.next:T.result,
+      ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); }); };
+  show();
+};
+
 GAMES.lueckentext = (l, A, done) => {
   const parts = l.text.split(/(\[\[[^\]]+\]\])/g), gaps=[];
   parts.forEach(p=>{ const m=p.match(/^\[\[(.+)\]\]$/); if(m){ const o=m[1].split("|"); gaps.push({ans:o[0], opts:shuffle(o)}); } });
@@ -698,23 +723,27 @@ GAMES.lueckentext = (l, A, done) => {
   function story(){
     let g=-1;
     const html = parts.map(p=>{ if(!/^\[\[/.test(p)) return rich(p).replace(/\n/g,"<br>"); g++;
-      const v=pick[g], st = checked ? (v===gaps[g].ans?" ok":" no") : (g===act?" act":"");
-      return `<button class="gap${v!==null?" filled":""}${st}" data-g="${g}" ${checked?"disabled":""} aria-label="Lücke ${g+1}">${checked&&v!==gaps[g].ans?`<span class="fix">${esc(gaps[g].ans)}</span>`:""}${v!==null?esc(v):"&nbsp;"+(g+1)+"&nbsp;"}</button>`; }).join("");
+      const v=pick[g], st = checked ? (same(v,gaps[g].ans)?" ok":" no") : (g===act?" act":"");
+      return `<button class="gap${v!==null?" filled":""}${st}" data-g="${g}" ${checked?"disabled":""} aria-label="Lücke ${g+1}">${checked&&!same(v,gaps[g].ans)?`<span class="fix">${esc(gaps[g].ans)}</span>`:""}${v!==null?esc(v):"&nbsp;"+(g+1)+"&nbsp;"}</button>`; }).join("");
     A.innerHTML = `<div class="panel">${l.ueberschrift?`<h2 class="disp story-h">${esc(l.ueberschrift)}</h2>`:""}<div class="story">${html}</div></div>`;
   }
   function chooser(){
     const all = pick.every(x=>x!==null);
     const d = bar("choice", `<div class="sheet-t"><p class="ch-l">${act!==null?`${T.chooseFor} ${act+1}:`:T.tapGap}</p>
-      <div class="row">${act!==null?gaps[act].opts.map(o=>`<button class="tile" data-o="${esc(o)}">${esc(o)}</button>`).join(""):""}</div></div>
+      ${l.tippen ? (act!==null ? `<div class="row type-row"><input id="tg" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${esc(pick[act]||"")}" aria-label="${T.gap} ${act+1}"><button class="btn" id="tgok">OK</button></div>` : "")
+        : `<div class="row">${act!==null?gaps[act].opts.map(o=>`<button class="tile" data-o="${esc(o)}">${esc(o)}</button>`).join(""):""}</div>`}</div>
       <button class="btn big" id="chk" ${all?"":"disabled"}>${T.check}</button>`);
+    const tg = d.querySelector("#tg"); if(tg){ setTimeout(()=>tg.focus({preventScroll:true}),30); tg.addEventListener("keydown", ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); d.querySelector("#tgok").click(); } }); }
     d.onclick = e => {
+      if(e.target.closest("#tgok") && act!==null){ const v=d.querySelector("#tg").value.trim(); if(!v) return; pick[act]=v;
+        const nx = pick.findIndex((x,k)=>x===null && k>act), first = pick.findIndex(x=>x===null); act = nx>=0 ? nx : (first>=0 ? first : null); story(); chooser(); return; }
       const o=e.target.closest("[data-o]"); if(o && act!==null){ pick[act]=o.dataset.o;
         const nx = pick.findIndex((x,k)=>x===null && k>act), first = pick.findIndex(x=>x===null);
         act = nx>=0 ? nx : (first>=0 ? first : null); story(); chooser(); return; }
-      if(e.target.closest("#chk")){ checked=true; pts=pick.filter((v,k)=>v===gaps[k].ans).length; story();
-        { let g=-1, before=""; parts.forEach(p=>{ if(/^\[\[/.test(p)){ g++; if(pick[g]!==gaps[g].ans){ const w=before.replace(/\[\[([^|\]]+)[^\]]*\]\]/g,"$1").split(/\s+/).filter(Boolean).slice(-6).join(" "); miss(`${T.gap} ${g+1}: …${w} ___`, gaps[g].ans, ""); } }
+      if(e.target.closest("#chk")){ checked=true; pts=pick.filter((v,k)=>same(v,gaps[k].ans)).length; story();
+        { let g=-1, before=""; parts.forEach(p=>{ if(/^\[\[/.test(p)){ g++; if(!same(pick[g],gaps[g].ans)){ const w=before.replace(/\[\[([^|\]]+)[^\]]*\]\]/g,"$1").split(/\s+/).filter(Boolean).slice(-6).join(" "); miss(`${T.gap} ${g+1}: …${w} ___`, gaps[g].ans, ""); } }
           before += /^\[\[/.test(p) ? gaps[g].ans+" " : p; }); }
-        award(gaps.map((g,k)=>["g"+k, pick[k]===g.ans?1:0]), A.querySelector(".story"));
+        award(gaps.map((g,k)=>["g"+k, same(pick[k],g.ans)?1:0]), A.querySelector(".story"));
         sheet(pts===gaps.length?"ok":"mid", esc(T.levelOf(pts,gaps.length)+" ✓"), l.erklaerung?rich(l.erklaerung):"", T.result, ()=>done(pts)); }
     };
   }
@@ -755,14 +784,64 @@ function finale(A){
   draw();
 }
 
+/* ---------- Niveau G/M/E: automatische Anpassung, wenn ein Spiel keine eigene Fassung hat ---------- */
+function autoNiveau(l, nv, world){
+  const c = JSON.parse(JSON.stringify(l)), cut = (a,n) => a.length<=n ? a : a.filter((_,i)=> i < n);
+  const even = (a,n) => { if(a.length<=n) return a; const out=[]; for(let i=0;i<n;i++) out.push(a[Math.round(i*(a.length-1)/(n-1))]); return out; };
+  if(nv==="G"){
+    switch(c.typ){
+      case "quiz": c.fragen = cut(c.fragen, 8).map(q=>{ const keep = q.o.length>=4 ? 3 : 2, d = q.o.map((_,j)=>j).filter(j=>j!==q.c).slice(0, keep-1), idx=[q.c].concat(d).sort((a,b)=>a-b);
+          return Object.assign(q, {o: idx.map(j=>q.o[j]), c: idx.indexOf(q.c)}); }); if(c.zeit) c.zeit = Math.round(c.zeit*1.5); break;
+      case "lueckentext": c.text = c.text.replace(/\[\[([^\]]+)\]\]/g, (m,x)=>{ const o=x.split("|"); return "[["+o.slice(0,2).join("|")+"]]"; }); break;
+      case "memory": c.paare = cut(c.paare, 6); break;
+      case "sortieren": c.items = cut(c.items, 8); break;
+      case "swipe": c.karten = cut(c.karten, 8); break;
+      case "satzbau": c.saetze = cut(c.saetze, 4); break;
+      case "zeitstrahl": c.items = even(c.items, Math.min(c.items.length, 5)); break;
+      case "rush": c.ziel = Math.max(5, Math.round(c.ziel*.7)); c.zeit = (c.zeit||60)+15; break;
+      case "schaetzen": c.fragen = c.fragen.map(q=>Object.assign(q,{tol:q.tol*1.6})); break;
+    }
+  }
+  if(nv==="E"){
+    const kat = world.kat || "";
+    switch(c.typ){
+      case "lueckentext": c.tippen = true; c.anleitung = "Read the text. Tap a gap and **type** the right word."; c.anleitungDe = "Lies den Text. Tippe auf eine Lücke und **schreibe** das richtige Wort."; break;
+      case "quiz": { const ok = c.fragen.every(q => { const a=String(q.o[q.c]); return a.length<=24 && a.split(/\s+/).length<=4; });
+        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, a:[q.o[q.c]].concat(q.alt||[]), e:q.e, tipp:q.o.filter((_,j)=>j!==q.c).length ? "" : ""}));
+          c.anleitung = (c.anleitung||"")+" **Type** the answer – no choices this time!"; c.anleitungDe = (c.anleitungDe||"")+" Schreibe die Antwort selbst – diesmal ohne Auswahl!"; }
+        else if(c.zeit) c.zeit = Math.max(8, Math.round(c.zeit*.75)); break; }
+      case "satzbau": { const all = c.saetze.flatMap(x=>x.w);
+        c.saetze = c.saetze.map(x=>{ const own = new Set(x.w.map(w=>w.toLowerCase())), pool = all.filter(w=>!own.has(w.toLowerCase()) && !/^[?.!,]$/.test(w));
+          const ex = []; for(let k=0;k<pool.length && ex.length<2;k++){ const w = pool[(k*7+x.w.length*3)%pool.length]; if(!ex.includes(w)) ex.push(w); } return Object.assign(x,{extra:ex}); });
+        c.anleitung = (c.anleitung||"")+" Careful: two words are **extra**!"; c.anleitungDe = (c.anleitungDe||"")+" Achtung: zwei Wörter sind **zu viel**!"; break; }
+      case "rush": c.ziel = Math.round(c.ziel*1.25); break;
+      case "schaetzen": c.fragen = c.fragen.map(q=>Object.assign(q,{tol:q.tol*.6})); break;
+      case "sortieren": c.koerbe = c.koerbe.map(k=>Object.assign(k,{info:""})); c.anleitung = (c.anleitung||"")+" No examples this time!"; c.anleitungDe = (c.anleitungDe||"")+" Diesmal ohne Beispiele!"; break;
+      case "memory": { const de = /german/i.test((c.art||"")+(c.anleitung||"")), Q = p => de ? p.b : p.a, Aw = p => de ? p.a : p.b;
+        if((kat!=="country" || de) && c.paare.every(p=>String(Aw(p)).split(/\s+/).length<=4 && String(Aw(p)).length<=24)){
+          c.typ="eingabe"; c.art = de ? "German → English · type" : "Type the partner"; c.fragen = c.paare.map(p=>({q:`**${Q(p)}** → …`, a:String(Aw(p)).split(/\s*\/\s*/).concat(p.alt||[]), e: de ? "" : `${p.a} – ${p.b}`}));
+          c.anleitung = de ? "What’s the English word? **Type** it – check your spelling!" : "What belongs to the word? **Type** the partner.";
+          c.anleitungDe = de ? "Wie heißt das Wort auf Englisch? **Schreibe** es – achte auf die Rechtschreibung!" : "Was gehört zu dem Wort? **Schreibe** das passende Gegenstück."; } break; }
+    }
+  }
+  return c;
+}
+
 /* ---------- Start ---------- */
 const LW = {
   start(world){
+    // Niveau G/M/E: Spiele können je Niveau eigene Inhalte haben (l.G / l.E überschreiben Felder, l.G===false blendet ein Spiel aus)
+    if(world.insel && window.UH && UH.niv){ const nv = UH.niv(); world.niveau = nv;
+      if(nv!=="M") world.levels = world.levels.filter(l => l[nv]!==false).map(l => { let ex = l[nv] && typeof l[nv]==="object" ? l[nv] : null;
+        let src = l; if(ex && ex.plus){ const key = {quiz:"fragen", schaetzen:"fragen", swipe:"karten", memory:"paare", sortieren:"items", zeitstrahl:"items", rush:"items", satzbau:"saetze"}[l.typ];
+          src = Object.assign({}, l); if(key) src[key] = (l[key]||[]).concat(ex.plus); ex = Object.assign({}, ex); delete ex.plus; ex.auto = ex.auto!==false; }
+        const base = (!ex || ex.auto) ? autoNiveau(src, nv, world) : src; return Object.assign({}, base, ex||{}, {id: l.id+"-"+nv.toLowerCase()}); });
+      if(world[nv] && typeof world[nv]==="object") Object.assign(world, world[nv]); }
     W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
     MAX = W.levels.reduce((a,l)=>a+maxOf(l),0);
     load();
-    try{ localStorage.setItem("lw-meta-"+W.id, JSON.stringify({max:MAX, titel:W.titel, ids:W.levels.map(l=>l.id), maxima:W.levels.map(maxOf)})); }catch(e){}
-    RANKED = !!(W.insel && W.insel.k && window.UH && UH.rank); if(RANKED) RANK_I = UH.rank(W.insel.k, todayN()).i;
+    try{ localStorage.setItem("lw-meta-"+W.id+(W.niveau&&W.niveau!=="M"?"-"+W.niveau:""), JSON.stringify({max:MAX, titel:W.titel, ids:W.levels.map(l=>l.id), maxima:W.levels.map(maxOf)})); }catch(e){}
+    RANKED = !!(W.insel && W.insel.k && window.UH && UH.rank); if(RANKED){ RANK_I = UH.rank(W.insel.k, todayN()).i; UH.bindPrefs(); }
     document.addEventListener("click", e=>{
       // Übersetzung
       const tr = e.target.closest("[data-tr]");

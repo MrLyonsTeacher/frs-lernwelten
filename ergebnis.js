@@ -62,25 +62,28 @@
   const BASE = (()=>{ try{ const s = document.currentScript && document.currentScript.src; return s ? s.replace(/[^/]*$/,"") : ""; }catch(e){ return ""; } })();
   const RANK_AT = [0, 30, 70, 120, 180, 250];
   // Geheimer Rang: ab 350 Flaggen an einem Tag, erscheint erst nach dem Freischalten in der Rangliste
-  const HIDDEN_AT = 350, GODS = {5:["fire","Fire God"],6:["ocean","Ocean God"],7:["mountain","Mountain God"],8:["sky","Sky God"],9:["forest","Forest God"],10:["ice","Ice God"]};
-  const godImg = k => BASE + "lernwelt/raenge/god-" + (GODS[k]||GODS[5])[0] + "-m.webp";
+  const HIDDEN_AT = 350, GODS = {5:["fire","Fire God","Fire Goddess"],6:["ocean","Ocean God","Ocean Goddess"],7:["mountain","Mountain God","Mountain Goddess"],8:["sky","Sky God","Sky Goddess"],9:["forest","Forest God","Forest Goddess"],10:["ice","Ice God","Ice Goddess"]};
+  const LS = (k,d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } }, LSset = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
+  const gender = () => LS("frs-gender","m"), niv = () => LS("frs-niveau","M");
+  const rName = r => (gender()==="f" && r[2]) ? r[2] : r[1], rFile = r => (gender()==="f" && r[3]) ? r[3] : r[0];
+  const godImg = k => BASE + "lernwelt/raenge/god-" + (GODS[k]||GODS[5])[0] + "-" + gender() + ".webp", godName = k => { const g=GODS[k]||GODS[5]; return gender()==="f" ? g[2] : g[1]; };
   const RANKS = {
-    5:  [["spark","Spark"],["ashmaster","Ash Master"],["flamekeeper","Flame Keeper"],["fireknight","Fire Knight"],["dragonrider","Dragon Rider"],["firelord","Fire Lord"]],
-    6:  [["droplet","Droplet"],["shellseeker","Shell Seeker"],["reefdiver","Reef Diver"],["seacaptain","Sea Captain"],["tidelord","Tide Lord"],["oceanruler","Ocean Ruler"]],
-    7:  [["pebble","Pebble Picker"],["miner","Miner"],["blacksmith","Blacksmith"],["gemmaster","Gem Master"],["dwarfchampion","Dwarf Champion"],["mountainking","Mountain King"]],
-    8:  [["leafrider","Leaf Rider"],["kiteflyer","Kite Flyer"],["windwalker","Wind Walker"],["cloudsage","Cloud Sage"],["skyguardian","Sky Guardian"],["airmonk","Air Monk"]],
-    9:  [["acorn","Acorn"],["mushroom","Mushroom"],["pathfinder","Pathfinder"],["ranger","Ranger"],["woodelf","Wood Elf"],["forestmaster","Forestmaster"]],
-    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem"],["frostwizard","Frost Wizard"]]
+    5:  [["spark","Spark"],["ashmaster","Ash Master","Ash Mistress"],["flamekeeper","Flame Keeper"],["fireknight","Fire Knight"],["dragonrider","Dragon Rider"],["firelord","Fire Lord","Fire Queen"]],
+    6:  [["droplet","Droplet"],["shellseeker","Shell Seeker"],["reefdiver","Reef Diver"],["seacaptain","Sea Captain"],["tidelord","Tide Lord","Tide Lady"],["oceanruler","Ocean Ruler"]],
+    7:  [["pebble","Pebble Picker"],["miner","Miner"],["blacksmith","Blacksmith"],["gemmaster","Gem Master","Gem Mistress"],["dwarfchampion","Dwarf Champion"],["mountainking","Mountain King","Mountain Queen"]],
+    8:  [["leafrider","Leaf Rider"],["kiteflyer","Kite Flyer"],["windwalker","Wind Walker"],["cloudsage","Cloud Sage"],["skyguardian","Sky Guardian"],["airmonk","Air Monk","Air Priestess"]],
+    9:  [["acorn","Acorn"],["mushroom","Mushroom"],["pathfinder","Pathfinder"],["ranger","Ranger"],["woodelf","Wood Elf"],["forestmaster","Forestmaster","Forest Queen"]],
+    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem"],["frostwizard","Frost Wizard","Frost Witch"]]
   };
   const rankImgUrl = f => BASE + "lernwelt/raenge/" + f + ".webp";
   const rankImg = (f, cls) => `<img class="${cls||"rk-img"}" src="${rankImgUrl(f)}" alt="" draggable="false">`;
   const worldImg = k => rankImgUrl("world-k"+k);
   function rank(k, n){
     if(n >= HIDDEN_AT){ const g = GODS[k]||GODS[5];
-      return { i:RANK_AT.length, icon:`<img class="rk-img rk-god" src="${godImg(k)}" alt="" draggable="false">`, img:godImg(k), name:g[1], at:HIDDEN_AT, next:null, nextName:null, nextIcon:"", toNext:0, pct:1, top:true, hidden:true, count:RANK_AT.length+1 }; }
+      return { i:RANK_AT.length, icon:`<img class="rk-img rk-god" src="${godImg(k)}" alt="" draggable="false">`, img:godImg(k), name:godName(k), at:HIDDEN_AT, next:null, nextName:null, nextIcon:"", toNext:0, pct:1, top:true, hidden:true, count:RANK_AT.length+1 }; }
     const R = RANKS[k] || RANKS[5]; let i = 0; RANK_AT.forEach((t,j)=>{ if(n >= t) i = j; });
     const nx = i < RANK_AT.length-1 ? RANK_AT[i+1] : null;
-    return { i, icon:rankImg(R[i][0]), img:rankImgUrl(R[i][0]), name:R[i][1], at:RANK_AT[i], next:nx, nextName: nx!==null ? R[i+1][1] : null, nextIcon: nx!==null ? rankImg(R[i+1][0]) : "",
+    return { i, icon:rankImg(rFile(R[i])), img:rankImgUrl(rFile(R[i])), name:rName(R[i]), at:RANK_AT[i], next:nx, nextName: nx!==null ? rName(R[i+1]) : null, nextIcon: nx!==null ? rankImg(rFile(R[i+1])) : "",
              toNext: nx!==null ? nx-n : 0, pct: nx!==null ? (n-RANK_AT[i])/(nx-RANK_AT[i]) : 1, top: nx===null, count: RANK_AT.length };
   }
   function rkStyle(){ if(document.getElementById("rk-style") || !document.head) return; const st=document.createElement("style"); st.id="rk-style"; st.textContent = `
@@ -113,8 +116,8 @@
     const d = document.createElement("div"); d.className = "rkl-bg";
     d.innerHTML = `<div class="rkl" role="dialog" aria-modal="true" aria-label="Ranks"><button class="x" aria-label="Close">×</button>
       <h2>${en===false?"Alle Ränge":"All ranks"}</h2><p class="sub">${en===false?`Heute gesammelt: ${n} ${flagsTxt}`:`Collected today: ${n} ${flagsTxt}`}</p>
-      ${n>=HIDDEN_AT?`<div class="rk-hid"><img src="${godImg(k)}" alt=""><div><small>${en===false?"Geheimer Rang freigeschaltet!":"Secret rank unlocked!"}</small><b>${(GODS[k]||GODS[5])[1]}</b><small>${en===false?"ab":"from"} ${HIDDEN_AT} ${flagsTxt}</small></div></div>`:""}
-      <ol>${R.map((r,j)=>`<li class="${j===cur?"cur":j>cur?"no":""}">${rankImg(r[0],"")}<span><b>${r[1]}</b><small>${en===false?"ab":"from"} ${RANK_AT[j]} ${flagsTxt}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?"✔":""}</li>`).join("")}</ol></div>`;
+      ${n>=HIDDEN_AT?`<div class="rk-hid"><img src="${godImg(k)}" alt=""><div><small>${en===false?"Geheimer Rang freigeschaltet!":"Secret rank unlocked!"}</small><b>${godName(k)}</b><small>${en===false?"ab":"from"} ${HIDDEN_AT} ${flagsTxt}</small></div></div>`:""}
+      <ol>${R.map((r,j)=>`<li class="${j===cur?"cur":j>cur?"no":""}">${rankImg(rFile(r),"")}<span><b>${rName(r)}</b><small>${en===false?"ab":"from"} ${RANK_AT[j]} ${flagsTxt}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?"✔":""}</li>`).join("")}</ol></div>`;
     const close = () => d.remove();
     d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); });
     document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
@@ -132,5 +135,33 @@
       if(klasseId) localStorage.removeItem("insel-"+klasseId+"-name");
     }catch(e){}
   }
-  window.UH = { make, link, parse, qrImage, rank, rankSheet, rankImg, worldImg, RANK_AT, RANKS, today, addToday, resetClass };
+  /* ---------- Niveau (G/M/E) und weiblich/männlich ---------- */
+  const NIV = { G:["G-Niveau","Basic","Grundlegendes Niveau – kürzer, mit mehr Hilfen"], M:["M-Niveau","Medium","Mittleres Niveau"], E:["E-Niveau","Expert","Erweitertes Niveau – schwieriger, mehr selbst formulieren"] };
+  function prefsHTML(){ const n=niv(), g=gender();
+    return `<span class="frs-pref"><button type="button" class="frs-niv" data-niv-open aria-label="Niveau wählen">${NIV[n][0]} <span aria-hidden="true">▾</span></button>`+
+      `<button type="button" class="frs-gen" data-gen-toggle aria-label="${g==="f"?"weiblich":"männlich"} – umschalten" title="weiblich / männlich"><span class="${g==="f"?"on":""}">♀</span><span class="${g==="m"?"on":""}">♂</span></button></span>`; }
+  function prefStyle(){ if(document.getElementById("frs-pref-style") || !document.head) return; const st=document.createElement("style"); st.id="frs-pref-style"; st.textContent=`
+    .frs-pref{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+    .frs-niv{min-height:40px;padding:0 12px;border-radius:12px;border:2px solid currentColor;background:rgba(0,0,0,.18);color:inherit;font:700 15px Fredoka,system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+    .frs-gen{display:inline-flex;min-height:40px;padding:2px;border-radius:12px;border:2px solid currentColor;background:rgba(0,0,0,.18);color:inherit;cursor:pointer}
+    .frs-gen span{display:grid;place-items:center;width:28px;border-radius:9px;font:700 16px system-ui;opacity:.5}
+    .frs-gen span.on{opacity:1;background:#FFC24A;color:#2A1A06}
+    .frs-nivpop{position:fixed;inset:0;z-index:95;background:rgba(6,10,20,.55);display:grid;place-items:center;padding:12px}
+    .frs-nivpop .box{width:min(420px,100%);background:rgba(18,22,36,.97);color:#fff;border:2px solid rgba(255,255,255,.7);border-radius:20px;padding:16px;font-family:Lexend,system-ui,sans-serif}
+    .frs-nivpop h2{margin:0 0 .6rem;font:700 1.4rem Fredoka,system-ui,sans-serif}
+    .frs-nivpop button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border-radius:14px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);color:#fff;cursor:pointer;font:inherit}
+    .frs-nivpop button.o b{display:block;font:700 1.15rem Fredoka,system-ui,sans-serif}
+    .frs-nivpop button.o small{color:#C8CCD8}
+    .frs-nivpop button.o.cur{border-color:#FFC24A;background:rgba(255,194,74,.18)}
+    @media (max-width:560px){ .frs-niv{font-size:13px;padding:0 8px;min-height:36px} .frs-gen{min-height:36px} .frs-gen span{width:22px;font-size:14px} }`; document.head.appendChild(st); }
+  try{ prefStyle(); }catch(e){}
+  let prefBound = false;
+  function bindPrefs(onChange){ if(prefBound) return; prefBound = true;
+    document.addEventListener("click", e=>{
+      if(e.target.closest("[data-gen-toggle]")){ LSset("frs-gender", gender()==="f" ? "m" : "f"); onChange ? onChange("gender") : location.reload(); return; }
+      if(e.target.closest("[data-niv-open]")){ prefStyle(); const d=document.createElement("div"); d.className="frs-nivpop";
+        d.innerHTML = `<div class="box" role="dialog" aria-modal="true"><h2>Choose your level</h2>${Object.keys(NIV).map(k=>`<button class="o${k===niv()?" cur":""}" data-niv="${k}"><b>${NIV[k][0]} · ${NIV[k][1]}</b><small>${NIV[k][2]}</small></button>`).join("")}</div>`;
+        d.addEventListener("click", ev=>{ const b=ev.target.closest("[data-niv]"); if(b){ LSset("frs-niveau", b.dataset.niv); d.remove(); onChange ? onChange("niveau") : location.reload(); return; } if(ev.target===d) d.remove(); });
+        document.body.appendChild(d); } }); }
+  window.UH = { make, link, parse, qrImage, rank, rankSheet, prefsHTML, bindPrefs, niv, gender, NIV, rankImg, worldImg, RANK_AT, RANKS, today, addToday, resetClass };
 })();

@@ -33,7 +33,11 @@ TH.start({
     ]}
   },
   levels: [
-    { id:"cmp", typ:"swipe", lernen:"sch", icon:"🏫", titel:"England or Germany?", art:"Swipe",
+    { id:"cmp", E:{plus:[
+        {t:"Students are in a tutor group.", r:"r"}, {t:"Many students go home for lunch.", r:"l"},
+        {t:"Students often eat a packed lunch in the cafeteria.", r:"r"}, {t:"Students stay in the same class from Klasse 5 to Klasse 10.", r:"l"}
+      ]},
+      typ:"swipe", lernen:"sch", icon:"🏫", titel:"England or Germany?", art:"Swipe",
       anleitung:"Typical for a school in England or in Germany? Swipe **left for Germany** and **right for England**.",
       anleitungDe:"Typisch für eine Schule in England oder in Deutschland? Wische nach **links für Deutschland** und nach **rechts für England**.",
       tipp:"Denk an Uniform, Tutor und lange Schultage.",
@@ -43,7 +47,12 @@ TH.start({
         {t:"The first year at secondary school is Klasse 5.", r:"l"}, {t:"In the morning there is registration with the tutor.", r:"r"},
         {t:"Students are in houses and win points.", r:"r"}, {t:"Grades go from 1 to 6.", r:"l"}, {t:"Students have assembly in the big hall.", r:"r"}
       ]},
-    { id:"quiz", typ:"quiz", lernen:"sch", icon:"👔", titel:"School Quiz", art:"Quiz",
+    { id:"quiz", E:{plus:[
+        {q:"What is an **assembly**?", o:["a meeting of many students in the big hall","a test","a lesson in the playground"], c:0},
+        {q:"Which year comes after **Year 7**?", o:["Year 8","Year 6","Klasse 6"], c:0},
+        {q:"Who checks who is there in the morning?", o:["the tutor","the head teacher","the cook"], c:0}
+      ]},
+      typ:"quiz", lernen:"sch", icon:"👔", titel:"School Quiz", art:"Quiz",
       anleitung:"What do you know about school in England?",
       anleitungDe:"Was weißt du über die Schule in England?",
       tipp:"Schau dir das Video an.",
@@ -53,13 +62,16 @@ TH.start({
         {q:"When does school usually end?", o:["at about 3:30 pm","at 12 o’clock","at 6 pm"], c:0}, {q:"What is a **packed lunch**?", o:["food you bring from home","a big dinner","a school bag"], c:0},
         {q:"What are **houses** at school?", o:["teams that win points","buildings for teachers","classrooms"], c:0}
       ]},
-    { id:"uni", typ:"memory", lernen:"sch", icon:"👕", titel:"Uniform Memory", art:"English – German · memory",
+    { id:"uni", E:{plus:[ {a:"shirt", b:"Hemd"}, {a:"break", b:"Pause"} ]},
+      typ:"memory", lernen:"sch", icon:"👕", titel:"Uniform Memory", art:"English – German · memory",
       anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
       anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Kleidung und Schulwörter.",
       paare:[ {a:"tie", b:"Krawatte"}, {a:"blazer", b:"Sakko / Blazer"}, {a:"jumper", b:"Pullover"}, {a:"skirt", b:"Rock"},
               {a:"tutor", b:"Klassenlehrer(in)"}, {a:"assembly", b:"Schulversammlung"}, {a:"packed lunch", b:"Lunchpaket"}, {a:"uniform", b:"Uniform"} ]},
-    { id:"day", typ:"zeitstrahl", icon:"⏰", titel:"Holly’s School Day", art:"Order · school day",
+    { id:"day", E:{auto:true, items:[ {j:"7:30", t:"Holly puts on her school uniform."}, {j:"8:15", t:"Holly takes the bus to school."}, {j:"8:45", t:"Registration with her tutor."}, {j:"9:00", t:"Assembly in the big hall."},
+              {j:"9:30", t:"First lesson: Maths."}, {j:"10:30", t:"Break in the playground."}, {j:"12:30", t:"Lunch in the cafeteria."}, {j:"3:30", t:"School ends."}, {j:"3:45", t:"Netball club."} ]},
+      typ:"zeitstrahl", icon:"⏰", titel:"Holly’s School Day", art:"Order · school day",
       anleitung:"Put Holly’s school day in the right order – **the earliest first**.",
       anleitungDe:"Bring Hollys Schultag in die richtige Reihenfolge – **das Früheste zuerst**.",
       tipp:"Nach dem Prüfen siehst du die Uhrzeiten.",
