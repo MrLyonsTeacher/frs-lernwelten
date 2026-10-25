@@ -26,7 +26,17 @@ export function build(A){
     wood: planks(["#5A3A26","#6A4630","#4E3220"], "#2A1A10"), beam: stripes(["#3A2618","#45301E","#2E1E12"], true),
     iron: noise(["#2A2A30","#34343A","#24242A"]),
     rail: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y,(y<3||x%5===0)?"#2A2A30":"rgba(0,0,0,0)"); }),
-    banner: noise(["#9A1E14","#AA2618","#8A1A10"])
+    banner: noise(["#9A1E14","#AA2618","#8A1A10"]),
+    winV: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const arch = y<6 && Math.hypot(x-7.5,6-y)>5.6; const fr = arch || x<2||x>13||y>13||x===7||x===8||y===9; P(g,x,y, fr?"#2A1E1C":pick(["#C890FF","#E0B0FF","#B070FF","#D8A0FF"])); } }),
+    winR: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const arch = y<6 && Math.hypot(x-7.5,6-y)>5.6; const fr = arch || x<2||x>13||y>13||x===7||x===8||y===9; P(g,x,y, fr?"#2A1E1C":pick(["#FF7A8A","#FF9AA6","#FF5A70","#FFB0B8"])); } }),
+    copper: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, x%4===0 ? "#5A1A1A" : pick(["#8A2A22","#9A3428","#7A2018"])); }),
+    goldDome: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, x%4===0 ? "#8A5A18" : pick(["#D8A030","#E8B840","#C89028"])); }),
+    shelf: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const band=y<2||y>13||y===7||y===8; P(g,x,y, band?pick(["#4A2A1A","#5A3420"]):(x%3===2?"#1A0E08":["#C8413A","#3E63DD","#E9A81C","#3FA34D","#7C5CFF"][((x/3|0)+(y>8?2:0))%5])); } }),
+    crystal: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x+y)%6; P(g,x,y, d===0?"#FFE0F0":d<3?"#FF6AA0":"#C0306A"); } }),
+    stem: stripes(["#5A1E36","#6E2644","#4A162C","#7A3050"], true, "#3A1022"), wart: noise(["#8A0E14","#A0161C","#740A10","#B0242A","#960F18"]),
+    tentR: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (Math.floor(x/4)%2) ? "#F2EBE2" : "#C8302A"); }),
+    tentY: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (Math.floor(x/4)%2) ? "#F2EBE2" : "#E8A81C"); }),
+    clock: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=Math.hypot(x-7.5,y-7.5); P(g,x,y, d>7.4?"rgba(0,0,0,0)": d>6.3?"#C89028":(Math.abs(x-7.5)<.8&&y<8&&y>2)||(Math.abs(y-7.5)<.8&&x>7&&x<12)?"#1A1A1A":"#FFF2D0"); } })
   };
   const blocks = {
     rock:{side:T.rock}, rock2:{side:T.rock2}, basalt:{side:T.basaltS, top:T.basaltT}, magma:{side:T.magma, em:.9},
@@ -34,7 +44,10 @@ export function build(A){
     stone:{side:T.stone}, stoneD:{side:T.stoneD}, trim:{side:T.trim, top:T.stoneD}, slate:{side:T.slate}, dome:{side:T.dome},
     gold:{side:T.gold, em:.35}, win:{side:T.win, em:1.05}, winS:{side:T.winS, em:.95}, door:{side:T.door, em:.85},
     glow:{side:T.glow, em:1.3}, lamp:{side:T.glow, em:1.5, halo:[0xFFA040,3.2,.55]}, wood:{side:T.wood}, beam:{side:T.beam, top:T.wood},
-    iron:{side:T.iron}, rail:{side:T.rail, alpha:.98, cross:true}, banner:{side:T.banner}
+    iron:{side:T.iron}, rail:{side:T.rail, alpha:.98, cross:true}, banner:{side:T.banner},
+    winV:{side:T.winV, em:1.1}, winR:{side:T.winR, em:1.05}, copper:{side:T.copper}, goldDome:{side:T.goldDome, em:.25}, shelf:{side:T.shelf, em:.25},
+    crystal:{side:T.crystal, em:1.2, halo:[0xFF5A9A,3,.5]}, stem:{side:T.stem}, wart:{side:T.wart}, tentR:{side:T.tentR}, tentY:{side:T.tentY}, clock:{side:T.clock, em:.5, alpha:.99},
+    vlamp:{side:T.glow, em:1.5, halo:[0xB070FF,3.4,.6]}, ylamp:{side:T.glow, em:1.5, halo:[0xFFD040,3.6,.6]}
   };
   const F = A.fine, fs = (x,y,z,t) => F.set(Math.round(x*2),Math.round(y*2),Math.round(z*2),t);
   const W=120, D=96, SEA=0;
@@ -57,17 +70,17 @@ export function build(A){
   const fallFoot = [];
 
   // ---------- Bausteine ----------
-  const windowsRing = (cx,y,cz,r,step=2) => { for(let x=Math.floor(cx-r-1);x<=cx+r+1;x++) for(let z=Math.floor(cz-r-1);z<=cz+r+1;z++){ const d=Math.hypot(x-cx,z-cz); if(d<=r+.3 && d>r-.7){ const a=Math.atan2(z-cz,x-cx); if(Math.round(a*r/step*1.0)%2===0){ set(x,y,z,"win"); set(x,y+1,z,"win"); } } } };
+  const windowsRing = (cx,y,cz,r,step=2,wt="win") => { for(let x=Math.floor(cx-r-1);x<=cx+r+1;x++) for(let z=Math.floor(cz-r-1);z<=cz+r+1;z++){ const d=Math.hypot(x-cx,z-cz); if(d<=r+.3 && d>r-.7){ const a=Math.atan2(z-cz,x-cx); if(Math.round(a*r/step*1.0)%2===0){ set(x,y,z,wt); set(x,y+1,z,wt); } } } };
   const towerRound = (cx,y0,cz,r,h,o={}) => { for(let y=y0;y<y0+h;y++) ring(cx,y,cz,r,(xx,yy)=> (yy-y0)%5===4 ? "trim" : "stone");
-      for(let y=y0+1;y<y0+h-1;y+=5) windowsRing(cx,y,cz,r,o.wstep||2);
+      for(let y=y0+1;y<y0+h-1;y+=5) windowsRing(cx,y,cz,r,o.wstep||2,o.win||"win");
       disk(cx,y0+h-1,cz,r,"stoneD"); return y0+h; };
   // Kuppel aus Blöcken, mit Rippen und Laterne
   const domeAt = (cx,y0,cz,r,o={}) => { const rib = o.ribs ?? 8;
     for(let yy=0; yy<=r; yy++){ const rr = Math.sqrt(Math.max(0,r*r-yy*yy))*(o.squash||1);
-      for(let x=Math.floor(cx-rr-1);x<=cx+rr+1;x++) for(let z=Math.floor(cz-rr-1);z<=cz+rr+1;z++){ const d=Math.hypot(x-cx,z-cz); if(d<=rr+.3 && d>rr-1.3){ const a=Math.atan2(z-cz,x-cx); set(x,y0+yy,z, yy===0 ? "trim" : (Math.abs(Math.sin(a*rib/2))<.05 && yy>1 && yy<r-1 ? "trim" : "dome")); } } }
+      for(let x=Math.floor(cx-rr-1);x<=cx+rr+1;x++) for(let z=Math.floor(cz-rr-1);z<=cz+rr+1;z++){ const d=Math.hypot(x-cx,z-cz); if(d<=rr+.3 && d>rr-1.3){ const a=Math.atan2(z-cz,x-cx); set(x,y0+yy,z, yy===0 ? "trim" : (Math.abs(Math.sin(a*rib/2))<.05 && yy>1 && yy<r-1 ? (o.rib||"trim") : (o.mat||"dome"))); } } }
     const ty = y0 + Math.round(r*(o.squash||1)) + 1;
     // Laterne obendrauf
-    if(o.lantern!==false){ for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]) set(cx+a,ty,cz+b,"win"); set(cx,ty,cz,"glow"); set(cx,ty+1,cz,"dome"); set(cx,ty+2,cz,"gold"); fs(cx,ty+3,cz,"gold"); fs(cx,ty+3.5,cz,"lamp"); return ty+4; }
+    if(o.lantern!==false){ for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]) set(cx+a,ty,cz+b,o.win||"win"); set(cx,ty,cz,"glow"); set(cx,ty+1,cz,o.mat||"dome"); set(cx,ty+2,cz,"gold"); fs(cx,ty+3,cz,"gold"); fs(cx,ty+3.5,cz,o.lamp||"lamp"); return ty+4; }
     return ty; };
   // Spitzturm (gotisch): quadratischer Schaft, spitzer Helm
   const spire = (cx,y0,cz,s,h,helm) => { for(let y=y0;y<y0+h;y++) for(let a=-s;a<=s;a++) for(let b=-s;b<=s;b++){ if(Math.abs(a)!==s&&Math.abs(b)!==s) continue; const c=Math.abs(a)===s&&Math.abs(b)===s;
@@ -80,7 +93,7 @@ export function build(A){
       for(let yy=y; yy<y+fh; yy++) for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++){ if(x!==x0&&x!==x1&&z!==z0&&z!==z1) continue;
         const corner=(x===x0||x===x1)&&(z===z0||z===z1), band=yy===y+fh-1;
         let t = corner ? "stoneD" : band ? "trim" : "stone";
-        if(!corner && !band && yy>y && yy<y+fh-1){ const along = (z===z0||z===z1) ? x-x0 : z-z0; if(along%3!==0) t = "win"; }
+        if(!corner && !band && yy>y && yy<y+fh-1){ const along = (z===z0||z===z1) ? x-x0 : z-z0; if(along%3!==0) t = (o.win && f===fl-1) ? o.win : "win"; }
         set(x,yy,z,t); }
       // Balkon-Gesims
       if(f>0) for(let x=x0-1;x<=x1+1;x++){ set(x,y-1,z1+1,"trim"); if(x%2===0) fs(x+.25,y-.25,z1+1.25,"iron"); } }
@@ -99,50 +112,57 @@ export function build(A){
     country:   {x:98, z:58, col:0xFFE14A, ort:"Ember Market Tower"}
   };
 
-  // ---------- Grammar: großer Kuppelpalast auf der mittleren Säule ----------
-  { const {x,z}=S.grammar, top=26; pillar(x,z,top,13,{falls:[[Math.PI/2+.25,3],[Math.PI*.15,2]]});
-    const y=top; fill(x-11,y-1,z-9,x+11,y-1,z+10,"stoneD");
-    // Unterbau mit zwei Flügeln, Mittelbau höher
-    hall(x-11,y,z-6,7,10,2,{});                        // linker Flügel
-    hall(x+5,y,z-6,7,10,2,{});                         // rechter Flügel
-    const yt = hall(x-5,y,z-7,11,12,3,{roof:false});   // Mittelbau, 3 Geschosse
-    // Freitreppe und Portal
-    for(let k=0;k<3;k++) fill(x-3,y+k-1,z+5+k,x+3,y+k-1,z+5+k,null), fill(x-3,y-1,z+5,x+3,y-1,z+9,"stoneD");
-    door(x-1,y,z+4); for(const a of [-3,3]){ fill(x+a,y,z+5,x+a,y+3,z+5,"trim"); set(x+a,y+4,z+5,"lamp"); }
-    // Tambour mit Fenstern und große Kuppel
-    const ty = towerRound(x,yt,z-1,4,5,{wstep:1.5}); S.grammar.top=[x, domeAt(x,ty,z-1,5,{ribs:10}), z-1];
-    // kleine Kuppeltürme an den Ecken des Mittelbaus
-    for(const [a,b] of [[-5,-7],[5,-7],[-5,4],[5,4]]){ const t2 = towerRound(x+a,yt,z+b,1.6,3,{wstep:3}); domeAt(x+a,t2,z+b,2,{ribs:4}); }
-    // Spitztürme auf den Flügeln
-    for(const a of [-8,8]){ spire(x+a,y+8+3,z-2,1,4,5); }
-    for(const a of [-9,9]) banner(x+a,y+6,z+4.75,6);
-    for(const [a,b] of [[-10,8],[10,8],[-6,9],[6,9]]) lantern(x+a,y,z+b);
-    S.grammar.base=y; S.grammar.lift=1; S.grammar.cam={pos:[x+20,y+15,z+80], look:[x+15,y+15,z-2]}; }
+  // ---------- Grammar: großer Kuppelpalast (Gold-Violett) ----------
+  { const {x,z}=S.grammar, top=26; pillar(x,z,top,14,{falls:[[Math.PI/2+.25,3],[Math.PI*.15,2],[Math.PI*.85,2]]});
+    const y=top; fill(x-12,y-1,z-10,x+12,y-1,z+11,"stoneD");
+    hall(x-12,y,z-7,8,11,3,{win:"winV"}); hall(x+5,y,z-7,8,11,3,{win:"winV"});          // Flügel, 3 Geschosse
+    const yt = hall(x-5,y,z-8,11,13,4,{roof:false, win:"winV"});                           // Mittelbau, 4 Geschosse
+    for(let k=0;k<3;k++) fill(x-3,y-1,z+5+k,x+3,y-1,z+5+k,"stoneD");
+    door(x-1,y,z+4); for(const a of [-3,3]){ fill(x+a,y,z+5,x+a,y+3,z+5,"trim"); set(x+a,y+4,z+5,"vlamp"); }
+    // Balkone rund um den Mittelbau
+    for(const yy of [y+4,y+8,y+12]) for(let a=-6;a<=6;a++){ set(x+a,yy-1,z+5,"trim"); fs(x+a,yy+.25,z+5.75,"iron"); }
+    const ty = towerRound(x,yt,z-1.5,4.5,6,{wstep:1.3, win:"winV"}); S.grammar.top=[x, domeAt(x,ty,z-1.5,6,{ribs:12, rib:"gold", win:"winV", lamp:"vlamp"}), z-1.5];
+    for(const [a,b] of [[-5,-8],[5,-8],[-5,4],[5,4]]){ const t2 = towerRound(x+a,yt,z+b,1.6,4,{wstep:3, win:"winV"}); domeAt(x+a,t2,z+b,2,{ribs:4, lamp:"vlamp"}); }
+    for(const a of [-8,8]) spire(x+a,y+12+3,z-2,1,5,6);
+    for(const a of [-10,-6,6,10]) banner(x+a,y+9,z+4.75,8);
+    for(const [a,b] of [[-11,9],[11,9],[-6,10],[6,10]]) { fill(x+a,y,z+b,x+a,y+2,z+b,"iron"); set(x+a,y+3,z+b,"vlamp"); }
+    S.grammar.base=y; S.grammar.lift=1; S.grammar.cam={pos:[x+20,y+22,z+84], look:[x+15,y+16,z-2]}; }
 
-  // ---------- Vocabulary: Kuppelturm links ----------
+  // ---------- Vocabulary: schlanker Bibliotheksturm mit Kupferkuppel, rosa Kristallen und Purpurpilzen ----------
   { const {x,z}=S.vocabulary, top=26; pillar(x,z,top,8,{falls:[[Math.PI/2-.2,2]]});
-    const y=top; ring(x,y,z,7.5,"trim"); for(let a=0;a<16;a++){ const an=a/16*Math.PI*2; fs(x+Math.cos(an)*7.6,y+.5,z+Math.sin(an)*7.6,"iron"); }
-    let t = towerRound(x,y,z,5,10,{wstep:1.6});
-    ring(x,t,z,6,"trim"); for(let a=0;a<20;a++){ const an=a/20*Math.PI*2; fs(x+Math.cos(an)*6.2,t+.75,z+Math.sin(an)*6.2,"iron"); }     // Galerie
-    t = towerRound(x,t,z,4,6,{wstep:1.4});
-    S.vocabulary.top=[x, domeAt(x,t,z,4.5,{ribs:8}), z];
-    door(x-1,y,z+5); for(const a of [-3,3]) lantern(x+a,y,z+6);
-    for(const k of [y+3,y+8]) for(const [a,b] of [[0,1],[1,0],[-1,0]]) set(x+a*5.4|0,k,z+b*5.4|0,"lamp");
-    S.vocabulary.base=y; S.vocabulary.lift=1; S.vocabulary.cam={pos:[x+30,y+13,z+64], look:[x+15,y+13,z]}; }
+    const y=top; ring(x,y,z,7.5,"trim");
+    // Riesenpilze am Rand der Säule
+    const fungus = (fx,fy,fz,hh,r) => { fill(fx,fy,fz,fx,fy+hh,fz,"stem"); for(let a=-r;a<=r;a++) for(let b=-r;b<=r;b++){ const d=Math.hypot(a,b); if(d<=r+.3){ set(fx+a,fy+hh+1,fz+b,"wart"); if(d<r-.8) set(fx+a,fy+hh+2,fz+b,"wart"); if(d>r-.8 && rand()<.3) set(fx+a,fy+hh,fz+b,"crystal"); } } };
+    fungus(x-6,y,z+3,6,2); fungus(x+6,y,z-4,8,3); fungus(x+5,y,z+5,4,2);
+    let t = y;
+    for(let k=0;k<3;k++){ for(let yy=t;yy<t+6;yy++) ring(x,yy,z,4.6-k*.5,(xx,y2)=> (y2-t)===5 ? "trim" : ((y2-t)%3===1 ? "shelf" : "stone")); windowsRing(x,t+2,z,4.6-k*.5,1.4,"winR"); t+=6;
+      ring(x,t,z,5.8-k*.5,"trim"); for(let a=0;a<18;a++){ const an=a/18*Math.PI*2; fs(x+Math.cos(an)*(6-k*.5),t+.75,z+Math.sin(an)*(6-k*.5),"iron"); } }   // drei Galerien
+    S.vocabulary.top=[x, domeAt(x,t,z,4,{ribs:8, mat:"copper", rib:"gold", win:"winR"}), z];
+    // schwebende Bücher und Kristalle rund um den Turm
+    for(let i=0;i<14;i++){ const an=i/14*Math.PI*2+.3, rr=7+rand()*2, hy=y+6+rand()*14; fs(x+Math.cos(an)*rr,hy,z+Math.sin(an)*rr, i%3===0?"crystal":"shelf"); fs(x+Math.cos(an)*rr+.5,hy,z+Math.sin(an)*rr,"shelf"); }
+    door(x-1,y,z+5); for(const a of [-3,3]){ fill(x+a,y,z+6,x+a,y+2,z+6,"iron"); set(x+a,y+3,z+6,"crystal"); }
+    S.vocabulary.base=y; S.vocabulary.lift=1; S.vocabulary.cam={pos:[x+30,y+20,z+66], look:[x+15,y+14,z]}; }
 
-  // ---------- Country & people: Turm mit Spitztürmchen rechts ----------
-  { const {x,z}=S.country, top=26; pillar(x,z,top,9,{falls:[[Math.PI/2+.35,3]]});
-    const y=top; ring(x,y,z,8.5,"trim");
-    // Arkadengeschoss (offene Bögen mit Licht), darüber Turm
-    for(let yy=y; yy<y+5; yy++) ring(x,yy,z,6,(xx,y2,zz)=>{ const a=Math.atan2(zz-z,xx-x); return (y2<y+4 && Math.round(a*6/Math.PI*1.5)%2===0) ? "door" : "stone"; });
-    let t = towerRound(x,y+5,z,5,8,{wstep:1.6});
-    for(const [a,b] of [[-5,-5],[5,-5],[-5,5],[5,5]]) spire(x+a,y,z+b,1,t-y-2,6);
-    t = towerRound(x,t,z,3.6,4,{wstep:1.2});
-    S.country.top=[x, domeAt(x,t,z,4,{ribs:8}), z];
-    // Marktstände unten
-    for(const [a,b,c] of [[-7,6,"banner"],[7,6,"banner"]]){ fill(x+a-1,y,z+b,x+a-1,y+2,z+b,"beam"); fill(x+a+1,y,z+b,x+a+1,y+2,z+b,"beam"); fill(x+a-1,y+3,z+b-1,x+a+1,y+3,z+b+1,c); fs(x+a,y+.25,z+b,"gold"); }
-    for(const a of [-3,3]) lantern(x+a,y,z+8);
-    S.country.base=y; S.country.lift=1; S.country.cam={pos:[x+2,y+13,z+66], look:[x+15,y+13,z]}; }
+  // ---------- Country & people: Markt-Turm mit goldener Kuppel, Uhr, Spitztürmen und bunten Zelten ----------
+  { const {x,z}=S.country, top=26; pillar(x,z,top,10,{falls:[[Math.PI/2+.35,3]]});
+    const y=top; ring(x,y,z,9.5,"trim");
+    // quadratischer Turm
+    const s0=4; let t=y;
+    for(let yy=y;yy<y+16;yy++) for(let a=-s0;a<=s0;a++) for(let b=-s0;b<=s0;b++){ if(Math.abs(a)!==s0&&Math.abs(b)!==s0) continue; const c=Math.abs(a)===s0&&Math.abs(b)===s0;
+      set(x+a,yy,z+b, c ? "stoneD" : (yy-y)%4===3 ? "trim" : ((yy-y)%4===1 && (a+b)%2===0 ? "win" : "stone")); }
+    t=y+16; fill(x-s0-1,t,z-s0-1,x+s0+1,t,z+s0+1,"trim");
+    // Uhr vorne
+    for(let u=-1.5;u<=1.5;u+=.5) for(let v=-1.5;v<=1.5;v+=.5){ if(Math.hypot(u,v)<=1.8) fs(x+u,t-3+v,z+s0+.75, Math.hypot(u,v)>1.4 ? "gold" : (Math.abs(u)<.3&&v>=0)||(Math.abs(v)<.3&&u>=0&&u<1.1) ? "iron" : "glow"); }
+    for(const [a,b] of [[-s0,-s0],[s0,-s0],[-s0,s0],[s0,s0]]) spire(x+a,t+1,z+b,0,3,6);
+    t = towerRound(x,t+1,z,3,5,{wstep:1.2});
+    S.country.top=[x, domeAt(x,t,z,3.6,{ribs:8, mat:"goldDome", rib:"trim", lamp:"ylamp"}), z];
+    // bunte Marktzelte rund um den Turm
+    const tent = (cx,cz,tt) => { for(let hh=0;hh<3;hh++) for(let a=-(2-hh);a<=2-hh;a++) fill(cx+a,y+2+hh,cz-1,cx+a,y+2+hh,cz+1,tt); for(const [a,b] of [[-2,-1],[2,-1],[-2,1],[2,1]]) fill(cx+a,y,cz+b,cx+a,y+1,cz+b,"beam"); fs(cx,y+.25,cz,"gold"); fs(cx+.5,y+.25,cz,"banner"); };
+    tent(x-7,z+3,"tentR"); tent(x+7,z+3,"tentY"); tent(x-6,z-6,"tentY"); tent(x+7,z-5,"tentR");
+    // Wimpelketten
+    for(const [a0,a1] of [[-7,0],[0,7]]) for(let k=0;k<=8;k++){ const fx=x+a0+(a1-a0)*k/8, fy=y+6-Math.sin(k/8*Math.PI)*1.2; fs(fx,fy,z+6.5, k%2?"tentY":"banner"); }
+    for(const a of [-4,4]){ fill(x+a,y,z+8,x+a,y+2,z+8,"iron"); set(x+a,y+3,z+8,"ylamp"); }
+    S.country.base=y; S.country.lift=1; S.country.cam={pos:[x+2,y+20,z+70], look:[x+15,y+14,z]}; }
 
   // ---------- Brücken ----------
   // Brücke von a nach b (Deck + Geländer, darunter Bögen/Streben), sanft durchhängend
@@ -160,6 +180,8 @@ export function build(A){
   // ---------- Vordergrund: Felskante mit Holzhütten (links), Felsen (rechts) ----------
   const ledge = (cx,cz,top,r) => { for(let y=SEA-2;y<top;y++){ const rr=r*(.8+.2*(y-SEA)/(top-SEA)); for(let x=Math.floor(cx-rr-2);x<=cx+rr+2;x++) for(let z=Math.floor(cz-rr-2);z<=cz+rr+2;z++){ const a=Math.atan2(z-cz,x-cx); if(Math.hypot(x-cx,z-cz)<=rr*(1+.2*Math.sin(a*4+y*.3))) set(x,y,z, rand()<.3?"rock2":"rock"); } } };
   ledge(4,92,12,10); ledge(118,90,10,9); ledge(-6,74,16,7);
+  const crag = (cx,cz,h,r) => { for(let y=SEA-2;y<h;y++){ const t=(y-SEA)/(h-SEA), rr=r*(1-t*.75); for(let x=Math.floor(cx-rr-2);x<=cx+rr+2;x++) for(let z=Math.floor(cz-rr-2);z<=cz+rr+2;z++){ const an=Math.atan2(z-cz,x-cx); if(Math.hypot(x-cx,z-cz)<=rr*(1+.25*Math.sin(an*3+y*.4+cx))) set(x,y,z, rand()<.04?"magma":rand()<.3?"rock2":"rock"); } } };
+  crag(-14,104,26,9); crag(134,102,30,10); crag(126,86,18,6); crag(-18,90,20,6);
   const hut = (x0,y,z0,w,d) => { for(let yy=y;yy<y+4;yy++) for(let x=x0;x<x0+w;x++) for(let z=z0;z<z0+d;z++){ if(x!==x0&&x!==x0+w-1&&z!==z0&&z!==z0+d-1) continue; const c=(x===x0||x===x0+w-1)&&(z===z0||z===z0+d-1); set(x,yy,z, c?"beam":(yy===y+2&&(x+z)%3===0?"winS":"wood")); }
     const half=Math.ceil(d/2)+1; for(let k=0;k<half;k++) for(let x=x0-1;x<=x0+w;x++){ set(x,y+4+k,z0-1+k,"slate"); set(x,y+4+k,z0+d-k,"slate"); } set(x0+1,y,z0+d-1,"door"); set(x0+1,y+1,z0+d-1,"door"); };
   hut(-2,12,88,6,5); hut(6,12,94,5,4);
@@ -180,6 +202,14 @@ export function build(A){
     // Mauerring mit Türmen
     for(let a=0;a<48;a++){ const an=a/48*Math.PI*2, wx=Math.round(x+Math.cos(an)*19), wz=Math.round(z+Math.sin(an)*12); if(wz>z+10) continue; fill(wx,y,wz,wx,y+4,wz,"stoneD"); if(a%2===0) set(wx,y+5,wz,"stoneD"); }
     S.castleTop=[x,y+29,z-2]; }
+  // Häuser mit Lichtern rund um die Burg (wie im Bild: die Stadt zieht sich den Hang hinauf)
+  { const cx=60, cz=-6, y=50; const house = (hx,hz,w,d,fl) => { if(get(hx,y,hz)||get(hx+w-1,y,hz+d-1)) return; hall(hx,y,hz,w,d,fl,{}); };
+    for(const [hx,hz,w,d,fl] of [[38,4,5,4,2],[44,10,5,4,2],[73,4,5,4,2],[69,10,5,4,1],[36,-10,4,5,3],[80,-10,4,5,3],[46,-16,5,4,2],[70,-18,5,4,2],[40,-2,4,4,1],[78,-2,4,4,2]]) house(hx,hz,w,d,fl);
+    for(let k=0;k<26;k++){ const an=k/26*Math.PI*2, lx=Math.round(cx+Math.cos(an)*20), lz=Math.round(cz+Math.sin(an)*13); if(get(lx,y-1,lz) && !get(lx,y,lz)){ set(lx,y,lz,"iron"); set(lx,y+1,lz,"lamp"); } } }
+  // Säulen mit Bauten im Mittelgrund links und rechts, mit Brücken zur Burg
+  { pillar(14,10,40,8,{falls:[[Math.PI/2,2]]}); const t1=hall(9,40,6,10,8,3,{}); spire(14,t1+2,10,1,3,6); domeAt(10,40+12,6,2,{ribs:4});
+    pillar(108,8,38,8,{falls:[[Math.PI/2+.3,2]]}); const t2=towerRound(108,38,8,4,11,{wstep:1.6}); domeAt(108,t2,8,4.5,{ribs:8});
+    bridge([22,39,10],[39,49,0],{truss:4, lamps:true}); bridge([99,37,8],[81,49,0],{truss:4, lamps:true}); }
 
   // ---------- weitere Säulen mit Bauten an den Seiten ----------
   { pillar(-8,40,30,7,{falls:[[Math.PI/2,2]]}); const t=towerRound(-8,30,40,4,9,{wstep:1.6}); domeAt(-8,t,40,4.2,{ribs:6});
@@ -199,7 +229,7 @@ export function build(A){
 
   // ---------- Vulkan und Landschaft bis zum Horizont ----------
   const Fr = A.far; Fr.cell = 3;
-  const VX=60, VZ=-110, VH=124, VR=125;
+  const VX=60, VZ=-110, VH=112, VR=125;
   const volc = (x,z) => { const d=Math.hypot(x-VX,(z-VZ)*1.05); if(d>VR) return -99; const ridge = Math.sin(Math.atan2(z-VZ,x-VX)*7)*4*Math.min(1,d/30);
     let h = VH*Math.pow(1-d/VR,1.25) + ridge + (fbm(x*.04,z*.04)-.5)*10; if(d<14) h = Math.min(h, VH*Math.pow(1-14/VR,1.25)-6); return h; };
   const crater = (x,z) => Math.hypot(x-VX,(z-VZ)*1.05) < 14;
@@ -222,7 +252,7 @@ export function build(A){
     { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:14, clear:8}}, scale:.55 }
   ];
   const walkLine = (a,b,o) => { const cx=(a[0]+b[0])/2, cz=(a[2]+b[2])/2, len=Math.hypot(b[0]-a[0],b[2]-a[2])/2-1.5;
-    creatures.push({ ...person(o.p), orbit:{c:[cx,a[1]+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };
+    creatures.push({ ...person(o.p), orbit:{c:[cx,(a[1]+b[1])/2+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), slope:(b[1]-a[1])/(2*len+3), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };
   walkLine(...BR.r, {p:{walk:true, shirt:0x8A2A1E}, ph:0});
   walkLine(...BR.r, {p:{walk:true, orc:true, shirt:0x4A3A2A, helm:0x5A5E66}, ph:Math.PI, cycle:[26,.55,6], scale:.19});
   walkLine(...BR.l, {p:{walk:true, shirt:0x2F4A8A, cape:0x6A1A12}, ph:1});
@@ -255,7 +285,7 @@ export function build(A){
            {n:14, pos:[-20,3,60], dx:150, dy:2, dz:0, s0:16, s1:20, color:0x6A4A40, opacity:.22, speed:.01, spread:30, sz:.6, flat:.35}],
     bombs:{pos:[VX,VH-10,VZ], n:20, period:12, burst:2.4, life:6, speed:[10,26], up:[30,44], g:-18, size:2.2, glowSize:3.4, color:0xFFC060, glow:0xFF6A1A, floor:20, light:[0xFF7A2A, 4000, 220], biasZ:4},
     creatures,
-    home:{pos:[62,52,196], look:[60,44,20]}, homePortrait:{pos:[62,48,214], look:[60,40,28]},
+    home:{pos:[62,84,196], look:[60,46,26]}, homePortrait:{pos:[62,96,236], look:[60,32,30]},
     ui:{bg:"rgba(34,8,4,.9)", border:"#FF9A4A", glow:"rgba(255,110,30,.55)", text:"#FFF1E2", sub:"#E8B48C", accent:"#FFB23A", "accent-ink":"#2A0A04", chip:"rgba(30,8,4,.8)"}
   };
 }

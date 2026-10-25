@@ -354,7 +354,7 @@ export async function start(o){
         } else {
         // rot: Bahn gedreht (z. B. schräg über eine Brücke hin und her)
         const ca = Math.cos(ob.rot||0), sa = Math.sin(ob.rot||0), ox = Math.cos(t)*rx, oz = Math.sin(t)*rz;
-        outer.position.set(cx+ox*ca-oz*sa, cy+Math.sin(t*2)*(ob.bob??.6)*move, cz+ox*sa+oz*ca);
+        outer.position.set(cx+ox*ca-oz*sa, cy+ox*(ob.slope||0)+Math.sin(t*2)*(ob.bob??.6)*move, cz+ox*sa+oz*ca);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;
         else { const v0=-Math.sin(t)*rx*(ob.dir||1), w0=Math.cos(t)*rz*(ob.dir||1), vx=v0*ca-w0*sa, vz=v0*sa+w0*ca; outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } } }
       else if(cr.pass){ // Vorbeiflug von a nach b, nur während des Flugs sichtbar (z. B. Fledermausschwarm)
