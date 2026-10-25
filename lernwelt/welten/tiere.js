@@ -331,3 +331,24 @@ export function phoenix(o={}){
   return { parts:[ part(body,[0,0,0]), part(wing,[1,1,3],["x",.5,2.2,0,-.15]), {...part(tip,[1,2,18],["x",.35,2.2,-.5]), parent:1},
     part(wing.mirrorZ(),[1,1,-3],["x",-.5,2.2,0,.15]), {...part(tip.mirrorZ(),[1,2,-18],["x",-.35,2.2,-.5]), parent:3} ], noShadow:true };
 }
+
+/* ---------- Menschen und Orks (Feuerwelt, scale ≈ .3) ---------- */
+export function person(o={}){
+  const SKIN = o.orc ? (o.skin||0x5E8A3A) : (o.skin||0xE8B48A), SHIRT=o.shirt||0x8A2A1E, PANTS=o.pants||0x2E2A30, BOOT=0x2A1A12, HAIR=o.hair||0x3A2414, BELT=0x6A4A2A;
+  const W = o.orc ? 1.3 : 1;
+  const body = M();
+  body.box(-1,6,-Math.round(1.5*W),1,10,Math.round(1.5*W),SHIRT).box(-1,6,-Math.round(1.5*W),1,6,Math.round(1.5*W),BELT);          // Rumpf
+  if(o.cape) body.box(-2,5,-2,-2,10,2,o.cape);
+  const head = M();
+  head.box(-1,11,-1,1,13,1,SKIN).put(2,12,-1,0x1A1A1A).put(2,12,1,0x1A1A1A);                                                   // Kopf mit Augen
+  if(o.orc){ head.put(2,11,-1,0xF0E8D0).put(2,11,1,0xF0E8D0).box(-1,14,-1,1,14,1,0x2A2A20).put(0,12,-2,SKIN).put(0,12,2,SKIN); }   // Hauer, Haar, Ohren
+  else head.box(-1,14,-1,1,14,1,HAIR).box(-1,12,-1,-1,13,1,HAIR);
+  if(o.helm) head.box(-1,14,-1,1,15,1,o.helm).put(0,16,0,o.helm);
+  const step = o.walk ? (o.speed||7) : 0;
+  const legL = M().box(0,0,-1,0,5,-1,PANTS).put(1,0,-1,BOOT).put(0,0,-1,BOOT), legR = M().box(0,0,1,0,5,1,PANTS).put(1,0,1,BOOT).put(0,0,1,BOOT);
+  const z = Math.round(1.5*W)+1;
+  const armL = M().box(0,6,-z,0,10,-z,SHIRT).put(0,5,-z,SKIN), armR = M().box(0,6,z,0,10,z,SHIRT).put(0,5,z,SKIN);
+  if(o.tool) armR.box(1,5,z,4,5,z,0x6A4A2A).box(4,4,z,5,6,z,0x5A5E66);
+  return { parts:[ part(body,[0,0,0]), part(head,[0,11,0],["y",.3,.7,0]), {...part(legL,[0,5,-1], step?["z",.55,step,0]:null), gait:true}, {...part(legR,[0,5,1], step?["z",-.55,step,0]:null), gait:true},
+    {...part(armL,[0,10,-z], step?["z",-.45,step,0]:["z",.08,1,0]), gait:!!step}, {...part(armR,[0,10,z], step?["z",.45,step,0]:["z",.08,1,1]), gait:!!step} ] };
+}
