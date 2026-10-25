@@ -6,7 +6,7 @@ export function build(A){
   const crystal = cols => tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x+y)%6; P(g,x,y, d===0?cols[0]:d<3?cols[1]:cols[2]); } });
   const STONE = ["#7A746C","#6E6862","#857F76","#645E58"];
   const T = {
-    stone: noise(STONE, 6, ["#5A544E"]), deep: noise(["#3A3634","#45403C","#302C2A","#4C4642"], 8, ["#2A2624"]),
+    stone: noise(STONE, 6, ["#5A544E"]), deep: noise(["#5E5852","#68625A","#58524C","#6E6860"], 8, ["#4E4842"]),
     flag: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x===0||y===0||(x===8&&y<8)||(y===8&&x>4)) ? "#3E3A36" : pick(["#8A847A","#7E786E","#948E84"])); P(g,3,5,"#5A544E"); P(g,4,6,"#5A544E"); P(g,11,12,"#5A544E"); }),
     sbrick: bricks(["#8A847A","#7E786E","#948E84"], "#4E4842"), chisel: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const e=x<1||y<1||x>14||y>14, i=x>3&&x<12&&y>3&&y<12, k=x>5&&x<10&&y>5&&y<10; P(g,x,y, e?"#4E4842":k?"#A49E94":i?"#7A746A":"#8E887E"); } }),
     statue: noise(["#A8A49C","#B4B0A8","#9C988F","#ACA8A0"], 4, ["#8C887F"]),
@@ -157,22 +157,37 @@ export function build(A){
   stoneHouse(8,  L0, 58, 5, 6, 8);
   stoneHouse(79, L2, 18, 6, 6, 8);
   stoneHouse(84, L0, 50, 5, 5, 6);
+  // ---------- Unterstadt vorne: eine Ebene tiefer, Straße mit Häusern, die Stadt geht weiter ----------
+  const LM = L0-8, Z0 = D, Z1 = D+34;
+  for(let z=Z0; z<=Z1; z++) for(let x=-2; x<=W+2; x++){ const side = Math.max(0, Math.max(4-x, x-(W-5)));
+    const h = side>0 ? LM + 10 + side*3 + Math.round(fbm(x*.2,z*.2)*4) : LM;
+    for(let y=LM-4; y<h; y++) set(x,y,z, y===h-1 && side===0 ? "flag" : (rand()<.25?"deep":"stone")); }
+  // Stützmauer mit Bögen und große Treppe hinunter
+  for(let x=0;x<=W;x++) for(let y=LM;y<L0;y++) set(x,y,Z0,(y===L0-1)?"chisel":"sbrick");
+  for(const ax of [8,18,28,60,70,80]) archZ(ax,LM,Z0,3,4);
+  for(let i=0;i<8;i++) fill(38,L0-1-i,Z0+i,50,L0-1-i,Z0+i,"flag"), fill(38,LM-1,Z0+i,50,L0-2-i,Z0+i,"sbrick");
+  for(const xx of [37,51]) for(let i=0;i<8;i++) set(xx,L0-i,Z0+i,"chisel");
+  // Häuserzeilen links und rechts der Straße (Vorderseite zur Kamera)
+  for(const [hx,hz,w,h] of [[9,Z0+12,9,7],[22,Z0+14,8,9],[10,Z0+26,8,8],[24,Z0+28,9,6],[66,Z0+12,8,8],[79,Z0+14,9,6],[65,Z0+27,9,7],[78,Z0+28,8,9]]) stoneHouse(hx,LM,hz,w,6,h,{balcony:(h>=8)});
+  // Brunnen auf dem Platz, Laternen entlang der Straße
+  { const fx=44, fz=Z0+18; ring(fx,LM,fz,3.2,"chisel"); disk(fx,LM,fz,2.2,"lava"); fill(fx,LM,fz,fx,LM+3,fz,"sbrick"); set(fx,LM+4,fz,"glow"); }
+  for(let z=Z0+9; z<=Z1; z+=6) for(const lx of [35,53]){ fill(lx,LM,z,lx,LM+3,z,"log"); set(lx,LM+4,z,"glow"); }
   // Kleinkram: Felsbrocken, Pilze, Kisten, Laternenpfähle auf dem Vorplatz
   const busy = (x,z) => Math.abs(x-44)<9 || (Math.hypot(x-S.country.x,z-S.country.z)<15) || (x<26 && z<44 && z>24) || Math.abs(x-12)<4 || (x>58 && x<65) || (x<30 && z<24);
   for(let i=0;i<70;i++){ const x=7+Math.floor(rand()*(W-14)), z=11+Math.floor(rand()*(D-12)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1; if(t>L2+1 || get(x,t,z)) continue;
     const r=rand(); if(r<.3){ ellip(x,t,z,1+rand(),1,1+rand(),"stone"); } else if(r<.5) set(x,t,z,"shroom"); else if(r<.65){ fill(x,t,z,x,t+3,z,"log"); set(x,t+4,z,"glow"); } else if(r<.75) cluster(x,t,z,pick(["amethyst","sapphire"]),2); else set(x,t,z,"planks"); }
 
-  // ---------- Decke mit Tropfsteinen (grob) und Licht von oben ----------
+  // ---------- Decke mit Tropfsteinen und Lichtöffnung über dem Tempel ----------
   const F = A.far; F.cell = 3;
-  for(let cx=-2; cx<=Math.ceil(W/3)+1; cx++) for(let cz=-1; cz<=Math.ceil(OPEN/3); cz++){ const x=cx*3, z=cz*3; if(Math.hypot(x-44,z-18)<7) continue;
-    const yy = 18 + Math.round(fbm(x*.08,z*.08)*2); F.set(cx,yy,cz, rand()<.3?"deep":"stone");
-    if(rand()<.12){ const len=1+Math.floor(rand()*3); for(let k=1;k<=len;k++) F.set(cx,yy-k,cz,"stone"); } }
+  for(let z=-2; z<OPEN+2; z++) for(let x=-2; x<W+2; x++){ if(Math.hypot(x-44,z-18)<6.5) continue;
+    const yy = TOP + Math.round(fbm(x*.09,z*.09)*3); fill(x,yy,z,x,yy+2,z,"stone");
+    if(z>4 && rand()<.035){ const len=2+Math.floor(rand()*6); for(let k=1;k<=len;k++){ set(x,yy-k,z,"stone"); if(k<len-2 && len>4){ set(x+1,yy-k,z,"stone"); } } } }
   // ---------- Weitere Höhlen links und rechts bis in die Ferne: Terrassen, beleuchtete Häuser ----------
   const away = x => Math.max(0,-x, x-W);
   const fh = (x,z) => { const a=away(x); let h = L0 + Math.floor(a/18)*7 + fbm(x*.05,z*.05)*3; if(a>70) h += (a-70)*1.4; if(z<OPEN) h = 80; return h; };
   A.farTerrain({ x0:-150, x1:W+150, z0:OPEN-6, z1:D+50, base:0, skip:(x,z)=> x>-1 && x<W+1,
     h: fh, top:(x,z,y,hc)=> y*3 > 60 ? "stone" : (rand()<.04 ? "glow" : "flag"),
-    fill:(x,z,y,hc)=> (y%2===1 && rand()<.14) ? "win" : (rand()<.25 ? "deep" : "sbrick") });
+    fill:(x,z,y,hc)=> (y%2===1 && y*3<26 && rand()<.14) ? "win" : (rand()<.25 ? "deep" : "sbrick") });
   for(let i=0;i<40;i++){ const x = rand()<.5 ? -20-rand()*120 : W+20+rand()*120, z = OPEN+rand()*(D-OPEN+40); const cx=Math.floor(x/3), cz=Math.floor(z/3), base=Math.ceil(fh(x,z)/3);
     const hh = 2+Math.floor(rand()*5); for(let k=0;k<hh;k++) F.set(cx,base+k,cz,"stone"); }
 
@@ -200,7 +215,7 @@ export function build(A){
     particles:[{n:420, area:[0,W,3,TOP,0,D], vy:0, wob:.25, color:0xFFE6A8, size:.16, opacity:.8, add:true, twinkle:true},
                {n:200, area:[S.country.x-3,S.country.x+3,L0+8,L0+32,S.country.z-8,S.country.z-4], vy:3, wob:.5, color:0xFF9A3A, size:.25, add:true}],
     puffs:[{n:8, pos:[S.country.x,L0+31,S.country.z-6], dx:2, dy:14, dz:2, s0:3, s1:8, color:0x4A4040, opacity:.4, speed:.05}],
-    home:{pos:[W/2,46,D+66], look:[W/2,20,D/2-8]}, homePortrait:{pos:[W/2,54,D+112], look:[W/2,22,D/2-8]},
+    home:{pos:[W/2,62,D+84], look:[W/2,12,D/2+2]}, homePortrait:{pos:[W/2,74,D+130], look:[W/2,14,D/2]},
     ui:{bg:"rgba(26,20,30,.9)", border:"#C9A6FF", glow:"rgba(184,138,255,.5)", text:"#F4EEFF", sub:"#C8BCD8", accent:"#FFC24A", "accent-ink":"#24180A", chip:"rgba(20,14,24,.82)"}
   };
 }
