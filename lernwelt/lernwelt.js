@@ -218,7 +218,7 @@ function bar(cls, html){
 let autoT = null;
 function sheet(kind, head, body, label, onNext){
   clearTimeout(autoT);
-  if(kind==="ok" && onNext){
+  if(false && kind==="ok" && onNext){
     const words = String(body||"").replace(/<[^>]+>/g," ").split(/\s+/).filter(Boolean).length, ms = words ? Math.min(4200, 1300 + words*170) : 950;
     const d = bar(kind+" auto", `<div class="sheet-t" role="status"><b>${head}</b>${body?`<div>${body}</div>`:""}</div><div class="auto-bar" aria-hidden="true"><i style="animation-duration:${ms}ms"></i></div>`);
     let done = false; const go = () => { if(done) return; done = true; clearTimeout(autoT); onNext(); };
@@ -507,7 +507,7 @@ GAMES.quiz = (l, A, done) => {
     res.push(ok);
     if(ok){ pts+=P; award([["q"+l.fragen.indexOf(q), P]], A.querySelector(`.opt[data-j="${q.c}"]`)); } else { A.querySelector(".qpanel").classList.add("shake"); miss((q.szene?q.szene+" – ":"")+q.q, q.o[q.c], q.e||l.regel); }
     const head = ok ? `${l.richtigText||T.right} +${P}` : `${j===-1?T.timeUp:T.wrong} ${T.correctIs} „${q.o[q.c]}“`;
-    sheet(ok?"ok":"no", esc(head), rich(q.e||(!ok&&l.regel)||""), i<qs.length-1?T.next:T.result, ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); });
+    sheet(ok?"ok":"no", esc(head), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result, ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); });
   }
   A.onclick = e => { const o = e.target.closest(".opt"); if(o) answer(+o.dataset.j); };
   show();
@@ -543,7 +543,7 @@ GAMES.swipe = (l, A, done) => {
     const corr = c.r==="l"?l.links.t:l.rechts.t;
     if(!ok) miss(c.t, corr, c.e||l.regel);
     const head = c.r==="beide" ? T.grey+" +1" : ok ? T.right+" +1" : `${T.wrong} ${T.correctIs} „${corr}“`;
-    sheet(ok?"ok":"no", esc(head), `<span class="quote">„${rich(c.t)}“</span> ${rich(c.e||(!ok&&l.regel)||"")}`, i<cs.length-1?T.next:T.result,
+    sheet(ok?"ok":"no", esc(head), `<span class="quote">„${rich(c.t)}“</span> ${rich(c.e||l.regel||"")}`, i<cs.length-1?T.next:T.result,
       ()=>{ i++; if(i<cs.length) show(); else done(pts, T.correctN(pts)+" / "+cs.length); });
   }
   A.onclick = e => { const b = e.target.closest("[data-d]"); if(b) decide(b.dataset.d); };
@@ -567,7 +567,7 @@ GAMES.sortieren = (l, A, done) => {
     const j=+b.dataset.b, it=its[i], ok = j===it.k; cnt[it.k]++; res.push(ok);
     const right = A.querySelector(`[data-b="${it.k}"]`); right.classList.add("hit"); right.querySelector(".cnt").textContent=cnt[it.k];
     if(ok){ pts++; award([["i"+l.items.indexOf(it), 1]], b);
-      if(it.e){ sheet("ok", esc(T.right+" +1"), rich(it.e)); tm=setTimeout(nextItem, 1600); } else tm=setTimeout(nextItem, 650);
+      sheet("ok", esc(T.right+" +1"), rich(it.e||l.koerbe[it.k].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);
     } else {
       b.classList.add("miss","shake"); $("#si").classList.add("shake"); miss(it.t, l.koerbe[it.k].t, it.e||l.koerbe[it.k].tipp||l.regel);
       sheet("no", esc(`${T.wrong} ${T.correctIs} „${l.koerbe[it.k].t}“`), rich(it.e||l.koerbe[it.k].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);
@@ -667,7 +667,7 @@ GAMES.satzbau = (l, A, done) => {
       if(ok) award([["s"+l.saetze.indexOf(s), P]], $("#ans"));
       const sol = s.w.join(" ").replace(/\s+([?.!,])/g,"$1");
       if(!ok) miss(s.hint||s.aufgabe||"", sol, s.e||l.regel);
-      sheet(ok?"ok":"no", esc(ok?T.right+" +"+P:T.wrong), `${ok?"":`${T.solution} <strong>${esc(sol)}</strong> `}${(s.e||(!ok&&l.regel))?rich(s.e||l.regel):""}`, i<ss.length-1?T.next:T.result,
+      sheet(ok?"ok":"no", esc(ok?T.right+" +"+P:T.wrong), `${ok?"":`${T.solution} <strong>${esc(sol)}</strong> `}${(s.e||l.regel)?rich(s.e||l.regel):""}`, i<ss.length-1?T.next:T.result,
         ()=>{ i++; if(i<ss.length) setup(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+ss.length); });
     }
   };
@@ -722,7 +722,7 @@ GAMES.eingabe = (l, A, done) => {
   A.onclick = e => { if(!e.target.closest("#chk") || locked) return; const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
     locked=true; $("#ans").disabled=true; const ok = same(v, q.a, q.strict); res.push(ok);
     if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e||l.regel); }
-    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||(!ok&&l.regel)||""), i<qs.length-1?T.next:T.result,
+    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result,
       ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); }); };
   show();
 };
