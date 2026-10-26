@@ -23,6 +23,14 @@ export function build(A){
     goldOre: ore(STONE, ["#FFD24A","#E8A81C"]), diaOre: ore(["#3A3634","#45403C","#302C2A"], ["#8AF0FF","#3FC8E8"]),
     woolR: noise(["#B8302A","#C83A32","#A8261F"]), woolB: noise(["#2F5DA8","#3A6AC0","#244E90"]), woolY: noise(["#E8B030","#F5C542"]),
     shroom: noise(["#5AF0FF","#8AF6FF","#2AC8E8"], 6, ["#E6FFFF"]),
+    copper: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, x%4===0 ? "#2E6A5A" : pick(["#4A9A82","#58A88E","#3E8A74"])); }),
+    slate: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const r=Math.floor(y/3), off=(r%2)*2; P(g,x,y, y%3===2 ? "#1E2228" : ((x+off)%4===0 ? "#2E343C" : pick(["#3A424C","#444C56","#363E48"]))); } }),
+    timber: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x<2||x>13||y<2||y>13||Math.abs(x-y)<1.2) ? "#4A2E18" : pick(["#E8DCC0","#DED0B2","#F0E4CA"])); }),
+    goldT: noise(["#C8901E","#E0A830","#B07A18","#F0C040"], 10, ["#FFF0A0"]),
+    gemA: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x*2+y)%7; P(g,x,y, d===0?"#F4E0FF":d<3?"#C08AFF":"#7A3AD8"); } }),
+    gemE: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x*2+y)%7; P(g,x,y, d===0?"#E0FFF0":d<3?"#4AE8A0":"#12905A"); } }),
+    gemS: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x*2+y)%7; P(g,x,y, d===0?"#E0F0FF":d<3?"#6AA8FF":"#2450C8"); } }),
+    gemR: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x*2+y)%7; P(g,x,y, d===0?"#FFE6EA":d<3?"#FF5A78":"#B01834"); } }),
     roofD: noise(["#6A2A22","#5A2420","#7A3228"]), sbrickD: bricks(["#5E5850","#6A645A","#544E48"], "#2E2A26"), tileR: noise(["#8A3A2E","#9A4434","#7A3228"]), tileB: noise(["#2E4A6A","#36567A","#28405E"]),
     carpet: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x<2||x>13) ? "#E8B030" : ((x+y)%8===0 ? "#7A1A1A" : pick(["#A8261F","#B8302A"]))); }),
     banR: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (x<2||x>13) ? "#E8B030" : (Math.abs(x-7.5)+Math.abs(y-8)<4 ? "#E8B030" : pick(["#A8261F","#B8302A"]))); }),
@@ -36,7 +44,8 @@ export function build(A){
     amethyst:{side:T.amethyst, em:1.0}, emerald:{side:T.emerald, em:.9}, sapphire:{side:T.sapphire, em:1.0}, ruby:{side:T.ruby, em:.95},
     goldOre:{side:T.goldOre}, diaOre:{side:T.diaOre, em:.15}, woolR:{side:T.woolR}, woolB:{side:T.woolB}, woolY:{side:T.woolY}, shroom:{side:T.shroom, em:1.0},
     chain:{side:T.chain, alpha:.99, cross:true},
-    sbrickD:{side:T.sbrickD}, roofD:{side:T.roofD}, tileR:{side:T.tileR}, tileB:{side:T.tileB}, carpet:{side:T.carpet}, banR:{side:T.banR}, banB:{side:T.banB},
+    sbrickD:{side:T.sbrickD}, roofD:{side:T.roofD}, copper:{side:T.copper}, slate:{side:T.slate}, timber:{side:T.timber}, goldT:{side:T.goldT, em:.25},
+    gemA:{side:T.gemA, em:.28}, gemE:{side:T.gemE, em:.25}, gemS:{side:T.gemS, em:.28}, gemR:{side:T.gemR, em:.25}, spark:{side:T.glow, em:1.6, halo:[0xFFFFFF,2.2,.6]}, tileR:{side:T.tileR}, tileB:{side:T.tileB}, carpet:{side:T.carpet}, banR:{side:T.banR}, banB:{side:T.banB},
     lavaFall:{side:T.lava, em:1.4, anim:[0,-.5], soft:true}, lamp:{side:T.glow, em:1.4, halo:[0xFFB84A,3.2,.55]}, cyan:{side:T.shroom, em:1.2, halo:[0x5AF0FF,3,.5]},
     gear:{side:T.gear, alpha:.99, cross:true}
   };
@@ -160,12 +169,44 @@ export function build(A){
       if(zz>0) for(const a of [-hw,hw]) fill(x+a,y+h+1+i,z-zz+1,x+a,y+h+1+i,z+zz-1, i===1 && zz>1 ? "win" : "sbrick"); }
     fill(x+hw-1,y+h+1,z-1,x+hw-1,y+h+R+3,z-1,"sbrick"); set(x+hw-1,y+h+R+4,z-1,"magma"); chim.push([x+hw-.5,y+h+R+5,z-.5]);
     if(opt.balcony){ for(let a=-hw;a<=hw;a++){ set(a+x,y+h-2,z+hd+1,"chisel"); if(a%2===0) set(a+x,y+h-1,z+hd+1,"iron"); } } };
-  stoneHouse(75, L1, 30, 9, 6, 7, {balcony:true});
-  stoneHouse(29, L1, 30, 7, 5, 5);
-  stoneHouse(20, L0, 62, 9, 6, 6, {balcony:true});
-  stoneHouse(8,  L0, 58, 5, 6, 8);
-  stoneHouse(79, L2, 18, 6, 6, 8);
-  stoneHouse(84, L0, 50, 5, 5, 6);
+  // ---------- Verschiedene Zwergenhäuser ----------
+  const FH = A.fine, fh2 = (x,y,z,t) => FH.set(Math.round(x*2),Math.round(y*2),Math.round(z*2),t);
+  // Turmhaus: rund, Schieferkegel, Balkonring
+  const towerHouse = (x,y,z,r,h) => { fill(x-r-1,y,z-r-1,x+r+1,y,z+r+1,"flag");
+    for(let yy=y+1;yy<=y+h;yy++) ring(x,yy,z,r,(a,b,c)=> (b-y)%4===0 ? "chisel" : ((b-y)%4===2 && (a+c)%3===0 ? "win" : "stone"));
+    disk(x,y+h,z,r,"planks"); ring(x,y+h,z,r+1,"chisel"); for(let k=0;k<r+3;k++) ring(x,y+h+1+k,z,Math.max(.3,r+.6-k*.85),"slate"); set(x,y+h+r+4,z,"gold");
+    set(x,y+1,z+r,"door"); set(x,y+2,z+r,"door"); fh2(x+1,y+3,z+r+.5,"lamp");
+    chim.push([x+.5,y+h+r+5,z+.5]); };
+  // Werkstatt: breit und niedrig, großes glühendes Tor, dicker Schornstein, Zahnrad an der Wand
+  const workshop = (x,y,z,w,d) => { const hw=w>>1, hd=d>>1; fill(x-hw-1,y,z-hd-1,x+hw+1,y,z+hd+1,"flag");
+    walls(x-hw,y+1,z-hd,x+hw,y+5,z+hd,(a,b,c)=> b===y+5 ? "chisel" : ((a===x-hw||a===x+hw)&&(c===z-hd||c===z+hd)) ? "sbrickD" : "sbrick");
+    fill(x-hw,y+6,z-hd,x+hw,y+6,z+hd,"slate"); fill(x-hw+1,y+7,z-hd+1,x+hw-1,y+7,z+hd-1,"slate");
+    for(let a=-1;a<=1;a++) for(let b=1;b<=3;b++) set(x+a,y+b,z+hd,"door"); fill(x-2,y+4,z+hd,x+2,y+4,z+hd,"iron");
+    fill(x+hw-1,y+6,z-hd+1,x+hw,y+12,z-hd+2,"sbrickD"); fill(x+hw-1,y+13,z-hd+1,x+hw,y+13,z-hd+2,"magma"); chim.push([x+hw,y+14,z-hd+2]);
+    for(let a=-1.5;a<=1.5;a+=.5) for(let b=-1.5;b<=1.5;b+=.5){ const dd=Math.hypot(a,b), an=Math.atan2(b,a); if(dd<1.4||(dd<1.9&&Math.sin(an*8)>0)) fh2(x-hw+1.5+a,y+3.5+b,z+hd+.75, dd<.4?"iron":"gold"); }
+    set(x-hw-1,y+1,z+hd+1,"log"); set(x-hw-1,y+2,z+hd+1,"log"); set(x+hw+1,y+1,z+hd,"anvil"==="x"?"iron":"iron"); };
+  // Wirtshaus: Fachwerk-Obergeschoss, Holzschild, Fässer
+  const tavern = (x,y,z,w,d) => { const hw=w>>1, hd=d>>1; fill(x-hw-1,y,z-hd-1,x+hw+1,y,z+hd+1,"flag");
+    walls(x-hw,y+1,z-hd,x+hw,y+4,z+hd,(a,b,c)=> ((a===x-hw||a===x+hw)&&(c===z-hd||c===z+hd)) ? "sbrickD" : (b===y+3 && (a+c)%3===0 ? "win" : "stone"));
+    walls(x-hw-1,y+5,z-hd-1,x+hw+1,y+8,z+hd+1,(a,b,c)=> b===y+5 ? "log" : (b===y+7 && (a+c)%2===0 ? "win" : "timber"));
+    for(let i=0;i<=hd+2;i++) fill(x-hw-2,y+9+i,z-hd-2+i,x+hw+2,y+9+i,z+hd+2-i, i===hd+2?"gold":"roofD");
+    fill(x-1,y+1,z+hd,x+1,y+2,z+hd,"door"); fill(x+hw+1,y+4,z+hd,x+hw+3,y+4,z+hd,"log"); fill(x+hw+3,y+2,z+hd,x+hw+3,y+3,z+hd,"planks"); fh2(x+hw+3,y+1.75,z+hd+.5,"woolR");
+    for(const [a,b] of [[-hw-1,hd+1],[-hw,hd+2],[hw+1,hd+2]]){ set(x+a,y+1,z+b,"log"); fh2(x+a,y+2,z+b,"planks"); } fh2(x-hw+.5,y+2.5,z+hd+1,"lamp");
+    chim.push([x-hw+1,y+14,z]); fill(x-hw+1,y+9,z,x-hw+1,y+13,z,"sbrick"); };
+  // Kuppelhaus: quadratisch, Kupferkuppel mit Goldspitze, Säulenvorbau
+  const domeHouse = (x,y,z,r) => { fill(x-r-2,y,z-r-2,x+r+2,y,z+r+3,"flag");
+    walls(x-r,y+1,z-r,x+r,y+5,z+r,(a,b,c)=> b===y+5 ? "chisel" : (b===y+3 && (a===x||c===z) ? "win" : "sbrick"));
+    for(let yy=0;yy<=r;yy++) ring(x,y+6+yy,z,Math.sqrt(Math.max(0,(r+.4)**2-yy*yy)),"copper",1.4); set(x,y+7+r,z,"gold"); set(x,y+8+r,z,"gold");
+    for(const a of [-2,2]){ fill(x+a,y+1,z+r+2,x+a,y+4,z+r+2,"chisel"); } fill(x-2,y+5,z+r+1,x+2,y+5,z+r+2,"chisel"); set(x,y+1,z+r,"door"); set(x,y+2,z+r,"door"); fh2(x,y+4.5,z+r+2.5,"lamp"); };
+  // Stufenhaus: drei kleiner werdende Stockwerke mit Runenband und Goldkante
+  const stepHouse = (x,y,z,w) => { let hw=w>>1, yy=y; fill(x-hw-1,y,z-hw-1,x+hw+1,y,z+hw+1,"flag");
+    for(let k=0;k<3 && hw>=1;k++){ walls(x-hw,yy+1,z-hw,x+hw,yy+3,z+hw,(a,b,c)=> b===yy+3 ? (k===2?"goldT":"rune") : (b===yy+2 && (a+c)%2===0 && a!==x-hw && a!==x+hw ? "win" : (k%2?"sbrickD":"stone")));
+      fill(x-hw,yy+4,z-hw,x+hw,yy+4,z+hw,"chisel"); yy+=4; hw-=1; } set(x,yy+1,z,"lamp");
+    set(x,y+1,z+(w>>1),"door"); set(x,y+2,z+(w>>1),"door"); };
+  workshop(75, L1, 30, 9, 6);
+  towerHouse(29, L1, 30, 3, 8);
+  tavern(20, L0, 62, 7, 4);
+  domeHouse(79, L2, 18, 3);
   // ---------- Unterstadt vorne: eine Ebene tiefer, Straße mit Häusern, die Stadt geht weiter ----------
   const LM = L0-8, Z0 = D, Z1 = D+34;
   for(let z=Z0; z<=Z1; z++) for(let x=-2; x<=W+2; x++){ const side = Math.max(0, Math.max(4-x, x-(W-5)));
@@ -177,13 +218,38 @@ export function build(A){
   for(let i=0;i<8;i++) fill(38,L0-1-i,Z0+i,50,L0-1-i,Z0+i,"flag"), fill(38,LM-1,Z0+i,50,L0-2-i,Z0+i,"sbrick");
   for(const xx of [37,51]) for(let i=0;i<8;i++) set(xx,L0-i,Z0+i,"chisel");
   // Häuserzeilen links und rechts der Straße (Vorderseite zur Kamera)
-  for(const [hx,hz,w,h] of [[9,Z0+12,9,7],[22,Z0+14,8,9],[10,Z0+26,8,8],[24,Z0+28,9,6],[66,Z0+12,8,8],[79,Z0+14,9,6],[65,Z0+27,9,7],[78,Z0+28,8,9]]) stoneHouse(hx,LM,hz,w,6,h,{balcony:(h>=8)});
+  stepHouse(12,LM,Z0+12,9); towerHouse(24,LM,Z0+16,3,10); tavern(14,LM,Z0+28,7,4); workshop(66,LM,Z0+12,9,6); domeHouse(79,LM,Z0+16,3); towerHouse(70,LM,Z0+29,2,7);
   // Brunnen auf dem Platz, Laternen entlang der Straße
-  { const fx=44, fz=Z0+18; ring(fx,LM,fz,3.2,"chisel"); disk(fx,LM,fz,2.2,"lava"); fill(fx,LM,fz,fx,LM+3,fz,"sbrick"); set(fx,LM+4,fz,"glow"); }
+  // ---------- Der Edelsteinbaum: von Zwergen geschmiedet, Stamm aus gedrehtem Gold und Eisen, Blätter aus Edelsteinen ----------
+  const gemTree = (cx,y0,cz) => {
+    // Sockel: runde Stufen mit Runen und Goldband
+    for(let k=0;k<3;k++){ disk(cx,y0+k,cz,6.5-k*1.6,k===2?"goldT":"chisel"); ring(cx,y0+k,cz,6.5-k*1.6,k===1?"rune":"sbrickD"); }
+    const base = y0+3;
+    // Wurzeln aus Gold, die sich über den Sockel krallen (fein)
+    for(let i=0;i<7;i++){ const an=i/7*Math.PI*2+.2; let px=cx, pz=cz, py=base+.5; for(let k=0;k<12;k++){ px+=Math.cos(an)*.45; pz+=Math.sin(an)*.45; py-= k<5 ? 0 : .28; fh2(px,py,pz, k%3===0?"iron":"goldT"); fh2(px,py+.5,pz,"goldT"); } }
+    // Stamm: zwei verdrehte Stränge (Gold + Eisen), oben verzweigt
+    for(let h=0; h<9; h+=.5){ const a=h*.6, r=1.6-h*.08; for(let k=0;k<6;k++){ const off=k/6*Math.PI*2; fh2(cx+Math.cos(a+off)*r, base+h, cz+Math.sin(a+off)*r, k%3===1 ? "iron" : "goldT"); fh2(cx+Math.cos(a+off)*r*.5, base+h, cz+Math.sin(a+off)*r*.5, "goldT"); } fh2(cx,base+h,cz,"goldT"); if(h===4) fh2(cx+Math.cos(a)*1.9, base+h, cz+Math.sin(a)*1.9, "gemR"); }
+    // Äste rekursiv, an den Spitzen Edelstein-Blätterbüschel
+    const gems = ["gemA","gemE","gemS","gemR"]; const tips = [];
+    const branch = (x,y,z,yaw,pitch,len,depth) => { const n=Math.ceil(len*2); let px=x,py=y,pz=z;
+      for(let i=0;i<n;i++){ px+=Math.cos(yaw)*Math.cos(pitch)*.5; pz+=Math.sin(yaw)*Math.cos(pitch)*.5; py+=Math.sin(pitch)*.5; fh2(px,py,pz, depth>1 ? "goldT" : "iron"); if(depth>1 && i%2===0) fh2(px,py+.5,pz,"goldT"); }
+      if(depth===0){ tips.push([px,py,pz,cur]); return; }
+      const k = depth>1 ? 3 : 2; for(let j=0;j<k;j++) branch(px,py,pz, yaw+(j-(k-1)/2)*1.1+(rand()-.5)*.5, Math.max(.05, pitch-.15+(rand()-.3)*.4), len*.68, depth-1); };
+    let cur = "gemE";
+    for(let i=0;i<5;i++){ cur = ["gemE","gemA","gemS","gemR","gemA"][i]; branch(cx, base+7+i*.4, cz, i/5*Math.PI*2+.4, .5, 3.4, 3); }
+    cur = "gemE"; branch(cx, base+9, cz, 0, 1.4, 2.2, 2);
+    // Blätter: kleine Edelstein-Kristalle (je Büschel eine Farbe), dazwischen Funken
+    tips.forEach(([tx,ty,tz,g],i)=>{ for(let a=-1;a<=1;a+=.5) for(let b=-.5;b<=1;b+=.5) for(let c=-1;c<=1;c+=.5){ const d=Math.hypot(a,b*1.3,c); if(d<=1.05 && rand()<.82) fh2(tx+a,ty+b+.4,tz+c, d>.8 && rand()<.06 ? "spark" : g); }
+      if(i%3===0) fh2(tx,ty+1.2,tz,"spark");
+      if(i%2===0){ for(let k=1;k<=Math.floor(2+rand()*3);k++) fh2(tx+.5,ty-k*.5,tz,"chain"); fh2(tx+.5,ty-2.5-rand(),tz,g); } });   // hängende Edelstein-Anhänger
+    // Laternen-Ring um den Baum
+    if(false) for(let i=0;i<6;i++){ const an=i/6*Math.PI*2+.5; const lx=Math.round(cx+Math.cos(an)*7.5), lz=Math.round(cz+Math.sin(an)*7.5); fill(lx,y0,lz,lx,y0+2,lz,"iron"); set(lx,y0+3,lz,"lamp"); }
+    return [cx, base+20, cz]; };
+  { const fx=44, fz=Z0+18; ring(fx,LM,fz,3.2,"chisel"); disk(fx,LM,fz,2.2,"lava"); fill(fx,LM,fz,fx,LM+3,fz,"sbrick"); set(fx,LM+4,fz,"lamp"); }
   for(let z=Z0+9; z<=Z1; z+=6) for(const lx of [35,53]){ fill(lx,LM,z,lx,LM+3,z,"log"); set(lx,LM+4,z,"glow"); }
   // Kleinkram: Felsbrocken, Pilze, Kisten, Laternenpfähle auf dem Vorplatz
   const busy = (x,z) => Math.abs(x-44)<9 || (Math.hypot(x-S.country.x,z-S.country.z)<15) || (x<26 && z<44 && z>24) || Math.abs(x-12)<4 || (x>58 && x<65) || (x<30 && z<24);
-  for(let i=0;i<70;i++){ const x=7+Math.floor(rand()*(W-14)), z=11+Math.floor(rand()*(D-12)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1; if(t>L2+1 || get(x,t,z)) continue;
+  for(let i=0;i<22;i++){ const x=7+Math.floor(rand()*(W-14)), z=11+Math.floor(rand()*(D-12)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1; if(t>L2+1 || get(x,t,z)) continue;
     const r=rand(); if(r<.3){ ellip(x,t,z,1+rand(),1,1+rand(),"stone"); } else if(r<.5) set(x,t,z,"shroom"); else if(r<.65){ fill(x,t,z,x,t+3,z,"log"); set(x,t+4,z,"glow"); } else if(r<.75) cluster(x,t,z,pick(["amethyst","sapphire"]),2); else set(x,t,z,"planks"); }
 
   // ---------- Decke mit Tropfsteinen und Lichtöffnung über dem Tempel ----------
@@ -207,6 +273,7 @@ export function build(A){
   for(const [cx,cz,L,r] of [[44,59,L0,8],[44,38,L1,5],[44,Z0+18,LM,7]]) for(let x=cx-r-2;x<=cx+r+2;x++) for(let z=cz-r;z<=cz+r;z++){
     if(get(x,L-1,z)!=="flag" || !freeAbove(x,L,z)) continue; const d=Math.abs(x-cx)+Math.abs(z-cz);
     if(d<=r) set(x,L-1,z, d===r ? "gold" : d===r-1 ? "chisel" : (d%3===0 ? "tileR" : d%3===1 ? "tileB" : "flag")); }
+  const treeTop = gemTree(44, L0, 60);
   // 2) roter Teppich von der Treppe zum Tempeltor
   for(let z=12; z<=25; z++) for(let x=41;x<=47;x++){ if(get(x,L2-1,z) && freeAbove(x,L2,z)) set(x,L2-1,z, (x===41||x===47) ? "gold" : "carpet"); }
   // 3) Lavarinne vor der Terrassenmauer der Unterstadt, mit Brücken an den Treppen
@@ -249,7 +316,7 @@ export function build(A){
     creatures.push({ ...bat(), pass:{a:[pa[0]+o[0]-i*.8,pa[1]+o[1],pa[2]+o[2]], b:[pb[0]+o[0]-i*.8,pb[1]+o[1],pb[2]+o[2]], period:P, dur:8.5, ph:ph0+i*.12, wave:[1.6,2+i%3], wph:i}, scale:.3 }); }
   const tun = [0x2F5DA8,0xA83A2A,0x3A8A4A,0x7A4AA8,0x8A6A2A], brd = [0xC86A2A,0xE8E2D8,0x6A4A2A,0xD8B060,0x2A2A2A];
   creatures.push({ ...dwarf({tunic:0x6A3A2A, beard:0xE8E2D8, hammer:true}), at:[S.country.x-4, L0, S.country.z-1], yaw:0, scale:.5 });
-  for(let i=0;i<5;i++) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[i], walk:true}), orbit:{c:[44+(i-2)*6, L0, 55+(i%2)*3], r:[4+i, 2+(i%3)], speed:.18+(i%3)*.05, ph:i*1.3, bob:.1, dir:i%2?1:-1}, scale:.42 });
+  for(let i=0;i<5;i++) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[i], walk:true}), orbit:{c:[44, L0, 60], r:[9.5+(i%2)*.8, 6+(i%2)*.5], speed:.07+(i%3)*.012, ph:i*1.25, bob:.1, dir:i%2?1:-1}, scale:.42 });
   for(let i=0;i<3;i++) creatures.push({ ...dwarf({tunic:tun[(i+2)%5], beard:brd[(i+1)%5], walk:true}), orbit:{c:[30+i*14, L1, 36], r:[6, 2], speed:.2, ph:i*2, bob:.1, dir:i%2?1:-1}, scale:.42 });
   for(const [dx,dz,yaw,i] of [[38,18,1.6,0],[52,20,1.3,1],[9,48,.3,2],[80,40,2.6,3]]) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[(i+2)%5]}), at:[dx, level(dz)>=TOP?L2:level(dz), dz], yaw, scale:.42 });
 
@@ -261,10 +328,12 @@ export function build(A){
             {pos:[S.country.x,L0+4,S.country.z-2], color:0xFF7A2A, int:340, dist:30, flicker:true},
             {pos:[S.vocabulary.x,L1+5,S.vocabulary.z], color:0xB88AFF, int:260, dist:26},
             {pos:[44,L0+8,52], color:0xFFC870, int:300, dist:40},
+            {pos:[44,L0+16,60], color:0xC8A8FF, int:260, dist:30}, {pos:[44,L0+10,64], color:0x6AF0C0, int:160, dist:22},
             {pos:[10,L2+6,12], color:0xFF7A2A, int:220, dist:26, flicker:true}, {pos:[80,L2+6,12], color:0xFF7A2A, int:220, dist:26, flicker:true},
             {pos:[33,L1+10,34], color:0xFFB050, int:140, dist:20}, {pos:[55,L1+10,34], color:0xFFB050, int:140, dist:20}],
     rays:{n:10, color:0xFFE6B8, area:[38,50,12,26], y:40, len:70},
-    particles:[{n:420, area:[0,W,3,TOP,0,D], vy:0, wob:.25, color:0xFFE6A8, size:.16, opacity:.8, add:true, twinkle:true},
+    particles:[{n:140, area:[44-6,44+6,L0+5,L0+16,60-6,60+6], vy:.25, wob:.4, color:0xFFFFFF, size:.22, add:true, blink:2.2},
+               {n:420, area:[0,W,3,TOP,0,D], vy:0, wob:.25, color:0xFFE6A8, size:.16, opacity:.8, add:true, twinkle:true},
                {n:200, area:[S.country.x-3,S.country.x+3,L0+8,L0+32,S.country.z-8,S.country.z-4], vy:3, wob:.5, color:0xFF9A3A, size:.25, add:true}],
     puffs:[{n:8, pos:[S.country.x,L0+31,S.country.z-6], dx:2, dy:14, dz:2, s0:3, s1:8, color:0x4A4040, opacity:.4, speed:.05},
            ...chim.map(c=>({n:3, pos:c, dx:1, dy:7, dz:-1, s0:1, s1:3.5, color:0x4A4440, opacity:.35, speed:.07, spread:.5})),
