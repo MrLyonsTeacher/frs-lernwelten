@@ -1,196 +1,252 @@
-// Klasse 10 · Ice Region – Frostpalast in einer Halle aus riesigen Eissäulen: spitze Türme, Spitzbögen, Eiszapfen, leuchtendes Tor; Frostfüchse und ein Eisbär laufen herum
+// Klasse 10 · Ice Citadel – nach Seáns Vorlagebild: großes Eisschloss rechts hinten auf einem Hügel, davor rechts ein vereister Wald,
+// links vorne ein gefrorener See, eine Brücke vom Wald über den See zum Schloss, links hinten ein zweiter See vor verschneiten Bergen.
+// Stationen: Schloss (Grammar), großer Eisbaum links vor dem Schloss (Vocabulary), Garten mit Brunnen rechts (Country & people).
 import { polarBear, frostFox } from "./tiere.js";
 export function build(A){
-  const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, terrain, tex, P, noise, stripes, bricks, rings, topEdge } = A;
+  const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, tex, P, noise, stripes, bricks, rings, topEdge } = A;
   const T = {
     snow: noise(["#F4F8FF","#EAF2FC","#FFFFFF","#E2ECF8"], 6, ["#D4E2F2"]), snowSide: topEdge(["#9AB8D4","#8AAAC8","#A8C4DC"], ["#F4F8FF","#EAF2FC"], 5),
     frost: noise(["#9AB8D4","#8AAAC8","#A8C4DC","#7E9EBE"], 8, ["#C8DCEE"]),
+    rock: noise(["#6A7E96","#5E7290","#748AA2","#56687E"], 8, ["#9AB0C6"]),
     floorIce: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(x*.5+y*.9)+rand()*.4; P(g,x,y, (x===0||y===0) ? "#6AA8D8" : v>1.2?"#E6F8FF":v>.2?"#A8D8F4":"#8AC4EC"); } }),
-    iceBrick: bricks(["#BCDDF2","#AED4EE","#C8E4F6","#B4D8F0"], "#5A8ABE", 4, 8),
-    iceTrim: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, y<2||y>13 ? "#2E6AA8" : (x+y)%7===0 ? "#8AD0F4" : pick(["#4A8AC8","#5A9AD4","#3E7EBE"])); }),
-    carved: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const e=x<1||y<1||x>14||y>14, i=x>3&&x<12&&y>3&&y<12; P(g,x,y, e?"#7AAAD0":i?(Math.abs(x-7.5)+Math.abs(y-7.5)<4?"#F0FAFF":"#B8DCF2"):"#D8EEFA"); } }),
-    pillar: tex(g=>{ for(let x=0;x<16;x++){ const c=pick(["#3A8AD8","#4AA0E6","#2A70C0","#5AB8F0","#6ACCF8"]); for(let y=0;y<16;y++) P(g,x,y, rand()<.03 ? "#E6FAFF" : (x%5===2 ? "#9AE6FF" : c)); } }),
-    pillarTop: rings(["#BFF2FF","#6ACCF8","#3A8AD8","#2A70C0"]),
-    spire: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, x%4===0 ? "#E8F8FF" : pick(["#A8DAF6","#9ACEF0","#B8E4FA"])); }),
-    win: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const fr = x<2||x>13||y>14||x===7||x===8||(y<6 && Math.abs(x-7.5)>y*1.3+1); P(g,x,y, fr ? "#2A5A98" : pick(["#8AF0FF","#6AE0FF","#BFF8FF"])); } }),
+    lake: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(x*.4+y*.25)+Math.sin(y*.7-x*.2)*.6+rand()*.3; P(g,x,y, v>1.3?"#CFF2FF":v>.6?"#7CC8F0":v>-.2?"#4AA6E0":"#2E84C8"); } }),
+    iceBrick: bricks(["#E6F2FC","#D8EAF8","#EEF6FE","#DCEEFA"], "#8AB0D0", 4, 8),
+    iceBrick2: bricks(["#C8E0F4","#BCD8F0","#D2E6F6"], "#7AA0C4", 4, 8),
+    iceTrim: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, y<2||y>13 ? "#4A86C0" : (x+y)%7===0 ? "#BFE8FA" : pick(["#8AB8DE","#9AC4E6","#7EAED6"])); }),
+    carved: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const e=x<1||y<1||x>14||y>14, i=x>3&&x<12&&y>3&&y<12; P(g,x,y, e?"#8AB2D4":i?(Math.abs(x-7.5)+Math.abs(y-7.5)<4?"#FFFFFF":"#D8ECFA"):"#EAF6FE"); } }),
+    roof: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const r=Math.floor(y/3), off=(r%2)*2; P(g,x,y, y%3===2 ? "#5E8EC4" : ((x+off)%4===0 ? "#7EA8D8" : pick(["#A8CCEE","#B8D8F4","#9CC2E8"]))); } }),
+    spire: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, x%4===0 ? "#FFFFFF" : pick(["#C8E4FA","#BCDCF6","#D4EAFC"])); }),
+    pillar: tex(g=>{ for(let x=0;x<16;x++){ const c=pick(["#5AA8E8","#6AB8F0","#4A98DC","#7ACCF8","#8ADCFC"]); for(let y=0;y<16;y++) P(g,x,y, rand()<.03 ? "#F0FCFF" : (x%5===2 ? "#BFF0FF" : c)); } }),
+    win: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const fr = x<2||x>13||y>14||x===7||x===8||(y<6 && Math.abs(x-7.5)>y*1.3+1); P(g,x,y, fr ? "#3A6AA8" : pick(["#9AF4FF","#7AE8FF","#CFFAFF"])); } }),
+    winW: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const fr = x<2||x>13||y>14||x===7||x===8||(y<6 && Math.abs(x-7.5)>y*1.3+1); P(g,x,y, fr ? "#3A6AA8" : pick(["#FFE6B0","#FFD890","#FFF0C8"])); } }),
     door: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=y/16; P(g,x,y, rand()<.1 ? "#FFFFFF" : v<.4?"#DFFCFF":v<.75?"#9AEEFF":"#5AD4FF"); } }),
-    dark: noise(["#1E3E6A","#24487A","#1A365E"], 6, ["#3A6AA0"]),
-    icicle: noise(["#DFF8FF","#BFEFFF","#FFFFFF"], 0), crystal: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x+y)%6; P(g,x,y, d===0?"#E6FFFF":d<3?"#7FE6FF":"#3AB4F0"); } }),
+    icicle: noise(["#DFF8FF","#BFEFFF","#FFFFFF"], 0),
+    crystal: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x+y)%6; P(g,x,y, d===0?"#E6FFFF":d<3?"#7FE6FF":"#3AB4F0"); } }),
     violet: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=(x+y)%6; P(g,x,y, d===0?"#F2E6FF":d<3?"#C8A0FF":"#9A6AF0"); } }),
-    lamp: noise(["#DFFCFF","#BFF4FF","#FFFFFF"]), silver: noise(["#E8F0F8","#D0DCE8","#F4F8FC"])
+    lamp: noise(["#DFFCFF","#BFF4FF","#FFFFFF"]), silver: noise(["#E8F0F8","#D0DCE8","#F4F8FC"]),
+    pine: noise(["#5E8AA8","#6A96B4","#527E9C","#7AA4C0"], 10, ["#DCEEFA","#FFFFFF"]), bark: stripes(["#5A4A44","#4E403A","#665650"], true),
+    hedge: noise(["#7EA2BE","#8AAECA","#6E94B2"], 14, ["#FFFFFF","#E8F4FE"]),
+    gold: noise(["#E8C870","#F4DA90","#D8B460"])
   };
   const blocks = {
-    snow:{side:T.snowSide, top:T.snow, bottom:T.frost}, snowB:{side:T.snow}, frost:{side:T.frost}, floorIce:{side:T.frost, top:T.floorIce, em:.08},
-    iceBrick:{side:T.iceBrick}, iceTrim:{side:T.iceTrim}, carved:{side:T.carved, top:T.iceBrick}, pillar:{side:T.pillar, top:T.pillarTop, em:.38},
-    spire:{side:T.spire, top:T.snow}, win:{side:T.win, em:.9}, door:{side:T.door, em:.7}, dark:{side:T.dark},
-    icicle:{side:T.icicle, alpha:.85, em:.35}, crystal:{side:T.crystal, em:1.0}, violet:{side:T.violet, em:1.0}, lamp:{side:T.lamp, em:1.3, scale:.6, halo:[0xBFF4FF,3.4,.75]}, silver:{side:T.silver}
+    snow:{side:T.snowSide, top:T.snow, bottom:T.frost}, snowB:{side:T.snow}, frost:{side:T.frost}, rock:{side:T.rock, top:T.snow}, floorIce:{side:T.frost, top:T.floorIce, em:.08},
+    lakeIce:{side:T.lake, em:.12}, iceBrick:{side:T.iceBrick}, iceBrick2:{side:T.iceBrick2}, iceTrim:{side:T.iceTrim}, carved:{side:T.carved, top:T.iceBrick}, roof:{side:T.roof},
+    spire:{side:T.spire, top:T.snow}, pillar:{side:T.pillar, em:.35}, win:{side:T.win, em:.9}, winW:{side:T.winW, em:.9}, door:{side:T.door, em:.75},
+    icicle:{side:T.icicle, alpha:.85, em:.35}, crystal:{side:T.crystal, em:1.0}, violet:{side:T.violet, em:1.0}, lamp:{side:T.lamp, em:1.3, scale:.6, halo:[0xBFF4FF,3.4,.75]},
+    silver:{side:T.silver}, pine:{side:T.pine}, bark:{side:T.bark, top:T.snow}, hedge:{side:T.hedge, top:T.snow}, gold:{side:T.gold, em:.3},
+    iceGlow:{side:T.pillar, em:.9, halo:[0x9AE8FF,4,.45]}, flowerV:{side:T.violet, em:.8, scale:.6}, flowerC:{side:T.crystal, em:.8, scale:.6}
   };
-  const W=92, D=72, G=5;  // G: Boden
-  // Boden: Schnee, eisiger Weg zum Tor, Schneewehen an den Rändern, hinten Eisklippen
-  terrain(W, D, (x,z)=> { let h = G + Math.max(0, fbm(x*.1,z*.1)-.62)*10; h += Math.max(0, 6-z)*6*(.6+fbm(x*.1,3)); h += Math.max(0, Math.max(3-x, x-(W-4)))*4; return h; },
-    (x,y,z,h) => y===h-1 ? ((Math.abs(x-46)<=6 && z>36 && h<=G+1) ? "floorIce" : "snow") : (y>h-3 ? "snowB" : "frost"));
+  const FN = A.fine, fs = (x,y,z,t) => FN.set(Math.round(x*2),Math.round(y*2),Math.round(z*2),t);
+  const W=120, D=96, G=6, L=4;      // G: Boden, L: Wasser/Eisoberfläche
+  const CX=80, CZ=20, HB=20;         // Schlosshügel
+  // ---------- Gelände ----------
+  const lakeF = (x,z) => ((x-24)/32)**2 + ((z-72)/28)**2;           // See links vorne
+  const lakeB = (x,z) => ((x-8)/44)**2 + ((z-2)/22)**2;             // See links hinten
+  const chan  = (x,z) => Math.abs(x-6-Math.sin(z*.15)*2) < 5 && z>14 && z<50;   // Verbindung
+  const hillD = (x,z) => Math.hypot(x-CX,(z-CZ)*1.15);
+  const H = (x,z) => { let h = G + (fbm(x*.08,z*.08)-.5)*3;
+    if(x>62 && z>52) h += 1.5 + fbm(x*.05,z*.05)*3;                  // Waldhügel
+    const d = hillD(x,z); if(d<34){ const t=Math.min(1,(34-d)/12); h = Math.max(h, G + (HB-G)*t*t*(3-2*t) + (fbm(x*.2,z*.2)-.5)*2*t*(1-t)*4); }
+    if(lakeF(x,z)<1 || lakeB(x,z)<1 || chan(x,z)) h = Math.min(h, L-1 - (1-Math.min(lakeF(x,z),lakeB(x,z),1))*2);
+    else if(lakeF(x,z)<1.25 || lakeB(x,z)<1.2) h = Math.min(h, L+ (Math.min(lakeF(x,z),lakeB(x,z))-1)*12);
+    return Math.round(h); };
+  const Hm = {}; const hAt = (x,z) => { const k=x+","+z; if(Hm[k]===undefined) Hm[k]=H(x,z); return Hm[k]; };
+  for(let z=-14; z<D+14; z++) for(let x=-14; x<W+14; x++){ const h=hAt(x,z);
+    for(let y=Math.min(h,L-3); y<h; y++){ const top=y===h-1, cliff = hillD(x,z)<34 && hillD(x,z)>20;
+      set(x,y,z, top ? (cliff && rand()<.3 ? "rock" : "snow") : (cliff || y<h-3 ? (rand()<.5?"rock":"frost") : "snowB")); }
+    if(h<L){ set(x,L-1,z, lakeF(x,z)<1 || chan(x,z) ? "lakeIce" : null); } }
 
   // ---------- Bausteine ----------
-  // spitzes Türmchen (Fiale): schmaler Kegel mit heller Spitze
-  const pinnacle = (x,y,z,h,r=1) => { for(let i=0;i<h;i++){ const rr=r*(1-i/h); if(rr>=.5) disk(x,y+i,z,rr,"spire"); else set(x,y+i,z,"spire"); } set(x,y+h,z,"icicle"); set(x,y+h+1,z,"lamp"); };
-  // Turm mit spitzem Helm, Spitzbogenfenstern, Zinnenkranz
-  const spireTower = (x,y,z,r,h,roof) => { cyl(x,y,z,r,h,(a,b,c)=> ((b-y)%6>=2 && (b-y)%6<=4 && Math.abs(((Math.atan2(c-z,a-x)+Math.PI)*8/Math.PI)%2-1)<.5) ? "win" : ((b-y)%6===0 ? "iceTrim" : "iceBrick"));
-    ring(x,y+h,z,r+1,"carved"); for(let i=0;i<10;i++){ const an=i/10*Math.PI*2; pinnacle(Math.round(x+Math.cos(an)*(r+1)),y+h+1,Math.round(z+Math.sin(an)*(r+1)),3,.6); }
-    cone(x,y+h+1,z,r+.4,roof,(a,b,c)=> (b-y-h)%5===0 ? "iceTrim" : "spire"); pinnacle(x,y+h+roof,z,4,.6); };
-  // Spitzbogen-Öffnung in einer Wand, die nach +z zeigt
-  const gothic = (x,y,z,w,h,fillT) => { const hw=w/2; for(let a=-Math.floor(hw);a<=Math.floor(hw);a++) for(let b=0;b<h+w;b++){ const top = h + (hw-Math.abs(a))*1.6; if(b<top){ set(x+a,y+b,z,fillT); } } };
-  // Eiszapfen
-  const icicles = (x0,x1,y,z0,z1,maxL) => { for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++){ if(rand()<.45){ const l=1+Math.floor(rand()*maxL); for(let k=1;k<=l;k++) if(!get(x,y-k,z)) set(x,y-k,z,"icicle"); } } };
-  // riesige Eissäule mit Sockel, Kapitell, Schnee und Eiszapfen
-  const bigPillar = (x,z,r,h) => { const y0=topAt(x,z,40)+1; cyl(x,y0,z,r+1.5,3,"carved"); ring(x,y0+3,z,r+1,"iceTrim");
-    for(let y=y0+3;y<y0+h;y++){ const rr = r + (y%14===0 ? .8 : 0); disk(x,y,z,rr,"pillar"); }
-    for(const k of [Math.round(h*.55), h]){ const cy=y0+k; cyl(x,cy,z,r+2,2,"carved"); ring(x,cy+2,z,r+2.6,"iceTrim"); disk(x,cy+3,z,r+2.4,"snowB"); for(let i=0;i<14;i++){ const an=i/14*Math.PI*2, ix=Math.round(x+Math.cos(an)*(r+2.6)), iz=Math.round(z+Math.sin(an)*(r+2.6)); const l=2+Math.floor(rand()*5); for(let q=1;q<=l;q++) set(ix,cy+1-q,iz,"icicle"); } }
-    return y0+h+3; };
+  const pinnacle = (x,y,z,h,r=1) => { for(let i=0;i<h;i++){ const rr=r*(1-i/h); if(rr>=.5) disk(x,y+i,z,rr,"spire"); else set(x,y+i,z,"spire"); } set(x,y+h,z,"icicle"); fs(x,y+h+1,z,"lamp"); };
+  const winRing = (x,y,z,r,step,t="win") => { for(let a=Math.floor(x-r-1);a<=x+r+1;a++) for(let c=Math.floor(z-r-1);c<=z+r+1;c++){ const d=Math.hypot(a-x,c-z); if(d<=r+.3 && d>r-.7 && Math.round(Math.atan2(c-z,a-x)*r/step)%2===0){ set(a,y,c,t); set(a,y+1,c,t); } } };
+  // runder Turm mit kegelförmigem Dach (hell-blau), Zinnenkranz, Fenstern
+  const roundTower = (x,y,z,r,h,roofH,o={}) => { for(let yy=y;yy<y+h;yy++) ring(x,yy,z,r,(a,b)=> (b-y)%6===5 ? "iceTrim" : (o.alt&&((b-y)>>2)%2 ? "iceBrick2" : "iceBrick"));
+    disk(x,y+h-1,z,r,"carved"); for(let yy=y+2;yy<y+h-2;yy+=6) winRing(x,yy,z,r,1.6,o.warm&&yy%12===2?"winW":"win");
+    ring(x,y+h,z,r+1,"carved"); for(let i=0;i<Math.round(r*4);i++){ const an=i/(r*4)*Math.PI*2; if(i%2===0) set(Math.round(x+Math.cos(an)*(r+1)),y+h+1,Math.round(z+Math.sin(an)*(r+1)),"carved"); }
+    for(let k=0;k<roofH;k++){ const rr=(r+.6)*Math.pow(1-k/roofH,1.15); if(rr<.5){ set(x,y+h+1+k,z,"roof"); continue; } ring(x,y+h+1+k,z,rr,"roof",1.3); }
+    set(x,y+h+1+roofH,z,"spire"); fs(x,y+h+2+roofH,z,"gold"); fs(x,y+h+2.5+roofH,z,"lamp"); return y+h+roofH; };
+  // eckiger gotischer Bau mit Spitzbogenfenstern
+  const gothic = (x,y,z,w,h,fillT) => { const hw=w/2; for(let a=-Math.floor(hw);a<=Math.floor(hw);a++) for(let b=0;b<h+w;b++){ const top = h + (hw-Math.abs(a))*1.6; if(b<top) set(x+a,y+b,z,fillT); } };
+  const block = (x0,y,z0,x1,z1,h,o={}) => { for(let yy=y;yy<y+h;yy++) for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++){ if(x!==x0&&x!==x1&&z!==z0&&z!==z1) continue;
+      const corner=(x===x0||x===x1)&&(z===z0||z===z1), band=(yy-y)%5===4; let t = corner ? "iceTrim" : band ? "carved" : "iceBrick";
+      if(!corner && !band && (yy-y)%5>=1 && (yy-y)%5<=2 && ((z===z0||z===z1) ? (x-x0)%3===1 : (z-z0)%3===1)) t = (o.warm && (x+yy)%7===0) ? "winW" : "win";
+      set(x,yy,z,t); }
+    fill(x0+1,y+h-1,z0+1,x1-1,y+h-1,z1-1,"carved");
+    if(o.roof!==false){ const half=Math.ceil((z1-z0+1)/2); for(let k=0;k<=half;k++){ for(let x=x0-1;x<=x1+1;x++){ set(x,y+h+k,z0-1+k,"roof"); set(x,y+h+k,z1+1-k,"roof"); } for(const x of [x0-1,x1+1]) for(let z=z0+k;z<=z1-k;z++) set(x,y+h+k,z,"iceBrick"); } }
+    else for(let x=x0;x<=x1;x+=2){ set(x,y+h,z0,"carved"); set(x,y+h,z1,"carved"); }
+    return y+h; };
+  const icicles = (x0,x1,y,z0,z1,maxL) => { for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++){ if(rand()<.4){ const l=1+Math.floor(rand()*maxL); for(let k=1;k<=l;k++) if(!get(x,y-k,z)) set(x,y-k,z,"icicle"); } } };
 
   const S = {
-    grammar:   {x:46, z:22, col:0x7FE6FF, ort:"Frost Palace"},
-    vocabulary:{x:18, z:50, col:0xC8A0FF, ort:"Crystal Chapel"},
-    country:   {x:74, z:52, col:0xBFF4FF, ort:"Ice Garden"}
+    grammar:   {x:CX, z:CZ, col:0x7FE6FF, ort:"Ice Citadel"},
+    vocabulary:{x:34, z:34, col:0xC8A0FF, ort:"Frost Tree"},
+    country:   {x:104, z:64, col:0xBFF4FF, ort:"Frozen Garden"}
   };
 
-  // ---------- Grammar: Frostpalast ----------
-  { const x=46, z=22, y=G;
-    // Terrasse mit Bogengang vorne und Treppe
-    fill(x-22,y,z-12,x+22,y+4,z+14,"iceBrick"); fill(x-22,y+4,z-12,x+22,y+4,z+14,"carved");
-    for(let a=-21;a<=21;a+=4){ if(Math.abs(a)<6) continue; gothic(x+a,y,z+14,2,2,"dark"); set(x+a,y+4,z+15,"iceTrim"); }
-    for(let a=-22;a<=22;a++) if(a%2===0) set(x+a,y+5,z+14,"carved");
-    for(let s=0;s<6;s++) fill(x-6,y+s-1,z+20-s,x+6,y+s-1,z+20-s,"carved"); for(let s=0;s<6;s++){ set(x-7,y+s,z+20-s,"iceTrim"); set(x+7,y+s,z+20-s,"iceTrim"); }
-    for(const a of [-7,7]){ fill(x+a,y,z+21,x+a,y+3,z+21,"carved"); set(x+a,y+4,z+21,"lamp"); }
-    // Untergeschoss mit Spitzbogenfenstern
-    const b=y+5; walls(x-18,b,z-8,x+18,b+12,z+10,(a,yy,c)=> (yy===b+12 ? "iceTrim" : "iceBrick")); fill(x-17,b,z-7,x+17,b+11,z+9,"iceBrick");
-    for(let a=-15;a<=15;a+=5){ if(Math.abs(a)<5) continue; gothic(x+a,b+3,z+10,2,4,"win"); fill(x+a-2,b+1,z+11,x+a+2,b+1,z+11,"carved"); }
-    // großes Tor mit Spitzgiebel
-    fill(x-6,b,z+11,x+6,b+15,z+12,"iceBrick"); gothic(x,b,z+12,6,8,"door"); gothic(x,b,z+11,6,8,"door");
-    for(let i=0;i<10;i++){ const w=7-i*.7; fill(Math.round(x-w),b+15+i,z+11,Math.round(x+w),b+15+i,z+12, i%3===0?"iceTrim":"spire"); }
-    pinnacle(x,b+25,z+12,7,.8); pinnacle(x-7,b+15,z+12,6,.8); pinnacle(x+7,b+15,z+12,6,.8);
-    gothic(x,b+16,z+13,2,2,"win");
-    icicles(x-18,x+18,b+12,z+11,z+11,4); icicles(x-6,x+6,b+15,z+13,z+13,3);
-    // Mittelgeschoss mit Ecktürmchen
-    const m=b+13; fill(x-12,m,z-6,x+12,m+11,z+6,"iceBrick"); for(let a=-10;a<=10;a+=4) gothic(x+a,m+3,z+7,2,4,"win"); fill(x-13,m+11,z-7,x+13,m+11,z+7,"iceTrim");
-    for(let a=-13;a<=13;a+=2) set(x+a,m+12,z+7,"carved");
-    for(const [a,c] of [[-12,-6],[12,-6],[-12,6],[12,6]]){ cyl(x+a,m,z+c,1.6,14,"iceBrick"); pinnacle(x+a,m+14,z+c,9,1.6); }
-    icicles(x-13,x+13,m+11,z+7,z+7,3);
-    // Hauptturm mit hohem Helm und Fialenkranz
-    const t=m+12; fill(x-6,t,z-4,x+6,t+12,z+4,"iceBrick"); for(const a of [-3,3]) gothic(x+a,t+3,z+5,2,5,"win"); gothic(x,t+2,z+5,2,7,"win");
-    for(const [a,c] of [[-6,-4],[6,-4],[-6,4],[6,4]]) pinnacle(x+a,t+12,z+c,7,1.2);
-    for(let i=0;i<24;i++){ const w=5.6*(1-i/24); fill(Math.round(x-w),t+13+i,Math.round(z-w*.8),Math.round(x+w),t+13+i,Math.round(z+w*.8), i%4===0?"iceTrim":"spire"); }
-    pinnacle(x,t+37,z,6,.6);
-    // Seitentürme
-    spireTower(x-19,b,z-2,3.2,22,16); spireTower(x+19,b,z-2,3.2,22,16);
-    spireTower(x-25,y,z+6,2.4,16,12); spireTower(x+25,y,z+6,2.4,16,12);
-    spireTower(x-10,m,z-9,2.2,14,12); spireTower(x+10,m,z-9,2.2,14,12);
-    // Fialen auf den Dachkanten
-    for(let a=-17;a<=17;a+=5) pinnacle(x+a,b+13,z-8,4,.6);
-    for(let a=-16;a<=16;a+=4){ if(Math.abs(a)<8) continue; pinnacle(x+a,b+13,z+10,5,.7); }
-    for(let a=-9;a<=9;a+=6) pinnacle(x+a,m+12,z+7,4,.6);
-    for(const a of [-22,-14,14,22]) pinnacle(x+a,y+5,z+14,4,.6);
-    for(const [a,c] of [[-18,-8],[18,-8],[-18,10],[18,10]]) pinnacle(x+a,b+13,z+c,8,1.2);
-    // hinterer, höherer Palastflügel mit drei Riesentürmen
-    fill(x-16,y,z-22,x+16,y+20,z-10,(a,yy,c)=> (yy-y)%7===0 ? "iceTrim" : "iceBrick");
-    for(let a=-14;a<=14;a+=4){ gothic(x+a,y+6,z-9,2,5,"win"); gothic(x+a,y+14,z-9,2,4,"win"); }
-    spireTower(x-12,y+20,z-16,3.4,22,18); spireTower(x+12,y+20,z-16,3.4,22,18); spireTower(x,y+20,z-17,4.2,34,24);
-    for(let a=-15;a<=15;a+=5) pinnacle(x+a,y+21,z-10,5,.7);
-    S.grammar.beams = [[x,y+20+34+24,z-17],[x-12,y+20+22+18,z-16],[x+12,y+20+22+18,z-16],[x-19,b+22+16,z-2],[x+19,b+22+16,z-2],[x,t+37,z]];
-    S.grammar.top=[x, b+16, z+13]; S.grammar.base=b+8; S.grammar.cam={pos:[50,26,82], look:[46,19,33]}; }
+  // ---------- Grammar: das Eisschloss ----------
+  { const x=CX, z=CZ, y=HB;
+    fill(x-20,y-1,z-14,x+20,y-1,z+16,"floorIce");
+    // äußere Mauer mit runden Türmen
+    for(let a=-18;a<=18;a++) for(const c of [-13,15]){ fill(x+a,y,z+c,x+a,y+5,z+c,(xx,yy)=> yy===y+5 ? "carved" : "iceBrick"); if(a%2===0) set(x+a,y+6,z+c,"carved"); }
+    for(let c=-13;c<=15;c++) for(const a of [-18,18]){ fill(x+a,y,z+c,x+a,y+5,z+c,(xx,yy)=> yy===y+5 ? "carved" : "iceBrick"); if(c%2===0) set(x+a,y+6,z+c,"carved"); }
+    for(const [a,c] of [[-18,-13],[18,-13],[-18,15],[18,15],[0,-13]]) roundTower(x+a,y,z+c,2.6,10,8,{warm:true});
+    // Torhaus vorne
+    { const gz=z+15; for(let a=-4;a<=4;a++) fill(x+a,y,gz,x+a,y+11,gz+1,(xx,yy)=> yy===y+11 ? "carved" : "iceBrick"); gothic(x,y,gz+1,4,6,"door"); gothic(x,y,gz,4,6,"door");
+      for(const a of [-4,4]) roundTower(x+a,y,gz+1,1.8,14,7); pinnacle(x,y+12,gz+1,6,.8); }
+    // Haupthaus in Stufen
+    const b1 = block(x-14,y,z-9,x+14,z+8,12,{roof:false, warm:true});
+    for(let a=-12;a<=12;a+=4){ gothic(x+a,y+2,z+9,2,4,"win"); }
+    icicles(x-14,x+14,b1,z+9,z+9,3);
+    const b2 = block(x-9,b1,z-7,x+9,z+5,11,{roof:false});
+    for(let a=-7;a<=7;a+=7) gothic(x+a,b1+2,z+6,2,6,"win");
+    icicles(x-9,x+9,b2,z+6,z+6,3);
+    // Ecktürme am Haupthaus
+    for(const [a,c] of [[-14,-9],[14,-9],[-14,8],[14,8]]) roundTower(x+a,y,z+c,2.4,18,10,{alt:true});
+    for(const [a,c] of [[-9,-7],[9,-7],[-9,5],[9,5]]) roundTower(x+a,b1,z+c,1.8,14,9);
+    // hoher Hauptturm mit Galerie und spitzem Helm
+    { const tz=z-1; let t=b2; for(let k=0;k<3;k++){ const r=5-k*1.1, hh=k===2?10:9; for(let yy=t;yy<t+hh;yy++) ring(x,yy,tz,r,(a,bb)=> (bb-t)%5===4 ? "iceTrim" : "iceBrick"); winRing(x,t+3,tz,r,1.2); disk(x,t+hh-1,tz,r,"carved"); ring(x,t+hh,tz,r+1,"carved");
+        for(let i=0;i<8;i++){ const an=i/8*Math.PI*2; pinnacle(Math.round(x+Math.cos(an)*(r+1)),t+hh+1,Math.round(tz+Math.sin(an)*(r+1)),3,.5); } t+=hh+1; }
+      for(let k=0;k<20;k++){ const rr=3.2*Math.pow(1-k/20,1.1); if(rr<.5) set(x,t+k,tz,"roof"); else ring(x,t+k,tz,rr,"roof",1.3); } fs(x,t+20,tz,"gold"); fs(x,t+21,tz,"gold"); fs(x,t+22,tz,"lamp");
+      S.grammar.top=[x, t+12, tz]; S.grammar.beams=[[x,t+22,tz]]; }
+    // Nebentürme mit Spitzhelmen hinten
+    for(const [a,c,h,r] of [[-7,-11,22,2.2],[7,-11,24,2.2],[0,-12,30,2.6]]) roundTower(x+a,b1,z+c,r,h,12,{alt:true});
+    // Treppe und Rampe hinunter zum Tor (in Richtung Brücke)
+    for(let s=0;s<8;s++) fill(x-3,y-1-s,z+17+s,x+3,y-1-s,z+17+s,"carved");
+    // Bogengang (Aquädukt) nach rechts zum Garten
+    for(let i=0;i<=12;i++){ const ax=x+19+i, az=z+10+Math.round(i*.9), top=y+2-Math.round(i*.4); fill(ax,top,az,ax,top,az+2,"carved"); set(ax,top+1,az,"iceTrim"); set(ax,top+1,az+2,"iceTrim");
+      if(i%6!==3) for(let yy=topAt(ax,az+1,top-1)+1; yy<top; yy++) for(const zz of [az,az+2]) set(ax,yy,zz,"iceBrick"); }
+    S.grammar.base=y+6; S.grammar.lift=1; S.grammar.cam={pos:[x-14,y+44,z+104], look:[x+14,y+14,z]}; }
 
-  // ---------- Riesige Eissäulen und Bögen (wie eine Halle) ----------
-  const cols = [[6,12],[86,12],[6,40],[86,40],[2,66],[90,66],[20,30],[72,30]];
-  const colTops = cols.map(([x,z],i)=> bigPillar(x,z, i>=6 ? 2.6 : 3.4, i>=6 ? 46 : 62));
-  // Spitzbögen zwischen den Säulen entlang jeder Seite
-  for(const side of [[0,2,4],[1,3,5]]) for(let k=0;k<2;k++){ const [x0,z0]=cols[side[k]], [x1,z1]=cols[side[k+1]], y=G+52;
-    for(let i=0;i<=40;i++){ const f=i/40, x=x0+(x1-x0)*f, z=z0+(z1-z0)*f, yy = y + Math.round((1-Math.abs(f-.5)*2)**.6*14); fill(Math.round(x)-1,yy,Math.round(z),Math.round(x)+1,yy+1,Math.round(z),"carved"); if(i%3===0) for(let q=1;q<=1+Math.floor(rand()*4);q++) set(Math.round(x),yy-q,Math.round(z),"icicle"); } }
+  // ---------- Unterer Mauerring am Hang mit Rundtürmen, wie eine Stadt die sich den Hügel hinaufzieht ----------
+  for(let i=0;i<120;i++){ const an=-Math.PI*.95 + i/120*Math.PI*1.9, wx=Math.round(CX+Math.cos(an)*27), wz=Math.round(CZ+Math.sin(an)*23);
+    if(an>1.2 && an<1.75) continue; const t=hAt(wx,wz); fill(wx,t,wz,wx,t+4,wz,(a,b)=> b===t+4 ? "carved" : "iceBrick"); if(i%2===0) set(wx,t+5,wz,"carved"); }
+  for(const an of [-2.6,-2.1,-1.5,-.9,-.3,.4,.9,2.0,2.5]){ const tx=Math.round(CX+Math.cos(an)*27), tz=Math.round(CZ+Math.sin(an)*23); roundTower(tx,hAt(tx,tz),tz,2.2,9+Math.round(rand()*6),7,{warm:true}); }
+  // schlanke Spitztürme zwischen Mauerring und Schloss
+  for(const [a,c,h] of [[-22,4,16],[22,0,18],[-16,-16,20],[16,-18,22],[-24,-6,12],[24,12,12]]){ const tx=CX+a, tz=CZ+c; roundTower(tx,hAt(tx,tz),tz,1.8,h,9); }
 
-  // ---------- Vocabulary: Kristallkapelle links ----------
-  { const {x,z} = S.vocabulary, y=G;
-    fill(x-6,y,z-5,x+6,y,z+5,"carved"); walls(x-5,y+1,z-4,x+5,y+9,z+4,(a,b,c)=> b===y+9 ? "iceTrim" : "iceBrick"); fill(x-4,y+1,z-3,x+4,y+8,z+3,null);
-    gothic(x,y+1,z+4,2,4,"door"); for(const a of [-3,3]) gothic(x+a,y+3,z+4,0,3,"win"); for(const c of [-2,2]){ gothic(x-5,y+3,z+c,0,4,"win"); gothic(x+5,y+3,z+c,0,4,"win"); }
-    for(let i=0;i<8;i++){ const w=6-i*.75; fill(x-5,y+10+i,Math.round(z-w),x+5,y+10+i,Math.round(z+w), i%3===0?"iceTrim":"spire"); }
-    pinnacle(x,y+18,z+4,5,.8); pinnacle(x,y+17,z,10,1.4);
-    for(const [a,c] of [[-5,-4],[5,-4],[-5,4],[5,4]]) pinnacle(x+a,y+10,z+c,6,.8);
-    for(const [cx,cz,t] of [[x-8,z+6,"crystal"],[x+8,z+7,"violet"],[x-9,z-2,"violet"],[x+9,z-3,"crystal"],[x-3,z+9,"crystal"],[x+4,z+9,"violet"]]) for(let k=0;k<3+Math.floor(rand()*4);k++) set(cx+(k%2),y+k,cz+(k===2?1:0),t);
-    icicles(x-5,x+5,y+9,z+5,z+5,2);
-    S.vocabulary.top=[x, y+24, z]; S.vocabulary.base=y+8; S.vocabulary.cam={pos:[40,26,86], look:[28,13,44]}; }
+  // ---------- Häuschen rund um den Schlosshügel (Stadt am Hang) ----------
+  const cottage = (x,z,w,d,h) => { const y=hAt(x,z); if(y<L+1 || get(x,y+1,z)) return; const hw=w>>1, hd=d>>1;
+    for(let yy=y;yy<y+h;yy++) for(let a=-hw;a<=hw;a++) for(let c=-hd;c<=hd;c++){ if(Math.abs(a)!==hw&&Math.abs(c)!==hd) continue; set(x+a,yy,z+c, (yy-y)===2 && (a+c)%2===0 && Math.abs(a)!==hw ? "winW" : "iceBrick2"); }
+    for(let k=0;k<=hd+1;k++) fill(x-hw-1,y+h+k,z-hd-1+k,x+hw+1,y+h+k,z+hd+1-k, k===hd+1?"snowB":"roof"); fs(x+hw,y+h+2,z,"lamp"); };
+  for(const [hx,hz,w,d,h] of [[56,8,5,4,4],[54,18,5,4,5],[58,30,5,4,4],[100,6,5,4,5],[104,18,5,4,4],[64,40,5,4,4],[96,34,5,4,4],[70,-6,5,4,5],[88,-8,5,4,4]]) cottage(hx,hz,w,d,h);
 
-  // ---------- Country & people: Eisgarten mit gefrorenem Brunnen und Eisfiguren ----------
-  { const {x,z} = S.country, y=G;
-    disk(x,y-1,z,9,"floorIce");
-    ring(x,y,z,3.4,"carved"); ring(x,y+1,z,3.4,"iceTrim"); disk(x,y,z,2.4,"floorIce"); cyl(x,y,z,1,6,"pillar"); disk(x,y+6,z,2.2,"carved"); ring(x,y+7,z,2.2,"iceTrim");
-    cyl(x,y+7,z,.6,4,"pillar"); disk(x,y+11,z,1.2,"carved"); set(x,y+12,z,"lamp"); icicles(x-2,x+2,y+6,z-2,z+2,3);
-    // Eisfiguren: Schwan, Stern, Kristallbaum
-    { const sx=x-6, sz=z-5; ellip(sx,y+2,sz,2,1.2,1.2,"icicle"); line(sx+1,y+3,sz,sx+2,y+6,sz,"icicle"); set(sx+3,y+6,sz,"icicle"); fill(sx-1,y,sz-1,sx+1,y,sz+1,"carved"); }
-    { const sx=x+6, sz=z-5; fill(sx-1,y,sz-1,sx+1,y,sz+1,"carved"); fill(sx,y+1,sz,sx,y+7,sz,"pillar"); for(const [a,b] of [[-2,4],[2,4],[-1,6],[1,6],[-2,2],[2,2]]) line(sx,y+b,sz,sx+a,y+b+2,sz,"crystal"); set(sx,y+8,sz,"lamp"); }
-    for(const [lx,lz] of [[x-8,z+4],[x+8,z+4],[x,z-9],[x-6,z+8],[x+6,z+8]]){ fill(lx,y,lz,lx,y+3,lz,"silver"); set(lx,y+4,lz,"lamp"); }
-    S.country.top=[x, y+16, z]; S.country.base=y+5; S.country.cam={pos:[56,24,86], look:[84,10,57]}; }
+  // ---------- Brücke vom Wald über den See zum Schloss ----------
+  { const P = [[78,G+2,84],[60,G+3,74],[44,G+5,60],[46,G+9,46],[60,HB-6,40],[CX,HB-6,CZ+24]];
+    const cr = (a,b,c,d,t) => a.map((_,i)=> .5*((2*b[i])+(-a[i]+c[i])*t+(2*a[i]-5*b[i]+4*c[i]-d[i])*t*t+(-a[i]+3*b[i]-3*c[i]+d[i])*t*t*t));
+    const pts=[]; for(let i=0;i<P.length-1;i++){ const a=P[Math.max(0,i-1)], b=P[i], c=P[i+1], d=P[Math.min(P.length-1,i+2)]; for(let k=0;k<12;k++) pts.push(cr(a,b,c,d,k/12)); } pts.push(P[P.length-1]);
+    let acc=0; for(let i=0;i<pts.length;i++){ const p=pts[i], q=pts[Math.min(pts.length-1,i+1)], dx=q[0]-p[0], dz=q[2]-p[2], l=Math.hypot(dx,dz)||1, nx=-dz/l, nz=dx/l, y=Math.round(p[1]);
+      for(const w of [-1,0,1]) set(Math.round(p[0]+nx*w),y,Math.round(p[2]+nz*w),"carved");
+      for(const w of [-2,2]){ set(Math.round(p[0]+nx*w),y,Math.round(p[2]+nz*w),"iceTrim"); fs(p[0]+nx*w,y+1,p[2]+nz*w,"silver"); }
+      acc += l; if(acc>7){ acc=0; for(const w of [-2,2]){ const lx=Math.round(p[0]+nx*w), lz=Math.round(p[2]+nz*w); set(lx,y+1,lz,"silver"); set(lx,y+2,lz,"lamp"); }
+        // Pfeiler bis zum Boden/Eis, mit Bogen
+        const ground = Math.max(L-1, hAt(Math.round(p[0]),Math.round(p[2]))); for(let yy=ground; yy<y; yy++) for(const w of [-1,1]) set(Math.round(p[0]+nx*w),yy,Math.round(p[2]+nz*w), yy===L-1 ? "carved" : "iceBrick"); }
+      else { const ground = Math.max(L-1, hAt(Math.round(p[0]),Math.round(p[2]))); const arch = y - 1 - Math.round(Math.sin(acc/7*Math.PI)*Math.max(0,(y-ground-2))*.8); for(let yy=arch; yy<y; yy++) set(Math.round(p[0]),yy,Math.round(p[2]),"iceBrick2"); } }
+    S.bridgePts = pts; }
 
-  // Schneehaufen, Kristalle, Eisspitzen auf dem Platz
-  const busy = (x,z) => (x>20 && x<72 && z<42) || Math.hypot(x-S.vocabulary.x,z-S.vocabulary.z)<11 || Math.hypot(x-S.country.x,z-S.country.z)<11 || Math.abs(x-46)<8 || cols.some(([cx,cz])=>Math.hypot(cx-x,cz-z)<6);
-  for(let i=0;i<70;i++){ const x=3+Math.floor(rand()*(W-6)), z=8+Math.floor(rand()*(D-9)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1;
-    const r=rand(); if(r<.35) ellip(x,t-1,z,1.5+rand()*1.5,1.2,1.5+rand(),"snowB"); else if(r<.6){ const h=3+Math.floor(rand()*6); for(let k=0;k<h;k++) disk(x,t+k,z,Math.max(0,(h-k)*.25),"icicle"); } else if(r<.75) set(x,t,z, rand()<.5?"crystal":"violet"); else if(r<.85){ fill(x,t,z,x,t+3,z,"silver"); set(x,t+4,z,"lamp"); } }
+  // ---------- Vocabulary: großer Eisbaum links vor dem Schloss ----------
+  { const {x,z}=S.vocabulary, y=hAt(x,z);
+    disk(x,y,z,7,"floorIce"); ring(x,y,z,7,"carved"); for(let i=0;i<12;i++){ const an=i/12*Math.PI*2; if(i%3===0){ const lx=Math.round(x+Math.cos(an)*8.5), lz=Math.round(z+Math.sin(an)*8.5); fill(lx,y,lz,lx,y+2,lz,"silver"); set(lx,y+3,lz,"lamp"); } }
+    // Wurzeln aus Eis, die sich über die Plattform krallen
+    for(let i=0;i<9;i++){ const an=i/9*Math.PI*2+.3; let px=x, pz=z, py=y+1.5; for(let k=0;k<14;k++){ px+=Math.cos(an)*.45; pz+=Math.sin(an)*.45; py-= k<5 ? 0 : .2; fs(px,py,pz,"pillar"); fs(px,py+.5,pz, k%4===0?"iceGlow":"pillar"); } }
+    // Stamm: gedreht, durchscheinend leuchtend
+    for(let h=0; h<16; h+=.5){ const a=h*.45, r=2.2-h*.09; for(let k=0;k<8;k++){ const off=k/8*Math.PI*2; fs(x+Math.cos(a+off)*r, y+1+h, z+Math.sin(a+off)*r, k%4===0 ? "iceGlow" : "pillar"); fs(x+Math.cos(a+off)*r*.5, y+1+h, z+Math.sin(a+off)*r*.5, "pillar"); } }
+    // Äste rekursiv mit Eiskristall-Blättern, Schnee auf den Ästen, hängende Eiszapfen
+    const tips=[];
+    const branch = (px,py,pz,yaw,pitch,len,depth) => { const n=Math.ceil(len*2);
+      for(let i=0;i<n;i++){ px+=Math.cos(yaw)*Math.cos(pitch)*.5; pz+=Math.sin(yaw)*Math.cos(pitch)*.5; py+=Math.sin(pitch)*.5; fs(px,py,pz, depth>1 ? "pillar" : "icicle"); if(depth>1){ fs(px,py+.5,pz, i%3===0 ? "snowB" : "pillar"); } }
+      if(depth===0){ tips.push([px,py,pz]); return; }
+      const k = depth>1 ? 3 : 2; for(let j=0;j<k;j++) branch(px,py,pz, yaw+(j-(k-1)/2)*1.05+(rand()-.5)*.4, Math.max(-.1, pitch-.2+(rand()-.4)*.4), len*.66, depth-1); };
+    for(let i=0;i<6;i++) branch(x, y+12+i*.7, z, i/6*Math.PI*2+.2, .45, 6.5, 3);
+    branch(x, y+16, z, .4, 1.35, 4, 2);
+    tips.forEach(([tx,ty,tz],i)=>{ const g = i%5===0 ? "violet" : "crystal";
+      for(let a=-1.5;a<=1.5;a+=.5) for(let b=-.5;b<=1;b+=.5) for(let c=-1.5;c<=1.5;c+=.5){ const d=Math.hypot(a,b*1.4,c); if(d<=1.5 && rand()<.62) fs(tx+a,ty+b+.5,tz+c, d>1.1 && b>.4 ? "snowB" : (rand()<.15 ? "icicle" : g)); }
+      for(let k=1;k<=1+Math.floor(rand()*4);k++) fs(tx,ty-k*.5,tz,"icicle"); });
+    S.vocabulary.top=[x, y+24, z]; S.vocabulary.base=y+8; S.vocabulary.lift=1; S.vocabulary.cam={pos:[x+6,y+34,z+66], look:[x+15,y+12,z]}; }
 
-  for(let z=-22; z<D+12; z++) for(let x=-58; x<W+58; x++) if(x<0||x>=W||z<0||z>=D){ set(x,G-1,z,"snow"); if(z<-6) for(let y=G; y<G+Math.min(18,(-6-z)*1.2); y++) set(x,y,z, y%3?"frost":"snowB"); }
-  // ---------- Eisstadt ringsum: Häuser mit Spitzdächern, Türme, Mauern ----------
-  const iceHouse = (x,z,w,d,h) => { const y0=Math.max(G,topAt(x,z,40)+1), hw=Math.floor(w/2), hd=Math.floor(d/2);
-    fill(x-hw,y0,z-hd,x+hw,y0+h,z+hd,(a,b,c)=> (b-y0)%5===0 ? "iceTrim" : "iceBrick");
-    for(let a=-hw+1;a<hw;a+=2) for(let b=2;b<h;b+=4){ set(x+a,y0+b,z+hd,"win"); set(x+a,y0+b,z-hd,"win"); }
-    for(let i=0;i<=hd+2;i++) fill(x-hw-1,y0+h+1+i,z-hd-1+i,x+hw+1,y0+h+1+i,z+hd+1-i, i>hd ? "snowB" : "spire");
-    pinnacle(x+hw,y0+h+1,z,3+Math.floor(rand()*3),.6); icicles(x-hw,x+hw,y0+h,z+hd+1,z+hd+1,2); };
-  for(let i=0;i<46;i++){ const side = i%2 ? 1 : -1, x = side<0 ? -8-Math.floor(rand()*44) : W+8+Math.floor(rand()*44), z = -16+Math.floor(rand()*(D+20));
-    iceHouse(x,z,5+2*Math.floor(rand()*3),5+2*Math.floor(rand()*2),5+Math.floor(rand()*9)); }
-  for(const [tx,tz,h] of [[-20,4,30],[-40,30,24],[W+20,6,30],[W+40,32,24],[-30,58,20],[W+30,58,20]]) spireTower(tx,Math.max(G,topAt(tx,tz,40)+1),tz,3,h,14);
-  // Stadtmauern mit Zinnen von den Säulen nach außen
-  for(const sx of [-1,1]) for(let k=0;k<60;k++){ const x = sx<0 ? 2-k : W-2+k, z = 70+Math.round(Math.sin(k*.08)*4); fill(x,G,z,x,G+7,z+1,"iceBrick"); if(k%2===0) set(x,G+8,z,"iceTrim"); }
-  // ---------- Landschaft bis zum Horizont: Eisklippen, weitere Säulenreihen, ferne Spitztürme ----------
-  const F = A.far; F.cell = 3;
-  const away = (x,z) => Math.hypot(Math.max(0,-x,x-W), Math.max(0,-z,z-D));
-  const fh = (x,z) => { let h = G + fbm(x*.04,z*.04)*4; if(z<0) h += Math.min(90, -z*.9)*(.6+.6*fbm(x*.03,z*.03)); h += Math.max(0, away(x,z)-30)*.5*(.6+fbm(x*.05,z*.05)); return h; };
-  A.farTerrain({ x0:-120, x1:W+120, z0:-130, z1:D+50, base:0, skip:(x,z)=> (x>-58 && x<W+58 && z>-22 && z<D+12) || (fh(x,z)<G+3 && away(x,z)<40),
-    h: fh, top:(x,z,y,hc)=> y*3 > 40 ? (rand()<.5?"snowB":"frost") : "snowB", fill:(x,z,y,hc)=> rand()<.04 ? "crystal" : "frost" });
-  const fset = (x,y,z,t) => F.set(Math.floor(x/3),Math.floor(y/3),Math.floor(z/3),t);
-  // Säulenreihen setzen sich in der Ferne fort
-  for(const px of [-26,-58,W+26,W+58]) for(let pz=-40; pz<=D+40; pz+=28){ const b=fh(px,pz); for(let y=b;y<b+80;y+=3) for(const [a,c] of [[0,0],[3,0],[0,3],[3,3]]) fset(px+a,y,pz+c,"pillar"); for(const [a,c] of [[-3,0],[6,0],[0,-3],[0,6]]) fset(px+a,b+50,pz+c,"carved"); }
-  // ferne Spitztürme hinter dem Palast
-  for(const [tx,tz,hh] of [[20,-40,60],[72,-44,70],[46,-70,90],[-10,-80,70],[104,-84,76],[0,-30,40],[92,-28,46]]){ const b=fh(tx,tz); for(let y=b;y<b+hh;y+=3) fset(tx,y,tz, (y/3|0)%5===2 ? "win" : "iceBrick"); for(let k=0;k<6;k++) fset(tx,b+hh+k*3,tz,"spire"); fset(tx,b+hh+18,tz,"lamp"); }
+  // ---------- Country & people: Garten mit großem Brunnen rechts ----------
+  { const {x,z}=S.country, y=hAt(x,z);
+    for(let a=-13;a<=13;a++) for(let c=-11;c<=11;c++){ const xx=x+a, zz=z+c; const t=hAt(xx,zz); if(Math.abs(t-y)>2) continue;
+      for(let yy=t;yy<y;yy++) set(xx,yy,zz,"snowB"); for(let yy=y;yy<=t;yy++) set(xx,yy,zz,null); set(xx,y-1,zz, (Math.abs(a)<=1||Math.abs(c)<=1||Math.abs(Math.hypot(a,c)-7)<.8) ? "floorIce" : "snow"); }
+    // Hecken (verschneit), Wege kreuzförmig und als Ring
+    for(let a=-12;a<=12;a++) for(let c=-10;c<=10;c++){ const r=Math.hypot(a,c); const edge = (Math.abs(a)===12||Math.abs(c)===10) && Math.abs(a)>2 && Math.abs(c)>2;
+      const inner = r>8.6 && r<9.6 && Math.abs(a)>2 && Math.abs(c)>2; if(edge || inner){ set(x+a,y,z+c,"hedge"); if(edge) set(x+a,y+1,z+c,"hedge"); } }
+    // Rosenbögen mit gefrorenen Blüten an den Eingängen
+    for(const [a,c,rot] of [[0,10,0],[0,-10,0],[12,0,1],[-12,0,1]]){ for(let k=-2;k<=2;k++){ const yy=y+4-Math.round(k*k*.5); const ax=rot? x+a : x+a+k, az=rot? z+c+k : z+c; set(ax,yy,az,"hedge"); fs(ax+.25,yy+.5,az, k%2?"flowerV":"flowerC"); }
+      for(const k of [-2,2]){ const ax=rot? x+a : x+a+k, az=rot? z+c+k : z+c; fill(ax,y,az,ax,y+2,az,"hedge"); } }
+    // großer Brunnen: drei Schalen, gefrorene Wasserstrahlen, leuchtendes Wasser
+    ring(x,y,z,5,"carved"); ring(x,y+1,z,5,(a,b,c)=>(a+c)%2?"iceTrim":"carved"); disk(x,y,z,4.2,"lakeIce");
+    cyl(x,y,z,1,5,"carved"); disk(x,y+5,z,3,"carved"); ring(x,y+6,z,3,"iceTrim"); disk(x,y+5,z,2.2,"iceGlow");
+    cyl(x,y+6,z,.6,4,"carved"); disk(x,y+10,z,1.8,"carved"); ring(x,y+11,z,1.8,"iceTrim"); set(x,y+11,z,"iceGlow");
+    for(let k=0;k<4;k++) fs(x,y+12+k*.5,z,"icicle"); fs(x,y+14.5,z,"lamp");
+    for(let i=0;i<8;i++){ const an=i/8*Math.PI*2; for(let k=0;k<6;k++){ const r=1.8+k*.32, yy=y+10.5-k*k*.18; fs(x+Math.cos(an)*r, yy, z+Math.sin(an)*r, "icicle"); } }       // erstarrte Strahlen oben
+    for(let i=0;i<12;i++){ const an=i/12*Math.PI*2; for(let k=0;k<7;k++){ const r=3+k*.3, yy=y+5.5-k*k*.12; fs(x+Math.cos(an)*r, yy, z+Math.sin(an)*r, "icicle"); } }        // unten
+    // Eisfiguren: Schwan und Hirsch auf Sockeln
+    { const sx=x-7, sz=z-6; fill(sx-1,y,sz-1,sx+1,y,sz+1,"carved"); ellip(sx,y+2,sz,1.6,1,1,"icicle"); line(sx+1,y+3,sz,sx+2,y+5,sz,"icicle"); fs(sx+2.5,y+5.5,sz,"icicle"); }
+    { const sx=x+7, sz=z-6; fill(sx-1,y,sz-1,sx+1,y,sz+1,"carved"); fill(sx,y+1,sz,sx,y+5,sz,"pillar"); for(const [a,b] of [[-2,3],[2,3],[-1,5],[1,5]]) line(sx,y+b,sz,sx+a,y+b+2,sz,"crystal"); fs(sx,y+6.5,sz,"lamp"); }
+    // Eis-Obelisk hinten im Garten
+    { const px=x, pz=z-9; fill(px,y,pz,px,y+6,pz,"pillar"); set(px,y+7,pz,"iceGlow"); fs(px,y+8,pz,"lamp"); }
+    // Laternen und Bänke
+    for(const [a,c] of [[-4,6],[4,6],[-6,-2],[6,-2],[-10,8],[10,8]]){ fill(x+a,y,z+c,x+a,y+2,z+c,"silver"); set(x+a,y+3,z+c,"lamp"); }
+    for(const [a,c] of [[-3,-5],[3,-5]]){ fs(x+a,y+.25,z+c,"carved"); fs(x+a+.5,y+.25,z+c,"carved"); fs(x+a-.5,y+.25,z+c,"carved"); }
+    S.country.top=[x, y+16, z]; S.country.base=y+5; S.country.lift=1; S.country.cam={pos:[x-18,y+30,z+42], look:[x+8,y+3,z-2]}; }
 
-  // Frostfüchse und Eisbär laufen herum
+  // ---------- vereister Wald rechts vorne ----------
+  const pine = (x,z,h) => { const y=hAt(x,z); if(y<L+1 || get(x,y,z) || get(x,y+1,z)) return; fill(x,y,z,x,y+2,z,"bark");
+    for(let k=0;k<h;k++){ const r=(h-k)*.36+.3, yy=y+2+k; if(r<.6){ set(x,yy,z,"pine"); continue; } disk(x,yy,z,r,(a,b,c)=> (k%3===0 && Math.hypot(a-x,c-z)>r-1) ? "snowB" : "pine"); }
+    set(x,y+2+h,z,"snowB"); if(rand()<.25) fs(x+.5,y+2+h+.5,z,"lamp"); };
+  for(let i=0;i<170;i++){ const x=58+Math.floor(rand()*70), z=50+Math.floor(rand()*56); if(Math.hypot(x-S.country.x,z-S.country.z)<17 || (Math.abs(x-S.country.x+4)<12 && z>S.country.z && z<S.country.z+34)) continue;
+    if(S.bridgePts.some(p=>Math.hypot(p[0]-x,p[2]-z)<4)) continue; pine(x,z,5+Math.floor(rand()*6)); }
+  // weitere Bäume am Ufer links und an den Rändern
+  for(let i=0;i<70;i++){ const x=-12+Math.floor(rand()*40), z=36+Math.floor(rand()*70); if(lakeF(x,z)<1.3 || Math.hypot(x-S.vocabulary.x,z-S.vocabulary.z)<12) continue; pine(x,z,5+Math.floor(rand()*6)); }
+  // Eisschollen und Lichter im See
+  for(let i=0;i<40;i++){ const x=Math.floor(rand()*60), z=40+Math.floor(rand()*60); if(lakeF(x,z)>.85) continue; if(rand()<.6) disk(x,L-1,z,1+rand()*1.6,"floorIce"); else fs(x,L-.25,z,"iceGlow"); }
+
+  // ---------- Landschaft bis zum Horizont: See links hinten, verschneite Berge ----------
+  const Fr = A.far; Fr.cell = 3;
+  const peaks = [[-110,-190,80,80],[-40,-220,90,95],[30,-240,80,85],[-180,-120,60,60],[150,-230,70,70],[220,-160,50,45],[-70,-150,50,50],[90,-260,70,75]];
+  const fh = (x,z) => { let h = G + (fbm(x*.03,z*.03)-.5)*6 + (x>62 && z>52 ? 1.5+fbm(x*.05,z*.05)*3 : 0);
+    for(const [px,pz,r,hh] of peaks){ const d=Math.hypot(x-px,z-pz)/r; if(d<1){ const v = hh*Math.pow(1-d,1.35)*(.75+.5*fbm(x*.05,z*.05)); if(v>h) h=v; } } return h; };
+  A.farTerrain({ x0:-260, x1:W+220, z0:-260, z1:D+60, base:0, skip:(x,z)=> (x>-15 && x<W+15 && z>-15 && z<D+15) || (lakeB(x,z)<1.3 && x<44),
+    h: fh, top:(x,z,y,hc)=> y*3 > 30 ? "snowB" : (rand()<.3 ? "rock" : "snowB"), fill:(x,z,y,hc)=> y*3 > 46 ? (rand()<.7?"snowB":"frost") : (rand()<.5 ? "rock" : "frost") });
+
+  // ferne verschneite Nadelbäume in der Ebene (grobe Blöcke)
+  const fset = (x,y,z,t) => Fr.set(Math.floor(x/3),Math.floor(y/3),Math.floor(z/3),t);
+  for(let i=0;i<900;i++){ const x=-200+rand()*440, z=-150+rand()*300; if(x>-15 && x<W+15 && z>-15 && z<D+15) continue; if(z>D+8) continue; if(lakeB(x,z)<1.45 && x<46) continue; if(fbm(x*.025,z*.025)<.5) continue;
+    const b=fh(x,z); if(b>36) continue; const cx=Math.floor(x/3), cz=Math.floor(z/3), cy=Math.floor(b/3);
+    for(const [a,c] of [[0,0],[1,0],[-1,0],[0,1],[0,-1]]) Fr.set(cx+a,cy+1,cz+c,"pine"); Fr.set(cx,cy,cz,"bark"); Fr.set(cx,cy+2,cz,"pine"); Fr.set(cx,cy+3,cz,"snowB"); }
+
+  // ---------- Tiere ----------
   const creatures = [
-    { ...frostFox({walk:true, speed:11}), orbit:{c:[46,G,57], r:[13,5], speed:.32, ph:0, bob:.15, cycle:[16,.32,0]}, scale:.28 },
-    { ...frostFox({walk:true, speed:11, col:0xF4FAFF}), orbit:{c:[46,G,57], r:[13,5], speed:.32, ph:.5, bob:.15, cycle:[16,.32,0]}, scale:.25 },
-    { ...frostFox({walk:true, speed:10}), orbit:{c:[34,G,63], r:[6,3], speed:.28, ph:2, bob:.15, dir:-1, cycle:[19,.3,6]}, scale:.25 },
-    { ...frostFox({walk:true, speed:12, col:0xDCEEFF}), orbit:{c:[56,G,65], r:[6,3], speed:.35, ph:4, bob:.15, dir:-1, cycle:[22,.28,11]}, scale:.25 },
-    { ...frostFox({walk:false}), at:[S.vocabulary.x+7, G, S.vocabulary.z+7], yaw:-.6, scale:.25 },
-    { ...polarBear({walk:true, speed:3.4}), orbit:{c:[68,G,64], r:[10,4], speed:.18, ph:1, bob:.05, cycle:[26,.35,4]}, scale:.42, clearR:4 }
+    { ...polarBear({walk:true, speed:3.4}), orbit:{c:[26,L,74], r:[8,3], speed:.12, ph:1, bob:.05, cycle:[30,.35,4]}, scale:.36, clearR:3 },
+    { ...frostFox({walk:true, speed:11}), orbit:{c:[S.country.x,S.country.base-5,S.country.z], r:[7,7], speed:.25, ph:0, bob:.12, cycle:[18,.3,0]}, scale:.26, clearR:1 },
+    { ...frostFox({walk:true, speed:11, col:0xF4FAFF}), orbit:{c:[S.country.x,S.country.base-5,S.country.z], r:[7,7], speed:.25, ph:.6, bob:.12, cycle:[18,.3,0]}, scale:.23, clearR:1 },
+    { ...frostFox({walk:true, speed:10}), orbit:{c:[S.vocabulary.x,hAt(S.vocabulary.x,S.vocabulary.z),S.vocabulary.z], r:[10.5,10.5], speed:.2, ph:2, bob:.12, dir:-1, cycle:[22,.3,6]}, scale:.24, clearR:1 },
+    { ...frostFox({walk:false}), at:[S.vocabulary.x+5, hAt(S.vocabulary.x,S.vocabulary.z)+1, S.vocabulary.z+5], yaw:-.6, scale:.24 }
   ];
-  // Laufwege der Tiere freiräumen (Schneehaufen, Eisspitzen, Kristalle, Laternen), damit nichts durch Blöcke läuft
-  const CLR = ["snowB","snow","frost","floorIce","icicle","crystal","violet","silver","lamp"];
-  for(const c of creatures){ const ob=c.orbit; if(!ob) continue; const rad = c.clearR = c.clearR || Math.max(3, Math.round(30*(c.scale||1)*.5)); c.clearH = 7;
+  // Laufwege freiräumen
+  const CLR = ["snowB","snow","frost","rock","icicle","crystal","violet","silver","lamp","pine","bark","hedge","floorIce"];
+  for(const c of creatures){ const ob=c.orbit; if(!ob) continue; const rad = c.clearR; c.clearH = 6;
     for(let k=0;k<360;k++){ const t=k/360*Math.PI*2, x=ob.c[0]+Math.cos(t)*ob.r[0], z=ob.c[2]+Math.sin(t)*ob.r[1];
-      for(let a=-rad;a<=rad;a++) for(let b=-rad;b<=rad;b++) if(a*a+b*b<=rad*rad) for(let y=G;y<G+8;y++){ const bt=get(Math.round(x+a),y,Math.round(z+b)); if(CLR.includes(bt)) set(Math.round(x+a),y,Math.round(z+b),null); } } }
+      for(let a=-rad;a<=rad;a++) for(let b=-rad;b<=rad;b++) if(a*a+b*b<=rad*rad) for(let y=Math.ceil(ob.c[1]);y<ob.c[1]+6;y++){ const bt=get(Math.round(x+a),y,Math.round(z+b)); if(CLR.includes(bt)) set(Math.round(x+a),y,Math.round(z+b),null); } } }
+
   return {
-    W, D, blocks, spots:S, exposure:.95, fov:42, creatures,
-    sky:[[0,"#1E4A8A"],[.4,"#4A80C0"],[.75,"#8AB8E4"],[1,"#BCD8F0"]], fog:[0x7EA6D2, 80, 290],
-    hemi:[0xCFE6FF, 0x22406E, 1.05], sun:{color:0xEAF6FF, int:1.25, pos:[-40,90,70]}, bloom:[.35,.45,.85],
-    lights:[{pos:[46,G+12,40], color:0x7FE6FF, int:200, dist:34, flicker:700},
-            {pos:[20,G+30,30], color:0x5AD8FF, int:160, dist:30, flicker:900}, {pos:[72,G+30,30], color:0x5AD8FF, int:160, dist:30, flicker:900},
-            {pos:[S.vocabulary.x,G+5,S.vocabulary.z+6], color:0xC8A0FF, int:180, dist:22},
-            {pos:[S.country.x,G+8,S.country.z], color:0xBFF4FF, int:180, dist:24}],
-    beams: S.grammar.beams ? S.grammar.beams.map((p,i)=>({pos:p, len:70+i*6, w:6, color:0x7FE6FF, opacity:.3, tilt:.45, speed:.18+i*.03, ph:i*1.3})) : [],
-    ribbons:[{w:300, h:34, pos:[W/2,104,-90], rot:0, color:0xA87AFF, opacity:.2}, {w:240, h:24, pos:[W/2-30,118,-120], rot:.25, color:0x7A6AF0, opacity:.16}, {w:200, h:18, pos:[W/2+40,96,-70], rot:-.2, color:0xC890FF, opacity:.12}],
-    rays:{n:16, color:0xFFFFFF, area:[16,76,0,40], y:60, len:100},
-    particles:[{n:1500, area:[-40,W+40,0,90,-40,D+60], vy:-3, wob:2.4, color:0xFFFFFF, size:.85, opacity:.95, soft:true},
-               {n:500, area:[-120,W+120,0,110,-160,-40], vy:-3.5, wob:2.5, color:0xFFFFFF, size:1.1, opacity:.8, soft:true},
-               {n:260, area:[0,W,4,50,0,D], vy:0, wob:.25, color:0xBFF8FF, size:.14, add:true, twinkle:true},
-               {n:160, area:[30,62,G+14,G+40,24,36], vy:.6, wob:.4, color:0x9AF0FF, size:.22, add:true, twinkle:true}],
-    puffs:[{n:18, pos:[-40,G+2,10], dx:170, dy:2, dz:20, s0:20, s1:18, color:0xD8E8F8, opacity:.3, speed:.01, spread:50, flat:.35},
-           {n:26, pos:[-160,78,-150], dx:360, dy:4, dz:40, s0:70, s1:30, color:0xF4F8FF, opacity:.8, speed:.006, spread:70, flat:.35, sz:1.2},
-           {n:10, pos:[-60,70,-10], dx:220, dy:3, dz:30, s0:30, s1:20, color:0xFFFFFF, opacity:.35, speed:.012, spread:40, flat:.3},
-           {n:16, pos:[-120,80,-30], dx:300, dy:2, dz:40, s0:46, s1:24, color:0xE6EEFA, opacity:.55, speed:.009, spread:70, flat:.3},
-           {n:12, pos:[10,50,-40], dx:70, dy:20, dz:0, s0:30, s1:30, color:0xFFFFFF, opacity:.45, speed:.008, spread:40, flat:.7}],
-    home:{pos:[W/2,84,D+104], look:[W/2,22,D/2-14]}, homePortrait:{pos:[W/2,86,D+112], look:[W/2,24,D/2-10]},
+    W, D, blocks, spots:S, exposure:1.0, fov:42, creatures,
+    sky:[[0,"#2A62B0"],[.4,"#5C94D6"],[.72,"#A8CCEE"],[1,"#E2EEF8"]], fog:[0xB4CCE6, 180, 620],
+    hemi:[0xE6F2FF, 0x3A5A8A, 1.35], sun:{color:0xFFF6EA, int:1.6, pos:[60,110,90]}, bloom:[.4,.45,.85],
+    lights:[{pos:[CX,HB+16,CZ+18], color:0x9AE8FF, int:420, dist:46, flicker:900},
+            {pos:[S.vocabulary.x,hAt(S.vocabulary.x,S.vocabulary.z)+12,S.vocabulary.z], color:0x8AD8FF, int:260, dist:30, flicker:1200},
+            {pos:[S.country.x,S.country.base+4,S.country.z], color:0xBFF4FF, int:200, dist:26}],
+    planes:[{y:L-.08, tex:T.lake, repeat:220, size:900, em:.25, anim:[.004,.002]}],
+    beams:[{pos:[CX,HB+60,CZ-1], len:90, w:7, color:0x9AE8FF, opacity:.22, tilt:.4, speed:.15}],
+    ribbons:[{w:320, h:30, pos:[20,120,-150], rot:.1, color:0x9A8AFF, opacity:.16}, {w:240, h:22, pos:[-20,132,-170], rot:.3, color:0x7AD8FF, opacity:.14}],
+    clouds:[{pos:[-40,110,-120], r:20, n:44, sx:1.8, sy:.6, sz:1.1, drift:.4}, {pos:[100,120,-140], r:24, n:48, sx:1.9, sy:.6, sz:1.1, drift:.3},
+            {pos:[40,140,-200], r:28, n:40, sx:2, sy:.5, sz:1}, {pos:[170,100,-60], r:18, n:36, sx:1.7, sy:.6, sz:1, drift:.5}],
+    particles:[{n:1700, area:[-40,W+40,0,90,-40,D+60], vy:-2.6, wob:2.2, color:0xFFFFFF, size:.8, opacity:.95, soft:true},
+               {n:500, area:[-160,W+160,0,120,-200,-40], vy:-3, wob:2.5, color:0xFFFFFF, size:1.1, opacity:.8, soft:true}],
+    puffs:[{n:16, pos:[-20,L+1,60], dx:80, dy:1, dz:10, s0:16, s1:20, color:0xE8F2FC, opacity:.35, speed:.01, spread:20, flat:.3},
+           {n:12, pos:[-60,L+2,0], dx:120, dy:1, dz:0, s0:24, s1:28, color:0xE8F2FC, opacity:.35, speed:.008, spread:20, flat:.3},
+           {n:10, pos:[60,G+3,90], dx:70, dy:2, dz:0, s0:16, s1:20, color:0xEEF6FE, opacity:.3, speed:.01, spread:10, flat:.35}],
+    home:{pos:[4,96,200], look:[52,24,36]}, homePortrait:{pos:[40,110,250], look:[62,24,36]},
     ui:{bg:"rgba(10,30,62,.86)", border:"#8AE6FF", glow:"rgba(138,230,255,.55)", text:"#EAF6FF", sub:"#A8C8E6", accent:"#8AE6FF", "accent-ink":"#06182E", chip:"rgba(8,26,54,.8)"}
   };
 }
