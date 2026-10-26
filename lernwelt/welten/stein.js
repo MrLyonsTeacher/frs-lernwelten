@@ -54,7 +54,7 @@ export function build(A){
   const level = z => z>=44 ? L0 : z>=26 ? L1 : z>=10 ? L2 : TOP;
   for(let z=0; z<D; z++) for(let x=0; x<W; x++){
     let h = level(z); const sideD = Math.max(5-x, x-(W-6));
-    if(sideD>0 && z<OPEN) h = TOP; else if(sideD>0) h = Math.max(h, L0 + Math.round(fbm(x*.3,z*.3)*3));
+    if(sideD>0 && z>=OPEN) h = Math.max(h, L0 + Math.round(fbm(x*.3,z*.3)*3));
     if(z<10) h = TOP - Math.round(fbm(x*.1,1)*2);
     for(let y=0;y<h;y++){ let t = y===h-1 && h<=L2 ? "flag" : (h>=TOP && rand()<.03 ? pick(["goldOre","diaOre"]) : (rand()<.3 ? "deep" : "stone")); set(x,y,z,t); } }
   // Stützmauern der Terrassen mit Zierbändern
@@ -144,13 +144,6 @@ export function build(A){
     for(const [lx,lz] of [[x-6,z+9],[x+6,z-10],[x+10,z+6]]){ fill(lx,y,lz,lx,y+4,lz,"log"); set(lx,y+5,lz,"glow"); }
     S.country.top=[x,y+12,z]; S.country.base=y+4; S.country.cam={dist:36, up:.42, side:-.15}; }
 
-  // ---------- Häuser in den Seitenwänden, Balkone, Laternen ----------
-  for(const [sx,dir] of [[4,1],[W-5,-1]]) for(const [yy,zz] of [[L2,14],[L2+9,20],[L2+9,32],[L2+18,14],[L2+18,28],[L1,20],[L2+27,22]]){
-    if(sx===4 && zz>28 && zz<42 && yy<L2+5) continue;
-    archX(sx,yy,zz,3,4,dir); for(const o of [-5,5]){ set(sx,yy+3,zz+o,"win"); set(sx,yy+4,zz+o,"win"); }
-    if(yy>L2){ for(let o=-6;o<=6;o++){ set(sx+dir,yy-1,zz+o,"chisel"); set(sx+2*dir,yy-1,zz+o,"chisel"); if(o%2===0) set(sx+2*dir,yy,zz+o,"sbrick"); } set(sx+2*dir,yy+1,zz-6,"glow"); } }
-  // Treppen an den Seitenwänden hinauf
-  for(const [sx,dir] of [[6,1],[W-7,-1]]) for(let i=0;i<30;i++){ const yy=L2+i, zz=12+i; if(zz>=OPEN-2) break; set(sx,yy,zz,"sbrick"); set(sx+dir,yy,zz,"sbrick"); }
   // Häuser auf der oberen Terrasse rechts
   { const hx=64, hz=15, y=L2; fill(hx-6,y,hz-4,hx+6,y+9,hz+3,"sbrick"); fill(hx-7,y+10,hz-5,hx+7,y+10,hz+4,"chisel"); for(let i=0;i<4;i++) fill(hx-6+i,y+11+i,hz-4,hx+6-i,y+11+i,hz+3,"sbrick");
     archZ(hx,y,hz+4,3,3); for(const a of [-4,4]){ set(hx+a,y+5,hz+4,"win"); set(hx+a,y+6,hz+4,"win"); } }
@@ -259,10 +252,16 @@ export function build(A){
     if(z>4 && rand()<.035){ const len=2+Math.floor(rand()*6); for(let k=1;k<=len;k++){ set(x,yy-k,z,"stone"); if(k<len-2 && len>4){ set(x+1,yy-k,z,"stone"); } } } }
   // ---------- Weitere Höhlen links und rechts bis in die Ferne: Terrassen, beleuchtete Häuser ----------
   const away = x => Math.max(0,-x, x-W);
-  const fh = (x,z) => { const a=away(x); let h = L0 + Math.floor(a/18)*7 + fbm(x*.05,z*.05)*3; if(a>70) h += (a-70)*1.4; if(z<OPEN) h = 80; return h; };
-  A.farTerrain({ x0:-150, x1:W+150, z0:OPEN-6, z1:D+50, base:0, skip:(x,z)=> x>-1 && x<W+1,
+  const fh = (x,z) => { const a=away(x); let h = level(Math.max(z,10)) + Math.floor(a/22)*6 + fbm(x*.05,z*.05)*3; if(a>90) h += (a-90)*1.6; if(z<10) h = 80; return Math.min(h,80); };
+  A.farTerrain({ x0:-170, x1:W+170, z0:-12, z1:D+50, base:0, skip:(x,z)=> x>-1 && x<W+1,
     h: fh, top:(x,z,y,hc)=> y*3 > 60 ? "stone" : (rand()<.04 ? "glow" : "flag"),
     fill:(x,z,y,hc)=> (y%2===1 && y*3<26 && rand()<.14) ? "win" : (rand()<.25 ? "deep" : "sbrick") });
+  // große Höhlendecke über der ganzen erweiterten Halle, mit Tropfsteinen
+  for(let cz=-4; cz<Math.ceil((OPEN+40)/3); cz++) for(let cx=Math.floor(-170/3); cx<Math.ceil((W+170)/3); cx++){ const x=cx*3, z=cz*3; if(x>-3 && x<W+3 && z<OPEN+2) continue;
+    const cy = Math.round((TOP+34+fbm(x*.02,z*.02)*10 + Math.max(0,z-OPEN)*.3)/3); F.set(cx,cy,cz,"stone"); F.set(cx,cy+1,cz,"deep");
+    if(rand()<.05){ const l=1+Math.floor(rand()*4); for(let k=1;k<=l;k++) F.set(cx,cy-k,cz,"deep"); } }
+  // Laternen und Lichter in den Seitenhöhlen
+  for(let i=0;i<80;i++){ const x = rand()<.5 ? -10-rand()*140 : W+10+rand()*140, z = 12+rand()*(D+20); const h=fh(x,z); if(h>60) continue; F.set(Math.floor(x/3),Math.ceil(h/3),Math.floor(z/3),"glow"); }
   for(let i=0;i<40;i++){ const x = rand()<.5 ? -20-rand()*120 : W+20+rand()*120, z = OPEN+rand()*(D-OPEN+40); const cx=Math.floor(x/3), cz=Math.floor(z/3), base=Math.ceil(fh(x,z)/3);
     const hh = 2+Math.floor(rand()*5); for(let k=0;k<hh;k++) F.set(cx,base+k,cz,"stone"); }
 

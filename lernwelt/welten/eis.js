@@ -204,9 +204,12 @@ export function build(A){
   // ---------- Landschaft bis zum Horizont: See links hinten, verschneite Berge ----------
   const Fr = A.far; Fr.cell = 3;
   const peaks = [[-110,-190,80,80],[-40,-220,90,95],[30,-240,80,85],[-180,-120,60,60],[150,-230,70,70],[220,-160,50,45],[-70,-150,50,50],[90,-260,70,75]];
+  // Bergkranz rundherum (links, rechts, hinten), damit man beim Drehen überall Berge sieht
+  for(let i=0;i<22;i++){ const an = Math.PI*(.05 + i/21*.9), R = 230 + (i%3)*35; peaks.push([W/2 - Math.cos(an)*R*1.15, D/2 - Math.sin(an)*R*.9 + 40, 70+(i*37)%40, 85+(i*53)%70]); }
+  for(const [px,pz,r,h] of [[-200,80,70,90],[-230,170,80,100],[W+200,70,70,95],[W+230,170,80,105],[-150,240,60,70],[W+150,250,60,75]]) peaks.push([px,pz,r,h]);
   const fh = (x,z) => { let h = G + (fbm(x*.03,z*.03)-.5)*6 + (x>62 && z>52 ? 1.5+fbm(x*.05,z*.05)*3 : 0);
     for(const [px,pz,r,hh] of peaks){ const d=Math.hypot(x-px,z-pz)/r; if(d<1){ const v = hh*Math.pow(1-d,1.35)*(.75+.5*fbm(x*.05,z*.05)); if(v>h) h=v; } } return h; };
-  A.farTerrain({ x0:-260, x1:W+220, z0:-260, z1:D+60, base:0, skip:(x,z)=> (x>-15 && x<W+15 && z>-15 && z<D+15) || (lakeB(x,z)<1.3 && x<44),
+  A.farTerrain({ x0:-330, x1:W+330, z0:-320, z1:D+260, base:0, skip:(x,z)=> (x>-15 && x<W+15 && z>-15 && z<D+15) || (lakeB(x,z)<1.3 && x<44),
     h: fh, top:(x,z,y,hc)=> y*3 > 30 ? "snowB" : (rand()<.3 ? "rock" : "snowB"), fill:(x,z,y,hc)=> y*3 > 46 ? (rand()<.7?"snowB":"frost") : (rand()<.5 ? "rock" : "frost") });
 
   // ferne verschneite Nadelbäume in der Ebene (grobe Blöcke)
@@ -239,7 +242,8 @@ export function build(A){
     planes:[{y:L-.08, tex:T.lake, repeat:220, size:900, em:.25, anim:[.004,.002]}],
     beams:[{pos:[CX,HB+60,CZ-1], len:90, w:7, color:0x9AE8FF, opacity:.22, tilt:.4, speed:.15}],
     ribbons:[{w:320, h:30, pos:[20,120,-150], rot:.1, color:0x9A8AFF, opacity:.16}, {w:240, h:22, pos:[-20,132,-170], rot:.3, color:0x7AD8FF, opacity:.14}],
-    clouds:[{pos:[-40,110,-120], r:20, n:44, sx:1.8, sy:.6, sz:1.1, drift:.4}, {pos:[100,120,-140], r:24, n:48, sx:1.9, sy:.6, sz:1.1, drift:.3},
+    clouds:[...[[-220,90,40],[-240,110,160],[W+220,95,40],[W+240,115,160],[-150,130,-60],[W+150,130,-60],[-60,150,-250],[180,150,-250]].map(p=>({pos:p, r:26, n:42, sx:1.9, sy:.55, sz:1.2, drift:.3})),
+            {pos:[-40,110,-120], r:20, n:44, sx:1.8, sy:.6, sz:1.1, drift:.4}, {pos:[100,120,-140], r:24, n:48, sx:1.9, sy:.6, sz:1.1, drift:.3},
             {pos:[40,140,-200], r:28, n:40, sx:2, sy:.5, sz:1}, {pos:[170,100,-60], r:18, n:36, sx:1.7, sy:.6, sz:1, drift:.5}],
     particles:[{n:1700, area:[-40,W+40,0,90,-40,D+60], vy:-2.6, wob:2.2, color:0xFFFFFF, size:.8, opacity:.95, soft:true},
                {n:500, area:[-160,W+160,0,120,-200,-40], vy:-3, wob:2.5, color:0xFFFFFF, size:1.1, opacity:.8, soft:true}],

@@ -305,7 +305,7 @@ export async function start(o){
   function goHome(){ orbitT = 0; focus = null; for(const j in labels) labels[j].el.classList.remove("hide"); fly(homeFor().pos, homeFor().look); }
 
   // Umlaufbahn: mit dem Finger nach links/rechts wischen dreht die Kamera um den Blickpunkt (höchstens 90° je Seite, nur waagrecht)
-  let orbitA = 0, orbitT = 0, dragging = false, dragX = 0, dragId = null;
+  let orbitA = (o.orbit||0)*Math.PI/180, orbitT = orbitA, dragging = false, dragX = 0, dragId = null;
   const el = renderer.domElement; el.style.touchAction = "none";
   el.addEventListener("pointerdown", e => { dragging = true; dragX = e.clientX; dragId = e.pointerId; try{ el.setPointerCapture(e.pointerId); }catch(_){} });
   el.addEventListener("pointermove", e => { if(!dragging || e.pointerId!==dragId) return; const d = e.clientX - dragX; dragX = e.clientX;
