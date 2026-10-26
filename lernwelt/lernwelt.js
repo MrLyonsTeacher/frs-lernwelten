@@ -246,7 +246,7 @@ function topbar(o){
 }
 function howBox(text, de, tip, extra){
   if(!text) return "";
-  return `<div class="how"><div class="how-t">${rich(text)}</div>${extra||""}${de?`
+  return (W.thema?`<div class="topic-strip"><span aria-hidden="true">📘</span> <b>${esc(W.thema)}</b></div>`:"")+`<div class="how"><div class="how-t">${rich(text)}</div>${extra||""}${de?`
     <button class="flag" data-tr aria-label="${T.showGerman}" aria-expanded="false">${FLAG_DE}</button>
     <div class="tr-pop" hidden role="dialog" aria-label="${T.german}">
       <button class="tr-x" data-trx aria-label="${T.close}">×</button>
@@ -391,7 +391,7 @@ function learnScreen(l){
     else st.innerHTML = f.video
       ? `<div class="ln-video"><div class="ln-vbox" id="lnV"><button class="ln-play" data-yt="${esc(f.video)}" aria-label="Play video">▶</button><p>${T.videoNote}</p></div>
           <div class="ln-body"><h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div></div>`
-      : `<div class="ln-art"><span>${f.bild||"📌"}</span></div>
+      : `<div class="ln-art">${f.foto ? `<figure class="ln-foto"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f.foto)}?width=800" alt="${esc(plain(f.titel||""))}" loading="eager" onerror="this.closest('figure').outerHTML='<span>${(f.bild||"📌").replace(/'/g,"")}</span>'"><figcaption><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f.foto)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a></figcaption></figure>` : `<span>${f.bild||"📌"}</span>`}</div>
          <div class="ln-body">${f.jahr?`<div class="ln-year" id="lnYear">${esc(f.jahr)}</div>`:""}<h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>
            ${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div>`;
     st.insertAdjacentHTML("beforeend", `<span class="ln-n">${i+1} / ${F.length}</span>`);
@@ -409,7 +409,7 @@ function learnScreen(l){
     if(e.target.closest("#lnAuto")){ if(!auto && i===F.length-1) show(0); setAuto(!auto); return; }
     if(e.target.closest("#lnVoice")){ voice = !voice; const b=$("#lnVoice"); b.setAttribute("aria-pressed", voice); if(voice){ if(!F[i].video) say(F[i], auto ? ()=>{ tm=setTimeout(()=>{ if(auto) (i<F.length-1 ? show(i+1) : setAuto(false)); }, 900); } : null); } else { hush(); if(auto) schedule(); } return; }
     const y = e.target.closest("[data-yt]");
-    if(y){ setAuto(false); $("#lnV").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(y.dataset.yt)}?rel=0&autoplay=1&playsinline=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
+    if(y){ setAuto(false); $("#lnV").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(y.dataset.yt)}?rel=0&autoplay=1&playsinline=1&modestbranding=1&iv_load_policy=3" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
     if(e.target.closest("#lnGo")){ stop(); S.seen[key] = 1; save(); location.hash = "l="+encodeURIComponent(l.id); }
   };
   show(0);

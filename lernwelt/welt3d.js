@@ -60,7 +60,7 @@ export function makeApi(seedNum){
 
   // 16×16-Pixeltexturen (eigene, im Klötzchen-Stil)
   const tex = draw => { const c=document.createElement("canvas"); c.width=c.height=16; const g=c.getContext("2d"); draw(g);
-    const t=new THREE.CanvasTexture(c); t.magFilter=t.minFilter=THREE.NearestFilter; t.colorSpace=THREE.SRGBColorSpace; t.wrapS=t.wrapT=THREE.RepeatWrapping; t.generateMipmaps=false; return t; };
+    const t=new THREE.CanvasTexture(c); t.magFilter=THREE.NearestFilter; t.minFilter=THREE.NearestMipmapLinearFilter; t.generateMipmaps=true; t.anisotropy=4; t.colorSpace=THREE.SRGBColorSpace; t.wrapS=t.wrapT=THREE.RepeatWrapping; return t; };
   const P = (g,x,y,c) => { g.fillStyle=c; g.fillRect(x,y,1,1); };
   const noise = (cols, dots, dotCols) => tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y,pick(cols)); for(let i=0;i<(dots||0);i++) P(g,Math.floor(rand()*16),Math.floor(rand()*16),pick(dotCols)); });
   const stripes = (cols, vertical=true, speck) => tex(g=>{ for(let a=0;a<16;a++){ const c=pick(cols); for(let b=0;b<16;b++) P(g, vertical?a:b, vertical?b:a, speck&&rand()<.15?speck:c); } });
@@ -122,7 +122,7 @@ export async function start(o){
   const sd = world.sun || {color:0xffffff, int:2, pos:[-50,80,60]};
   const sun = new THREE.DirectionalLight(sd.color, sd.int); sun.position.set(sd.pos[0]+world.W/2, sd.pos[1], sd.pos[2]+world.D/2); sun.castShadow = !o.lite;
   const ext = Math.max(world.W, world.D) * .8;
-  Object.assign(sun.shadow.camera, {left:-ext, right:ext, top:ext, bottom:-ext, near:1, far:500}); sun.shadow.mapSize.set(2048,2048); sun.shadow.bias = -.0005;
+  Object.assign(sun.shadow.camera, {left:-ext, right:ext, top:ext, bottom:-ext, near:1, far:500}); sun.shadow.mapSize.set(2048,2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .06;
   sun.target.position.set(world.W/2, 0, world.D/2); scene.add(sun, sun.target);
   const pls = (world.lights||[]).map(l=>{ const p=new THREE.PointLight(l.color, l.int, l.dist||40, 2); p.position.set(...l.pos); p.userData=l; scene.add(p); return p; });
 
@@ -144,7 +144,7 @@ export async function start(o){
       if(vis) (groups[t]=groups[t]||[]).push(b); }
     for(const t in groups){ const d = B[t];
       const mesh = new THREE.InstancedMesh(box, matsFor(t), groups[t].length);
-      groups[t].forEach((b,i)=>{ dummy.position.set((b[0]+.5)*cell,(b[1]+.5)*cell,(b[2]+.5)*cell); dummy.scale.setScalar((d.scale||1)*cell); dummy.updateMatrix(); mesh.setMatrixAt(i,dummy.matrix); });
+      groups[t].forEach((b,i)=>{ dummy.position.set((b[0]+.5)*cell,(b[1]+.5)*cell,(b[2]+.5)*cell); dummy.scale.setScalar((d.scale||1)*cell*(cell<1 ? .985 : (d.alpha||d.cross) ? .996 : 1)); dummy.updateMatrix(); mesh.setMatrixAt(i,dummy.matrix); });
       mesh.castShadow = !isFar && !d.em && !d.alpha; mesh.receiveShadow = !isFar && !d.alpha; if(d.alpha) mesh.renderOrder = 2;
       mesh.frustumCulled = false; scene.add(mesh); count += groups[t].length;
       // runder, weicher Lichtschein um Lampen (statt harter Würfelkanten)
@@ -296,14 +296,22 @@ export async function start(o){
   let from=null, to=null, t0=0, dur=1, focus=null, running=false, frames=0;
   const ease = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
   const fly = (pos, look, d=1.5) => { from={pos:curPos.clone(), look:curLook.clone()}; to={pos:new THREE.Vector3(...pos), look:new THREE.Vector3(...look)}; t0=performance.now(); dur=o.still ? 1 : d*1000; wake(); };
-  function focusOn(k){ const s = spots[k]; focus = k;
+  function focusOn(k){ orbitT = 0; const s = spots[k]; focus = k;
     const c = s.cam || {}, dist = c.dist || 26, side = c.side ?? -.3, up = c.up ?? .5, portrait = cam.aspect < 1;
     const dd = portrait ? dist*1.45 : dist, lookShift = portrait ? 0 : (o.banner ? -dist*.2 : dist*.28), drop = portrait ? dd*.32 : 0;
     if(c.pos){ const L = portrait ? [s.top[0], c.look[1]-4, s.top[2]] : o.banner ? [s.top[0]+(s.top[0]-c.look[0])*.5, c.look[1], s.top[2]+(s.top[2]-c.look[2])*.5] : c.look, f = portrait ? 1.5 : 1; fly(L.map((v,i)=>v+(c.pos[i]-c.look[i])*f), L); }
     else fly([s.top[0]+dd*side, (c.y ?? s.base ?? s.top[1]*.6) + dd*up, s.top[2]+dd], [s.top[0]+lookShift, (c.lookY ?? (s.base ?? s.top[1]*.6)+4) - drop, s.top[2]]);
     for(const j in labels) labels[j].el.classList.toggle("hide", j!==k); }
-  function goHome(){ focus = null; for(const j in labels) labels[j].el.classList.remove("hide"); fly(homeFor().pos, homeFor().look); }
+  function goHome(){ orbitT = 0; focus = null; for(const j in labels) labels[j].el.classList.remove("hide"); fly(homeFor().pos, homeFor().look); }
 
+  // Umlaufbahn: mit dem Finger nach links/rechts wischen dreht die Kamera um den Blickpunkt (höchstens 90° je Seite, nur waagrecht)
+  let orbitA = 0, orbitT = 0, dragging = false, dragX = 0, dragId = null;
+  const el = renderer.domElement; el.style.touchAction = "none";
+  el.addEventListener("pointerdown", e => { dragging = true; dragX = e.clientX; dragId = e.pointerId; try{ el.setPointerCapture(e.pointerId); }catch(_){} });
+  el.addEventListener("pointermove", e => { if(!dragging || e.pointerId!==dragId) return; const d = e.clientX - dragX; dragX = e.clientX;
+    orbitT = Math.max(-Math.PI/2, Math.min(Math.PI/2, orbitT - d/Math.max(320, innerWidth)*Math.PI*1.1)); wake(); });
+  const endDrag = e => { if(e.pointerId===dragId){ dragging = false; dragId = null; } };
+  el.addEventListener("pointerup", endDrag); el.addEventListener("pointercancel", endDrag);
   const v = new THREE.Vector3(); let last = performance.now();
   const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   const clock0 = performance.now();
@@ -312,8 +320,10 @@ export async function start(o){
     requestAnimationFrame(frame); frames++; const dt = Math.min(.05, (now-last)/1000); perf(Math.min(.2,(now-last)/1000)); last = now;
     const tt = o.still ? (o.stillTime || 12) : (now-clock0)/1000;
     if(to){ const p=Math.min(1,(now-t0)/dur), e=ease(p); curPos.lerpVectors(from.pos,to.pos,e); curLook.lerpVectors(from.look,to.look,e); if(p>=1){ to=null; frames=0; } }
-    const sway = (focus || reduce || o.still) ? 0 : Math.sin(now/5200)*2;
-    cam.position.set(curPos.x+sway, curPos.y, curPos.z); cam.lookAt(curLook);
+    const sway = (focus || reduce || o.still || dragging || Math.abs(orbitA)>.02) ? 0 : Math.sin(now/5200)*2;
+    orbitA += (orbitT-orbitA)*(o.still ? 1 : 1-Math.exp(-dt*10));
+    { const dx=curPos.x+sway-curLook.x, dz=curPos.z-curLook.z, c=Math.cos(orbitA), sn=Math.sin(orbitA);
+      cam.position.set(curLook.x + dx*c - dz*sn, curPos.y, curLook.z + dx*sn + dz*c); } cam.lookAt(curLook);
     for(const [tx,[ax,ay]] of anim) tx.offset.set(now*ax/1000, now*ay/1000);
     for(const pp of parts){ const a=pp.g.attributes.position.array, p=pp.p, [x0,x1,y0,y1,z0,z1]=p.area;
       for(let i=0;i<pp.n;i++){ const k3=i*3;
