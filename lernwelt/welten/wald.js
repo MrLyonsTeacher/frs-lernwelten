@@ -32,12 +32,11 @@ export function build(A){
   };
   const W=96, D=72, WL=3;
   // Tal mit Wasser unten, Klippen hinten mit Wasserfällen
-  const H = (x,z) => { let h = 2 + fbm(x*.08,z*.08)*3.5;
+  const H = (x,z) => { let h = WL + 2.5 + fbm(x*.08,z*.08)*2.5;
     const back = Math.max(0, 16 - z); if(back>0) h += back*1.5 + fbm(x*.12,z*.2)*7;
     const side = Math.max(0, Math.max(5 - x, x - (W-6))); if(side>0) h += side*2.2 + fbm(x*.2,z*.1)*4;
     return h; };
-  terrain(W, D, H, (x,y,z,h) => y===h-1 ? (h<=WL+1 ? "dirt" : (h>14 ? (rand()<.5?"moss":"grass") : "grass")) : y>h-3 ? "dirt" : (rand()<.35?"moss":"stone"));
-  for(let z=0;z<D;z++) for(let x=0;x<W;x++){ const t=topAt(x,z,60); for(let y=t+1;y<=WL;y++) set(x,y,z,"water"); }
+  terrain(W, D, H, (x,y,z,h) => y===h-1 ? (h>14 ? (rand()<.5?"moss":"grass") : (rand()<.12?"moss":"grass")) : y>h-3 ? "dirt" : (rand()<.35?"moss":"stone"));
 
   // ---------- Bausteine ----------
   // Riesenbaum mit Wurzeln, leicht gedrehtem Stamm, Ästen und Krone
@@ -93,7 +92,7 @@ export function build(A){
       if(i%Math.ceil(n/2)===0 && i>0 && i<n){ for(let yy=WL-1;yy<ay;yy++) for(const w of [-1,0,1]) set(x+nx*w,yy,z+nz*w,"elfPillar"); }
       if(i===0||i===n){ for(const w of [-2,2]){ set(x+nx*w,y+2,z+nz*w,"elfPillar"); set(x+nx*w,y+3,z+nz*w,"lantern"); } } } };
   // Wasserfall
-  const waterfall = (x,z,w) => { const t=topAt(x,z,80); for(let y=t; y>WL; y--) for(let a=0;a<w;a++){ const zz = z + Math.max(0, Math.floor((t-y)*.08)); set(x+a,y,zz+1,"fall"); } for(let a=-1;a<=w;a++) set(x+a,t+1,z,"water"); };
+  const waterfall = (x,z,w) => { const t=topAt(x,z,80); for(let y=t; y>WL; y--) for(let a=0;a<w;a++){ const zz = z + Math.max(0, Math.floor((t-y)*.08)); if(y<t-3 && get(x+a,y,zz+1) && get(x+a,y,zz+1)!=="fall"){ if(y<WL+8){ for(let b=-2;b<=2;b++) for(let c=1;c<=4;c++) if(get(x+a+b,y,zz+c)) set(x+a+b,y,zz+c,"water"); } continue; } set(x+a,y,zz+1,"fall"); } for(let a=-1;a<=w;a++) set(x+a,t+1,z,"water"); };
 
   // ---------- Grammar: Elbenpalast im Riesenbaum ----------
   const S = {
@@ -203,6 +202,9 @@ export function build(A){
   for(let i=0;i<28;i++){ const x=-150+rand()*(W+340), z=-170+rand()*(D+200); const aw=away(x,z); if(aw<14 || (x>-80 && x<W+80 && z>-4)) continue; farTree(x,z, 4+Math.floor(rand()*2)*3, 46+Math.floor(rand()*36)); }
 
   // Glühwürmchen, Nebel, Lichtstrahlen, Einhorn, Vögel
+  // vereinzelte Büsche, Farne und Pilze auf dem begrünten Boden
+  for(let i=0;i<120;i++){ const x=4+Math.floor(rand()*(W-8)), z=18+Math.floor(rand()*(D-20)); const t=topAt(x,z,30); if(t<WL || t>12) continue; const g=get(x,t,z); if(g!=="grass" && g!=="moss") continue; if(get(x,t+1,z)||get(x,t+2,z)) continue;
+    const r=rand(); if(r<.55){ ellip(x,t+1,z,1+rand()*1.2,.8+rand()*.6,1+rand()*1.2,(a,b,c)=> get(a,b,c) ? get(a,b,c) : (rand()<.3?"leaves2":"leaves")); } else if(r<.75) set(x,t+1,z,"glowMush"); else if(r<.9) set(x,t+1,z,pick(["flowerB","flowerW"])); else set(x,t+1,z,"mush"); }
   const creatures = [{ ...stag(), at:[S.vocabulary.x-5, 13, S.vocabulary.z+1], yaw:-.85, scale:.225 }];
   // ein paar Elben: über die große Brücke, über Hängebrücken, am Brunnen; dazu zwei kleine Elfen
   const rev = a => a.slice().reverse();

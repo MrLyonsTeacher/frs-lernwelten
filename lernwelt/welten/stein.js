@@ -200,6 +200,96 @@ export function build(A){
   towerHouse(29, L1, 30, 3, 8);
   tavern(20, L0, 62, 7, 4);
   domeHouse(79, L2, 18, 3);
+
+  // ================= Erweiterung links und rechts =================
+  const XL0=-46, XR1=W+45;
+  // Boden: gleiche Terrassen wie in der Mitte, mit Stützmauern, Treppen und Laternen
+  for(let z=10; z<D; z++) for(const [x0,x1] of [[XL0,-1],[W,XR1]]) for(let x=x0; x<=x1; x++){ const h=level(z); for(let y=0;y<h;y++) set(x,y,z, y===h-1 ? "flag" : (rand()<.3?"deep":"stone")); }
+  for(const [x0,x1] of [[XL0,-1],[W,XR1]]) for(let x=x0;x<=x1;x++){ for(let y=L0;y<L1;y++) set(x,y,43,(y===L1-1)?"chisel":(y%6===0?"sbrickD":"sbrick")); for(let y=L1;y<L2;y++) set(x,y,25,(y===L2-1)?"chisel":(y%6===0?"sbrickD":"sbrick")); }
+  for(const sx of [-24, W+22]){ stairs(sx-3,sx+3,L0,51,8); stairs(sx-3,sx+3,L1,33,8); }
+  for(const ax of [-36,-12,W+10,W+34]){ archZ(ax,L0,43,3,4); archZ(ax,L1,25,3,4); }
+  // Rückwand hinter der Erweiterung
+  for(const [x0,x1] of [[XL0,-1],[W,XR1]]) for(let x=x0;x<=x1;x++) for(let z=0;z<10;z++) for(let y=0;y<TOP;y++) set(x,y,z, y>=L2 && rand()<.02 ? pick(["goldOre","diaOre"]) : (rand()<.3?"deep":"stone"));
+  for(const [x0,x1] of [[XL0,-1],[W,XR1]]) for(let x=x0;x<=x1;x+=7) archZ(x+3,L2,9,3,5);
+
+  // ---------- Links: riesige, sehr detaillierte Statue des Zwergenkönigs ----------
+  const king = (x,y,z) => { const ST="statue", GD="gold", DK="deep";
+    // Sockel: drei Stufen, Runenband, Goldkante, Inschrift-Tafeln
+    for(let k=0;k<4;k++){ fill(x-11+k,y+k,z-9+k,x+11-k,y+k,z+9-k, k===3?"chisel":"sbrick"); }
+    for(let a=-8;a<=8;a++){ set(x+a,y+2,z+7,(a%2)?"rune":"chisel"); set(x+a,y+3,z+7,GD); }
+    for(const a of [-9,9]){ fill(x+a,y,z+8,x+a,y+6,z+8,"chisel"); fill(x+a-1,y+7,z+7,x+a+1,y+7,z+9,"iron"); set(x+a,y+8,z+8,"glow"); }
+    const b=y+4;
+    // Stiefel mit Goldkappen, Beine im Schritt
+    fill(x-5,b,z-2,x-1,b+2,z+4,ST); fill(x+1,b,z-3,x+5,b+2,z+2,ST); fill(x-5,b,z+4,x-1,b,z+4,GD); fill(x+1,b,z+2,x+5,b,z+2,GD);
+    fill(x-4,b+3,z-1,x-2,b+10,z+2,ST); fill(x+2,b+3,z-2,x+4,b+10,z+1,ST);
+    // Kettenhemd-Rock und Gürtel mit großer Schnalle
+    for(let yy=b+9; yy<=b+13; yy++){ const w=6-Math.floor((yy-b-9)*.3); fill(x-w,yy,z-3,x+w,yy,z+3,(xx,y2,zz)=> (xx+y2+zz)%2 ? "iron" : ST); }
+    fill(x-6,b+14,z-3,x+6,b+15,z+4,"planks"); fill(x-2,b+14,z+4,x+2,b+15,z+5,GD); set(x,b+14,z+5,"ruby");
+    // Rumpf mit Brustpanzer und Runen
+    for(let yy=b+16; yy<=b+26; yy++){ const w = yy<b+21 ? 6 : 7; fill(x-w,yy,z-3,x+w,yy,z+4,ST); }
+    for(let yy=b+18;yy<=b+24;yy++) for(let a=-3;a<=3;a++) if(Math.abs(a)+Math.abs(yy-b-21)<=4) set(x+a,yy,z+5, Math.abs(a)+Math.abs(yy-b-21)===4 ? GD : "iron");
+    set(x,b+21,z+5,"sapphire");
+    // Schulterpanzer, Umhang
+    for(const s2 of [-1,1]){ ellip(x+s2*8,b+25,z,2.6,2,3.2,ST); fill(x+s2*8,b+24,z-3,x+s2*8,b+24,z+3,GD); }
+    for(let yy=b+4; yy<=b+25; yy++){ const w=7+Math.floor((b+25-yy)*.12); fill(x-w,yy,z-5,x+w,yy,z-4,"woolR"); } fill(x-8,b+4,z-5,x+8,b+4,z-5,GD);
+    // Arme: links auf den Schild gestützt, rechts hält die Axt hoch
+    fill(x-10,b+14,z-1,x-8,b+23,z+2,ST); fill(x-10,b+12,z+1,x-8,b+13,z+3,ST);
+    fill(x+8,b+19,z-1,x+10,b+24,z+2,ST); fill(x+9,b+25,z,x+11,b+32,z+2,ST); fill(x+9,b+33,z,x+11,b+34,z+2,ST);
+    // Schild (rund, mit Gold und Rubin)
+    for(let a=-5;a<=5;a++) for(let c=-5;c<=5;c++){ const d=Math.hypot(a,c); if(d<=5.3) set(x-12,b+8+c+5,z+3+a, d>4.5?GD:(d<1.3?"ruby":((Math.round(a)+Math.round(c))%3===0?"iron":ST))); }
+    // Axt: langer Stiel, doppeltes Blatt
+    fill(x+10,b+20,z+1,x+10,b+46,z+1,"log"); for(const s2 of [-1,1]) for(let k=0;k<6;k++) fill(x+10+s2*(1+k*.7|0),b+40-k*.6|0,z+1,x+10+s2*(1+k*.7|0),b+44+k*.6|0,z+1,"iron"); set(x+10,b+47,z+1,GD);
+    // Kopf: Gesicht, Nase, Augen, buschige Brauen
+    fill(x-4,b+27,z-2,x+4,b+34,z+3,ST); fill(x-1,b+30,z+4,x+1,b+32,z+5,ST); set(x,b+29,z+5,ST);
+    for(const s2 of [-2,2]){ set(x+s2,b+32,z+4,"glow"); fill(x+s2-1,b+33,z+4,x+s2+1,b+33,z+5,ST); }
+    // Bart: lang, in drei geflochtenen Zöpfen mit Goldringen
+    for(let yy=b+16; yy<=b+30; yy++){ const w=Math.max(1, Math.round((yy-b-16)*.32)+1); fill(x-w,yy,z+4,x+w,yy,z+5,ST); }
+    for(const a of [-3,0,3]) for(let yy=b+6; yy<b+17; yy++){ set(x+a,yy,z+5,(yy-b)%3===0?GD:ST); if((yy-b)%2) set(x+a+(yy%2?1:0),yy,z+6,ST); }
+    fill(x-5,b+29,z+4,x+5,b+29,z+4,ST);  // Schnurrbart
+    // Helm mit Hörnern, Krone und Edelsteinen
+    fill(x-5,b+35,z-3,x+5,b+35,z+4,GD); for(let k=0;k<5;k++) fill(x-4+k,b+36+k,z-2+Math.floor(k/2),x+4-k,b+36+k,z+3-Math.floor(k/2),"iron");
+    for(const a of [-4,-2,0,2,4]){ set(x+a,b+36,z+5,a===0?"emerald":"gold"); set(x+a,b+37,z+5,a%4===0?"gold":null); }
+    for(const s2 of [-1,1]){ line(x+s2*5,b+36,z,x+s2*9,b+40,z+1,"statue"); line(x+s2*9,b+40,z+1,x+s2*10,b+45,z+2,"chisel"); }
+    return b+47; };
+  const kingTop = king(-24, L2, 17);
+  // Vorplatz mit Feuerschalen und Mosaik
+  for(let a=-10;a<=10;a++) for(let c=0;c<14;c++){ const xx=-24+a, zz=27+c; if(get(xx,L1-1,zz)!=="flag") continue; set(xx,L1-1,zz,(Math.abs(a)+c)%5===0?"tileB":(Math.abs(a)===10?"gold":"flag")); }
+  for(const a of [-9,9]){ fill(-24+a,L1,30,-24+a,L1+2,30,"chisel"); fill(-24+a-1,L1+3,29,-24+a+1,L1+3,31,"iron"); set(-24+a,L1+4,30,"lava"); }
+
+  // Häuser in der linken Erweiterung
+  towerHouse(-10,L0,60,3,9); tavern(-36,L0,58,7,4); stepHouse(-8,L1,34,7); workshop(-38,L1,34,9,6);
+  // Brücke über eine Lavaspalte (links unten)
+  { for(let z=46;z<D;z++) for(let x=-34;x<=-28;x++){ for(let y=1;y<L0;y++) set(x,y,z,null); set(x,0,z,"lava"); }
+    for(let x=-36;x<=-26;x++){ fill(x,L0-1,70,x,L0-1,72,"planks"); set(x,L0,70,(x%2)?"log":null); set(x,L0,72,(x%2)?"log":null); }
+    for(const z of [48,60,84,94]) set(-31,1,z,"glow"); }
+
+  // ---------- Rechts: große Königshalle (Bergkönigs-Halle) mit Schmiede-Esse und Glockenturm ----------
+  { const x=W+24, z=16, y=L2;
+    fill(x-15,y,z-6,x+15,y+16,z+6,(a,b,c)=> (b-y)%5===4 ? "chisel" : "sbrick");
+    // Säulenportikus vorne
+    fill(x-14,y,z+7,x+14,y,z+11,"flag"); for(let a=-12;a<=12;a+=4){ fill(x+a,y+1,z+10,x+a,y+14,z+10,(xx,yy)=> (yy-y)%4===0 ? "gold" : "statue"); fill(x+a-1,y+15,z+9,x+a+1,y+15,z+11,"chisel"); }
+    fill(x-15,y+16,z+7,x+15,y+17,z+11,"chisel"); for(let a=-15;a<=15;a++) set(x+a,y+17,z+12,(a%3)?"rune":"gold");
+    // Giebel
+    for(let k=0;k<10;k++) fill(x-15+k*1.5|0,y+18+k,z-7,x+15-(k*1.5|0),y+18+k,z+12, k===9?"gold":(k%2?"roofD":"tileR"));
+    for(let a=-6;a<=6;a++) for(let b=0;b<6;b++) if(Math.abs(a)<=6-b) set(x+a,y+19+b,z+13,(a===0&&b===2)?"sapphire":"chisel");
+    // großes Tor mit warmem Licht
+    for(let a=-3;a<=3;a++) for(let b=0;b<10;b++){ if(b<7||Math.hypot(a,b-7)<3.3){ set(x+a,y+b,z+6,"door"); } }
+    for(const a of [-9,9]) for(let b=3;b<12;b+=4){ set(x+a,y+b,z+6,"win"); set(x+a,y+b+1,z+6,"win"); }
+    // Esse mit rauchendem Schlot
+    fill(x+12,y+17,z-4,x+15,y+34,z-1,"sbrickD"); fill(x+12,y+35,z-4,x+15,y+35,z-1,"magma"); chim.push([x+13.5,y+36,z-2.5]);
+    // Glockenturm links
+    for(let yy=y+17;yy<y+36;yy++) for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++){ if(Math.abs(a)!==2&&Math.abs(c)!==2) continue; set(x-12+a,yy,z+c, (yy-y)%6===0?"chisel":((yy-y)%6===3&&(a===0||c===0)?"win":"sbrick")); }
+    fill(x-12,y+33,z,x-12,y+34,z,"gold"); for(let k=0;k<6;k++) fill(x-14+k*.4|0,y+36+k,z-2+(k*.4|0),x-10-(k*.4|0),y+36+k,z+2-(k*.4|0),"copper"); set(x-12,y+42,z,"gold");
+    // Fahnen
+    for(const a of [-6,6]){ fill(x+a,y+18,z+13,x+a,y+24,z+13,"log"); fill(x+a+1,y+21,z+13,x+a+3,y+24,z+13,a<0?"banR":"banB"); }
+    S.hallTop=[x,y+28,z]; }
+  // Häuser und Markt in der rechten Erweiterung
+  domeHouse(W+10,L1,34,3); towerHouse(W+38,L1,32,3,10); stepHouse(W+12,L0,60,9); tavern(W+34,L0,62,7,4);
+  // Mine-Lore auf Schienen am Rand
+  for(let z=46;z<D-2;z++){ set(W+42,L0-1,z,"iron"); if(z%2) set(W+41,L0-1,z,"planks"); }
+  fill(W+41,L0,70,W+43,L0+1,72,"iron"); set(W+42,L0+2,71,"goldOre"); set(W+42,L0+2,70,"emerald");
+  // Laternen auf den Erweiterungsterrassen
+  for(const [x0,x1] of [[XL0+3,-3],[W+3,XR1-3]]) for(let x=x0;x<=x1;x+=7) for(const z of [45,27]){ const L=z===45?L0:L1; if(!get(x,L,z)){ set(x,L,z,"iron"); set(x,L+1,z,"lamp"); } }
   // ---------- Unterstadt vorne: eine Ebene tiefer, Straße mit Häusern, die Stadt geht weiter ----------
   const LM = L0-8, Z0 = D, Z1 = D+34;
   for(let z=Z0; z<=Z1; z++) for(let x=-2; x<=W+2; x++){ const side = Math.max(0, Math.max(4-x, x-(W-5)));
@@ -253,11 +343,11 @@ export function build(A){
   // ---------- Weitere Höhlen links und rechts bis in die Ferne: Terrassen, beleuchtete Häuser ----------
   const away = x => Math.max(0,-x, x-W);
   const fh = (x,z) => { const a=away(x); let h = level(Math.max(z,10)) + Math.floor(a/22)*6 + fbm(x*.05,z*.05)*3; if(a>90) h += (a-90)*1.6; if(z<10) h = 80; return Math.min(h,80); };
-  A.farTerrain({ x0:-170, x1:W+170, z0:-12, z1:D+50, base:0, skip:(x,z)=> x>-1 && x<W+1,
+  A.farTerrain({ x0:-170, x1:W+170, z0:-12, z1:D+50, base:0, skip:(x,z)=> x>XL0-1 && x<XR1+1,
     h: fh, top:(x,z,y,hc)=> y*3 > 60 ? "stone" : (rand()<.04 ? "glow" : "flag"),
     fill:(x,z,y,hc)=> (y%2===1 && y*3<26 && rand()<.14) ? "win" : (rand()<.25 ? "deep" : "sbrick") });
   // große Höhlendecke über der ganzen erweiterten Halle, mit Tropfsteinen
-  for(let cz=-4; cz<Math.ceil((OPEN+40)/3); cz++) for(let cx=Math.floor(-170/3); cx<Math.ceil((W+170)/3); cx++){ const x=cx*3, z=cz*3; if(x>-3 && x<W+3 && z<OPEN+2) continue;
+  for(let cz=-4; cz<Math.ceil((OPEN+40)/3); cz++) for(let cx=Math.floor(-170/3); cx<Math.ceil((W+170)/3); cx++){ const x=cx*3, z=cz*3; if(x>XL0-3 && x<XR1+3 && z<4) continue;
     const cy = Math.round((TOP+34+fbm(x*.02,z*.02)*10 + Math.max(0,z-OPEN)*.3)/3); F.set(cx,cy,cz,"stone"); F.set(cx,cy+1,cz,"deep");
     if(rand()<.05){ const l=1+Math.floor(rand()*4); for(let k=1;k<=l;k++) F.set(cx,cy-k,cz,"deep"); } }
   // Laternen und Lichter in den Seitenhöhlen
