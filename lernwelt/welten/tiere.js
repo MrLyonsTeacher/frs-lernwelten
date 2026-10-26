@@ -352,3 +352,28 @@ export function person(o={}){
   return { parts:[ part(body,[0,0,0]), part(head,[0,11,0],["y",.3,.7,0]), {...part(legL,[0,5,-1], step?["z",.55,step,0]:null), gait:true}, {...part(legR,[0,5,1], step?["z",-.55,step,0]:null), gait:true},
     {...part(armL,[0,10,-z], step?["z",-.45,step,0]:["z",.08,1,0]), gait:!!step}, {...part(armR,[0,10,z], step?["z",.45,step,0]:["z",.08,1,1]), gait:!!step} ] };
 }
+
+/* ---------- Elb (Waldwelt): schlank, lange Haare, spitze Ohren, Umhang (scale ≈ .17) ---------- */
+export function elf(o={}){
+  const SKIN=o.skin||0xF2D8C0, HAIR=o.hair||0xF0E0A0, ROBE=o.robe||0x2E6A3E, ROBE2=o.robe2||0x4A8A52, TRIM=0xE8C24A, BOOT=0x4A3420, step=o.walk ? (o.speed||6) : 0;
+  const body = M();
+  body.box(-1,6,-1,1,11,1,ROBE).box(-1,6,-1,1,6,1,TRIM).box(1,8,0,1,10,0,ROBE2).box(-1,11,-1,1,11,1,TRIM);     // schlanker Rumpf, Gürtel, Saum
+  body.box(-2,5,-2,-2,11,2,o.cape||0x1E4A2A).box(-3,4,-1,-3,7,1,o.cape||0x1E4A2A);                                   // Umhang
+  const head = M();
+  head.box(-1,12,-1,1,14,1,SKIN).put(2,13,-1,0x2A4A6A).put(2,13,1,0x2A4A6A);
+  head.box(-1,15,-1,1,15,1,HAIR).box(-2,10,-1,-2,15,1,HAIR).put(-1,14,-1,HAIR).put(-1,14,1,HAIR);                 // langes Haar hinten
+  head.put(0,14,-2,SKIN).put(-1,15,-2,SKIN).put(0,14,2,SKIN).put(-1,15,2,SKIN);                                      // spitze Ohren
+  head.box(-1,15,-1,1,15,1,o.circlet?TRIM:HAIR);
+  const legL = M().box(0,0,-1,0,5,-1,ROBE2).put(1,0,-1,BOOT).put(0,0,-1,BOOT), legR = M().box(0,0,1,0,5,1,ROBE2).put(1,0,1,BOOT).put(0,0,1,BOOT);
+  const armL = M().box(0,7,-2,0,11,-2,ROBE).put(0,6,-2,SKIN), armR = M().box(0,7,2,0,11,2,ROBE).put(0,6,2,SKIN);
+  if(o.bow) armL.box(1,5,-3,1,12,-3,0x8A5A2A).put(2,6,-3,0x8A5A2A).put(2,11,-3,0x8A5A2A);
+  if(o.lantern) armR.box(1,6,2,1,6,2,0x5A4A2A).put(1,5,2,0xFFD27A,1);
+  return { parts:[ part(body,[0,0,0]), part(head,[0,12,0],["y",.35,.6,0]), {...part(legL,[0,5,-1], step?["z",.5,step,0]:null), gait:true}, {...part(legR,[0,5,1], step?["z",-.5,step,0]:null), gait:true},
+    {...part(armL,[0,11,-2], step?["z",-.35,step,0]:["z",.06,1,0]), gait:!!step}, {...part(armR,[0,11,2], step?["z",.35,step,0]:["z",.06,1,1]), gait:!!step} ] };
+}
+/* ---------- kleine Elfe mit leuchtenden Flügeln (schwebt, scale ≈ .12) ---------- */
+export function fairy(col=0x9AF0FF){
+  const body = M().box(0,0,0,0,3,0,0xF2E0D0).put(0,4,0,0xF2D8C0).put(0,5,0,0xE8C878).box(0,0,0,0,1,0,col,1);
+  const w = M().poly([[2,0],[2,4],[0,5],[-2,4],[-2,1]], ()=>3, col, 1); const wR = w.mirrorZ();
+  return { parts:[ part(body,[0,0,0]), part(w,[0,3,0],["x",.9,16,0]), part(wR,[0,3,0],["x",-.9,16,0]) ], noShadow:true };
+}

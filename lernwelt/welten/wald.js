@@ -1,5 +1,5 @@
 // Klasse 9 · Woodlands – Elbenstadt in Riesenbäumen: Baumhäuser auf Plattformen, Hängebrücken, Wasserfälle, Mondbrunnen, Nebel und Glühwürmchen
-import { stag, bird } from "./tiere.js";
+import { elf, fairy, stag, bird } from "./tiere.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, terrain, tex, P, noise, stripes, bricks, rings, topEdge, planks, glassT } = A;
   const T = {
@@ -78,9 +78,10 @@ export function build(A){
     for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){ set(x+a*(R+1),y+4,z+b*(R+1),"leafRoof"); set(x+a*(R+2),y+3,z+b*(R+2),"leafRoof"); }
     set(x,y+5+Hh,z,"leafRoof"); set(x,y+6+Hh,z,"leafRoof"); return y+6+Hh; };
   // Hängebrücke mit Seilen, Pfosten und hängenden Laternen
-  const ropeBridge = (x0,y0,z0,x1,y1,z1,lamps=true) => { const n=Math.ceil(Math.hypot(x1-x0,z1-z0)), nx=-(z1-z0)/n, nz=(x1-x0)/n;
+  const WALKS = [];
+  const ropeBridge = (x0,y0,z0,x1,y1,z1,lamps=true) => { const n=Math.ceil(Math.hypot(x1-x0,z1-z0)), nx=-(z1-z0)/n, nz=(x1-x0)/n; const wp=[]; WALKS.push(wp);
     for(let i=0;i<=n;i++){ const f=i/n, sag=Math.sin(f*Math.PI)*Math.min(4,n*.08), x=x0+(x1-x0)*f, z=z0+(z1-z0)*f, y=Math.round(y0+(y1-y0)*f-sag);
-      for(const w of [-1,0,1]) set(x+nx*w, y, z+nz*w, (i%4===0 && w===0) ? "elfWoodD" : "planks");
+      wp.push([x+.5,y+1,z+.5]); for(const w of [-1,0,1]) set(x+nx*w, y, z+nz*w, (i%4===0 && w===0) ? "elfWoodD" : "planks");
       set(x+nx*2, y+2, z+nz*2, "rope"); set(x-nx*2, y+2, z-nz*2, "rope");
       if(i%5===0){ set(x+nx*2,y+1,z+nz*2,"elfWoodD"); set(x-nx*2,y+1,z-nz*2,"elfWoodD"); }
       if(lamps && i%8===4){ set(x,y-1,z,"rope"); set(x,y-2,z,"lantern"); } } };
@@ -119,7 +120,7 @@ export function build(A){
     disk(x,y,z,8,"elfFloor"); ring(x,y,z,8,"elfStone"); ring(x,y+1,z,8,(a,b,c)=>((a+c)%2?"elfPillar":null));
     ring(x,y+1,z,3,"elfStone"); disk(x,y+1,z,2.2,"moon"); fill(x,y+1,z,x,y+4,z,"elfPillar"); disk(x,y+5,z,1.3,"elfStone"); set(x,y+5,z,"moon"); set(x,y+6,z,"moon");
     for(const [a,b] of [[-6,-3],[6,-3],[-3,6],[3,6]]){ fill(x+a,y+1,z+b,x+a,y+3,z+b,"rune"); set(x+a,y+4,z+b,"lantern"); }
-    for(let i=0;i<22;i++){ const a=rand()*Math.PI*2, d=4+rand()*3, px=Math.round(x+Math.cos(a)*d), pz=Math.round(z+Math.sin(a)*d); if(!get(px,y+1,pz)) set(px,y+1,pz,pick(["flowerB","flowerW","flowerB"])); }
+    for(let i=0;i<22;i++){ const a=rand()*Math.PI*2, d=rand()<.5 ? 3.6+rand()*.6 : 6.2+rand()*.9, px=Math.round(x+Math.cos(a)*d), pz=Math.round(z+Math.sin(a)*d); if(!get(px,y+1,pz)) set(px,y+1,pz,pick(["flowerB","flowerW","flowerB"])); }
     archBridge(x-8,y,z+1, 3,13,z+4);
     archBridge(x+6,y,z-5, TX-11,18,TZ+8);
     S.vocabulary.top=[x,y+9,z]; S.vocabulary.base=y+2; S.vocabulary.cam={pos:[46,40,92], look:[16,10,44]}; }
@@ -151,9 +152,9 @@ export function build(A){
   // Fluss am Grund der Schlucht mit Nebel
   
   // große Elbenbrücke: Bogen über die Schlucht, Pfeiler, Geländer mit Laternen, Torbögen an beiden Enden
-  { const bx=48, y0=FG+2, n=CZ1-CZ0+10, z0=CZ1+6, z1=CZ0-6;
+  const BIG = []; { const bx=48, y0=FG+2, n=CZ1-CZ0+10, z0=CZ1+6, z1=CZ0-6;
     for(let i=0;i<=n;i++){ const f=i/n, z=Math.round(z0+(z1-z0)*f), y=Math.round(y0+(16-y0)*f + Math.sin(f*Math.PI)*3);
-      for(let w=-3;w<=3;w++) set(bx+w,y,z, Math.abs(w)===3 ? "elfStone" : "elfFloor");
+      BIG.push([bx+.5,y+1,z+.5]); for(let w=-3;w<=3;w++) set(bx+w,y,z, Math.abs(w)===3 ? "elfStone" : "elfFloor");
       for(const w of [-3,3]){ set(bx+w,y+1,z, i%2===0 ? "elfPillar" : "elfStone"); if(i%5===0){ fill(bx+w,y+1,z,bx+w,y+3,z,"elfPillar"); set(bx+w,y+4,z,"lantern"); } }
       const arch = Math.round(Math.sin(f*Math.PI)*12); for(let k=1;k<=Math.max(2,arch);k++) for(let w=-3;w<=3;w+=3) set(bx+w,y-k,z,"elfStone"); }
     for(const pz of [CZ0+5, CZ1-5]) for(let y=CB; y<12; y++) disk(bx,y,pz,2.4,(a,b,c)=> (b%6===0) ? "gold" : "elfPillar");
@@ -203,6 +204,15 @@ export function build(A){
 
   // Glühwürmchen, Nebel, Lichtstrahlen, Einhorn, Vögel
   const creatures = [{ ...stag(), at:[S.vocabulary.x-5, 13, S.vocabulary.z+1], yaw:-.85, scale:.225 }];
+  // ein paar Elben: über die große Brücke, über Hängebrücken, am Brunnen; dazu zwei kleine Elfen
+  const rev = a => a.slice().reverse();
+  creatures.push({ ...elf({walk:true, robe:0x2E6A3E, hair:0xF0E0A0, lantern:true}), path:{pts:BIG.map(p=>[p[0]-1,p[1],p[2]]), speed:1.3, pause:4, ph:0}, scale:.17 },
+    { ...elf({walk:true, robe:0x3A4A7A, robe2:0x5A6A9A, hair:0xD8D8E8, cape:0x2A2A4A, bow:true}), path:{pts:rev(BIG).map(p=>[p[0]+1,p[1],p[2]]), speed:1.1, pause:6, ph:.45}, scale:.17 },
+    { ...elf({walk:true, robe:0x6A4A2A, hair:0xC87A3A, cape:0x3A2A1A}), path:{pts:WALKS[0], speed:1, pause:5, ph:.2}, scale:.16 },
+    { ...elf({walk:true, robe:0xE8E0C8, robe2:0xD0C8A8, hair:0xF4E8B0, cape:0x8AA0B8, circlet:true}), orbit:{c:[S.vocabulary.x,13,S.vocabulary.z], r:[5.2,5.2], speed:.12, ph:1, bob:.03, cycle:[24,.45,3]}, scale:.16, clearR:1 },
+    { ...elf({robe:0x2E5A3A, hair:0x3A2A1A, bow:true}), at:[V1[0]+4, 23, V1[1]-2], yaw:2.4, scale:.16 },
+    { ...fairy(0x9AF0FF), at:[S.vocabulary.x+2.5, 15, S.vocabulary.z+3], hover:[.35,1.3], scale:.12 },
+    { ...fairy(0xFFB0E8), at:[S.vocabulary.x-3, 14.5, S.vocabulary.z-2], hover:[.3,1.1], yaw:1.5, scale:.12 });
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:40, creatures,
@@ -213,11 +223,12 @@ export function build(A){
             {pos:[V1[0],28,V1[1]+6], color:0xFFB84A, int:220, dist:30, flicker:true}],
     planes:[{y:CB+.4, tex:T.water, repeat:300, size:1000, em:.1, anim:[.02,.01]}],
     rays:{n:18, color:0xFFE6A8, area:[-30,W+30,-30,D], y:46, len:90},
-    particles:[{n:420, area:[-10,W+10,3,40,-10,D+10], vy:0, wob:1.1, color:0xE8FF7A, size:.9, blink:1.3},
-               {n:160, area:[-120,W+120,4,50,-140,-10], vy:0, wob:1.4, color:0xE8FF7A, size:1.8, blink:1}],
     puffs:[{n:26, pos:[-80,CB+6,CZ0+10], dx:240, dy:4, dz:0, s0:22, s1:16, color:0xDDEEE4, opacity:.5, speed:.008, spread:8, flat:.4},
            {n:30, pos:[-60,5,-30], dx:220, dy:1, dz:30, s0:22, s1:20, color:0xCFE6DA, opacity:.42, speed:.01, spread:70, flat:.35, sz:1.2},
-           {n:18, pos:[-20,8,40], dx:140, dy:2, dz:0, s0:14, s1:14, color:0xDDEEE4, opacity:.25, speed:.014, spread:30, flat:.4}],
+           {n:18, pos:[-20,8,40], dx:140, dy:2, dz:0, s0:14, s1:14, color:0xDDEEE4, opacity:.25, speed:.014, spread:30, flat:.4},
+           {n:22, pos:[-50,FG+3,CZ1+14], dx:200, dy:2, dz:0, s0:20, s1:24, color:0xE4F0EA, opacity:.55, speed:.007, spread:22, flat:.35, sz:1.4},
+           {n:16, pos:[-40,FG+9,CZ1+34], dx:190, dy:2, dz:0, s0:26, s1:28, color:0xE8F2EE, opacity:.32, speed:.006, spread:16, flat:.35},
+           {n:14, pos:[-30,CB+14,CZ0+9], dx:180, dy:3, dz:0, s0:18, s1:20, color:0xE0EEE8, opacity:.5, speed:.009, spread:6, flat:.4}],
     home:{pos:[W/2,56,D+92], look:[W/2,16,D/2-4]}, homePortrait:{pos:[W/2,72,D+140], look:[W/2,18,D/2-6]},
     ui:{bg:"rgba(14,36,30,.88)", border:"#E8C24A", glow:"rgba(232,194,74,.45)", text:"#F4F0DC", sub:"#B8D0B4", accent:"#E8C24A", "accent-ink":"#1E1A06", chip:"rgba(12,30,24,.8)"}
   };

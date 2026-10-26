@@ -385,6 +385,13 @@ export async function start(o){
         outer.position.set(cx+ox*ca-oz*sa, cy+ox*(ob.slope||0)+Math.sin(t*2)*(ob.bob??.6)*move, cz+ox*sa+oz*ca);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;
         else { const v0=-Math.sin(t)*rx*(ob.dir||1), w0=Math.cos(t)*rz*(ob.dir||1), vx=v0*ca-w0*sa, vz=v0*sa+w0*ca; outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } } }
+      else if(cr.path){ // Laufen entlang von Wegpunkten (z. B. über eine Brücke), hin und zurück mit kurzen Pausen
+        const P = cr.path, pts = P.pts; if(!P._len){ P._seg=[0]; for(let i=1;i<pts.length;i++) P._seg.push(P._seg[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2])); P._len=P._seg[P._seg.length-1]; }
+        const L=P._len, sp=P.speed||1.2, pause=P.pause??3, T1=L/sp, per=2*(T1+pause), x=((tt+(P.ph||0)*per)%per+per)%per;
+        let d, fwd; if(x<T1){ d=x*sp; fwd=1; move=1; } else if(x<T1+pause){ d=L; fwd=1; move=0; } else if(x<2*T1+pause){ d=L-(x-T1-pause)*sp; fwd=-1; move=1; } else { d=0; fwd=-1; move=0; }
+        let i=1; while(i<pts.length-1 && P._seg[i]<d) i++; const a0=pts[i-1], a1=pts[i], f=Math.max(0,Math.min(1,(d-P._seg[i-1])/Math.max(.001,P._seg[i]-P._seg[i-1])));
+        outer.position.set(a0[0]+(a1[0]-a0[0])*f, a0[1]+(a1[1]-a0[1])*f, a0[2]+(a1[2]-a0[2])*f);
+        outer.rotation.y = Math.atan2(-(a1[2]-a0[2])*fwd, (a1[0]-a0[0])*fwd); }
       else if(cr.pass){ // Vorbeiflug von a nach b, nur während des Flugs sichtbar (z. B. Fledermausschwarm)
         const p=cr.pass, P=p.period||30, x=(tt+(p.ph||0))%P, u=x/p.dur;
         outer.visible = u < 1;

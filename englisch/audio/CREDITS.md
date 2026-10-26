@@ -1,8 +1,8 @@
 # Vorlese-Stimmen
 
-Die Audiodateien der Info-Karten wurden mit [Piper](https://github.com/rhasspy/piper) erzeugt (offline, keine Cloud).
+Die Audiodateien der Info-Karten wurden mit [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) erzeugt (offline, Apache-2.0).
 
-- Britisches Englisch: Stimme `en_GB-cori-high`
-- Amerikanisches Englisch (Klasse 8): Stimme `en_US-hfc_female-medium` (Hi-Fi TTS-Datensatz, CC BY 4.0)
+- Britisches Englisch: Stimmen `bf_emma`, `bf_isabella` (weiblich) und `bm_george` (männlich)
+- Amerikanisches Englisch (Klasse 8): Stimmen `af_heart` (weiblich) und `am_michael` (männlich)
 
-Stimmen: https://huggingface.co/rhasspy/piper-voices
+Zahlen, Jahreszahlen, Daten und Preise werden vor dem Vorlesen ausgeschrieben (z. B. 1666 → „sixteen sixty-six“).
