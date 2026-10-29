@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Rainbow Nation – South Africa: apartheid, Mandela &amp; a nation of many languages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"country", id:"sa9", icon:"🇿🇦", kartenSymbol:"🧭",
+  titel:"The Rainbow Nation", untertitel:"South Africa: apartheid, Mandela & a nation of many languages",
+  text:"Under the oldest tree of the Woodlands the elves keep a story about courage: how South Africa ended apartheid and became the “rainbow nation”. Learn about its history, languages and culture.",
+  lernen: {
+    sa: { titel:"South Africa in 8 cards", folien:[
+      {"bild":"🌈","titel":"The rainbow nation","text":"South Africa is called the **rainbow nation** because many different peoples live there. It has **12 official languages** – among them **Zulu**, **Xhosa**, **Afrikaans**, **English** and **South African Sign Language**.","de":"Südafrika heißt **Regenbogennation**, weil viele verschiedene Völker dort leben. Es hat **12 Amtssprachen** – darunter **Zulu, Xhosa, Afrikaans, Englisch** und die **Südafrikanische Gebärdensprache**."},
+      {"bild":"🏛️","titel":"Three capitals","text":"South Africa has **three capitals**: **Pretoria** (government), **Cape Town** (parliament) and **Bloemfontein** (highest court). The biggest city is **Johannesburg**.","de":"Südafrika hat **drei Hauptstädte**: **Pretoria** (Regierung), **Kapstadt** (Parlament) und **Bloemfontein** (oberstes Gericht). Die größte Stadt ist **Johannesburg**."},
+      {"bild":"🚧","titel":"Apartheid","text":"From **1948 to 1994** the government had a system called **apartheid** (“apartness”). Black, white, “coloured” and Indian people had to live, go to school and travel **separately**. Black people had very few rights and **couldn’t vote**.","de":"Von **1948 bis 1994** herrschte die **Apartheid** („Getrenntheit“). Schwarze, Weiße, „Coloureds“ und Inder mussten **getrennt** wohnen, zur Schule gehen und reisen. Schwarze hatten kaum Rechte und **durften nicht wählen**."},
+      {"bild":"✊","titel":"Soweto 1976","text":"In **1976** thousands of students in **Soweto** protested because they had to learn in Afrikaans. The police shot at them. Today **16 June** is **Youth Day** in South Africa.","de":"**1976** protestierten in **Soweto** Tausende Schüler, weil sie auf Afrikaans lernen mussten. Die Polizei schoss auf sie. Heute ist der **16. Juni** in Südafrika der **Tag der Jugend**."},
+      {"bild":"🕊️","titel":"Nelson Mandela","text":"**Nelson Mandela** fought against apartheid. He was in prison for **27 years**, many of them on **Robben Island**. After he was freed in **1990**, he worked for **peace** and **reconciliation**.","de":"**Nelson Mandela** kämpfte gegen die Apartheid. Er war **27 Jahre** im Gefängnis, viele davon auf **Robben Island**. Nach seiner Freilassung **1990** setzte er sich für **Frieden** und **Versöhnung** ein."},
+      {"bild":"🗳️","titel":"1994: Freedom Day","text":"On **27 April 1994** all South Africans could vote for the first time. Mandela became the **first Black president**. 27 April is now **Freedom Day**.","de":"Am **27. April 1994** durften alle Südafrikaner zum ersten Mal wählen. Mandela wurde der **erste schwarze Präsident**. Der 27. April ist heute der **Tag der Freiheit**."},
+      {"bild":"🏉","titel":"Sport brings people together","text":"In **1995** South Africa won the **Rugby World Cup**. Mandela wore the team’s green shirt – a sign of unity. In **2010** the country hosted the **FIFA World Cup**, the first in Africa.","de":"**1995** gewann Südafrika die **Rugby-WM**. Mandela trug das grüne Trikot – ein Zeichen der Einheit. **2010** fand die erste **Fußball-WM** Afrikas in Südafrika statt."},
+      {"bild":"🔥","titel":"Food: braai & more","text":"A **braai** is a South African barbecue – a big social event. Other favourites are **biltong** (dried meat), **bobotie** (a spicy meat dish) and **malva pudding**.","de":"Ein **Braai** ist ein südafrikanisches Grillfest – ein großes gesellschaftliches Ereignis. Beliebt sind auch **Biltong** (Trockenfleisch), **Bobotie** (würziges Hackfleischgericht) und **Malva Pudding**."}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"sa", icon:"🌈", titel:"Rainbow Quiz", art:"Quiz · the big picture",
+      E:{plus:[
+        {q:"Why did students in Soweto protest in 1976?", o:["They were forced to learn in Afrikaans","They wanted longer holidays","They wanted to play more rugby","Their school was closed"], c:0, e:"**Afrikaans** was seen as the language of the apartheid government."},
+        {q:"What does “reconciliation” mean?", o:["former enemies making peace","going to prison","winning a sports match","building a new city"], c:0, e:"**reconciliation** = Versöhnung."}
+      ]},
+      anleitung:"What do you know about South Africa now? Choose the right answer.",
+      anleitungDe:"Was weißt du jetzt über Südafrika? Wähle die richtige Antwort.",
+      tipp:"Tippe auf 📖, wenn du dir die Infokarten noch einmal ansehen willst.",
+      fragen:[
+        {q:"Why is South Africa called the “rainbow nation”?", o:["Many different peoples live there","It rains a lot","Its flag has seven colours","There are many rainbows"], c:0, e:"Because of its **many peoples and cultures**."},
+        {q:"How many official languages does South Africa have?", o:["12","2","1","25"], c:0, e:"**12** – since 2023 including South African Sign Language."},
+        {q:"What was apartheid?", o:["A system that separated people by race","A type of house","A national park","A football club"], c:0, e:"**Apartheid** (1948–1994)."},
+        {q:"How long was Nelson Mandela in prison?", o:["27 years","2 years","10 years","50 years"], c:0, e:"**27 years**."},
+        {q:"What happened on 27 April 1994?", o:["All South Africans could vote for the first time","Mandela went to prison","The World Cup started","Apartheid started"], c:0, e:"The first **free elections** – today **Freedom Day**."},
+        {q:"Which city is NOT a capital of South Africa?", o:["Johannesburg","Pretoria","Cape Town","Bloemfontein"], c:0, e:"**Johannesburg** is the biggest city, but not a capital."},
+        {q:"What is a braai?", o:["a barbecue","a dance","a hat","a language"], c:0, e:"A **braai** = barbecue."},
+        {q:"Which sports event did South Africa host in 2010?", o:["the FIFA World Cup","the Olympic Games","the Rugby World Cup","the Tour de France"], c:0, e:"The first **football World Cup** in Africa."}
+      ]},
+    { id:"time", typ:"zeitstrahl", lernen:"sa", icon:"⏳", titel:"The Long Walk to Freedom", art:"Timeline · 7 events",
+      anleitung:"Put the events in the right order – **the oldest first**.",
+      anleitungDe:"Bring die Ereignisse in die richtige Reihenfolge – **das älteste zuerst**.",
+      tipp:"Apartheid beginnt – Widerstand – Gefängnis – Freiheit.",
+      items:[
+        {j:"1948", t:"The government introduces apartheid."},
+        {j:"1964", t:"Nelson Mandela is sent to prison for life."},
+        {j:"1976", t:"Students protest in Soweto."},
+        {j:"1990", t:"Mandela is freed after 27 years."},
+        {j:"1994", t:"First free elections – Mandela becomes president."},
+        {j:"1995", t:"South Africa wins the Rugby World Cup."},
+        {j:"2010", t:"South Africa hosts the FIFA World Cup."}
+      ]},
+    { id:"sort", typ:"sortieren", lernen:"sa", icon:"🗂️", titel:"Before or After 1994?", art:"Sort · apartheid and democracy",
+      anleitung:"Was it like this **during apartheid** or **after 1994**? Tap the right box.",
+      anleitungDe:"War das **während der Apartheid** oder **nach 1994** so? Tippe auf das richtige Kästchen.",
+      tipp:"Denk an Rechte und Freiheit.",
+      koerbe:[ {t:"during apartheid", info:"🚧 1948–1994", tipp:"**apartheid**: separate schools, beaches, buses; Black people couldn’t vote."}, {t:"after 1994", info:"🗳️ democracy", tipp:"**after 1994**: equal rights, free elections, 12 official languages."} ],
+      items:[
+        {t:"There were separate beaches for Black and white people.", k:0}, {t:"Black people couldn’t vote.", k:0}, {t:"Many Black families were moved to townships.", k:0}, {t:"Mandela was in prison.", k:0},
+        {t:"Everybody can vote.", k:1}, {t:"Children of all colours can go to the same school.", k:1}, {t:"The country has a Black president.", k:1, e:"Mandela became president in **1994**."}, {t:"27 April is a public holiday called Freedom Day.", k:1}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"sa", icon:"✅", titel:"True or False?", art:"Swipe · facts",
+      anleitung:"Is it true? Swipe **right for True** and **left for False**.",
+      anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
+      tipp:"Lies genau – oft ist nur ein Detail falsch.",
+      links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
+      karten:[
+        {t:"Robben Island was a prison.", r:"r", e:"True – today it’s a museum."},
+        {t:"Apartheid ended in 1948.", r:"l", e:"False – it **started** in 1948 and ended in **1994**."},
+        {t:"Zulu and Xhosa are languages spoken in South Africa.", r:"r", e:"True – both are official languages."},
+        {t:"Mandela was the first Black president of South Africa.", r:"r", e:"True – from 1994 to 1999."},
+        {t:"Johannesburg is the only capital of South Africa.", r:"l", e:"False – the capitals are **Pretoria, Cape Town** and **Bloemfontein**."},
+        {t:"Youth Day remembers the Soweto protests of 1976.", r:"r", e:"True – on **16 June**."},
+        {t:"Biltong is a sweet dessert.", r:"l", e:"False – it’s **dried meat**."},
+        {t:"Mandela wore the rugby team’s shirt to bring people together.", r:"r", e:"True – at the **1995** World Cup final."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🏝️", titel:"Visit to Robben Island", art:"Reading · fill in the gaps",
+      anleitung:"Read Thandi’s school report. Tap a gap and choose the right word.",
+      anleitungDe:"Lies Thandis Schulbericht. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alles steht in den Infokarten.",
+      ueberschrift:"Our class trip to Robben Island",
+      text:"Last Friday our class took the ferry from [[Cape Town|Cairo|Canberra]] to Robben Island. Our guide, Mr Sisulu, had been a prisoner there himself during [[apartheid|apartment|independence]].\nHe showed us the small cell where Nelson Mandela lived for 18 of his [[27|7|72]] years in prison. Mandela was freed in [[1990|1948|2010]] and four years later he became South Africa’s first Black [[president|prisoner|police officer]].\nMr Sisulu told us that Mandela never wanted revenge – he wanted [[reconciliation|revolution|recreation]]. That’s why people call South Africa the [[rainbow nation|rain nation|rainbow island]] today. On the ferry back we all sang “Nkosi Sikelel’ iAfrika”, the first part of the national anthem.",
+      erklaerung:"Robben Island · **27 Jahre** Haft · Freilassung **1990** · Präsident **1994** · **reconciliation** = Versöhnung."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Mine Railway – Modal verbs: can, must, mustn’t, needn’t, may, should</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"mod7", icon:"🚂", kartenSymbol:"🎫",
+  titel:"The Mine Railway", untertitel:"Modal verbs: can, must, mustn’t, needn’t, may, should",
+  text:"All aboard the dwarves’ mine railway – and the buses and trams of Dublin! What can you do, what must you do and what mustn’t you do? Learn the modal verbs.",
+  lernen: {
+    mod: { titel:"Modal verbs", folien:[
+      {"bild":"💪","titel":"can / can’t","formel":["can | = | können, dürfen","can’t | = | nicht können, nicht dürfen"],"bsp":["You **can** buy a ticket on the bus.","You **can’t** smoke on the train."],"de":"**can** = Fähigkeit oder Erlaubnis. Danach die **Grundform** ohne *to*."},
+      {"bild":"❗","titel":"must / mustn’t","formel":["must | = | müssen","mustn’t | = | nicht dürfen!"],"bsp":["You **must** have a ticket.","You **mustn’t** jump off the train."],"de":"**must** = Pflicht · **mustn’t** = **Verbot** (nicht: nicht müssen!)."},
+      {"bild":"😌","titel":"needn’t","formel":["needn’t | = | nicht müssen, nicht brauchen"],"bsp":["You **needn’t** pay – kids travel free.","You **needn’t** hurry."],"de":"**needn’t** = es ist **nicht nötig**."},
+      {"bild":"🙋","titel":"may and should","formel":["may | = | dürfen (höflich)","should | = | sollte (Rat)"],"bsp":["**May** I open the window?","You **should** buy a Leap Card."],"de":"**may** = höflich um Erlaubnis bitten · **should** = **Ratschlag**."}
+    ]},
+    dub: { titel:"Getting around Dublin", folien:[
+      {"bild":"🚌","titel":"Dublin Bus","text":"The big **double-decker buses** are the easiest way to get around. On many buses you **can’t** pay with notes – have **coins** or a card ready.","de":"Die großen **Doppeldeckerbusse** sind am einfachsten. In vielen Bussen kann man **nicht mit Scheinen** zahlen – Münzen oder Karte bereithalten."},
+      {"bild":"🚋","titel":"The Luas","text":"The **Luas** is Dublin’s **tram**. *Luas* is the Irish word for *speed*. There are two lines: the **Red Line** and the **Green Line**.","de":"Die **Luas** ist Dublins **Straßenbahn**. *Luas* ist das irische Wort für *Geschwindigkeit*. Es gibt die **Rote** und die **Grüne Linie**."},
+      {"bild":"🚆","titel":"The DART","text":"The **DART** is a train that runs along the **coast** of Dublin Bay – great for a trip to the seaside at **Howth** or **Bray**.","de":"Die **DART** ist ein Zug entlang der **Küste** der Dublin Bay – ideal für einen Ausflug ans Meer nach **Howth** oder **Bray**."},
+      {"bild":"💳","titel":"The Leap Card","text":"With a **Leap Card** you **can** use the bus, the Luas and the DART. You top it up with money – it’s **cheaper** than single tickets.","de":"Mit der **Leap Card** kann man Bus, Luas und DART nutzen. Man lädt Geld auf – das ist **günstiger** als Einzelfahrkarten."}
+    ]}
+  },
+  levels: [
+    { id:"sort", typ:"sortieren", lernen:"mod", icon:"🗂️", titel:"Railway Rules", art:"Meaning · sort",
+      anleitung:"What does the sentence mean? Tap the right box.",
+      anleitungDe:"Was bedeutet der Satz? Tippe auf das richtige Kästchen.",
+      tipp:"mustn’t = verboten · needn’t = nicht nötig.",
+      koerbe:[ {t:"allowed", info:"✅ can / may", tipp:"**erlaubt**: can, may."}, {t:"necessary", info:"❗ must", tipp:"**Pflicht**: must."}, {t:"forbidden", info:"⛔ mustn’t / can’t", tipp:"**verboten**: mustn’t, can’t."}, {t:"not necessary", info:"😌 needn’t", tipp:"**nicht nötig**: needn’t."} ],
+      items:[
+        {t:"You can take your bike on the DART.", k:0}, {t:"You may sit anywhere.", k:0},
+        {t:"You must show your ticket.", k:1}, {t:"You must stand behind the yellow line.", k:1},
+        {t:"You mustn’t eat on the Luas.", k:2}, {t:"You can’t smoke on the bus.", k:2, e:"**can’t** can also mean *not allowed*."},
+        {t:"You needn’t buy a ticket – children under 5 travel free.", k:3}, {t:"You needn’t run – the next tram comes in 3 minutes.", k:3}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"mod", icon:"⛔", titel:"Mustn’t or Needn’t?", art:"Swipe · forbidden or not necessary",
+      anleitung:"Which word fits? Swipe **left for mustn’t** and **right for needn’t**.",
+      anleitungDe:"Welches Wort passt? Wische nach **links für mustn’t** (verboten) und nach **rechts für needn’t** (nicht nötig).",
+      tipp:"Ist es verboten oder nur nicht nötig?",
+      links:{t:"mustn’t", icon:"⛔"}, rechts:{t:"needn’t", icon:"😌"},
+      karten:[
+        {t:"You ___ touch the rails – they are dangerous!", r:"l", e:"Dangerous → forbidden → **mustn’t**."},
+        {t:"You ___ take a jacket. It’s warm today.", r:"r", e:"Not necessary → **needn’t**."},
+        {t:"You ___ feed the ducks in the park – it’s bad for them.", r:"l", e:"Forbidden → **mustn’t**."},
+        {t:"You ___ book a table. The café is never full.", r:"r", e:"Not necessary → **needn’t**."},
+        {t:"You ___ ride your bike in the station.", r:"l", e:"Forbidden → **mustn’t**."},
+        {t:"You ___ bring food. Lunch is included.", r:"r", e:"Not necessary → **needn’t**."},
+        {t:"You ___ cross the road when the light is red.", r:"l", e:"Forbidden → **mustn’t**."},
+        {t:"You ___ wait for me. I’ll walk home.", r:"r", e:"Not necessary → **needn’t**."}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"mod", icon:"🎫", titel:"Ticket Office", art:"Modal verbs · quiz",
+      anleitung:"Choose the right modal verb.",
+      anleitungDe:"Wähle das richtige Modalverb.",
+      tipp:"Nach Modalverben steht die Grundform ohne *to* und ohne *-s*.",
+      fragen:[
+        {q:"**___** I sit here, please?", o:["May","Must","Needn’t"], c:0, e:"Polite question for permission → **May I …?**"},
+        {q:"You look tired. You **___** go to bed early.", o:["should","mustn’t","needn’t"], c:0, e:"Advice → **should**."},
+        {q:"She **___** speak Irish – her grandma taught her.", o:["can","must","mustn’t"], c:0, e:"Ability → **can**."},
+        {q:"Passengers **___** have a valid ticket.", o:["must","may not","needn’t"], c:0, e:"Obligation → **must**."},
+        {q:"Which sentence is correct?", o:["He can swim.","He cans swim.","He can to swim."], c:0, e:"No *-s*, no *to*: **He can swim**."},
+        {q:"You **___** shout on the bus. Other people want peace.", o:["mustn’t","needn’t","should"], c:0, e:"Not allowed → **mustn’t**."},
+        {q:"It’s Sunday. We **___** get up early.", o:["needn’t","mustn’t","can’t"], c:0, e:"Not necessary → **needn’t**."},
+        {q:"Excuse me, **___** you tell me the way to the Luas stop?", o:["can","must","should"], c:0, e:"Request → **Can you …?**"}
+      ]},
+    { id:"dublin", typ:"swipe", lernen:"dub", icon:"🚋", titel:"Dublin on the Move", art:"Swipe · true or false",
+      anleitung:"Is it true? Swipe **right for True** and **left for False**.",
+      anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
+      tipp:"Tippe auf 📖, um die Infokarten zu Dublin noch einmal anzusehen.",
+      links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
+      karten:[
+        {t:"The Luas is a tram in Dublin.", r:"r", e:"True – *Luas* means *speed* in Irish."},
+        {t:"The DART is an underground train like the London Tube.", r:"l", e:"False – the DART runs along the **coast**, not under the ground."},
+        {t:"With a Leap Card you can use the bus, the Luas and the DART.", r:"r", e:"True – and it’s cheaper than single tickets."},
+        {t:"On many Dublin buses you should have coins or a card ready.", r:"r", e:"True – often you **can’t** pay with notes."},
+        {t:"The Luas has a Red Line and a Blue Line.", r:"l", e:"False – a **Red** Line and a **Green** Line."},
+        {t:"You can take the DART to the seaside at Howth.", r:"r", e:"True – Howth is a fishing village by the sea."},
+        {t:"Dublin buses are all small single-deckers.", r:"l", e:"False – most of them are big **double-deckers**."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📧", titel:"Travel Tips from Seán", art:"Email · fill in the gaps",
+      anleitung:"Seán from Dublin writes to his exchange partner. Tap a gap and choose the right word.",
+      anleitungDe:"Seán aus Dublin schreibt seinem Austauschpartner. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Erlaubt, Pflicht, Verbot, nicht nötig oder Rat?",
+      ueberschrift:"Hi Max!",
+      text:"Hi Max,\nI’m so happy you’re coming to Dublin! Here are some tips. At the airport you [[can|mustn’t|needn’t]] take the bus into the city. You [[should|mustn’t|can’t]] buy a Leap Card – it’s cheaper. On the bus you [[mustn’t|needn’t|may]] eat chips – the driver will be angry!\nYou [[needn’t|mustn’t|can’t]] bring a sleeping bag – we have lots of beds. But you [[must|needn’t|mustn’t]] bring a rain jacket. It’s Ireland! 😉\nOn Saturday we [[can|mustn’t|needn’t]] take the DART to Howth and eat fish and chips by the sea.\nSee you soon,\nSeán",
+      erklaerung:"**can** (Möglichkeit), **should** (Rat), **mustn’t** (Verbot), **needn’t** (nicht nötig), **must** (Pflicht)."}
+  ]
+});
+</script>
+</body>
+</html>

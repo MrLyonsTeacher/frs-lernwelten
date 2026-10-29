@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Shopping, Environment &amp; Media – Unit 4: buying &amp; selling, environment, media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"vocabulary", id:"vhk9", icon:"🏙️", kartenSymbol:"🍃",
+  titel:"Words: Shopping, Environment & Media", untertitel:"Unit 4: buying & selling, environment, media",
+  text:"Night markets, smog and smartphones: words for shopping, for protecting the environment and for talking about news and social media.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Market Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Auf Märkten in Hongkong wird viel gehandelt!",
+      paare:[ {a:"bargain", b:"Schnäppchen"}, {a:"to bargain", b:"feilschen, handeln"}, {a:"customer", b:"Kunde, Kundin"}, {a:"refund", b:"Rückerstattung"},
+              {a:"discount", b:"Rabatt"}, {a:"second-hand", b:"gebraucht"}, {a:"stall", b:"Marktstand"}, {a:"to afford", b:"sich leisten"} ]},
+    { id:"verbs", typ:"quiz", icon:"🌫️", titel:"Cause & Effect", art:"Verbs for effects · quiz",
+      anleitung:"Which verb fits?",
+      anleitungDe:"Welches Verb passt?",
+      tipp:"Diese Verben beschreiben Wirkungen: increase, reduce, damage …",
+      fragen:[
+        {q:"Cars and factories **___** the air.", o:["pollute","polish","pollinate"], c:0, e:"**pollute** = verschmutzen."},
+        {q:"We must **___** the amount of plastic we use.", o:["reduce","produce","introduce"], c:0, e:"**reduce** = verringern."},
+        {q:"Smog can **___** your lungs.", o:["damage","manage","imagine"], c:0, e:"**damage** = schädigen."},
+        {q:"The number of cars in the city keeps **___**.", o:["increasing","decreasing","releasing"], c:0, e:"**increase** = steigen, zunehmen."},
+        {q:"Old phones can be **___** – the metals are used again.", o:["recycled","recited","rejected"], c:0, e:"**recycle** = wiederverwerten."},
+        {q:"Electric buses **___** less CO2.", o:["produce","reduce","prevent"], c:0, e:"**produce** = erzeugen."},
+        {q:"Some websites are **___** in some countries – people can’t open them.", o:["censored","sensored","centred"], c:0, e:"**censor** = zensieren."},
+        {q:"Fake news can **___** people.", o:["mislead","misplace","mistake"], c:0, e:"**mislead** = irreführen."}
+      ]},
+    { id:"media", typ:"sortieren", icon:"📱", titel:"Media Mix", art:"Sort · media words",
+      anleitung:"Is it about **news & media** or about **shopping**? Tap the right box.",
+      anleitungDe:"Geht es um **Nachrichten & Medien** oder um **Einkaufen**? Tippe auf das richtige Kästchen.",
+      tipp:"headline = Schlagzeile · receipt = Kassenbon.",
+      koerbe:[ {t:"news & media", info:"📰", tipp:"**media**: headline, journalist, source, fake news, post, follower."}, {t:"shopping", info:"🛍️", tipp:"**shopping**: receipt, price tag, bargain, customer, refund."} ],
+      items:[
+        {t:"headline", k:0}, {t:"journalist", k:0}, {t:"source", k:0, e:"**source** = Quelle – always check it!"}, {t:"fake news", k:0}, {t:"follower", k:0},
+        {t:"receipt", k:1}, {t:"price tag", k:1}, {t:"bargain", k:1}, {t:"customer", k:1}, {t:"refund", k:1}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **receipt** (stummes p), **pollution**, **advertisement**.", typ:"rush", icon:"⚡", titel:"Night Market Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Kassenbon", o:["receipt","reciept","receit"], c:0}, {q:"Werbung (Anzeige)", o:["advertisement","advertisment","advertismant"], c:0}, {q:"Verschmutzung", o:["pollution","polution","pollusion"], c:0},
+        {q:"Schnäppchen", o:["bargain","bargin","bargian"], c:0}, {q:"Kunde", o:["customer","costumer","customar"], c:0, e:"**customer** = Kunde · **costume** = Kostüm!"}, {q:"Rabatt", o:["discount","discaunt","discout"], c:0},
+        {q:"Abfall", o:["waste","waist","wast"], c:0}, {q:"Klimawandel", o:["climate change","climat change","climate chance"], c:0}, {q:"erneuerbar", o:["renewable","renewible","reneweable"], c:0},
+        {q:"Quelle", o:["source","sauce","sorce"], c:0}, {q:"Schlagzeile", o:["headline","headlain","head line’s"], c:0}, {q:"Nachrichten", o:["news","new’s","newses"], c:0},
+        {q:"Zensur", o:["censorship","sensorship","censorshipp"], c:0}, {q:"Meinung", o:["opinion","opinon","oppinion"], c:0}, {q:"Strom (Energie)", o:["electricity","electrisity","elecricity"], c:0},
+        {q:"umweltfreundlich", o:["eco-friendly","eco-friendy","echo-friendly"], c:0}, {q:"verkaufen", o:["sell","sale","cell"], c:0}, {q:"sich leisten", o:["afford","aford","effort"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"💬", titel:"Online Comment: Too Much Stuff?", art:"Comment · fill in the gaps",
+      anleitung:"Read the online comment. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Online-Kommentar. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Comment on: “Hong Kong – a shopping paradise?”",
+      text:"I live in Hong Kong and I love the night markets. You can find a real [[bargain|bargin|burger]] if you [[bargain|borrow|bargained]] with the sellers. But I think we buy too much stuff we don’t need.\nAll the plastic bags and packaging create lots of [[waste|waist|west]]. And the many cars and ships [[pollute|polish|pollinate]] the air – on some days the smog is terrible.\nSo here’s my [[opinion|onion|option]]: buy [[second-hand|second-handed|secondly]] clothes, take your own bag and don’t believe every [[advertisement|adventure|advisement]]! Shopping is fun, but let’s be more [[eco-friendly|echo-friendly|eco-friendlily]].",
+      erklaerung:"Einkaufen: **bargain, second-hand, advertisement** · Umwelt: **waste, pollute, eco-friendly** · **opinion** = Meinung."}
+  ]
+});
+</script>
+</body>
+</html>

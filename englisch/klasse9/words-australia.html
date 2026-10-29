@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Respect, Jobs &amp; Nature Down Under – Unit 1: respect, jobs &amp; qualities, environment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"vocabulary", id:"vaus9", icon:"🦘", kartenSymbol:"🍃",
+  titel:"Words: Respect, Jobs & Nature Down Under", untertitel:"Unit 1: respect, jobs & qualities, environment",
+  text:"From the Outback to the Great Barrier Reef: words about respect, jobs and job applications – and the dangers to our environment.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Job Words", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Diese Wörter brauchst du für Bewerbungen.",
+      paare:[ {a:"to apply for", b:"sich bewerben um"}, {a:"application", b:"Bewerbung"}, {a:"experience", b:"Erfahrung"}, {a:"skill", b:"Fähigkeit"},
+              {a:"salary", b:"Gehalt"}, {a:"employer", b:"Arbeitgeber(in)"}, {a:"employee", b:"Angestellte(r)"}, {a:"job interview", b:"Vorstellungsgespräch"} ]},
+    { id:"resp", typ:"sortieren", icon:"🖐️", titel:"Respect Word Field", art:"Respectful or not · sort",
+      anleitung:"Is it respectful or disrespectful behaviour? Tap the right box.",
+      anleitungDe:"Ist das respektvolles oder respektloses Verhalten? Tippe auf das richtige Kästchen.",
+      tipp:"to ignore = ignorieren · to value = wertschätzen.",
+      koerbe:[ {t:"respectful", info:"👍", tipp:"**respectful**: listen, be polite, value other cultures, follow the rules."}, {t:"disrespectful", info:"👎", tipp:"**disrespectful**: ignore rules, be rude, laugh at others, damage things."} ],
+      items:[
+        {t:"to listen carefully", k:0}, {t:"to value other cultures", k:0}, {t:"to be polite", k:0}, {t:"to follow the rules", k:0}, {t:"to treat people fairly", k:0},
+        {t:"to be rude", k:1}, {t:"to ignore a sign", k:1}, {t:"to laugh at someone", k:1}, {t:"to damage a sacred site", k:1}, {t:"to interrupt people", k:1}
+      ]},
+    { id:"env", typ:"quiz", icon:"🐠", titel:"Reef in Danger", art:"Environment words · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"When corals lose their colour and turn white because the water is too warm.", o:["coral bleaching","coral painting","coral cooking"], c:0, e:"**coral bleaching** = Korallenbleiche."},
+        {q:"Dirty air, water or land.", o:["pollution","population","position"], c:0, e:"**pollution** = Verschmutzung."},
+        {q:"A plant or animal that may soon not exist any more.", o:["endangered","dangerous","enormous"], c:0, e:"**endangered** = vom Aussterben bedroht."},
+        {q:"To keep something safe from danger.", o:["protect","produce","provide"], c:0, e:"**protect** = schützen."},
+        {q:"The warming of the Earth because of greenhouse gases.", o:["global warming","global cooling","global trading"], c:0, e:"**global warming** = Erderwärmung."},
+        {q:"A long, thin piece of land or coral close to the surface of the sea.", o:["reef","ridge","river"], c:0, e:"**reef** = Riff."},
+        {q:"To make something smaller or less.", o:["reduce","refuse","replace"], c:0, e:"*reduce plastic* = Plastik reduzieren."},
+        {q:"Australia’s dry, empty land far away from the cities.", o:["the Outback","the Backyard","the Outside"], c:0, e:"**the Outback** = das australische Hinterland."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **experience**, **environment**, **responsible**.", typ:"rush", icon:"⚡", titel:"Outback Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Umwelt", o:["environment","enviroment","environmant"], c:0}, {q:"Erfahrung", o:["experience","experiance","expirience"], c:0}, {q:"verantwortlich", o:["responsible","responsable","resposible"], c:0},
+        {q:"zuverlässig", o:["reliable","relyable","reliabel"], c:0}, {q:"Lebenslauf", o:["CV","CD","VC"], c:0}, {q:"Gehalt", o:["salary","celery","salery"], c:0},
+        {q:"Achtung, Respekt", o:["respect","respekt","respectful"], c:0}, {q:"Ureinwohner", o:["Indigenous people","Indigenius people","Indigenous peeple"], c:0}, {q:"heilig", o:["sacred","scared","secret"], c:0},
+        {q:"Zerstörung", o:["destruction","distruction","destroyment"], c:0}, {q:"Lebensraum", o:["habitat","habbitat","inhabit"], c:0}, {q:"Gefahr", o:["danger","dangar","dancer"], c:0},
+        {q:"bewerben", o:["apply","aplly","applie"], c:0}, {q:"Fähigkeit", o:["skill","skil","scill"], c:0}, {q:"Vorstellungsgespräch", o:["job interview","job intervue","job inter view"], c:0},
+        {q:"Wüste", o:["desert","dessert","dissert"], c:0, e:"**desert** = Wüste · **dessert** = Nachtisch!"}, {q:"Höflichkeit", o:["politeness","politness","politeniss"], c:0}, {q:"schützen", o:["protect","protekt","protegt"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📋", titel:"Job Ad: Reef Guide", art:"Advert · fill in the gaps",
+      anleitung:"Read the job advert. Tap a gap and choose the right word.",
+      anleitungDe:"Lies die Stellenanzeige. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Wanted: Young reef guide (summer job)",
+      text:"Reef Adventures in Cairns is looking for a young, [[reliable|reliably|relying]] reef guide for the summer holidays.\nYou will show tourists the Great Barrier Reef and explain why it is so important to [[protect|produce|provide]] it. You will also talk about dangers like [[pollution|population|position]] and coral [[bleaching|breaching|blessing]].\nWe are looking for someone with good communication [[skills|skulls|skies]]. [[Experience|Experiment|Expense]] with snorkelling is a plus. You must be [[polite|police|polish]] and respectful to all visitors.\nThe [[salary|celery|salad]] is $25 an hour. Please send your [[application|appliance|apple]] and your CV by email.",
+      erklaerung:"Jobwörter: **reliable, skills, experience, salary, application** · Umwelt: **protect, pollution, coral bleaching**."}
+  ]
+});
+</script>
+</body>
+</html>

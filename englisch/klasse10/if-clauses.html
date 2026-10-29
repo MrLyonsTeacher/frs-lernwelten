@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Ice Oracle – If-clauses type I &amp; II (revision) · unless</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"grammar", id:"if10", icon:"🔮", kartenSymbol:"❄️",
+  titel:"The Ice Oracle", untertitel:"If-clauses type I & II (revision) · unless",
+  text:"Deep in the Citadel an oracle of ice answers every question: “What will happen if …?” and “What would you do if …?” Revise if-clauses type I and II – and plan a volunteer trip to India.",
+  lernen: {
+    if12: { titel:"If-clauses type I and II", folien:[
+      {"bild":"🌦️","titel":"Type I – real","formel":["If + simple present | , | will / can / must + infinitive"],"bsp":["If you **volunteer** in India, you **will learn** a lot.","If it **rains**, we **can’t** work outside."],"de":"**Typ I**: realistisch, gut möglich. Im if-Satz **nie will**."},
+      {"bild":"✨","titel":"Type II – unreal / unlikely","formel":["If + simple past | , | would / could / might + infinitive"],"bsp":["If I **had** more money, I **would travel** around the world.","If I **were** you, I **would apply**."],"de":"**Typ II**: unwahrscheinlich, ausgedacht, Ratschlag (*If I were you*)."},
+      {"bild":"🚫","titel":"unless","formel":["unless | = | if … not"],"bsp":["You can’t go **unless** you have a visa.","= You can’t go **if** you **don’t** have a visa."],"de":"**unless** = wenn … nicht / es sei denn."},
+      {"bild":"⚖️","titel":"Type I or II?","bsp":["If I **get** the job, I**’ll move** to Delhi. (I’ve applied – it’s possible!)","If I **got** the job, I**’d move** to Delhi. (I haven’t applied – just a dream.)"],"de":"Der Unterschied liegt in der **Wahrscheinlichkeit** aus Sicht des Sprechers."}
+    ]}
+  },
+  levels: [
+    { id:"swipe", typ:"swipe", lernen:"if12", icon:"⚖️", titel:"Real or Unreal?", art:"Swipe · type I / type II",
+      anleitung:"Which type is it? Swipe **left for type I** and **right for type II**.",
+      anleitungDe:"Welcher Typ ist das? Wische nach **links für Typ I** und nach **rechts für Typ II**.",
+      tipp:"will/can → Typ I · would/could → Typ II.",
+      links:{t:"type I", icon:"🌦️"}, rechts:{t:"type II", icon:"✨"},
+      karten:[
+        {t:"If you send the form today, you’ll get an answer next week.", r:"l", e:"**’ll** → type I."},
+        {t:"If I spoke Hindi, I could talk to everyone.", r:"r", e:"**spoke … could** → type II."},
+        {t:"We won’t finish the school building unless more people help.", r:"l", e:"**won’t … unless** → type I."},
+        {t:"If I were the head of the project, I’d change a lot.", r:"r", e:"**were … ’d** → type II."},
+        {t:"If it’s too hot, we’ll work in the morning.", r:"l", e:"**’s … ’ll** → type I."},
+        {t:"What would you do if you won a trip to India?", r:"r", e:"**would … won** → type II."},
+        {t:"If you don’t drink enough water, you’ll get ill.", r:"l", e:"**don’t … ’ll** → type I."},
+        {t:"If there were more teachers, more children could go to school.", r:"r", e:"**were … could** → type II."}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"if12", icon:"🔮", titel:"Ask the Oracle", art:"Forms · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Typ I: present + will · Typ II: past + would.",
+      fragen:[
+        {q:"If you **___** for the project, you will work with children.", o:["apply","will apply","applied"], c:0, e:"Type I: if + **simple present**."},
+        {q:"If I had a week off, I **___** Mumbai.", o:["would visit","will visit","visited"], c:0, e:"Type II: **would + infinitive**."},
+        {q:"You won’t get a visa **___** you have a valid passport.", o:["unless","if","when"], c:0, e:"**unless** = if … not."},
+        {q:"If she **___** more experience, she would get the job.", o:["had","has","would have"], c:0, e:"Type II: **had**."},
+        {q:"If I **___** you, I would learn some Hindi first.", o:["were","am","would be"], c:0, e:"Advice: **If I were you**."},
+        {q:"If it **___** tomorrow, the trip will be cancelled.", o:["rains","will rain","rained"], c:0, e:"Type I: **rains**."},
+        {q:"What **___** you do if you saw a tiger?", o:["would","will","did"], c:0, e:"Type II question."},
+        {q:"If we leave now, we **___** the train to Agra.", o:["will catch","would catch","caught"], c:0, e:"Type I: **will catch**."},
+        {q:"I **___** help you unless you ask me.", o:["can’t","couldn’t have","don’t can"], c:0, e:"**can’t … unless** – type I with a modal."}
+      ]},
+    { id:"rewrite", typ:"quiz", lernen:"if12", icon:"🔁", titel:"Say It with Unless", art:"unless · quiz",
+      anleitung:"Which sentence means the same?",
+      anleitungDe:"Welcher Satz bedeutet dasselbe?",
+      tipp:"unless = if … not.",
+      fragen:[
+        {q:"If you don’t hurry, you’ll miss the bus.", o:["Unless you hurry, you’ll miss the bus.","Unless you don’t hurry, you’ll miss the bus.","Unless you hurry, you won’t miss the bus."], c:0, e:"**if … not** → **unless** (without *not*)."},
+        {q:"I won’t go if you don’t come with me.", o:["I won’t go unless you come with me.","I will go unless you come with me.","I won’t go unless you don’t come."], c:0, e:"→ **unless you come**."},
+        {q:"If they don’t get more money, they can’t build the school.", o:["Unless they get more money, they can’t build the school.","Unless they don’t get money, they build the school.","If they get more money, they can’t build the school."], c:0, e:"→ **Unless they get more money**."},
+        {q:"She won’t pass the test if she doesn’t study.", o:["She won’t pass the test unless she studies.","She will pass the test unless she studies.","She won’t pass unless she doesn’t study."], c:0, e:"→ **unless she studies**."}
+      ]},
+    { id:"build", regel:"Typ I: if + **simple present**, **will** … · Typ II: if + **simple past**, **would** … · **unless** = if … not.", typ:"satzbau", icon:"🧱", titel:"Oracle Sentences", art:"Sentence builder",
+      anleitung:"Build the if-sentence.",
+      anleitungDe:"Bau den if-Satz.",
+      tipp:"Der if-Satz kann vorne (mit Komma) oder hinten stehen.",
+      punkte:2,
+      saetze:[
+        {w:["If","I","had","more","time",",","I","would","volunteer"], alt:[["I","would","volunteer","if","I","had","more","time"],["If","I","had","more","time","I","would","volunteer"]], hint:"🇩🇪 Wenn ich mehr Zeit hätte, würde ich ehrenamtlich arbeiten."},
+        {w:["You","won't","learn","unless","you","practise"], hint:"🇩🇪 Du lernst nichts, wenn du nicht übst."},
+        {w:["If","it","is","too","hot",",","we","will","stay","inside"], alt:[["We","will","stay","inside","if","it","is","too","hot"],["If","it","is","too","hot","we","will","stay","inside"]], hint:"🇩🇪 Wenn es zu heiß ist, bleiben wir drinnen."},
+        {w:["If","I","were","you",",","I","would","apply"], alt:[["I","would","apply","if","I","were","you"],["If","I","were","you","I","would","apply"]], hint:"🇩🇪 An deiner Stelle würde ich mich bewerben."},
+        {w:["What","would","you","do","if","you","were","rich","?"], hint:"🇩🇪 Was würdest du tun, wenn du reich wärst?"}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📧", titel:"An Email Enquiry", art:"Email · fill in the gaps",
+      anleitung:"Paul writes to a volunteer organisation. Tap a gap and choose the right form.",
+      anleitungDe:"Paul schreibt an eine Freiwilligenorganisation. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Realistisch (Typ I) oder unwahrscheinlich (Typ II)?",
+      ueberschrift:"Enquiry: volunteer work in Jaipur",
+      text:"Dear Sir or Madam,\nI saw your advertisement for volunteers at a school in Jaipur and I would like some more information.\nIf I [[apply|will apply|applied]] now, when will I hear from you? I am 17 and I finish school in June. If you [[accept|will accept|accepted]] me, I will be able to start in July.\nI have some questions: Will I get a place to stay if I [[work|will work|worked]] for three months? And can I take part [[if|unless|because]] I speak no Hindi at all? (I don’t think so – but if I [[had|have|would have]] more time before July, I [[would take|will take|took]] a language course.)\nI look forward to hearing from you.\nYours [[faithfully|sincerely|lovely]],\nPaul Weber",
+      erklaerung:"Typ I: **apply, accept, work** + will · Typ II: **had … would take** · *Dear Sir or Madam* → **Yours faithfully**."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Society, Landscapes &amp; Nature – Unit 3: social differences, landscapes, nature</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"vocabulary", id:"vsa9", icon:"🦓", kartenSymbol:"🍃",
+  titel:"Words: Society, Landscapes & Nature", untertitel:"Unit 3: social differences, landscapes, nature",
+  text:"Townships and shopping malls, mountains and savannah: the words you need to talk about South Africa’s people, landscapes and wildlife.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Landscape Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Stell dir die Landschaft vor.",
+      paare:[ {a:"coast", b:"Küste"}, {a:"valley", b:"Tal"}, {a:"cliff", b:"Klippe"}, {a:"grassland", b:"Grasland"},
+              {a:"waterfall", b:"Wasserfall"}, {a:"mountain range", b:"Gebirge"}, {a:"wildlife", b:"Tierwelt (wild)"}, {a:"nature reserve", b:"Naturschutzgebiet"} ]},
+    { id:"soc", typ:"quiz", icon:"⚖️", titel:"Social Differences", art:"Explanations · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"Having very little money and not enough food or a good home.", o:["poverty","property","priority"], c:0, e:"**poverty** = Armut."},
+        {q:"Having a lot of money.", o:["wealthy","healthy","worthy"], c:0, e:"**wealthy** = wohlhabend."},
+        {q:"In South Africa: an area outside a city where mostly Black people had to live during apartheid.", o:["township","townhall","downtown"], c:0, e:"**township** – many still exist today."},
+        {q:"Treating people worse because of their skin colour, religion, etc.", o:["discrimination","decoration","destination"], c:0, e:"**discrimination** = Diskriminierung."},
+        {q:"The situation when everyone has the same rights.", o:["equality","quality","quantity"], c:0, e:"**equality** = Gleichberechtigung."},
+        {q:"Without a job.", o:["unemployed","unemployable","employed"], c:0, e:"**unemployed** = arbeitslos."},
+        {q:"The system in South Africa (1948–1994) that separated people by race.", o:["apartheid","apartment","department"], c:0, e:"**apartheid** = „Getrenntheit“ in Afrikaans."},
+        {q:"A big difference between two groups.", o:["gap","gate","gear"], c:0, e:"*the gap between rich and poor* = die Kluft zwischen Arm und Reich."}
+      ]},
+    { id:"nat", typ:"sortieren", icon:"🌍", titel:"Landscape or Wildlife?", art:"Sort · nature",
+      anleitung:"Is it a landscape word or an animal? Tap the right box.",
+      anleitungDe:"Ist es ein Landschaftswort oder ein Tier? Tippe auf das richtige Kästchen.",
+      tipp:"savannah = Savanne · buffalo = Büffel.",
+      koerbe:[ {t:"landscape", info:"⛰️", tipp:"**landscape**: savannah, coast, valley, plain, desert."}, {t:"wildlife", info:"🦁", tipp:"**wildlife**: buffalo, leopard, rhino, penguin, hippo."} ],
+      items:[
+        {t:"savannah", k:0}, {t:"coastline", k:0}, {t:"plain", k:0, e:"**plain** = Ebene."}, {t:"desert", k:0}, {t:"bush", k:0, e:"**the bush** = wildes, buschiges Land."},
+        {t:"buffalo", k:1}, {t:"leopard", k:1}, {t:"rhino", k:1}, {t:"penguin", k:1, e:"Yes – there are **penguins** near Cape Town!"}, {t:"hippo", k:1}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **government**, **separate**, **environment**.", typ:"rush", icon:"⚡", titel:"Savannah Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Regierung", o:["government","goverment","governmant"], c:0}, {q:"trennen", o:["separate","seperate","separete"], c:0}, {q:"Armut", o:["poverty","povertie","poorty"], c:0},
+        {q:"Gesellschaft", o:["society","sociaty","socity"], c:0}, {q:"Gesetz", o:["law","low","lawn"], c:0}, {q:"Wahl", o:["election","elektion","elections’"], c:0},
+        {q:"Gleichheit", o:["equality","equallity","eqality"], c:0}, {q:"Tierwelt", o:["wildlife","wildlive","wild life’s"], c:0}, {q:"Landschaft", o:["landscape","landskape","landscap"], c:0},
+        {q:"Küste", o:["coast","cost","coaste"], c:0}, {q:"Wilderer", o:["poacher","poucher","poatcher"], c:0}, {q:"aussterben", o:["die out","die off","dying out’s"], c:0},
+        {q:"Sprache", o:["language","langauge","languag"], c:0}, {q:"Gefängnis", o:["prison","prisen","poison"], c:0}, {q:"Freiheit", o:["freedom","freedum","freedome"], c:0},
+        {q:"Nachbarschaft", o:["neighbourhood","neighbourhod","neigbourhood"], c:0}, {q:"Wüste", o:["desert","dessert","dezert"], c:0}, {q:"Gebirge", o:["mountain range","mountain rank","mountin range"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📰", titel:"Article: Two Sides of Cape Town", art:"Article · fill in the gaps",
+      anleitung:"Read the magazine article. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Zeitschriftenartikel. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Cape Town – a city of contrasts",
+      text:"Cape Town is one of the most beautiful cities in the world. It lies on the [[coast|cost|coat]] between the ocean and Table Mountain, and there are even penguins on its beaches.\nBut there is another side, too. Near the airport there are big [[townships|townhalls|downtowns]] where thousands of people live in small houses or huts. Many of them are [[unemployed|unemployable|employed]], and [[poverty|property|priority]] is still a big problem.\nThe [[gap|gate|gear]] between rich and poor is one of the biggest in the world. During [[apartheid|apartment|department]] Black and white people had to live [[separately|separate|seperately]]. Since 1994 everyone has had the same rights – but real [[equality|quality|quantity]] will take more time.",
+      erklaerung:"Gesellschaft: **townships, unemployed, poverty, gap, apartheid, equality** · Landschaft: **coast**."}
+  ]
+});
+</script>
+</body>
+</html>

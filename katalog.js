@@ -64,8 +64,20 @@ const FRS = {
         { id:"fd6",  kat:"country",    titel:"The Galley Café",          untertitel:"Food & drink",                      pfad:"englisch/klasse6/food-and-drink.html",       icon:"🍟", max:54 }
       ]},
       { k:7,  id:"e7",  themen:[
-        { id:"bi7", kat:"country", titel:"Discover the British Isles", untertitel:"Countries, history & culture", pfad:"englisch/klasse7/british-isles.html", icon:"🧭", max:79 }
-      ]},
+        { id:"adv7", kat:"grammar", titel:"The Gem Polishers", untertitel:"Adjectives & adverbs", pfad:"englisch/klasse7/adjectives-adverbs.html", icon:"⛏️", max:55 },
+        { id:"pp7", kat:"grammar", titel:"Cave Rescue", untertitel:"Present perfect & simple past", pfad:"englisch/klasse7/present-perfect.html", icon:"🚑", max:45 },
+        { id:"rel7", kat:"grammar", titel:"The Inventors’ Hall", untertitel:"Relative clauses: who, which, that", pfad:"englisch/klasse7/relative-clauses.html", icon:"⚙️", max:41 },
+        { id:"ger7", kat:"grammar", titel:"Holiday Hall", untertitel:"The gerund (-ing form)", pfad:"englisch/klasse7/gerund.html", icon:"🏕️", max:46 },
+        { id:"if7", kat:"grammar", titel:"The Crystal of Wishes", untertitel:"will-future · if-clauses I & II", pfad:"englisch/klasse7/if-clauses.html", icon:"🔮", max:48 },
+        { id:"cmp7", kat:"grammar", titel:"The Dwarven Market", untertitel:"Comparison of adjectives · some & any", pfad:"englisch/klasse7/comparison.html", icon:"⚖️", max:50 },
+        { id:"pres7", kat:"grammar", titel:"Host Family Hideout", untertitel:"Simple present vs present progressive · mine, yours …", pfad:"englisch/klasse7/present-tenses.html", icon:"🏡", max:39 },
+        { id:"mod7", kat:"grammar", titel:"The Mine Railway", untertitel:"Modal verbs: can, must, mustn’t, needn’t, may, should", pfad:"englisch/klasse7/modals.html", icon:"🚂", max:37 },
+        { id:"vtown7", kat:"vocabulary", titel:"Words: Town, Shops & Directions", untertitel:"Unit 1 & 4: York, shops, shopping", pfad:"englisch/klasse7/words-town-shopping.html", icon:"🏘️", max:48 },
+        { id:"vhealth7", kat:"vocabulary", titel:"Words: Sport, Health & Feelings", untertitel:"Unit 2 & 4: activities, injuries, feelings, advice", pfad:"englisch/klasse7/words-sport-health-feelings.html", icon:"🩹", max:47 },
+        { id:"vtrav7", kat:"vocabulary", titel:"Words: Travel, Holidays & Inventions", untertitel:"Unit 3 & 5: holidays, materials, travel, public transport", pfad:"englisch/klasse7/words-travel-inventions.html", icon:"🧳", max:48 },
+        { id:"bi7", kat:"country", titel:"Discover the British Isles", untertitel:"Countries, history & culture", pfad:"englisch/klasse7/british-isles.html", icon:"🧭", max:79 },
+        { id:"life7", kat:"country", titel:"Travel Smart: UK & Ireland", untertitel:"Money, miles, meals & more", pfad:"englisch/klasse7/travel-smart.html", icon:"🧳", max:41 }
+      ] },
       { k:8,  id:"e8",  themen:[
         { id:"past8", kat:"grammar", titel:"Ellis Island Archive", untertitel:"Simple past & past perfect", pfad:"englisch/klasse8/ellis-island-archive.html", icon:"🗽", max:47 },
         { id:"mod8", kat:"grammar", titel:"High School Rules", untertitel:"Modals & substitutes", pfad:"englisch/klasse8/high-school-rules.html", icon:"🏫", max:47 },
@@ -86,9 +98,38 @@ const FRS = {
         { id:"south8", kat:"country", titel:"Southern Life", untertitel:"Food, music & civil rights", pfad:"englisch/klasse8/southern-life.html", icon:"🎷", max:38 }
       ] },
       { k:9,  id:"e9",  themen:[
-        { id:"emp9", kat:"country", titel:"Rise and Fall of the British Empire", untertitel:"History, colonies & the Commonwealth", pfad:"englisch/klasse9/british-empire.html", icon:"🌍", max:55 }
+        { id:"mod9", kat:"grammar", titel:"Respect the Rock", untertitel:"Modals in the past & future · substitutes", pfad:"englisch/klasse9/modals-past.html", icon:"🪨", max:43 },
+        { id:"cmp9", kat:"grammar", titel:"The Elves’ Job Fair", untertitel:"Comparison of adjectives & adverbs", pfad:"englisch/klasse9/comparison.html", icon:"💼", max:46 },
+        { id:"rel9", kat:"grammar", titel:"Caribbean Tales", untertitel:"Relative clauses · contact clauses · whose, where", pfad:"englisch/klasse9/relative-clauses.html", icon:"🏝️", max:44 },
+        { id:"prog9", kat:"grammar", titel:"When the Storm Came", untertitel:"Past progressive · when & while", pfad:"englisch/klasse9/past-progressive.html", icon:"🌀", max:45 },
+        { id:"ppf9", kat:"grammar", titel:"Woodland Detectives", untertitel:"Past perfect", pfad:"englisch/klasse9/past-perfect.html", icon:"🔍", max:42 },
+        { id:"pass9", kat:"grammar", titel:"Ranger Station", untertitel:"The passive in different tenses", pfad:"englisch/klasse9/passive.html", icon:"🦏", max:48 },
+        { id:"rep9", kat:"grammar", titel:"Whispering Trees", untertitel:"Reported speech: statements, questions, commands", pfad:"englisch/klasse9/reported-speech.html", icon:"💬", max:40 },
+        { id:"fut9", kat:"grammar", titel:"Green Future", untertitel:"will-future vs going to-future", pfad:"englisch/klasse9/future.html", icon:"🌱", max:40 },
+        { id:"vaus9", kat:"vocabulary", titel:"Words: Respect, Jobs & Nature Down Under", untertitel:"Unit 1: respect, jobs & qualities, environment", pfad:"englisch/klasse9/words-australia.html", icon:"🦘", max:47 },
+        { id:"vcar9", kat:"vocabulary", titel:"Words: Holidays & Values", untertitel:"Unit 2: holiday words, standards & values, weather", pfad:"englisch/klasse9/words-caribbean.html", icon:"🌴", max:46 },
+        { id:"vsa9", kat:"vocabulary", titel:"Words: Society, Landscapes & Nature", untertitel:"Unit 3: social differences, landscapes, nature", pfad:"englisch/klasse9/words-south-africa.html", icon:"🦓", max:46 },
+        { id:"vhk9", kat:"vocabulary", titel:"Words: Shopping, Environment & Media", untertitel:"Unit 4: buying & selling, environment, media", pfad:"englisch/klasse9/words-hong-kong.html", icon:"🏙️", max:46 },
+        { id:"emp9", kat:"country", titel:"Rise and Fall of the British Empire", untertitel:"History, colonies & the Commonwealth", pfad:"englisch/klasse9/british-empire.html", icon:"🌍", max:55 },
+        { id:"aus9", kat:"country", titel:"G’day, Australia!", untertitel:"Outback, reef, wildlife & Aussie English", pfad:"englisch/klasse9/australia.html", icon:"🦘", max:41 },
+        { id:"car9", kat:"country", titel:"Island Vibes: The Caribbean", untertitel:"Jamaica, history, music & hurricanes", pfad:"englisch/klasse9/caribbean.html", icon:"🌴", max:35 },
+        { id:"sa9", kat:"country", titel:"The Rainbow Nation", untertitel:"South Africa: apartheid, Mandela & a nation of many languages", pfad:"englisch/klasse9/south-africa.html", icon:"🇿🇦", max:38 },
+        { id:"hk9", kat:"country", titel:"Hong Kong: Where East Meets West", untertitel:"History, city life, festivals & food", pfad:"englisch/klasse9/hong-kong.html", icon:"🏙️", max:40 }
       ] },
-      { k:10, id:"e10", themen:[] }
+      { k:10, id:"e10",  themen:[
+        { id:"pres10", kat:"grammar", titel:"The Frozen Arena", untertitel:"Simple present vs present progressive (revision)", pfad:"englisch/klasse10/present-tenses.html", icon:"🏒", max:43 },
+        { id:"pp10", kat:"grammar", titel:"The Pipeline Protest", untertitel:"Present perfect simple & progressive · since/for", pfad:"englisch/klasse10/present-perfect.html", icon:"🛢️", max:49 },
+        { id:"if10", kat:"grammar", titel:"The Ice Oracle", untertitel:"If-clauses type I & II (revision) · unless", pfad:"englisch/klasse10/if-clauses.html", icon:"🔮", max:38 },
+        { id:"pass10", kat:"grammar", titel:"The Crystal Factory", untertitel:"The passive (revision): all tenses, by-agent, being done", pfad:"englisch/klasse10/passive.html", icon:"🏭", max:44 },
+        { id:"past10", kat:"grammar", titel:"Frozen Memories", untertitel:"Past tenses (revision): simple past, past progressive, past perfect, present perfect", pfad:"englisch/klasse10/past-tenses.html", icon:"🧊", max:46 },
+        { id:"ifc10", kat:"grammar", titel:"If Only …", untertitel:"If-clauses type III · all three types", pfad:"englisch/klasse10/if-clauses-3.html", icon:"🌋", max:38 },
+        { id:"vcan10", kat:"vocabulary", titel:"Words: Sport, Energy & Strong Feelings", untertitel:"Unit 1: talking about sport, giving reasons, energy, protest", pfad:"englisch/klasse10/words-canada.html", icon:"🍁", max:47 },
+        { id:"vind10", kat:"vocabulary", titel:"Words: Work, Volunteering & Production", untertitel:"Unit 2: at work, formal emails, production", pfad:"englisch/klasse10/words-india.html", icon:"🪷", max:41 },
+        { id:"vnz10", kat:"vocabulary", titel:"Words: Relationships, Advice & Emergencies", untertitel:"Unit 3: relationships, giving advice, emergencies", pfad:"englisch/klasse10/words-new-zealand.html", icon:"🥝", max:44 },
+        { id:"can10", kat:"country", titel:"True North: Canada", untertitel:"Land, people, history & the Arctic", pfad:"englisch/klasse10/canada.html", icon:"🍁", max:41 },
+        { id:"ind10", kat:"country", titel:"Incredible India", untertitel:"History, Gandhi, languages, food & festivals", pfad:"englisch/klasse10/india.html", icon:"🪷", max:35 },
+        { id:"nz10", kat:"country", titel:"Aotearoa New Zealand", untertitel:"Māori culture, history, nature & the Kiwi way of life", pfad:"englisch/klasse10/new-zealand.html", icon:"🥝", max:38 }
+      ] }
     ]
   },
 

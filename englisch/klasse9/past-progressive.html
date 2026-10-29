@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>When the Storm Came – Past progressive · when &amp; while</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"prog9", icon:"🌀", kartenSymbol:"🍃",
+  titel:"When the Storm Came", untertitel:"Past progressive · when & while",
+  text:"Last night a storm crashed through the Woodlands – and through a Caribbean island blog. What were the elves doing when the storm came? Learn the past progressive.",
+  lernen: {
+    prog: { titel:"The past progressive", folien:[
+      {"bild":"⏸️","titel":"Form","formel":["was / were | + | verb + ing"],"bsp":["At 8 pm I **was reading** a book.","The kids **were playing** on the beach."],"de":"**was/were + -ing**: Was war **gerade im Gange** zu einem Zeitpunkt in der Vergangenheit?"},
+      {"bild":"⚡","titel":"Interrupted actions: when","formel":["past progressive | + | when | + | simple past"],"bsp":["We **were swimming when** the storm **started**."],"de":"Eine **längere Handlung** (past progressive) wird von einer **kurzen** (simple past) **unterbrochen**."},
+      {"bild":"🔀","titel":"Parallel actions: while","formel":["while | + | past progressive"],"bsp":["**While** Dad **was cooking**, Mum **was reading**.","**While** I **was sleeping**, the lights went out."],"de":"**while** = während – zwei Handlungen **gleichzeitig**."},
+      {"bild":"❓","titel":"Questions and negatives","formel":["Was / Were | + | subject | + | -ing?","wasn’t / weren’t | + | -ing"],"bsp":["What **were** you **doing** at 9 o’clock?","I **wasn’t sleeping**."],"de":"Frage: **Was/Were** nach vorne · Verneinung: **wasn’t/weren’t**."}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"prog", icon:"🌀", titel:"Storm Night", art:"was / were + -ing · quiz",
+      anleitung:"What were they doing when the storm came? Choose the right form.",
+      anleitungDe:"Was machten sie gerade, als der Sturm kam? Wähle die richtige Form.",
+      tipp:"I/he/she/it → **was** · you/we/they → **were**.",
+      fragen:[
+        {q:"At 10 pm I **___** a film.", o:["was watching","were watching","watched was"], c:0, e:"I → **was** + -ing."},
+        {q:"The elves **___** songs by the fire.", o:["were singing","was singing","were sing"], c:0, e:"they → **were singing**."},
+        {q:"What **___** you **___** when the lights went out?", o:["were … doing","was … doing","did … doing"], c:0, alt:["were doing"], e:"Question: **Were you doing …?**"},
+        {q:"Kemar **___** – he was reading a comic.", o:["wasn’t sleeping","weren’t sleeping","didn’t sleeping"], c:0, e:"he → **wasn’t** + -ing."},
+        {q:"It **___** heavily all night.", o:["was raining","were raining","rained was"], c:0, e:"**was raining**."},
+        {q:"**___** your parents **___** at home?", o:["Were … working","Was … working","Did … working"], c:0, alt:["Were working"], e:"parents = they → **Were … working**."},
+        {q:"We **___** dinner when we heard a loud noise.", o:["were having","had were","was having"], c:0, e:"we → **were having**."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"prog", icon:"⚡", titel:"Long or Short?", art:"Swipe · progressive or simple past",
+      anleitung:"Which form fits the gap? Swipe **left for past progressive** and **right for simple past**.",
+      anleitungDe:"Welche Form passt in die Lücke? Wische nach **links für past progressive** (längere Handlung) und nach **rechts für simple past** (kurze Handlung).",
+      tipp:"Was dauerte an – und was passierte plötzlich?",
+      links:{t:"was/were -ing", icon:"⏸️"}, rechts:{t:"simple past", icon:"⚡"},
+      karten:[
+        {t:"I ___ (walk) home when it started to rain.", r:"l", e:"Longer action → **was walking**."},
+        {t:"We were sleeping when the phone ___ (ring).", r:"r", e:"Short action → **rang**."},
+        {t:"While she ___ (surf), she saw a turtle.", r:"l", e:"**While** + **was surfing**."},
+        {t:"The kids were playing football when a tree ___ (fall) down.", r:"r", e:"Sudden action → **fell**."},
+        {t:"When the hurricane arrived, the fishermen ___ (sit) in the café.", r:"l", e:"Longer action → **were sitting**."},
+        {t:"He ___ (cut) his finger while he was cooking.", r:"r", e:"Short action → **cut**."},
+        {t:"While we ___ (wait) for the bus, we chatted.", r:"l", e:"**While** → **were waiting**."},
+        {t:"I was writing my blog when my laptop ___ (crash).", r:"r", e:"Sudden → **crashed**."}
+      ]},
+    { id:"rush", regel:"Bei **-ing**: stummes e fällt weg (write → **writing**), Konsonant verdoppeln (swim → **swimming**).", typ:"rush", icon:"⚡", titel:"Hurricane Rush", art:"was / were + -ing · 60 seconds",
+      anleitung:"Choose the right **past progressive** form. **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die richtige **past-progressive**-Form. **Ziel: 12** in 60 Sekunden.",
+      tipp:"was oder were? Und die -ing-Schreibweise!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"I / swim", o:["I was swimming","I were swimming","I was swiming"], c:0}, {q:"they / dance", o:["they were dancing","they was dancing","they were danceing"], c:0},
+        {q:"she / write", o:["she was writing","she was writting","she were writing"], c:0}, {q:"we / sit", o:["we were sitting","we were siting","we was sitting"], c:0},
+        {q:"it / rain", o:["it was raining","it were raining","it was rainning"], c:0}, {q:"you / run", o:["you were running","you was running","you were runing"], c:0},
+        {q:"he / lie", o:["he was lying","he was lieing","he were lying"], c:0}, {q:"the dogs / bark", o:["the dogs were barking","the dogs was barking","the dogs were barkking"], c:0},
+        {q:"I / not sleep", o:["I wasn’t sleeping","I weren’t sleeping","I didn’t sleeping"], c:0}, {q:"Tom / make", o:["Tom was making","Tom was makeing","Tom were making"], c:0},
+        {q:"we / not listen", o:["we weren’t listening","we wasn’t listening","we didn’t listening"], c:0}, {q:"Ana / shop", o:["Ana was shopping","Ana was shoping","Ana were shopping"], c:0},
+        {q:"they / travel", o:["they were travelling","they were travling","they was travelling"], c:0}, {q:"the sun / shine", o:["the sun was shining","the sun was shineing","the sun were shining"], c:0},
+        {q:"you / plan", o:["you were planning","you were planing","you was planning"], c:0}, {q:"she / study", o:["she was studying","she was studing","she was studiing"], c:0}
+      ]},
+    { id:"build", regel:"**when** + simple past (kurz) · **while** + past progressive (lang).", typ:"satzbau", icon:"🧱", titel:"Blog Sentences", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"Die längere Handlung bekommt was/were + -ing.",
+      punkte:2,
+      saetze:[
+        {w:["We","were","swimming","when","the","storm","started"], alt:[["When","the","storm","started",",","we","were","swimming"],["When","the","storm","started","we","were","swimming"]], hint:"🇩🇪 Wir schwammen gerade, als der Sturm anfing."},
+        {w:["While","I","was","sleeping",",","the","lights","went","out"], alt:[["The","lights","went","out","while","I","was","sleeping"],["While","I","was","sleeping","the","lights","went","out"]], hint:"🇩🇪 Während ich schlief, ging das Licht aus."},
+        {w:["What","were","you","doing","at","midnight","?"], hint:"🇩🇪 Was hast du um Mitternacht gemacht?"},
+        {w:["She","wasn't","listening","to","the","teacher"], hint:"🇩🇪 Sie hörte der Lehrerin nicht zu."},
+        {w:["They","were","dancing","while","the","band","was","playing"], alt:[["While","the","band","was","playing",",","they","were","dancing"],["While","the","band","was","playing","they","were","dancing"]], hint:"🇩🇪 Sie tanzten, während die Band spielte."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"💻", titel:"Island Blog: The Hurricane", art:"Blog · fill in the gaps",
+      anleitung:"Read Shanice’s blog from Barbados. Tap a gap and choose the right form.",
+      anleitungDe:"Lies Shanices Blog aus Barbados. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Längere Handlung → was/were + -ing · plötzliches Ereignis → simple past.",
+      ueberschrift:"Shanice’s Island Life – The night of the storm",
+      text:"Last Tuesday was crazy! At 7 pm my family [[was having|had|is having]] dinner when the radio [[announced|was announcing|announces]] a hurricane warning.\nWhile Dad [[was closing|closed|were closing]] the windows, my brother and I [[were carrying|was carrying|carried were]] water bottles into the house. At about 11 pm the wind [[was blowing|blew was|were blowing]] so hard that the trees were bending. Suddenly the lights [[went|were going|was going]] out!\nWe [[were sitting|was sitting|sat were]] in the dark when our neighbour [[knocked|was knocking|knocks]] at the door with a torch. In the morning the sun was shining again – and nobody was hurt.",
+      erklaerung:"Hintergrund/Dauer: **was having, was closing, were sitting** · plötzlich: **announced, went, knocked**."}
+  ]
+});
+</script>
+</body>
+</html>

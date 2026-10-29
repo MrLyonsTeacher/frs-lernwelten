@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Gem Polishers – Adjectives &amp; adverbs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"adv7", icon:"⛏️", kartenSymbol:"💎",
+  titel:"The Gem Polishers", untertitel:"Adjectives & adverbs",
+  text:"Deep in the dwarven caves the miners work hard – some fast, some slowly, some carefully. Learn when you need an adjective and when you need an adverb.",
+  lernen: {
+    adv: { titel:"Adjective or adverb?", folien:[
+      {"bild":"💎","titel":"Adjectives describe nouns","formel":["a **careful** miner","the gem is **beautiful**"],"bsp":["Rhys is a **good** climber.","The cave is **dark**."],"de":"**Adjektive** beschreiben ein **Nomen** (wie ist jemand/etwas?). Auch nach *be, look, feel, smell, sound, taste*."},
+      {"bild":"⛏️","titel":"Adverbs describe verbs","formel":["adjective | + ly | = adverb","careful | → | carefully","quick | → | quickly"],"bsp":["Rhys climbs **carefully**.","The dwarf runs **quickly**."],"de":"**Adverbien der Art und Weise** beschreiben ein **Verb** (wie macht jemand etwas?)."},
+      {"bild":"✏️","titel":"Spelling","formel":["easy | → | easily","terrible | → | terribly","fantastic | → | fantastically"],"bsp":["She did it **easily**.","He sang **terribly**."],"de":"-y → **-ily**, -le → **-ly**, -ic → **-ically**."},
+      {"bild":"⚠️","titel":"Irregular adverbs","formel":["good | → | well","fast | → | fast","hard | → | hard","late | → | late"],"bsp":["Megan plays rugby **well**.","They work **hard**."],"de":"**good → well**. *fast, hard, late, early* bleiben gleich. Achtung: *hardly* = kaum!"}
+    ]}
+  },
+  levels: [
+    { id:"sort", typ:"sortieren", lernen:"adv", icon:"🗂️", titel:"Gem Sorter", art:"Adjective or adverb · sort",
+      anleitung:"Is the word an **adjective** or an **adverb**? Tap the right box.",
+      anleitungDe:"Ist das Wort ein **Adjektiv** oder ein **Adverb**? Tippe auf das richtige Kästchen.",
+      tipp:"Die meisten Adverbien enden auf -ly. Aber: *friendly* und *lovely* sind Adjektive!",
+      koerbe:[ {t:"adjective", info:"💎 describes a noun", tipp:"**Adjektiv**: careful, happy, good, quick …"}, {t:"adverb", info:"⛏️ describes a verb", tipp:"**Adverb**: carefully, happily, well, quickly …"} ],
+      items:[
+        {t:"quiet", k:0}, {t:"quietly", k:1}, {t:"happy", k:0}, {t:"happily", k:1}, {t:"good", k:0}, {t:"well", k:1, e:"**good → well** is irregular."},
+        {t:"terrible", k:0}, {t:"terribly", k:1}, {t:"friendly", k:0, e:"**friendly** ends in -ly but it is an **adjective**: a friendly dwarf."}, {t:"easily", k:1},
+        {t:"dangerous", k:0}, {t:"dangerously", k:1}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"adv", icon:"🔦", titel:"Into the Mine", art:"Choose the right form · quiz",
+      anleitung:"Adjective or adverb? Choose the right word.",
+      anleitungDe:"Adjektiv oder Adverb? Wähle das richtige Wort.",
+      tipp:"Frag dich: Beschreibe ich ein Nomen (wie ist …?) oder ein Verb (wie macht man …?)",
+      fragen:[
+        {q:"Rhys climbs **___** down the ladder.", o:["carefully","careful"], c:0, e:"How does he climb? → adverb **carefully**."},
+        {q:"It’s a **___** cave. Don’t go in alone!", o:["dangerous","dangerously"], c:0, e:"It describes the noun *cave* → adjective **dangerous**."},
+        {q:"Megan is a **___** rugby player.", o:["good","well"], c:0, e:"*player* is a noun → adjective **good**."},
+        {q:"Megan plays rugby very **___**.", o:["well","good"], c:0, e:"How does she play? → adverb **well**."},
+        {q:"The dwarf sounds **___** today.", o:["happy","happily"], c:0, e:"After *sound, look, feel, smell, taste* → **adjective**."},
+        {q:"The miners worked **___** all day.", o:["hard","hardly"], c:0, e:"**hard** = hart, fleißig. *hardly* = kaum."},
+        {q:"She answered the question **___**.", o:["easily","easyly","easy"], c:0, e:"-y → **-ily**: easily."},
+        {q:"The goat ran **___** up the mountain.", o:["fast","fastly","fasty"], c:0, e:"**fast** stays **fast** – there is no *fastly*."},
+        {q:"Be **___**! The gems are fragile.", o:["careful","carefully"], c:0, e:"After *be* → adjective **careful**."},
+        {q:"The cave was **___** dark.", o:["terribly","terrible"], c:0, e:"An adverb can describe an adjective, too: **terribly** dark."}
+      ]},
+    { id:"rush", regel:"Adverb = Adjektiv **+ly** · -y → **-ily** · -le → **-ly** · -ic → **-ically** · good → **well**.", typ:"rush", icon:"⚡", titel:"Polish Rush", art:"Make the adverb · 60 seconds",
+      anleitung:"What’s the **adverb**? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das **Adverb**? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"slow", o:["slowly","slowily","slowley"], c:0}, {q:"happy", o:["happily","happyly","happly"], c:0}, {q:"good", o:["well","goodly","good"], c:0},
+        {q:"terrible", o:["terribly","terriblely","terribely"], c:0}, {q:"fast", o:["fast","fastly","fastily"], c:0}, {q:"easy", o:["easily","easyly","easly"], c:0},
+        {q:"careful", o:["carefully","carefuly","carefullly"], c:0}, {q:"fantastic", o:["fantastically","fantasticly","fantasticaly"], c:0},
+        {q:"quiet", o:["quietly","quietily","quitely"], c:0}, {q:"hard", o:["hard","hardly","hardily"], c:0, e:"**hard** stays **hard**. *hardly* means *kaum*."},
+        {q:"angry", o:["angrily","angryly","angerly"], c:0}, {q:"loud", o:["loudly","loudily","louder"], c:0}, {q:"sad", o:["sadly","saddly","sadily"], c:0},
+        {q:"perfect", o:["perfectly","perfectely","perfectily"], c:0}, {q:"simple", o:["simply","simplely","simplly"], c:0}, {q:"late", o:["late","lately","latly"], c:0, e:"**late** stays **late**. *lately* = in letzter Zeit."},
+        {q:"brave", o:["bravely","bravly","braveley"], c:0}, {q:"noisy", o:["noisily","noisyly","noisly"], c:0}
+      ]},
+    { id:"build", regel:"Wortstellung: Das Adverb steht meist **nach dem Verb** bzw. **nach dem Objekt**: She opened the box **carefully**.", typ:"satzbau", icon:"🧱", titel:"Tunnel Builder", art:"Sentence builder",
+      anleitung:"Build the sentence. Where does the adverb go?",
+      anleitungDe:"Bau den Satz. Wo steht das Adverb?",
+      tipp:"Verb + Objekt bleiben zusammen – das Adverb kommt danach.",
+      punkte:2,
+      saetze:[
+        {w:["The","dwarf","opened","the","box","carefully"], hint:"🇩🇪 Der Zwerg öffnete die Kiste vorsichtig."},
+        {w:["Megan","plays","rugby","really","well"], hint:"🇩🇪 Megan spielt richtig gut Rugby."},
+        {w:["We","walked","quietly","through","the","cave"], alt:[["We","walked","through","the","cave","quietly"]], hint:"🇩🇪 Wir gingen leise durch die Höhle."},
+        {w:["The","old","miner","speaks","Welsh","fluently"], hint:"🇩🇪 Der alte Bergmann spricht fließend Walisisch."},
+        {w:["The","kids","climbed","up","the","wall","quickly"], alt:[["The","kids","quickly","climbed","up","the","wall"]], hint:"🇩🇪 Die Kinder kletterten schnell die Wand hoch."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📰", titel:"Youth Club News", art:"Text · fill in the gaps",
+      anleitung:"Read the report from a youth club in Wales. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Bericht aus einem Jugendzentrum in Wales. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Nomen → Adjektiv · Verb → Adverb.",
+      ueberschrift:"Climbing day at Cardiff Youth Club",
+      text:"Last Saturday we had a [[fantastic|fantastically]] climbing day. Our trainer, Dai, explained everything very [[clearly|clear]]. First we put on our helmets [[carefully|careful]]. The wall was really [[high|highly]], and some of us felt [[nervous|nervously]].\nOwen climbed [[slowly|slow]] but he reached the top. Ffion is a [[brilliant|brilliantly]] climber – she climbed up [[fast|fastly]] and came down [[easily|easy]]. At the end everybody cheered [[loudly|loud]]. It was a [[great|greatly]] day!",
+      erklaerung:"Adjektiv beschreibt ein **Nomen** oder steht nach *be, feel, look*; das Adverb beschreibt, **wie** etwas getan wird."}
+  ]
+});
+</script>
+</body>
+</html>

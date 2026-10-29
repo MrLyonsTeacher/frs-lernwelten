@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Work, Volunteering &amp; Production – Unit 2: at work, formal emails, production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"vocabulary", id:"vind10", icon:"🪷", kartenSymbol:"❄️",
+  titel:"Words: Work, Volunteering & Production", untertitel:"Unit 2: at work, formal emails, production",
+  text:"Volunteering in Jaipur, a call centre in Bangalore, a T-shirt factory in Tiruppur: the words you need for the world of work and how things are made.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Work Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Diese Wörter brauchst du für Bewerbungen und Praktika.",
+      paare:[ {a:"volunteer", b:"Freiwillige(r)"}, {a:"internship", b:"Praktikum"}, {a:"requirement", b:"Voraussetzung"}, {a:"working hours", b:"Arbeitszeit"},
+              {a:"enquiry", b:"Anfrage"}, {a:"to be responsible for", b:"zuständig sein für"}, {a:"colleague", b:"Kollege, Kollegin"}, {a:"wage", b:"Lohn"} ]},
+    { id:"prod", typ:"zeitstrahl", icon:"🏭", titel:"How Is It Made?", art:"Production steps · order",
+      anleitung:"Put the production steps of a smartphone in the right order – **first step first**.",
+      anleitungDe:"Bring die Produktionsschritte eines Smartphones in die richtige Reihenfolge – **erster Schritt zuerst**.",
+      tipp:"Von der Idee bis zum Kunden.",
+      items:[
+        {j:"Step 1", t:"The phone is designed by engineers."},
+        {j:"Step 2", t:"Raw materials are mined."},
+        {j:"Step 3", t:"The parts are manufactured."},
+        {j:"Step 4", t:"The phone is assembled in a factory."},
+        {j:"Step 5", t:"It is tested for quality."},
+        {j:"Step 6", t:"It is packed and shipped."},
+        {j:"Step 7", t:"It is sold to customers."}
+      ]},
+    { id:"formal", typ:"quiz", icon:"📧", titel:"Formal or Informal?", art:"Formal email · quiz",
+      anleitung:"You are writing a **formal** email. Which phrase is better?",
+      anleitungDe:"Du schreibst eine **formelle** E-Mail. Welche Wendung ist besser?",
+      tipp:"Formell = höflich, vollständig, keine Kurzformen.",
+      fragen:[
+        {q:"Greeting (you don’t know the name):", o:["Dear Sir or Madam,","Hey guys!","Hi there,"], c:0, e:"**Dear Sir or Madam** → ends with **Yours faithfully**."},
+        {q:"Reason for writing:", o:["I am writing to enquire about …","I wanna know about …","So, what’s up with …"], c:0, e:"**I am writing to enquire about …**"},
+        {q:"Asking for information:", o:["Could you please tell me …?","Tell me …!","I need to know …, OK?"], c:0, e:"Polite question: **Could you please …?**"},
+        {q:"Ending the email:", o:["I look forward to hearing from you.","See ya!","Write back soon, mate!"], c:0, e:"**I look forward to hearing from you.**"},
+        {q:"Closing (you know the name: Dear Ms Rao):", o:["Yours sincerely,","Yours faithfully,","Love,"], c:0, e:"Name known → **Yours sincerely**."},
+        {q:"Which sentence is formal?", o:["I would be grateful if you could send me a brochure.","Send me a brochure.","Gimme a brochure pls."], c:0, e:"**I would be grateful if …**"}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **colleague**, **responsible**, **experience**.", typ:"rush", icon:"⚡", titel:"Rickshaw Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Kollege", o:["colleague","collegue","colleage"], c:0}, {q:"verantwortlich", o:["responsible","responsable","resposible"], c:0}, {q:"Firma", o:["company","companie","campany"], c:0},
+        {q:"herstellen", o:["manufacture","manufactor","manifacture"], c:0}, {q:"Kunde", o:["customer","costumer","customar"], c:0}, {q:"Lieferung", o:["delivery","delivary","deliverie"], c:0},
+        {q:"Gehalt", o:["salary","salery","sallary"], c:0}, {q:"Bewerbung", o:["application","aplication","applikation"], c:0}, {q:"Freiwillige(r)", o:["volunteer","voluntier","volunter"], c:0},
+        {q:"Anfrage", o:["enquiry","enquirie","inkwiry"], c:0}, {q:"Unterkunft", o:["accommodation","accomodation","acommodation"], c:0}, {q:"Arbeiter(in)", o:["worker","woker","wroker"], c:0},
+        {q:"Fabrik", o:["factory","fabric","factorie"], c:0, e:"**factory** = Fabrik · **fabric** = Stoff!"}, {q:"Werbung", o:["advertising","advertizing","adverting"], c:0}, {q:"exportieren", o:["export","exsport","expord"], c:0},
+        {q:"Produkt", o:["product","produkt","prodact"], c:0}, {q:"Lohn", o:["wage","wedge","wager"], c:0}, {q:"Gewerkschaft", o:["trade union","trade onion","trades union’s"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📞", titel:"A Day at the Call Centre", art:"Text · fill in the gaps",
+      anleitung:"Read about Priya’s job. Tap a gap and choose the right word.",
+      anleitungDe:"Lies über Priyas Job. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Night shift in Bangalore",
+      text:"Priya, 22, works at a call centre in Bangalore. Her [[working hours|working ours|work hour’s]] are unusual: she starts at 8 pm because her [[customers|costumers|customs]] live in the UK and the USA.\nShe is [[responsible|responsive|respectable]] for answering questions about phones that are [[manufactured|manifested|manicured]] by a big tech [[company|companion|compass]]. Her [[colleagues|collages|colleges]] are mostly young graduates.\nThe [[salary|celery|saltery]] is good for India, but the night shifts are hard. “One day I want to do an [[internship|intern ship|interview]] abroad,” Priya says.",
+      erklaerung:"Arbeit: **working hours, customers, responsible for, colleagues, salary, internship** · **manufactured** = hergestellt."}
+  ]
+});
+</script>
+</body>
+</html>

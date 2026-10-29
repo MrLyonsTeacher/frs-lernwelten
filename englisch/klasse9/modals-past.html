@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Respect the Rock – Modals in the past &amp; future · substitutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"mod9", icon:"🪨", kartenSymbol:"🍃",
+  titel:"Respect the Rock", untertitel:"Modals in the past & future · substitutes",
+  text:"The elves of the Woodlands have strict rules for their sacred trees – just like the Anangu people have for Uluru. What were visitors allowed to do, what did they have to do, and what will they be able to do?",
+  lernen: {
+    mod: { titel:"Modals and their substitutes", folien:[
+      {"bild":"🔄","titel":"Modals have no past or future","formel":["can | → | was/were able to · could","must | → | had to · will have to","may | → | was/were allowed to"],"bsp":["In 2019 visitors **were allowed to** climb Uluru.","Since then they **have had to** stay on the ground."],"de":"*can, must, may* haben **keine** Vergangenheits- oder Zukunftsform → man braucht **Ersatzformen**."},
+      {"bild":"⏭️","titel":"Future","formel":["will be able to","will have to","will be allowed to"],"bsp":["One day you **will be able to** visit the rock again.","You **won’t have to** pay for the shuttle bus."],"de":"Zukunft: **will + Ersatzform**."},
+      {"bild":"⛔","titel":"Negatives","formel":["mustn’t | → | wasn’t allowed to","don’t have to | → | didn’t have to","can’t | → | couldn’t / wasn’t able to"],"bsp":["We **weren’t allowed to** take photos there.","We **didn’t have to** wear hats."],"de":"**wasn’t allowed to** = durfte nicht · **didn’t have to** = musste nicht."},
+      {"bild":"🤔","titel":"should have + 3rd form","formel":["should have | + | past participle"],"bsp":["You **should have asked** first.","He **shouldn’t have climbed** the rock."],"de":"**should have done** = hätte tun sollen (Kritik an etwas Vergangenem)."}
+    ]},
+    uluru: { titel:"Uluru – a sacred place", folien:[
+      {"bild":"🪨","titel":"A giant rock","text":"**Uluru** is a huge sandstone rock in the middle of Australia. It is about **348 m** high and changes colour at **sunrise and sunset**. Many people call it by its English name, **Ayers Rock**.","de":"**Uluru** ist ein riesiger Sandsteinfelsen mitten in Australien, etwa **348 m** hoch. Bei **Sonnenauf- und -untergang** ändert er die Farbe. Der englische Name ist **Ayers Rock**."},
+      {"bild":"🖐️","titel":"The Anangu","text":"For the **Anangu**, the Aboriginal people of the area, Uluru is **sacred**. Their stories and ceremonies are connected with the rock. They have lived there for thousands of years.","de":"Für die **Anangu**, die Aborigines dieser Gegend, ist Uluru **heilig**. Ihre Geschichten und Zeremonien sind mit dem Felsen verbunden. Sie leben dort seit Tausenden von Jahren."},
+      {"bild":"🚫","titel":"No more climbing","text":"For many years tourists climbed Uluru, although the Anangu asked them not to. Since **October 2019** climbing has been **banned**. At some sacred places you also **mustn’t take photos**.","de":"Viele Jahre lang kletterten Touristen auf den Uluru, obwohl die Anangu darum baten, es nicht zu tun. Seit **Oktober 2019** ist das Klettern **verboten**. An manchen heiligen Orten darf man auch **nicht fotografieren**."}
+    ]}
+  },
+  levels: [
+    { id:"sort", typ:"sortieren", lernen:"mod", icon:"🗂️", titel:"Past, Present or Future?", art:"Substitutes · sort",
+      anleitung:"When is it? Tap the right box.",
+      anleitungDe:"Wann ist das? Tippe auf das richtige Kästchen.",
+      tipp:"was/had/could → Vergangenheit · will → Zukunft.",
+      koerbe:[ {t:"past", info:"⏮️ was able to, had to …", tipp:"**past**: could, was able to, had to, was allowed to."}, {t:"present", info:"▶️ can, must, may …", tipp:"**present**: can, must, may, am able to, have to."}, {t:"future", info:"⏭️ will be able to …", tipp:"**future**: will be able to, will have to, will be allowed to."} ],
+      items:[
+        {t:"We had to leave the park at sunset.", k:0}, {t:"They weren’t allowed to climb.", k:0}, {t:"She could see the rock from the plane.", k:0},
+        {t:"You must stay on the path.", k:1}, {t:"We are allowed to camp here.", k:1}, {t:"I can’t find my hat.", k:1},
+        {t:"You will have to book a tour.", k:2}, {t:"Will we be able to see the sunrise?", k:2}, {t:"Next year visitors won’t be allowed to drive there.", k:2}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"mod", icon:"🍃", titel:"The Elders’ Rules", art:"Substitutes · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Signalwörter: yesterday, in 2019 → Vergangenheit · tomorrow, next year → Zukunft.",
+      fragen:[
+        {q:"Before 2019 tourists **___** climb Uluru.", o:["were allowed to","may","must"], c:0, e:"Past permission → **were allowed to**."},
+        {q:"Yesterday we **___** get up at 4 am to see the sunrise.", o:["had to","must","have to"], c:0, e:"Past of *must* → **had to**."},
+        {q:"Next week you **___** visit the cultural centre.", o:["will be able to","can will","will can"], c:0, e:"Future of *can* → **will be able to**."},
+        {q:"At this place we **___** take any photos. It was sacred.", o:["weren’t allowed to","didn’t have to","needn’t"], c:0, e:"It was forbidden → **weren’t allowed to**."},
+        {q:"It was free, so we **___** pay.", o:["didn’t have to","weren’t allowed to","mustn’t"], c:0, e:"Not necessary → **didn’t have to**."},
+        {q:"When I was eight, I **___** swim 1 km.", o:["could","can","must"], c:0, e:"Past ability → **could** / was able to."},
+        {q:"You climbed it? You **___** done that!", o:["shouldn’t have","mustn’t have","didn’t have"], c:0, e:"Criticism about the past → **shouldn’t have + 3rd form**."},
+        {q:"If it rains, we **___** stay in the tent.", o:["will have to","must will","had to"], c:0, e:"Future → **will have to**."},
+        {q:"Since 2019 visitors **___** stay on the ground.", o:["have had to","has to","had have to"], c:0, e:"Present perfect of *have to* → **have had to**."}
+      ]},
+    { id:"respect", typ:"swipe", lernen:"uluru", icon:"🖐️", titel:"Respectful or Not?", art:"Swipe · respectful behaviour",
+      anleitung:"You are visiting Uluru. Is this respectful? Swipe **right for respectful** and **left for not respectful**.",
+      anleitungDe:"Du besuchst den Uluru. Ist das respektvoll? Wische nach **rechts für respektvoll** und nach **links für nicht respektvoll**.",
+      tipp:"Denk an die Wünsche der Anangu.",
+      links:{t:"not respectful", icon:"👎"}, rechts:{t:"respectful", icon:"👍"},
+      karten:[
+        {t:"You walk around the base of the rock with a guide.", r:"r", e:"Respectful – the **base walk** is about 10 km long."},
+        {t:"You take a stone from the rock as a souvenir.", r:"l", e:"Not respectful – you mustn’t take anything away."},
+        {t:"You take photos where a sign says “No photos”.", r:"l", e:"Not respectful – some places are **sacred**."},
+        {t:"You listen to Anangu stories at the cultural centre.", r:"r", e:"Respectful – a great way to learn."},
+        {t:"You try to climb the rock at night.", r:"l", e:"Not respectful – and illegal since **2019**."},
+        {t:"You use the Aboriginal name, Uluru.", r:"r", e:"Respectful – it’s the traditional name."},
+        {t:"You leave your rubbish in the desert.", r:"l", e:"Not respectful – take it with you."},
+        {t:"You ask before you take a photo of a person.", r:"r", e:"Respectful – always ask first."}
+      ]},
+    { id:"build", regel:"Ersatzformen: **had to · was/were allowed to · was able to · will have to · will be able to**.", typ:"satzbau", icon:"🧱", titel:"Trail Sentences", art:"Sentence builder",
+      anleitung:"Build the sentence with a substitute form.",
+      anleitungDe:"Bau den Satz mit einer Ersatzform.",
+      tipp:"Achte auf die Zeit im deutschen Satz.",
+      punkte:2,
+      saetze:[
+        {w:["We","weren't","allowed","to","climb","the","rock"], hint:"🇩🇪 Wir durften nicht auf den Felsen klettern."},
+        {w:["They","had","to","walk","ten","kilometres"], hint:"🇩🇪 Sie mussten zehn Kilometer laufen."},
+        {w:["Will","we","be","able","to","see","the","sunset","?"], hint:"🇩🇪 Werden wir den Sonnenuntergang sehen können?"},
+        {w:["You","shouldn't","have","taken","that","stone"], hint:"🇩🇪 Du hättest diesen Stein nicht nehmen sollen."},
+        {w:["I","didn't","have","to","pay","for","the","bus"], hint:"🇩🇪 Ich musste nicht für den Bus bezahlen."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📓", titel:"Travel Diary: Red Centre", art:"Diary · fill in the gaps",
+      anleitung:"Read Jonas’ travel diary. Tap a gap and choose the right form.",
+      anleitungDe:"Lies Jonas’ Reisetagebuch. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Vergangenheit, Gegenwart oder Zukunft?",
+      ueberschrift:"Day 12 – Uluru",
+      text:"Today was amazing! We [[had to|must|have to]] get up at 4:30 because we wanted to see the sunrise at Uluru. When the sun came up, we [[were able to|can|will be able to]] see the rock turn bright red.\nAfter breakfast we did the base walk. At some places we [[weren’t allowed to|didn’t have to|needn’t]] take photos because they are sacred to the Anangu. Our guide said that people [[were allowed to|are allowed to|will be allowed to]] climb the rock until 2019. One man in our group said he had climbed it in 2015. I think he [[shouldn’t have|mustn’t have|didn’t have to]] done that.\nTomorrow we [[will have to|had to|must to]] drive 450 km to Alice Springs. I hope we [[will be able to|could|were able to]] see some kangaroos on the way!",
+      erklaerung:"Vergangenheit: **had to, were able to, weren’t allowed to** · Kritik: **shouldn’t have** · Zukunft: **will have to, will be able to**."}
+  ]
+});
+</script>
+</body>
+</html>

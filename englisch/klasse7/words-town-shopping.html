@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Town, Shops &amp; Directions – Unit 1 &amp; 4: York, shops, shopping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"vocabulary", id:"vtown7", icon:"🏘️", kartenSymbol:"🧭",
+  titel:"Words: Town, Shops & Directions", untertitel:"Unit 1 & 4: York, shops, shopping",
+  text:"Find your way through the tunnels of the dwarf town – and through York and Lisburn: shops, directions and what you say when you go shopping.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Shop Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Sprich die Wörter leise mit.",
+      paare:[ {a:"chemist’s", b:"Apotheke / Drogerie"}, {a:"butcher’s", b:"Metzgerei"}, {a:"baker’s", b:"Bäckerei"}, {a:"newsagent’s", b:"Zeitschriftenladen"},
+              {a:"greengrocer’s", b:"Obst- und Gemüseladen"}, {a:"post office", b:"Postamt"}, {a:"department store", b:"Kaufhaus"}, {a:"shopping centre", b:"Einkaufszentrum"} ]},
+    { id:"what", typ:"sortieren", icon:"🛍️", titel:"Where Can You Buy It?", art:"Shops · sort",
+      anleitung:"Where can you buy it? Tap the right shop.",
+      anleitungDe:"Wo kann man das kaufen? Tippe auf den richtigen Laden.",
+      tipp:"chemist’s = Apotheke/Drogerie · newsagent’s = Zeitschriften & Süßigkeiten.",
+      koerbe:[ {t:"chemist’s", info:"💊", tipp:"**chemist’s**: plasters, medicine, shampoo, toothpaste."}, {t:"baker’s", info:"🥖", tipp:"**baker’s**: bread, rolls, cakes, scones."}, {t:"newsagent’s", info:"📰", tipp:"**newsagent’s**: newspapers, magazines, sweets, stamps."}, {t:"greengrocer’s", info:"🥕", tipp:"**greengrocer’s**: fruit and vegetables."} ],
+      items:[
+        {t:"plasters", k:0, e:"**plaster** = Pflaster."}, {t:"medicine", k:0}, {t:"shampoo", k:0},
+        {t:"rolls", k:1}, {t:"scones", k:1, e:"**Scones** are small British cakes – great with jam and cream."}, {t:"a birthday cake", k:1},
+        {t:"a magazine", k:2}, {t:"a newspaper", k:2}, {t:"a bar of chocolate", k:2},
+        {t:"carrots", k:3}, {t:"potatoes", k:3}, {t:"bananas", k:3}
+      ]},
+    { id:"way", typ:"quiz", icon:"🧭", titel:"Which Way?", art:"Directions · quiz",
+      anleitung:"Directions! Choose the right meaning.",
+      anleitungDe:"Wegbeschreibungen! Wähle die richtige Bedeutung.",
+      tipp:"Stell dir den Weg auf einer Karte vor.",
+      fragen:[
+        {q:"**Go straight on** means …", o:["geradeaus gehen","rechts abbiegen","zurückgehen"], c:0, e:"**straight on** = geradeaus."},
+        {q:"**Turn left at the traffic lights.**", o:["An der Ampel links abbiegen.","An der Kreuzung rechts abbiegen.","An der Ampel warten."], c:0, e:"**traffic lights** = Ampel."},
+        {q:"**Take the second turning on the right.**", o:["Nimm die zweite Straße rechts.","Dreh dich zweimal um.","Nimm den zweiten Bus."], c:0, e:"**turning** = Abzweigung."},
+        {q:"The museum is **opposite** the bank.", o:["gegenüber","neben","hinter"], c:0, e:"**opposite** = gegenüber."},
+        {q:"The shop is **between** the café and the bank.", o:["zwischen","gegenüber","vor"], c:0, e:"**between** = zwischen."},
+        {q:"**Excuse me, how do I get to the station?**", o:["Entschuldigung, wie komme ich zum Bahnhof?","Entschuldigung, wann fährt der Zug?","Wo ist die Bushaltestelle?"], c:0, e:"Polite question for directions."},
+        {q:"**Cross the road** at the zebra crossing.", o:["die Straße überqueren","die Straße entlanggehen","an der Straße warten"], c:0, e:"**cross** = überqueren."},
+        {q:"The castle is **at the end of** the street.", o:["am Ende der Straße","an der Ecke","in der Mitte"], c:0, e:"**at the end of** = am Ende von."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **receipt** (Kassenbon) mit stummem p, **queue** (Warteschlange).", typ:"rush", icon:"⚡", titel:"Shopping Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Kassenbon", o:["receipt","reciept","receit"], c:0}, {q:"Warteschlange", o:["queue","queu","que"], c:0}, {q:"Wechselgeld", o:["change","chance","charge"], c:0},
+        {q:"Preis", o:["price","prize","prise"], c:0}, {q:"Größe", o:["size","sice","seize"], c:0}, {q:"anprobieren", o:["try on","try out","put on"], c:0},
+        {q:"Kasse", o:["till","tile","tell"], c:0}, {q:"Angebot", o:["special offer","special offre","speshal offer"], c:0}, {q:"bezahlen", o:["pay","pey","paid"], c:0},
+        {q:"teuer", o:["expensive","expansive","expencive"], c:0}, {q:"billig", o:["cheap","cheep","chip"], c:0}, {q:"Kreuzung", o:["crossroads","crossroad","crosroads"], c:0},
+        {q:"Ampel", o:["traffic lights","trafic lights","traffic light’s"], c:0}, {q:"Ecke", o:["corner","conner","coner"], c:0}, {q:"Bushaltestelle", o:["bus stop","bus station stop","bus shop"], c:0},
+        {q:"geradeaus", o:["straight on","streight on","straight in"], c:0}, {q:"Brücke", o:["bridge","brigde","bridgde"], c:0}, {q:"Pfund (Geld)", o:["pound","pond","pount"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🗺️", titel:"Lost in York", art:"Dialogue · fill in the gaps",
+      anleitung:"Tom is lost in York. Tap a gap and choose the right word.",
+      anleitungDe:"Tom hat sich in York verlaufen. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Excuse me …",
+      text:"Tom: Excuse me, how do I get to the [[Minster|monster|minister]]?\nWoman: Oh, that’s easy. Go [[straight on|straight in|straightly]] down this street. Then [[turn|turns|turning]] left at the [[traffic lights|traffic light’s|trafficlights]].\nTom: Left at the lights. OK.\nWoman: Walk past the [[chemist’s|chemistry|chemicals]] and the baker’s. The Minster is [[opposite|between|under]] a big bookshop. You can’t miss it!\nTom: Thank you very much! Oh – and where can I buy a stamp for a postcard?\nWoman: At the [[post office|post station|postman’s]] or at the [[newsagent’s|newsagents’s|news agent]] on the corner.",
+      erklaerung:"Wegbeschreibung: **straight on, turn left, traffic lights, opposite** · Läden: **chemist’s, post office, newsagent’s**."}
+  ]
+});
+</script>
+</body>
+</html>

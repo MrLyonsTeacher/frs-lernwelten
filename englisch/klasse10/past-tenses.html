@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Frozen Memories – Past tenses (revision): simple past, past progressive, past perfect, present perfect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"grammar", id:"past10", icon:"🧊", kartenSymbol:"❄️",
+  titel:"Frozen Memories", untertitel:"Past tenses (revision): simple past, past progressive, past perfect, present perfect",
+  text:"In the Ice Citadel memories are frozen in crystal. Look into them and tell the stories – with all the past tenses you know.",
+  lernen: {
+    past: { titel:"Four tenses for the past", folien:[
+      {"bild":"📍","titel":"Simple past","formel":["verb + ed / 2nd form"],"bsp":["We **met** in Auckland **in 2023**."],"de":"**Abgeschlossen**, oft mit Zeitpunkt (yesterday, in 2023, ago). Erzählzeit."},
+      {"bild":"⏸️","titel":"Past progressive","formel":["was / were + -ing"],"bsp":["I **was walking** home when I **saw** her."],"de":"Handlung **im Gange** – oft von einer kurzen Handlung (simple past) unterbrochen."},
+      {"bild":"⏪","titel":"Past perfect","formel":["had + 3rd form"],"bsp":["When I arrived, she **had** already **left**."],"de":"**Vorvergangenheit**: was **vorher** schon passiert war."},
+      {"bild":"🔗","titel":"Present perfect","formel":["have / has + 3rd form"],"bsp":["We**’ve been** friends **since** primary school.","Have you **ever** **been** to New Zealand?"],"de":"**Verbindung zur Gegenwart**, ohne Zeitpunkt (ever, never, since, for, just, yet)."}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"past", icon:"🧊", titel:"Crystal Memories", art:"Choose the tense · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Signalwörter und Reihenfolge der Ereignisse beachten.",
+      fragen:[
+        {q:"Aroha and Tom **___** at a party in Wellington two years ago.", o:["met","have met","had met"], c:0, e:"**two years ago** → simple past."},
+        {q:"They **___** friends ever since.", o:["have been","were","had been"], c:0, e:"**ever since** → present perfect."},
+        {q:"When Tom arrived, Aroha **___** with her cousin.", o:["was dancing","danced","has danced"], c:0, e:"Action in progress → **was dancing**."},
+        {q:"Tom was nervous because he **___** her before.", o:["had never met","has never met","never meets"], c:0, e:"Before that moment → **had never met**."},
+        {q:"**___** you ever **___** a long-distance relationship?", o:["Have … had","Did … have","Had … had"], c:0, alt:["Have had"], e:"**ever** (until now) → present perfect."},
+        {q:"While they **___** on the beach, it started to rain.", o:["were walking","walked","have walked"], c:0, e:"**While** + past progressive."},
+        {q:"After she **___** his message, she called him back.", o:["had read","has read","was reading"], c:0, e:"**After** + first action → past perfect."},
+        {q:"I **___** my best friend since 2019.", o:["have known","knew","was knowing"], c:0, e:"**since** + state verb → **have known**."},
+        {q:"Last week Mia **___** up with her boyfriend.", o:["broke","has broken","had been breaking"], c:0, e:"**Last week** → simple past (break up = sich trennen)."}
+      ]},
+    { id:"sort", typ:"sortieren", lernen:"past", icon:"🗂️", titel:"Signal Word Sorter", art:"Signal words · sort",
+      anleitung:"Which tense usually goes with the signal word? Tap the right box.",
+      anleitungDe:"Welche Zeitform passt meistens zum Signalwort? Tippe auf das richtige Kästchen.",
+      tipp:"Manche Signalwörter passen zu mehreren Zeiten – hier zählt die typische.",
+      koerbe:[ {t:"simple past", info:"📍", tipp:"**simple past**: ago, last …, in 2015, yesterday."}, {t:"past progressive", info:"⏸️", tipp:"**past progressive**: while, at 8 pm yesterday, all evening."}, {t:"past perfect", info:"⏪", tipp:"**past perfect**: by the time, had already, before that."}, {t:"present perfect", info:"🔗", tipp:"**present perfect**: ever, never, since, yet, so far."} ],
+      items:[
+        {t:"three years ago", k:0}, {t:"last weekend", k:0},
+        {t:"while", k:1}, {t:"at 8 pm yesterday evening", k:1},
+        {t:"by the time we arrived", k:2}, {t:"never … before (that day)", k:2},
+        {t:"ever", k:3}, {t:"so far", k:3}
+      ]},
+    { id:"rush", regel:"Grundform – simple past – 3. Form: z. B. fall – **fell** – **fallen**.", typ:"rush", icon:"⚡", titel:"Irregular Avalanche", art:"Simple past · 60 seconds",
+      anleitung:"Choose the **simple past** form. **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die **simple-past**-Form. **Ziel: 12** in 60 Sekunden.",
+      tipp:"Unregelmäßige Verben!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"fall", o:["fell","fallen","falled"], c:0}, {q:"feel", o:["felt","feeled","fell"], c:0}, {q:"fight", o:["fought","fighted","fight"], c:0}, {q:"forgive", o:["forgave","forgived","forgiven"], c:0},
+        {q:"lose", o:["lost","losed","loosed"], c:0}, {q:"meet", o:["met","meeted","meet"], c:0}, {q:"think", o:["thought","thinked","taught"], c:0}, {q:"keep", o:["kept","keeped","kepped"], c:0},
+        {q:"break", o:["broke","broken","breaked"], c:0}, {q:"tell", o:["told","telled","tolled"], c:0}, {q:"leave", o:["left","leaved","lefted"], c:0}, {q:"understand", o:["understood","understanded","understand"], c:0},
+        {q:"bring", o:["brought","bringed","brang"], c:0}, {q:"shake", o:["shook","shaked","shaken"], c:0}, {q:"hold", o:["held","holded","hold"], c:0}, {q:"catch", o:["caught","catched","cought"], c:0}
+      ]},
+    { id:"build", regel:"Vorher → **had + 3. Form** · im Gange → **was/were + -ing** · Zeitpunkt → **simple past** · bis jetzt → **have/has + 3. Form**.", typ:"satzbau", icon:"🧱", titel:"Story Builder", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"Achte auf die Zeitform im deutschen Satz.",
+      punkte:2,
+      saetze:[
+        {w:["We","were","texting","when","the","teacher","came","in"], alt:[["When","the","teacher","came","in",",","we","were","texting"],["When","the","teacher","came","in","we","were","texting"]], hint:"🇩🇪 Wir schrieben gerade Nachrichten, als die Lehrerin hereinkam."},
+        {w:["She","had","already","left","when","I","arrived"], alt:[["When","I","arrived",",","she","had","already","left"],["When","I","arrived","she","had","already","left"]], hint:"🇩🇪 Sie war schon gegangen, als ich ankam."},
+        {w:["Have","you","ever","been","in","love","?"], hint:"🇩🇪 Warst du schon einmal verliebt?"},
+        {w:["They","broke","up","last","month"], alt:[["Last","month","they","broke","up"]], hint:"🇩🇪 Sie haben sich letzten Monat getrennt."},
+        {w:["I","have","known","her","for","five","years"], hint:"🇩🇪 Ich kenne sie seit fünf Jahren."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"💌", titel:"Advice Forum", art:"Forum post · fill in the gaps",
+      anleitung:"Read the post on an advice forum. Tap a gap and choose the right form.",
+      anleitungDe:"Lies den Beitrag in einem Ratgeberforum. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Welche Zeit passt zur Situation?",
+      ueberschrift:"Help! My best friend is ignoring me",
+      text:"Kia ora everyone,\nI’m Ruby (15) from Dunedin. My best friend Hana and I [[have known|knew|had known]] each other since we were five. But last Saturday something [[happened|has happened|was happening]].\nWe [[were sitting|sat were|have sat]] in a café when her phone rang. While she [[was talking|talked|has talked]], I looked at her messages – I know, stupid! She saw it and [[left|has left|had leaving]] without a word.\nWhen I got home, she [[had already blocked|has already blocked|already blocks]] me on every app. I [[haven’t talked|didn’t talk|hadn’t talked]] to her since then. What should I do?",
+      erklaerung:"since → **have known / haven’t talked** · Zeitpunkt → **happened, left** · im Gange → **were sitting, was talking** · vorher → **had already blocked**."}
+  ]
+});
+</script>
+</body>
+</html>

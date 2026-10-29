@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Holiday Hall – The gerund (-ing form)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"ger7", icon:"🏕️", kartenSymbol:"🎒",
+  titel:"Holiday Hall", untertitel:"The gerund (-ing form)",
+  text:"The dwarves are planning their holidays: camping, swimming or just sleeping? Learn how to use the -ing form like a noun – the gerund.",
+  lernen: {
+    ger: { titel:"The gerund", folien:[
+      {"bild":"🏊","titel":"-ing form as a noun","formel":["verb | + ing | = gerund","swim | → | swimming"],"bsp":["**Swimming** is fun.","**Camping** in Scotland can be wet."],"de":"Das **Gerundium** ist ein Verb mit **-ing**, das wie ein **Nomen** benutzt wird – oft als Subjekt am Satzanfang."},
+      {"bild":"❤️","titel":"After these verbs","formel":["like · love · hate · enjoy | + | -ing","start · stop · finish | + | -ing"],"bsp":["I **enjoy hiking**.","We **finished packing** at ten."],"de":"Nach *like, love, hate, enjoy, start, stop, finish, don’t mind* steht oft das **Gerundium**."},
+      {"bild":"🧲","titel":"After prepositions","formel":["good at · interested in · afraid of | + | -ing","before · after · without | + | -ing"],"bsp":["Tom is **good at climbing**.","**Before going** out, check the weather."],"de":"Nach **Präpositionen** steht **immer** das Gerundium."},
+      {"bild":"✏️","titel":"Spelling","formel":["make | → | making","swim | → | swimming","lie | → | lying"],"bsp":["**Making** pancakes is easy.","**Swimming** in the sea is cold."],"de":"stummes -e fällt weg · kurzer Vokal + Konsonant → **Konsonant verdoppeln** · -ie → **-ying**."}
+    ]}
+  },
+  levels: [
+    { id:"rush", regel:"-e fällt weg (make → **making**), Konsonant verdoppeln (swim → **swimming**), ie → **y** (lie → **lying**).", typ:"rush", icon:"⚡", titel:"-ing Rush", art:"Spelling · 60 seconds",
+      anleitung:"Choose the right **-ing form**. **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die richtige **-ing-Form**. **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Rechtschreibregeln!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"swim", o:["swimming","swiming","swimeing"], c:0}, {q:"make", o:["making","makeing","makking"], c:0}, {q:"run", o:["running","runing","runnning"], c:0},
+        {q:"ride", o:["riding","rideing","ridding"], c:0}, {q:"lie", o:["lying","lieing","liing"], c:0}, {q:"go", o:["going","goeing","gooing"], c:0},
+        {q:"shop", o:["shopping","shoping","shopeing"], c:0}, {q:"dance", o:["dancing","danceing","dancting"], c:0}, {q:"sit", o:["sitting","siting","siteing"], c:0},
+        {q:"play", o:["playing","plaing","plaiing"], c:0}, {q:"write", o:["writing","writting","writeing"], c:0}, {q:"get", o:["getting","geting","geeting"], c:0},
+        {q:"hike", o:["hiking","hikeing","hikking"], c:0}, {q:"stop", o:["stopping","stoping","stopeing"], c:0}, {q:"camp", o:["camping","campping","campeing"], c:0},
+        {q:"take", o:["taking","takeing","takking"], c:0}, {q:"travel", o:["travelling","travling","travellling"], c:0, e:"British English: **travelling** (AE: traveling)."}, {q:"die", o:["dying","dieing","diing"], c:0}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"ger", icon:"🎒", titel:"Packing Time", art:"Gerund · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Nach *enjoy, finish, stop* und nach Präpositionen steht -ing.",
+      fragen:[
+        {q:"**___** is my favourite hobby.", o:["Reading","Read","To reading"], c:0, e:"Gerund as subject: **Reading** is …"},
+        {q:"We enjoy **___** in the mountains.", o:["hiking","hike","to hiking"], c:0, e:"enjoy + **-ing**."},
+        {q:"Kate is good at **___**.", o:["drawing","draw","to draw"], c:0, e:"After a preposition (at) → **-ing**."},
+        {q:"Have you finished **___** your bag?", o:["packing","pack","to packing"], c:0, e:"finish + **-ing**."},
+        {q:"He’s afraid of **___** in the dark.", o:["being","be","to be"], c:0, e:"afraid **of** + -ing."},
+        {q:"Stop **___**! I’m trying to sleep.", o:["talking","talk","to talking"], c:0, e:"stop + **-ing**."},
+        {q:"Thanks for **___** me.", o:["helping","help","to help"], c:0, e:"for + **-ing**."},
+        {q:"Before **___** to bed, I brush my teeth.", o:["going","go","to going"], c:0, e:"before + **-ing**."},
+        {q:"I don’t mind **___** in a tent.", o:["sleeping","sleep","to sleep"], c:0, e:"don’t mind + **-ing**."},
+        {q:"Are you interested in **___** a castle?", o:["visiting","visit","visited"], c:0, e:"interested **in** + -ing."}
+      ]},
+    { id:"sort", typ:"sortieren", lernen:"ger", icon:"🏨", titel:"Places to Stay", art:"Holiday words · sort",
+      anleitung:"Where do you sleep? Tap the right box.",
+      anleitungDe:"Wo schläft man? Tippe auf das richtige Kästchen.",
+      tipp:"Ein B&B ist ein privates Haus mit Frühstück.",
+      koerbe:[ {t:"camping", info:"⛺ outside", tipp:"**camping**: tent, campsite, sleeping bag, caravan."}, {t:"in a building", info:"🏠 inside", tipp:"**in a building**: hotel, B&B, youth hostel, holiday cottage."} ],
+      items:[
+        {t:"tent", k:0}, {t:"sleeping bag", k:0}, {t:"campsite", k:0}, {t:"caravan", k:0, e:"A **caravan** (Wohnwagen) stands on a campsite."},
+        {t:"hotel", k:1}, {t:"B&B (bed and breakfast)", k:1, e:"**B&B** = a private house where you get a room and breakfast."}, {t:"youth hostel", k:1}, {t:"holiday cottage", k:1}
+      ]},
+    { id:"build", regel:"Gerundium als **Subjekt** am Satzanfang oder **nach** like/enjoy/finish und Präpositionen.", typ:"satzbau", icon:"🧱", titel:"Holiday Sentences", art:"Sentence builder",
+      anleitung:"Build the sentence with a gerund.",
+      anleitungDe:"Bau den Satz mit einem Gerundium.",
+      tipp:"Das -ing-Wort kann am Anfang stehen.",
+      punkte:2,
+      saetze:[
+        {w:["Camping","in","Scotland","is","fun"], hint:"🇩🇪 Zelten in Schottland macht Spaß."},
+        {w:["I","love","swimming","in","the","sea"], hint:"🇩🇪 Ich liebe es, im Meer zu schwimmen."},
+        {w:["My","dad","is","good","at","cooking"], hint:"🇩🇪 Mein Vater kann gut kochen."},
+        {w:["We","are","interested","in","visiting","castles"], hint:"🇩🇪 Wir interessieren uns dafür, Burgen zu besichtigen."},
+        {w:["Thank","you","for","inviting","me"], hint:"🇩🇪 Danke für die Einladung."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🗺️", titel:"Holiday Plans", art:"Text · fill in the gaps",
+      anleitung:"The family is discussing their holiday. Tap a gap and choose the right form.",
+      anleitungDe:"Die Familie bespricht den Urlaub. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Nach Präpositionen und nach enjoy, love, hate steht -ing.",
+      ueberschrift:"Where shall we go?",
+      text:"Mum: I’d like to go to the Highlands. I love [[walking|walk]] in the hills.\nAmy: Oh no! I hate [[getting|get]] wet, and it always rains in Scotland.\nDad: [[Staying|Stay]] in a B&B is nice – you get a big breakfast!\nJack: I’m interested in [[seeing|see]] Loch Ness. Maybe we’ll find Nessie!\nAmy: OK, but I want to go to a town too. I enjoy [[shopping|shop]].\nMum: Fine. But before [[booking|book]] anything, let’s look at the prices.",
+      erklaerung:"Gerundium nach **love, hate, enjoy**, nach **Präpositionen** (in, before) und als **Subjekt** (Staying …)."}
+  ]
+});
+</script>
+</body>
+</html>

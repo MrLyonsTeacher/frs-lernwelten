@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>True North: Canada – Land, people, history &amp; the Arctic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"country", id:"can10", icon:"🍁", kartenSymbol:"🧭",
+  titel:"True North: Canada", untertitel:"Land, people, history & the Arctic",
+  text:"From the Ice Citadel you can almost see it: the second-largest country in the world, with endless forests, the Arctic – and people who speak English, French and many Indigenous languages.",
+  lernen: {
+    can: { titel:"Canada in 9 cards", folien:[
+      {"bild":"🗺️","titel":"Huge and empty","text":"Canada is the **second-largest country** in the world – about **28 times as big as Germany**. But only about **41 million** people live there, most of them within **200 km of the US border**.","de":"Kanada ist das **zweitgrößte Land** der Welt – etwa **28-mal so groß wie Deutschland**. Aber nur rund **41 Millionen** Menschen leben dort, die meisten nahe der **US-Grenze**."},
+      {"bild":"🏛️","titel":"Ottawa and the provinces","text":"The capital is **Ottawa**. Canada has **10 provinces** and **3 territories**. The biggest cities are **Toronto**, **Montreal** and **Vancouver**.","de":"Die Hauptstadt ist **Ottawa**. Kanada hat **10 Provinzen** und **3 Territorien**. Die größten Städte sind **Toronto, Montreal** und **Vancouver**."},
+      {"bild":"🗣️","titel":"English and French","text":"Canada has **two official languages**: **English** and **French**. In the province of **Québec** most people speak French. Products in shops have labels in both languages.","de":"Kanada hat **zwei Amtssprachen**: **Englisch** und **Französisch**. In der Provinz **Québec** sprechen die meisten Französisch. Produkte haben Etiketten in beiden Sprachen."},
+      {"bild":"🪶","titel":"First Nations, Inuit and Métis","text":"**Indigenous peoples** lived in Canada long before the Europeans came: the **First Nations**, the **Inuit** in the Arctic and the **Métis**. For a long time many Indigenous children were forced to go to **residential schools**, where they weren’t allowed to speak their languages.","de":"**Indigene Völker** lebten lange vor den Europäern in Kanada: die **First Nations**, die **Inuit** in der Arktis und die **Métis**. Lange wurden viele indigene Kinder in **Internatsschulen** gezwungen, wo sie ihre Sprache nicht sprechen durften."},
+      {"bild":"🍁","titel":"A young country","text":"French and British settlers fought over the land. In **1867** Canada became a country (a **dominion**) – **1 July** is **Canada Day**. The King of the UK is still Canada’s **head of state**.","de":"Französische und britische Siedler kämpften um das Land. **1867** wurde Kanada ein eigener Staat – der **1. Juli** ist **Canada Day**. Der britische König ist bis heute Kanadas **Staatsoberhaupt**."},
+      {"bild":"🏒","titel":"Hockey and lacrosse","text":"Canada has **two national sports**: **ice hockey** in winter and **lacrosse** in summer. Lacrosse was first played by First Nations peoples.","de":"Kanada hat **zwei Nationalsportarten**: **Eishockey** im Winter und **Lacrosse** im Sommer. Lacrosse wurde zuerst von den First Nations gespielt."},
+      {"bild":"🐻‍❄️","titel":"The Arctic","text":"In the far north it is dark for weeks in winter. **Polar bears**, **caribou** and **narwhals** live there. The town of **Churchill** is called the “polar bear capital of the world”.","de":"Im hohen Norden ist es im Winter wochenlang dunkel. Dort leben **Eisbären, Karibus** und **Narwale**. Die Stadt **Churchill** gilt als „Eisbärenhauptstadt der Welt“."},
+      {"bild":"🛢️","titel":"Energy and protests","text":"Canada has huge **oil sands** in Alberta and a lot of **hydropower**. New **pipelines** have caused big **protests** – often led by Indigenous communities who want to protect their land and water.","de":"Kanada hat riesige **Ölsande** in Alberta und viel **Wasserkraft**. Neue **Pipelines** haben große **Proteste** ausgelöst – oft angeführt von indigenen Gemeinschaften, die ihr Land und Wasser schützen wollen."},
+      {"bild":"🚂","titel":"The Canadian Pacific Railway","text":"The **railway across Canada** was finished in **1885**. It connected the east with British Columbia in the west. Today you can still cross the country by train – it takes about **four days**!","de":"Die **Eisenbahn quer durch Kanada** wurde **1885** fertig. Sie verband den Osten mit British Columbia im Westen. Heute kann man das Land noch immer per Zug durchqueren – das dauert etwa **vier Tage**!"}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"can", icon:"🍁", titel:"Canada Quiz", art:"Quiz · the big picture",
+      E:{plus:[
+        {q:"Why are many Indigenous communities against new pipelines?", o:["They want to protect their land and water","They want more oil","They don’t like trains","They want to move to the USA"], c:0, e:"An **oil spill** could destroy rivers, lakes and hunting grounds."},
+        {q:"What were residential schools?", o:["schools where Indigenous children were forced to live and couldn’t speak their languages","schools for rich kids","online schools in the Arctic","summer camps"], c:0, e:"Today Canada calls this a dark chapter of its history."}
+      ]},
+      anleitung:"What do you know about Canada now? Choose the right answer.",
+      anleitungDe:"Was weißt du jetzt über Kanada? Wähle die richtige Antwort.",
+      tipp:"Tippe auf 📖, wenn du dir die Infokarten noch einmal ansehen willst.",
+      fragen:[
+        {q:"What is the capital of Canada?", o:["Ottawa","Toronto","Vancouver","Montreal"], c:0, e:"**Ottawa**."},
+        {q:"What are Canada’s official languages?", o:["English and French","English and Spanish","only English","French and Inuktitut"], c:0, e:"**English and French**."},
+        {q:"Where do most French-speaking Canadians live?", o:["in Québec","in British Columbia","in the Arctic","in Alberta"], c:0, e:"In the province of **Québec**."},
+        {q:"When is Canada Day?", o:["1 July","4 July","26 January","17 March"], c:0, e:"**1 July** – the birthday of Canada (1867)."},
+        {q:"Which are Canada’s two national sports?", o:["ice hockey and lacrosse","football and baseball","curling and skiing","rugby and cricket"], c:0, e:"**Ice hockey** (winter) and **lacrosse** (summer)."},
+        {q:"Who are the Inuit?", o:["Indigenous people in the Arctic","French settlers","a hockey team","British soldiers"], c:0, e:"The **Inuit** live in the Arctic."},
+        {q:"Where do most Canadians live?", o:["close to the US border","in the Arctic","on islands","in the Rocky Mountains"], c:0, e:"Most live within about **200 km of the US border**."},
+        {q:"Which town is called the “polar bear capital of the world”?", o:["Churchill","Ottawa","Calgary","Halifax"], c:0, e:"**Churchill** in Manitoba."}
+      ]},
+    { id:"guess", typ:"schaetzen", lernen:"can", icon:"📏", titel:"Canada in Numbers", art:"Estimate · slider",
+      anleitung:"Guess the number! Move the slider and tap **OK**. The closer you are, the more flags you get.",
+      anleitungDe:"Schätze die Zahl! Bewege den Regler und tippe auf **OK**. Je näher du dran bist, desto mehr Flaggen bekommst du.",
+      tipp:"Deutschland hat etwa 84 Millionen Einwohner.",
+      fragen:[
+        {q:"How many people live in Canada? (million)", min:5, max:150, step:1, start:20, unit:"million", dec:0, ans:41, tol:4, e:"About **41 million** – half of Germany."},
+        {q:"How many times bigger than Germany is Canada?", min:1, max:60, step:1, start:5, unit:"×", dec:0, ans:28, tol:3, e:"About **28 times**."},
+        {q:"In which year did Canada become a country?", min:1600, max:1950, step:1, start:1800, unit:"", dec:0, ans:1867, tol:6, e:"**1867**."},
+        {q:"How many days does the train trip from Toronto to Vancouver take?", min:1, max:14, step:1, start:2, unit:"days", dec:0, ans:4, tol:1, e:"About **4 days** on *The Canadian*."}
+      ]},
+    { id:"map", typ:"sortieren", lernen:"can", icon:"🗺️", titel:"Where in Canada?", art:"Sort · regions",
+      anleitung:"Where in Canada is it? Tap the right region.",
+      anleitungDe:"Wo in Kanada ist das? Tippe auf die richtige Region.",
+      tipp:"West – Mitte/Osten – Norden.",
+      koerbe:[ {t:"West", info:"🏔️ BC, Alberta", tipp:"**West**: Vancouver, the Rocky Mountains, Alberta’s oil sands."}, {t:"East", info:"🏙️ Ontario, Québec", tipp:"**East**: Toronto, Ottawa, Montreal, Niagara Falls."}, {t:"North", info:"🧊 the territories", tipp:"**North**: the Arctic, Nunavut, Inuit communities."} ],
+      items:[
+        {t:"Vancouver", k:0}, {t:"the Rocky Mountains", k:0}, {t:"the oil sands", k:0},
+        {t:"Toronto", k:1}, {t:"Niagara Falls", k:1}, {t:"the French-speaking city of Montreal", k:1},
+        {t:"Nunavut", k:2, e:"**Nunavut** = “our land” in Inuktitut – the territory of the Inuit."}, {t:"igloos and dog sleds", k:2}, {t:"the midnight sun", k:2}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"can", icon:"✅", titel:"True or False?", art:"Swipe · facts",
+      anleitung:"Is it true? Swipe **right for True** and **left for False**.",
+      anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
+      tipp:"Lies genau – oft ist nur ein Detail falsch.",
+      links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
+      karten:[
+        {t:"Canada is the largest country in the world.", r:"l", e:"False – it’s the **second-largest** (after Russia)."},
+        {t:"Canada has two official languages.", r:"r", e:"True – English and French."},
+        {t:"Toronto is the capital of Canada.", r:"l", e:"False – it’s **Ottawa**."},
+        {t:"Lacrosse was first played by First Nations peoples.", r:"r", e:"True."},
+        {t:"The King of the UK is Canada’s head of state.", r:"r", e:"True – Canada is a constitutional monarchy."},
+        {t:"Polar bears live in the south of Canada.", r:"l", e:"False – they live in the **north** (e.g. Churchill)."},
+        {t:"The maple leaf is on the Canadian flag.", r:"r", e:"True – a red **maple leaf**."},
+        {t:"The railway across Canada was finished in 1985.", r:"l", e:"False – in **1885**."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🚂", titel:"Across Canada by Train", art:"Travel diary · fill in the gaps",
+      anleitung:"Read Sophie’s travel diary. Tap a gap and choose the right word.",
+      anleitungDe:"Lies Sophies Reisetagebuch. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alles steht in den Infokarten.",
+      ueberschrift:"Four days on “The Canadian”",
+      text:"Day 1: We left [[Toronto|Tokyo|Texas]] this morning. Everything at the station was in English and [[French|German|Spanish]].\nDay 2: Endless forests and lakes! Canada is the [[second-largest|largest|smallest]] country in the world, so it’s no wonder the trip takes so long.\nDay 3: Today we saw the [[Rocky Mountains|Alps|Andes]]. A man from Alberta told us about the [[oil sands|olive groves|rice fields]] there and the [[protests|parties|parades]] against new pipelines.\nDay 4: Arrived in [[Vancouver|Venice|Ottawa]]! Tonight we’re watching an ice [[hockey|cream|skating]] game. Go Canucks!",
+      erklaerung:"Route Toronto → Rocky Mountains → Vancouver · **English and French** · **oil sands, protests** · **ice hockey**."}
+  ]
+});
+</script>
+</body>
+</html>

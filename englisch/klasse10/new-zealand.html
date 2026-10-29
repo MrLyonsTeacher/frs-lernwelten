@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Aotearoa New Zealand – Māori culture, history, nature &amp; the Kiwi way of life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"country", id:"nz10", icon:"🥝", kartenSymbol:"🧭",
+  titel:"Aotearoa New Zealand", untertitel:"Māori culture, history, nature & the Kiwi way of life",
+  text:"Beyond the frozen sea lies the “land of the long white cloud”. Discover New Zealand: Māori traditions, a treaty, flightless birds – and the place where Middle-earth was filmed.",
+  lernen: {
+    nz: { titel:"New Zealand in 9 cards", folien:[
+      {"bild":"☁️","titel":"Aotearoa","text":"The Māori name of New Zealand is **Aotearoa** – “the land of the long white cloud”. The country has two big islands, the **North Island** and the **South Island**, and about **5.3 million** people.","de":"Der Māori-Name Neuseelands ist **Aotearoa** – „das Land der langen weißen Wolke“. Es gibt zwei große Inseln, die **Nordinsel** und die **Südinsel**, und etwa **5,3 Millionen** Einwohner."},
+      {"bild":"🛶","titel":"The first people","text":"The **Māori** came from Polynesia in big canoes about **700 years ago**. They were the first people in New Zealand. Today about **one in six** New Zealanders is Māori.","de":"Die **Māori** kamen vor etwa **700 Jahren** in großen Kanus aus Polynesien. Sie waren die ersten Menschen in Neuseeland. Heute ist etwa **jeder sechste** Neuseeländer Māori."},
+      {"bild":"📜","titel":"The Treaty of Waitangi","text":"In **1840** British officials and many Māori chiefs signed the **Treaty of Waitangi**. But the English and Māori versions said different things, and Māori lost a lot of land. **6 February** is **Waitangi Day**.","de":"**1840** unterzeichneten britische Beamte und viele Māori-Häuptlinge den **Vertrag von Waitangi**. Doch die englische und die Māori-Fassung sagten Verschiedenes, und die Māori verloren viel Land. Der **6. Februar** ist **Waitangi Day**."},
+      {"bild":"🗣️","titel":"Te reo Māori","text":"**Te reo Māori** is an official language. *Kia ora* means **hello** (and thanks), *whānau* means **family** and *kai* means **food**. Many places have Māori names.","de":"**Te reo Māori** ist Amtssprache. *Kia ora* heißt **Hallo** (und Danke), *whānau* **Familie** und *kai* **Essen**. Viele Orte haben Māori-Namen."},
+      {"bild":"🏉","titel":"Haka and rugby","text":"A **haka** is a traditional Māori dance with strong movements and shouting. The national rugby team, the **All Blacks**, performs a haka before every match.","de":"Ein **Haka** ist ein traditioneller Māori-Tanz mit kraftvollen Bewegungen und Rufen. Die Rugby-Nationalmannschaft, die **All Blacks**, tanzt vor jedem Spiel einen Haka."},
+      {"bild":"🖋️","titel":"Tā moko and the marae","text":"**Tā moko** are traditional Māori tattoos that tell a person’s **family history**. A **marae** is a meeting place where families come together for celebrations and important events.","de":"**Tā moko** sind traditionelle Māori-Tätowierungen, die die **Familiengeschichte** eines Menschen erzählen. Ein **Marae** ist ein Versammlungsort, an dem Familien Feste und wichtige Ereignisse feiern."},
+      {"bild":"🗳️","titel":"Votes for women","text":"In **1893** New Zealand was the **first country in the world** where women could vote in national elections.","de":"**1893** durften in Neuseeland als **erstem Land der Welt** Frauen bei nationalen Wahlen wählen."},
+      {"bild":"🥝","titel":"Kiwis","text":"The **kiwi** is a small bird that **can’t fly**. It’s the national symbol – and New Zealanders call themselves **Kiwis**, too. The fruit was renamed “kiwifruit” to sell it abroad.","de":"Der **Kiwi** ist ein kleiner Vogel, der **nicht fliegen** kann. Er ist das Nationalsymbol – und die Neuseeländer nennen sich selbst **Kiwis**. Die Frucht wurde für den Export „Kiwifruit“ genannt."},
+      {"bild":"🏔️","titel":"Middle-earth","text":"The **Lord of the Rings** and **Hobbit** films were shot in New Zealand. You can still visit **Hobbiton** near Matamata. Volcanoes, glaciers, fjords and beaches make it a paradise for adventure sports like **bungy jumping**, which started here.","de":"Die Filme **Der Herr der Ringe** und **Der Hobbit** wurden in Neuseeland gedreht. **Hobbiton** bei Matamata kann man besuchen. Vulkane, Gletscher, Fjorde und Strände machen es zum Paradies für Abenteuersport wie **Bungeejumping**, das hier erfunden wurde."}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"nz", icon:"🥝", titel:"Kiwi Quiz", art:"Quiz · the big picture",
+      E:{plus:[
+        {q:"Why is the Treaty of Waitangi still discussed today?", o:["The English and Māori versions said different things","It was written in German","Nobody signed it","It gave land to the Māori only"], c:0, e:"Different translations led to **misunderstandings** and **land loss**."},
+        {q:"What does a tā moko show?", o:["a person’s family history","a person’s favourite sport","the way to the next town","a football club"], c:0, e:"Every **moko** is unique."}
+      ]},
+      anleitung:"What do you know about New Zealand now? Choose the right answer.",
+      anleitungDe:"Was weißt du jetzt über Neuseeland? Wähle die richtige Antwort.",
+      tipp:"Tippe auf 📖, wenn du dir die Infokarten noch einmal ansehen willst.",
+      fragen:[
+        {q:"What does “Aotearoa” mean?", o:["land of the long white cloud","land of the kiwi","green island","land of fire"], c:0, e:"**Aotearoa** = the land of the long white cloud."},
+        {q:"Who were the first people in New Zealand?", o:["the Māori","British settlers","the Inuit","Dutch sailors"], c:0, e:"The **Māori** came from Polynesia."},
+        {q:"What was signed in 1840?", o:["the Treaty of Waitangi","the end of apartheid","the first rugby rules","a peace treaty with Australia"], c:0, e:"The **Treaty of Waitangi**."},
+        {q:"What does “Kia ora” mean?", o:["hello / thank you","goodbye forever","good night","food"], c:0, e:"**Kia ora** = hello, thanks."},
+        {q:"What is a haka?", o:["a traditional Māori dance","a kind of boat","a bird","a mountain"], c:0, e:"The **All Blacks** perform it before matches."},
+        {q:"What happened in New Zealand in 1893?", o:["Women could vote for the first time","The first film was made","The kiwi was discovered","Bungy jumping was invented"], c:0, e:"**First country** with votes for women."},
+        {q:"What is special about the kiwi bird?", o:["It can’t fly.","It can swim under water.","It lives only in Germany.","It is very big."], c:0, e:"The **kiwi** can’t fly."},
+        {q:"Which films were made in New Zealand?", o:["The Lord of the Rings","Star Wars","Harry Potter","Frozen"], c:0, e:"**The Lord of the Rings** and **The Hobbit**."}
+      ]},
+    { id:"reo", typ:"memory", lernen:"nz", icon:"🗣️", titel:"Te Reo Words", art:"Māori word + meaning · memory",
+      anleitung:"Find the pairs: **Māori word + English meaning**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Māori-Wort + englische Bedeutung**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Viele dieser Wörter benutzen auch englischsprachige Neuseeländer.",
+      paare:[ {a:"Kia ora", b:"hello / thanks"}, {a:"whānau", b:"family"}, {a:"kai", b:"food"}, {a:"Aotearoa", b:"New Zealand"},
+              {a:"marae", b:"meeting place"}, {a:"Pākehā", b:"New Zealander of European origin"}, {a:"haka", b:"traditional dance"}, {a:"Ka kite anō", b:"see you again"} ]},
+    { id:"time", typ:"zeitstrahl", lernen:"nz", icon:"⏳", titel:"New Zealand Through Time", art:"Timeline · 6 events",
+      anleitung:"Put the events in the right order – **the oldest first**.",
+      anleitungDe:"Bring die Ereignisse in die richtige Reihenfolge – **das älteste zuerst**.",
+      tipp:"Die Māori kamen lange vor den Europäern.",
+      items:[
+        {j:"c. 1300", t:"The Māori arrive in canoes from Polynesia."},
+        {j:"1642", t:"The Dutch sailor Abel Tasman reaches New Zealand."},
+        {j:"1769", t:"James Cook maps the coast."},
+        {j:"1840", t:"The Treaty of Waitangi is signed."},
+        {j:"1893", t:"Women get the right to vote."},
+        {j:"2001", t:"The first Lord of the Rings film comes out."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"nz", icon:"✅", titel:"True or False?", art:"Swipe · facts",
+      anleitung:"Is it true? Swipe **right for True** and **left for False**.",
+      anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
+      tipp:"Lies genau – oft ist nur ein Detail falsch.",
+      links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
+      karten:[
+        {t:"Te reo Māori is an official language of New Zealand.", r:"r", e:"True – together with English and NZ Sign Language."},
+        {t:"New Zealanders call themselves Kiwis.", r:"r", e:"True – after the bird."},
+        {t:"The Māori arrived about 3,000 years ago.", r:"l", e:"False – about **700 years ago**."},
+        {t:"The All Blacks are a famous rugby team.", r:"r", e:"True – and they perform the **haka**."},
+        {t:"Waitangi Day is on 4 July.", r:"l", e:"False – it’s on **6 February**."},
+        {t:"Bungy jumping as a business started in New Zealand.", r:"r", e:"True – in **1988** near Queenstown."},
+        {t:"New Zealand is part of Australia.", r:"l", e:"False – it’s an **independent** country about 2,000 km from Australia."},
+        {t:"New Zealand was the first country where women could vote.", r:"r", e:"True – in **1893**."}
+      ]},
+    { id:"story", E:{art:"Email · choose the right word"}, typ:"lueckentext", icon:"✉️", titel:"Kia Ora from Rotorua", art:"Email · fill in the gaps",
+      anleitung:"Read Jonas’ email from his exchange year. Tap a gap and choose the right word.",
+      anleitungDe:"Lies Jonas’ E-Mail aus seinem Austauschjahr. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alles steht in den Infokarten.",
+      ueberschrift:"Kia ora from Aotearoa!",
+      text:"[[Kia ora|Kia ola|Kai ora]] everyone!\nI’ve been in New Zealand for two months now. My host family is Māori, and they always say I’m part of their [[whānau|kai|marae]] now. Last weekend we went to a [[marae|museum|mall]] for my host grandma’s birthday. The food was amazing – there was so much [[kai|haka|moko]]!\nAt school I’ve learnt a [[haka|hula|hockey]] and we performed it at the rugby match. My host uncle has a [[tā moko|tattoo shop|tomato]] that tells his family history.\nNext week we’re going to [[Hobbiton|Hogwarts|Hamburg]] where they filmed The Lord of the Rings. Oh – and I finally saw a real [[kiwi|koala|kangaroo]]! It can’t fly, but it’s so cute.\nKa kite anō,\nJonas",
+      erklaerung:"Te reo: **Kia ora, whānau, marae, kai, haka, tā moko, Ka kite anō** · **Hobbiton** · **kiwi**."}
+  ]
+});
+</script>
+</body>
+</html>

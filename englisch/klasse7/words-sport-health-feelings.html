@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Sport, Health &amp; Feelings – Unit 2 &amp; 4: activities, injuries, feelings, advice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"vocabulary", id:"vhealth7", icon:"🩹", kartenSymbol:"🧗",
+  titel:"Words: Sport, Health & Feelings", untertitel:"Unit 2 & 4: activities, injuries, feelings, advice",
+  text:"Climbing, coasteering, broken arms and big feelings: the words you need to talk about sport, accidents and how you feel.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Body & Injuries", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Zeig beim Spielen auf die Körperteile.",
+      paare:[ {a:"ankle", b:"Knöchel"}, {a:"wrist", b:"Handgelenk"}, {a:"knee", b:"Knie"}, {a:"elbow", b:"Ellbogen"},
+              {a:"bruise", b:"blauer Fleck"}, {a:"bandage", b:"Verband"}, {a:"injury", b:"Verletzung"}, {a:"sore throat", b:"Halsschmerzen"} ]},
+    { id:"feel", typ:"sortieren", icon:"😊", titel:"How Do You Feel?", art:"Feelings · sort",
+      anleitung:"Is it a good feeling or a bad feeling? Tap the right box.",
+      anleitungDe:"Ist es ein gutes oder ein schlechtes Gefühl? Tippe auf das richtige Kästchen.",
+      tipp:"proud = stolz · jealous = eifersüchtig.",
+      koerbe:[ {t:"good feeling", info:"😊", tipp:"**good**: happy, proud, excited, relaxed, relieved."}, {t:"bad feeling", info:"😟", tipp:"**bad**: lonely, jealous, nervous, upset, embarrassed."} ],
+      items:[
+        {t:"proud", k:0, e:"**proud** = stolz."}, {t:"excited", k:0}, {t:"relaxed", k:0}, {t:"relieved", k:0, e:"**relieved** = erleichtert."}, {t:"cheerful", k:0},
+        {t:"lonely", k:1}, {t:"jealous", k:1, e:"**jealous** = eifersüchtig, neidisch."}, {t:"nervous", k:1}, {t:"upset", k:1, e:"**upset** = aufgebracht, traurig."}, {t:"embarrassed", k:1, e:"**embarrassed** = verlegen, peinlich berührt."}
+      ]},
+    { id:"sport", typ:"quiz", icon:"🏉", titel:"Sport & Activities", art:"Explanations · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"You climb along the coast, jump into the sea and swim – a sport from Wales.", o:["coasteering","surfing","sailing"], c:0, e:"**Coasteering** was invented in Wales."},
+        {q:"A person who is brave and likes adventure is …", o:["adventurous","lazy","careful"], c:0, e:"**adventurous** = abenteuerlustig."},
+        {q:"Wales’ most popular team sport, played with an oval ball.", o:["rugby","cricket","hockey"], c:0, e:"**Rugby** is like a religion in Wales!"},
+        {q:"You wear it on your head when you go climbing or cycling.", o:["helmet","glove","wetsuit"], c:0, e:"**helmet** = Helm."},
+        {q:"The person who helps a team to get better.", o:["coach","referee","fan"], c:0, e:"**coach** = Trainer(in). The **referee** is the Schiedsrichter."},
+        {q:"To get better at something by doing it again and again.", o:["practise","pretend","promise"], c:0, e:"**practise** (BE verb) = üben, trainieren."},
+        {q:"A big piece of rubber clothing that keeps you warm in the water.", o:["wetsuit","raincoat","swimsuit"], c:0, e:"**wetsuit** = Neoprenanzug."},
+        {q:"When you win, you are the …", o:["winner","loser","player of the losers"], c:0, e:"**winner** – the opposite is **loser**."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **injury**, **ambulance**, **advice** (Nomen) / **advise** (Verb).", typ:"rush", icon:"⚡", titel:"Ambulance Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Krankenwagen", o:["ambulance","ambulanse","ambulence"], c:0}, {q:"Verletzung", o:["injury","injurie","injery"], c:0}, {q:"Rat(schlag)", o:["advice","advise","advize"], c:0},
+        {q:"Krankenhaus", o:["hospital","hospitel","hospitall"], c:0}, {q:"Unfall", o:["accident","acident","accidant"], c:0}, {q:"Schmerz", o:["pain","pane","pein"], c:0},
+        {q:"brechen", o:["break","brake","brick"], c:0}, {q:"bluten", o:["bleed","blood","blead"], c:0}, {q:"Arzt/Ärztin", o:["doctor","docter","dokter"], c:0},
+        {q:"Krankenpfleger(in)", o:["nurse","nurce","nerse"], c:0}, {q:"einsam", o:["lonely","lonly","lonley"], c:0}, {q:"eifersüchtig", o:["jealous","jelous","jealouse"], c:0},
+        {q:"stolz", o:["proud","prout","prowd"], c:0}, {q:"sich Sorgen machen", o:["worry","wory","worrie"], c:0}, {q:"Freundschaft", o:["friendship","frienship","friendshipp"], c:0},
+        {q:"Wettkampf", o:["competition","competion","compitition"], c:0}, {q:"Mannschaft", o:["team","teem","tiem"], c:0}, {q:"Fieber", o:["temperature","temprature","temperatur"], c:0, e:"*to have a temperature* = Fieber haben."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"💌", titel:"Dear Megan", art:"Email · fill in the gaps",
+      anleitung:"Ffion writes to her friend after an accident. Tap a gap and choose the right word.",
+      anleitungDe:"Ffion schreibt ihrer Freundin nach einem Unfall. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Hi Megan!",
+      text:"Hi Megan,\nyou won’t believe it: I had an [[accident|accent|incident]] at rugby training on Saturday! I fell and hurt my [[ankle|uncle|angle]]. It was really swollen and I was in a lot of [[pain|pane|pen]]. The [[coach|couch|cook]] called my mum and we went to [[hospital|hostel|hospitality]].\nThe doctor put a [[bandage|badge|bandit]] on it. Luckily it isn’t broken! I was so [[relieved|relived|released]]. But now I can’t play in the match next week and I feel a bit [[jealous|joyful|generous]] of the others. Can you give me some [[advice|advise|advices]]? What can I do at home all day?\nLove, Ffion",
+      erklaerung:"Gesundheit: **accident, ankle, pain, hospital, bandage** · Gefühle: **relieved, jealous** · **advice** (Nomen, kein Plural!)."}
+  ]
+});
+</script>
+</body>
+</html>

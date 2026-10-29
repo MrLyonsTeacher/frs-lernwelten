@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Holidays &amp; Values – Unit 2: holiday words, standards &amp; values, weather</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"vocabulary", id:"vcar9", icon:"🌴", kartenSymbol:"🍃",
+  titel:"Words: Holidays & Values", untertitel:"Unit 2: holiday words, standards & values, weather",
+  text:"Sun, sea and storms – plus the things that really matter: friendship, honesty and respect. The words you need for the Caribbean unit.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Values Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Werte sind meist Nomen: honesty, freedom …",
+      paare:[ {a:"honesty", b:"Ehrlichkeit"}, {a:"freedom", b:"Freiheit"}, {a:"loyalty", b:"Treue, Loyalität"}, {a:"tolerance", b:"Toleranz"},
+              {a:"equality", b:"Gleichberechtigung"}, {a:"trust", b:"Vertrauen"}, {a:"generosity", b:"Großzügigkeit"}, {a:"justice", b:"Gerechtigkeit"} ]},
+    { id:"adj", typ:"quiz", icon:"🔤", titel:"Noun → Adjective", art:"Word families · quiz",
+      anleitung:"Which adjective belongs to the noun?",
+      anleitungDe:"Welches Adjektiv gehört zum Nomen?",
+      tipp:"Wortfamilien helfen beim Vokabellernen!",
+      fragen:[
+        {q:"honesty → ?", o:["honest","honestly","honestful"], c:0, e:"**honest** = ehrlich."},
+        {q:"freedom → ?", o:["free","freely","freeful"], c:0, e:"**free** = frei."},
+        {q:"generosity → ?", o:["generous","generic","generousful"], c:0, e:"**generous** = großzügig."},
+        {q:"tolerance → ?", o:["tolerant","tolerate","tolerable"], c:0, e:"**tolerant** (Adjektiv) · *tolerate* (Verb)."},
+        {q:"loyalty → ?", o:["loyal","loyally","loyalful"], c:0, e:"**loyal** = treu."},
+        {q:"responsibility → ?", o:["responsible","responsive","responsibly"], c:0, e:"**responsible** = verantwortungsvoll."},
+        {q:"kindness → ?", o:["kind","kindly","kinder"], c:0, e:"**kind** = freundlich, nett."},
+        {q:"equality → ?", o:["equal","equally","equalful"], c:0, e:"**equal** = gleich(berechtigt)."}
+      ]},
+    { id:"hol", typ:"sortieren", icon:"🏖️", titel:"Pack Your Bag", art:"Holiday words · sort",
+      anleitung:"Where does it belong? Tap the right box.",
+      anleitungDe:"Wohin gehört das? Tippe auf das richtige Kästchen.",
+      tipp:"Was nimmst du mit, was erlebst du am Flughafen, wie ist das Wetter?",
+      koerbe:[ {t:"in my suitcase", info:"🧳", tipp:"**suitcase**: sunscreen, swimsuit, flip-flops, sunglasses."}, {t:"at the airport", info:"✈️", tipp:"**airport**: check-in, boarding pass, gate, security check."}, {t:"weather", info:"🌦️", tipp:"**weather**: humid, hurricane, rainy season, tropical."} ],
+      items:[
+        {t:"sunscreen", k:0}, {t:"flip-flops", k:0}, {t:"swimsuit", k:0},
+        {t:"boarding pass", k:1}, {t:"gate", k:1}, {t:"security check", k:1}, {t:"delayed flight", k:1},
+        {t:"humid", k:2, e:"**humid** = feucht, schwül."}, {t:"hurricane", k:2}, {t:"rainy season", k:2}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **island** (stummes s), **beach**, **luggage**.", typ:"rush", icon:"⚡", titel:"Island Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Insel", o:["island","iland","islant"], c:0}, {q:"Reiseziel", o:["destination","destinasion","destiny"], c:0}, {q:"Unterkunft", o:["accommodation","acommodation","accomodation"], c:0},
+        {q:"Abflug", o:["departure","departur","depature"], c:0}, {q:"Ankunft", o:["arrival","arival","arrivel"], c:0}, {q:"Sonnencreme", o:["sunscreen","sunscream","sun cream’s"], c:0},
+        {q:"Wirbelsturm", o:["hurricane","huricane","hurrycane"], c:0}, {q:"Ehrlichkeit", o:["honesty","honesity","honisty"], c:0}, {q:"Freundschaft", o:["friendship","frienship","friendshipp"], c:0},
+        {q:"Vertrauen", o:["trust","trast","truth"], c:0}, {q:"Wert", o:["value","valiu","valew"], c:0}, {q:"Vorurteil", o:["prejudice","predjudice","prejudise"], c:0},
+        {q:"Sklaverei", o:["slavery","slavary","slaverie"], c:0}, {q:"Seeräuber", o:["pirate","pirat","pyrate"], c:0}, {q:"Schatz", o:["treasure","treassure","tresure"], c:0},
+        {q:"feucht, schwül", o:["humid","humit","humide"], c:0}, {q:"Strand", o:["beach","beech","beatch"], c:0}, {q:"Gepäck", o:["luggage","lugage","luggages"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📱", titel:"My Values Blog", art:"Blog · fill in the gaps",
+      anleitung:"Read Kaya’s blog post from Jamaica. Tap a gap and choose the right word.",
+      anleitungDe:"Lies Kayas Blogbeitrag aus Jamaika. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"What matters most to me",
+      text:"Hi, I’m Kaya from Montego Bay! Today I want to write about the [[values|valleys|volumes]] that are important to me.\nFor me, [[honesty|honey|harmony]] is number one. I want my friends to tell me the truth. Number two is [[friendship|friendly|frightening]] – my friends are like a second family. My grandma always says that [[generosity|generation|general]] is important too: if you have something, share it.\nOur island has a difficult history of [[slavery|salary|slippery]]. That’s why [[freedom|freezing|freeway]] and [[equality|quality|equally]] mean a lot to Jamaicans. Our national motto is “Out of many, one people”. I think that’s a great way to fight [[prejudice|preference|pressure]]. What are your values?",
+      erklaerung:"Werte: **honesty, friendship, generosity, freedom, equality** · **prejudice** = Vorurteil."}
+  ]
+});
+</script>
+</body>
+</html>

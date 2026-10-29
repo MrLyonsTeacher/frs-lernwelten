@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Whispering Trees – Reported speech: statements, questions, commands</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"rep9", icon:"💬", kartenSymbol:"🍃",
+  titel:"Whispering Trees", untertitel:"Reported speech: statements, questions, commands",
+  text:"In the Woodlands the trees whisper everything they hear: “She said that …”, “He asked if …”. Learn how to report what other people said – just like in online comments from Hong Kong.",
+  lernen: {
+    rep: { titel:"Reported speech", folien:[
+      {"bild":"🗨️","titel":"Reporting statements","formel":["“I **like** dim sum.” | → | She said (that) she **liked** dim sum."],"bsp":["Tom: “I **am** tired.” → Tom said he **was** tired."],"de":"Ist das Einleitungsverb in der Vergangenheit (*said, told*), rückt die Zeit **eine Stufe zurück** (backshift)."},
+      {"bild":"⏪","titel":"Backshift","formel":["simple present | → | simple past","present progressive | → | past progressive","simple past / present perfect | → | past perfect","will | → | would","can | → | could"],"bsp":["“I **will** come.” → He said he **would** come.","“I **have lost** my phone.” → She said she **had lost** her phone."],"de":"So verschieben sich die Zeiten."},
+      {"bild":"🔄","titel":"Pronouns, places and times","formel":["I | → | he / she","here | → | there","today | → | that day","tomorrow | → | the next day","yesterday | → | the day before"],"bsp":["“I’ll see you **tomorrow**.” → He said he would see me **the next day**."],"de":"Auch **Pronomen**, **Orts-** und **Zeitangaben** passen sich an."},
+      {"bild":"❓","titel":"Questions and commands","formel":["“Where **do** you live?” | → | She asked where I **lived**.","“**Are** you OK?” | → | He asked **if** I **was** OK.","“**Be** quiet!” | → | She told us **to be** quiet."],"de":"Fragen: **Aussagesatz-Stellung**, kein *do/does/did*; Ja/Nein-Fragen mit **if/whether**. Aufforderungen: **told/asked + to**."}
+    ]}
+  },
+  levels: [
+    { id:"shift", typ:"quiz", lernen:"rep", icon:"⏪", titel:"Backshift", art:"Statements · quiz",
+      anleitung:"Report what the person said. Choose the right form.",
+      anleitungDe:"Gib wieder, was die Person gesagt hat. Wähle die richtige Form.",
+      tipp:"Eine Zeitstufe zurück!",
+      fragen:[
+        {q:"Mei: “I **live** in Kowloon.” → Mei said she **___** in Kowloon.", o:["lived","lives","had lived"], c:0, e:"simple present → **simple past**."},
+        {q:"Jack: “I **am waiting** for the ferry.” → Jack said he **___** for the ferry.", o:["was waiting","is waiting","waited"], c:0, e:"present progressive → **past progressive**."},
+        {q:"Ling: “I **will buy** a new phone.” → Ling said she **___** a new phone.", o:["would buy","will buy","bought"], c:0, e:"will → **would**."},
+        {q:"Tom: “I **have lost** my ticket.” → Tom said he **___** his ticket.", o:["had lost","has lost","lost"], c:0, e:"present perfect → **past perfect**."},
+        {q:"Amy: “I **can** speak Cantonese.” → Amy said she **___** speak Cantonese.", o:["could","can","would can"], c:0, e:"can → **could**."},
+        {q:"Ben: “I **saw** a dragon boat race.” → Ben said he **___** a dragon boat race.", o:["had seen","has seen","sees"], c:0, e:"simple past → **past perfect**."},
+        {q:"Kai: “We **are** late **today**.” → Kai said they were late **___**.", o:["that day","today","tomorrow"], c:0, e:"today → **that day**."},
+        {q:"Sue: “I’ll call you **tomorrow**.” → Sue said she would call me **___**.", o:["the next day","tomorrow","the day before"], c:0, e:"tomorrow → **the next day**."}
+      ]},
+    { id:"q", typ:"quiz", lernen:"rep", icon:"❓", titel:"She Asked …", art:"Reported questions & commands · quiz",
+      anleitung:"Choose the right reported question or command.",
+      anleitungDe:"Wähle die richtige indirekte Frage oder Aufforderung.",
+      tipp:"Indirekte Frage: Subjekt vor dem Verb, kein do/does/did, kein Fragezeichen.",
+      fragen:[
+        {q:"“Where do you live?”", o:["She asked me where I lived.","She asked me where did I live.","She asked me where do I live."], c:0, e:"No *did*, normal word order: **where I lived**."},
+        {q:"“Are you hungry?”", o:["He asked if I was hungry.","He asked was I hungry.","He asked if am I hungry."], c:0, e:"Yes/no question → **if** + subject + verb."},
+        {q:"“Close the window!”", o:["She told me to close the window.","She told me close the window.","She said me to close the window."], c:0, e:"Command → **told + person + to**."},
+        {q:"“Don’t touch it!”", o:["He told us not to touch it.","He told us don’t touch it.","He told us to not touching it."], c:0, e:"Negative command → **not to**."},
+        {q:"“What time does the market open?”", o:["They asked what time the market opened.","They asked what time did the market open.","They asked what time does the market open."], c:0, e:"**what time the market opened**."},
+        {q:"“Have you ever been to Hong Kong?”", o:["She asked if I had ever been to Hong Kong.","She asked have I ever been to Hong Kong.","She asked if I have ever been to Hong Kong?"], c:0, e:"present perfect → **had been**, with **if**."},
+        {q:"“Please help me.”", o:["He asked me to help him.","He asked me help him.","He asked me that I help me."], c:0, e:"Request → **asked + person + to**."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"rep", icon:"🗣️", titel:"Said or Told?", art:"Swipe · said / told",
+      anleitung:"Which verb fits? Swipe **left for said** and **right for told**.",
+      anleitungDe:"Welches Verb passt? Wische nach **links für said** und nach **rechts für told**.",
+      tipp:"**told** braucht eine Person danach (told **me**). **said** nicht (said **that** …).",
+      links:{t:"said", icon:"🗨️"}, rechts:{t:"told", icon:"👉"},
+      karten:[
+        {t:"She ___ me that she was from Macau.", r:"r", e:"**told + me**."},
+        {t:"He ___ that the MTR was very fast.", r:"l", e:"No person → **said**."},
+        {t:"My teacher ___ us to be quiet.", r:"r", e:"**told + us + to**."},
+        {t:"They ___ the food was too spicy.", r:"l", e:"No person → **said**."},
+        {t:"Grandma ___ me a story about the old harbour.", r:"r", e:"**tell somebody a story** → **told**."},
+        {t:"Ling ___ she would come later.", r:"l", e:"**said**."},
+        {t:"The guide ___ the tourists not to feed the monkeys.", r:"r", e:"**told + person + not to**."},
+        {t:"Everybody ___ the fireworks were amazing.", r:"l", e:"**said**."}
+      ]},
+    { id:"build", regel:"Indirekte Frage: **asked + Fragewort/if + Subjekt + Verb** (zurückversetzt), kein do/did.", typ:"satzbau", icon:"🧱", titel:"Comment Builder", art:"Sentence builder",
+      anleitung:"Report what was said. Build the sentence.",
+      anleitungDe:"Gib wieder, was gesagt wurde. Bau den Satz.",
+      tipp:"Zeit zurückversetzen und Wortstellung beachten.",
+      punkte:2,
+      saetze:[
+        {w:["She","said","that","she","loved","Hong","Kong"], alt:[["She","said","she","loved","Hong","Kong"]], hint:"“I love Hong Kong.”"},
+        {w:["He","asked","where","I","was","going"], hint:"“Where are you going?”"},
+        {w:["They","asked","if","we","had","finished"], alt:[["They","asked","whether","we","had","finished"]], hint:"“Have you finished?”"},
+        {w:["The","teacher","told","us","to","switch","off","our","phones"], hint:"“Switch off your phones!”"},
+        {w:["Mei","said","she","would","send","me","a","photo"], alt:[["Mei","said","that","she","would","send","me","a","photo"]], hint:"“I will send you a photo.”"}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📱", titel:"Online Comments", art:"Text · fill in the gaps",
+      anleitung:"Ryan writes a comment about his trip. Tap a gap and choose the right form.",
+      anleitungDe:"Ryan schreibt einen Kommentar über seine Reise. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Zeiten zurückversetzen · indirekte Fragen ohne do/did.",
+      ueberschrift:"Comments: My first day in Hong Kong",
+      text:"ryan_travels: When I arrived at the hostel, the receptionist asked me where I [[came|come|did come]] from. I told her I [[was|am|be]] from Manchester. She said that the city [[was|is|will be]] very busy that weekend because of the dragon boat festival.\nThen I asked her if she [[could|can|could to]] recommend a good place for dim sum. She told me [[to try|try|trying]] a small restaurant near the Star Ferry. She said she [[had eaten|has eaten|eats]] there many times.\nWhen I paid, the waiter asked me if I [[had enjoyed|have enjoyed|did enjoy]] the food. Of course I had! 😋",
+      erklaerung:"Backshift: **came, was, could, had eaten, had enjoyed** · Aufforderung: **told me to try**."}
+  ]
+});
+</script>
+</body>
+</html>

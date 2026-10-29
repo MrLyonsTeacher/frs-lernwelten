@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Travel, Holidays &amp; Inventions – Unit 3 &amp; 5: holidays, materials, travel, public transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"vocabulary", id:"vtrav7", icon:"🧳", kartenSymbol:"🎫",
+  titel:"Words: Travel, Holidays & Inventions", untertitel:"Unit 3 & 5: holidays, materials, travel, public transport",
+  text:"Pack your bag! Words for holidays and trips, for buses and trains – and for the materials that inventors and dwarf smiths work with.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Travel Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Sprich die Wörter leise mit.",
+      paare:[ {a:"platform", b:"Bahnsteig"}, {a:"return ticket", b:"Rückfahrkarte"}, {a:"single ticket", b:"einfache Fahrkarte"}, {a:"timetable", b:"Fahrplan"},
+              {a:"delay", b:"Verspätung"}, {a:"luggage", b:"Gepäck"}, {a:"accommodation", b:"Unterkunft"}, {a:"to book", b:"buchen"} ]},
+    { id:"mat", typ:"sortieren", icon:"⚒️", titel:"The Smith’s Materials", art:"Materials · sort",
+      anleitung:"What is it usually made of? Tap the right material.",
+      anleitungDe:"Woraus ist das meistens gemacht? Tippe auf das richtige Material.",
+      tipp:"made of = hergestellt aus.",
+      koerbe:[ {t:"metal", info:"🔩", tipp:"**metal**: a key, a coin, a hammer head."}, {t:"wood", info:"🪵", tipp:"**wood**: a table, a pencil, a ruler."}, {t:"glass", info:"🪟", tipp:"**glass**: a window, a bottle, glasses."}, {t:"plastic", info:"🧴", tipp:"**plastic**: a bottle, a toy, a bag."} ],
+      items:[
+        {t:"a key", k:0}, {t:"a coin", k:0}, {t:"a nail", k:0},
+        {t:"a pencil", k:1}, {t:"a table", k:1}, {t:"a cricket bat", k:1},
+        {t:"a window", k:2}, {t:"a mirror", k:2}, {t:"a light bulb", k:2, e:"The outside of a **light bulb** is made of glass."},
+        {t:"a toothbrush", k:3}, {t:"a phone case", k:3}, {t:"a shopping bag", k:3, e:"Most shopping bags are **plastic** – or cloth, which is better for the environment."}
+      ]},
+    { id:"trip", typ:"quiz", icon:"🚉", titel:"At the Station", art:"Explanations · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"A ticket for there and back again.", o:["return ticket","single ticket","season ticket"], c:0, e:"**return** = hin und zurück · **single** = einfach."},
+        {q:"The place where you wait for the train.", o:["platform","pavement","plate"], c:0, e:"**platform** = Bahnsteig."},
+        {q:"The bus is 20 minutes late. There is a …", o:["delay","display","decay"], c:0, e:"**delay** = Verspätung."},
+        {q:"A cheap place to stay for young people.", o:["youth hostel","hospital","holiday home"], c:0, e:"**youth hostel** = Jugendherberge."},
+        {q:"To change from one bus or train to another.", o:["change","charge","chase"], c:0, e:"*You have to **change** at Connolly Station.*"},
+        {q:"The person who checks your ticket on the train.", o:["conductor","driver","passenger"], c:0, e:"**conductor** = Schaffner(in). A **passenger** is a Fahrgast."},
+        {q:"A person who has a new idea for a machine.", o:["inventor","invader","investor"], c:0, e:"**inventor** = Erfinder(in)."},
+        {q:"Something that is very useful and makes life easier.", o:["handy","heavy","hungry"], c:0, e:"**handy** = praktisch (nicht: Handy = **mobile**!)."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **luggage** (kein Plural!), **accommodation** (2 × c, 2 × m).", typ:"rush", icon:"⚡", titel:"Departure Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Gepäck", o:["luggage","lugage","luggages"], c:0}, {q:"Unterkunft", o:["accommodation","accomodation","acommodation"], c:0}, {q:"Fahrkarte", o:["ticket","tiket","ticked"], c:0},
+        {q:"Reise", o:["journey","journy","jurney"], c:0}, {q:"Fahrgast", o:["passenger","passanger","pasenger"], c:0}, {q:"Erfindung", o:["invention","invension","inventation"], c:0},
+        {q:"Holz", o:["wood","wool","would"], c:0}, {q:"Glas", o:["glass","glas","grass"], c:0}, {q:"Strand", o:["beach","beech","beatch"], c:0},
+        {q:"Zelt", o:["tent","tend","tant"], c:0}, {q:"Urlaub", o:["holiday","holyday","holliday"], c:0}, {q:"Koffer", o:["suitcase","suitecase","suitcace"], c:0},
+        {q:"Flughafen", o:["airport","airfield port","air port"], c:0}, {q:"verpassen", o:["miss","mist","mess"], c:0}, {q:"Ausflug", o:["trip","tripp","treep"], c:0},
+        {q:"Gastfamilie", o:["host family","guest family","host familly"], c:0}, {q:"Zahnbürste", o:["toothbrush","toothbrash","teethbrush"], c:0}, {q:"erfinden", o:["invent","invite","event"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🚆", titel:"A Trip to Galway", art:"Text · fill in the gaps",
+      anleitung:"Read about Ben’s trip. Tap a gap and choose the right word.",
+      anleitungDe:"Lies über Bens Ausflug. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"My trip to Galway",
+      text:"Last summer I went to Galway with my host family. We bought [[return tickets|returning tickets|retour tickets]] at the station in Dublin. The train left from [[platform|plateau|plate]] 4.\nUnfortunately there was a [[delay|display|delight]] of 30 minutes, so we sat on our [[luggage|luggages|lugage]] and waited. The [[journey|jury|journal]] took about two and a half hours.\nIn Galway we stayed in a [[youth hostel|hostile|hospital]] near the [[beach|beech|bench]]. It was cheap but nice. Next time I want to go [[camping|camp|camped]] with a tent!",
+      erklaerung:"Reisewörter: **return ticket, platform, delay, luggage, journey, youth hostel, beach**."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Cave Rescue – Present perfect &amp; simple past</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"pp7", icon:"🚑", kartenSymbol:"⛑️",
+  titel:"Cave Rescue", untertitel:"Present perfect & simple past",
+  text:"Help! A miner has had an accident in the deep tunnels. Call the rescue team – and learn when to use the present perfect and when the simple past.",
+  lernen: {
+    pp: { titel:"Present perfect or simple past?", folien:[
+      {"bild":"🩹","titel":"Present perfect","formel":["have / has | + | 3rd form (past participle)"],"bsp":["Oh no! I**’ve broken** my arm.","She **has fallen** off the ladder."],"de":"**Present perfect**: Etwas ist passiert – **wichtig ist das Ergebnis jetzt**. Kein genauer Zeitpunkt!"},
+      {"bild":"🗓️","titel":"Simple past","formel":["verb + ed | / | 2nd form"],"bsp":["I **broke** my arm **last year**.","She **fell** off the ladder **yesterday**."],"de":"**Simple past**: abgeschlossen in der Vergangenheit – oft mit **Zeitangabe** (yesterday, last week, in 2020, ago)."},
+      {"bild":"🔦","titel":"Signal words","formel":["ever · never · just · already · yet | → | present perfect","yesterday · ago · last … · in 2019 | → | simple past"],"bsp":["Have you **ever** been to Wales?","I went there **two years ago**."],"de":"Achte auf **Signalwörter**!"},
+      {"bild":"📚","titel":"Irregular verbs","formel":["fall – fell – fallen","break – broke – broken","see – saw – seen","go – went – gone/been"],"bsp":["He **has hurt** his leg.","We **went** to hospital."],"de":"Die **3. Form** unregelmäßiger Verben muss man lernen."}
+    ]},
+    call: { titel:"How to make an emergency call", folien:[
+      {"bild":"☎️","titel":"999 or 112","text":"In the **UK** you call **999** in an emergency. **112** works too – in all EU countries and in the UK.","de":"Im **Vereinigten Königreich** wählt man **999**. **112** funktioniert auch – in der ganzen EU und im UK."},
+      {"bild":"🚒","titel":"Which service?","text":"The operator asks: *Which service do you need?* – **police, fire brigade, ambulance** or **coastguard**. In the mountains and caves there is also **mountain rescue** and **cave rescue**.","de":"Man wird gefragt, welchen Dienst man braucht: **Polizei, Feuerwehr, Krankenwagen** oder **Küstenwache**. In Bergen und Höhlen gibt es auch **Bergrettung** und **Höhlenrettung**."},
+      {"bild":"🗣️","titel":"What to say","text":"Say **what has happened**, **where** you are and **who** is hurt. Stay calm, speak clearly and **don’t hang up** until they tell you to.","de":"Sag, **was passiert ist**, **wo** du bist und **wer** verletzt ist. Bleib ruhig, sprich deutlich und **leg nicht auf**, bis man es dir sagt."}
+    ]}
+  },
+  levels: [
+    { id:"sort", typ:"sortieren", lernen:"pp", icon:"🔦", titel:"Signal Word Sorter", art:"Signal words · sort",
+      anleitung:"Which tense goes with the signal word? Tap the right box.",
+      anleitungDe:"Welche Zeitform passt zum Signalwort? Tippe auf das richtige Kästchen.",
+      tipp:"Genauer Zeitpunkt in der Vergangenheit → simple past.",
+      koerbe:[ {t:"present perfect", info:"🩹 has/have + 3rd form", tipp:"**present perfect**: ever, never, just, already, yet, so far, since, for."}, {t:"simple past", info:"🗓️ 2nd form", tipp:"**simple past**: yesterday, last week, ago, in 2020, when I was …"} ],
+      items:[
+        {t:"ever", k:0}, {t:"never", k:0}, {t:"just", k:0}, {t:"already", k:0}, {t:"yet", k:0}, {t:"so far", k:0, e:"**so far** = bis jetzt → present perfect."},
+        {t:"yesterday", k:1}, {t:"last Saturday", k:1}, {t:"two days ago", k:1}, {t:"in 2019", k:1}, {t:"when I was six", k:1}, {t:"this morning at 7", k:1, e:"A **fixed time** in the past → simple past."}
+      ]},
+    { id:"forms", typ:"memory", lernen:"pp", icon:"🧠", titel:"Third Form Memory", art:"Infinitive + 3rd form · memory",
+      anleitung:"Find the pairs: **infinitive + 3rd form**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Grundform + 3. Form**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Sag die drei Formen leise auf: fall – fell – fallen.",
+      paare:[ {a:"fall", b:"fallen"}, {a:"break", b:"broken"}, {a:"see", b:"seen"}, {a:"write", b:"written"}, {a:"take", b:"taken"}, {a:"bite", b:"bitten"}, {a:"fly", b:"flown"}, {a:"bring", b:"brought"} ]},
+    { id:"quiz", typ:"quiz", lernen:"pp", icon:"⛑️", titel:"Rescue Report", art:"Present perfect or simple past · quiz",
+      anleitung:"Choose the right tense.",
+      anleitungDe:"Wähle die richtige Zeitform.",
+      tipp:"Signalwort suchen! Zeitpunkt genannt → simple past.",
+      fragen:[
+        {q:"Help! My friend **___** off the ladder!", o:["has fallen","fell yesterday","falls"], c:0, e:"It has just happened, the result is important → **present perfect**."},
+        {q:"I **___** my leg last winter.", o:["broke","have broken","has broken"], c:0, e:"**last winter** → simple past."},
+        {q:"**___** you ever **___** to a hospital?", o:["Have … been","Did … be","Were … been"], c:0, alt:["Have been"], e:"**ever** → present perfect."},
+        {q:"The ambulance **___** ten minutes ago.", o:["arrived","has arrived","have arrived"], c:0, e:"**ago** → simple past."},
+        {q:"We **___** the rescue team yet.", o:["haven’t called","didn’t call","don’t called"], c:0, e:"**yet** → present perfect."},
+        {q:"She **___** just **___** her finger.", o:["has … cut","did … cut","is … cut"], c:0, alt:["has cut"], e:"**just** → present perfect."},
+        {q:"When **___** the accident happen?", o:["did","has","have"], c:0, e:"Questions with **When** → simple past."},
+        {q:"I **___** never **___** a snake.", o:["have … seen","did … see","have … saw"], c:0, alt:["have seen"], e:"**never** → present perfect with the 3rd form **seen**."},
+        {q:"Yesterday a dog **___** my brother.", o:["bit","has bitten","bitten"], c:0, e:"**Yesterday** → simple past: bite – **bit** – bitten."},
+        {q:"Oh no, he **___** his head!", o:["has hurt","hurted","have hurt"], c:0, e:"he → **has hurt** (hurt – hurt – hurt)."}
+      ]},
+    { id:"call", typ:"quiz", lernen:"call", icon:"☎️", titel:"Emergency Call", art:"What do you say? · quiz",
+      anleitung:"You are making an emergency call. What do you say?",
+      anleitungDe:"Du machst einen Notruf. Was sagst du?",
+      tipp:"Was ist passiert? Wo? Wer ist verletzt?",
+      fragen:[
+        {q:"Which number do you call in an emergency in the UK?", o:["999","110","911"], c:0, e:"**999** – and **112** works too."},
+        {q:"Operator: *Emergency, which service?* You need a doctor quickly.", o:["Ambulance, please.","Fire brigade, please.","Pizza, please."], c:0, e:"A doctor and a hospital → **ambulance**."},
+        {q:"There’s smoke coming out of a house. You need …", o:["the fire brigade","the coastguard","mountain rescue"], c:0, e:"Fire → **fire brigade**."},
+        {q:"Operator: *What’s happened?*", o:["My friend has fallen and hurt her leg.","My friend fell in 2019.","My friend is nice."], c:0, e:"Say **what has happened** – present perfect."},
+        {q:"Operator: *Where are you?*", o:["We’re at the entrance to the old mine near Llanberis.","We’re outside.","I don’t know, bye!"], c:0, e:"Give a **clear place**."},
+        {q:"Operator: *Is she breathing?*", o:["Yes, she is, but she can’t walk.","Yes, she breathe.","Yesterday."], c:0, e:"Answer **clearly** and in full sentences."},
+        {q:"What should you **not** do?", o:["Hang up before the operator tells you to.","Stay calm.","Speak clearly."], c:0, e:"**Don’t hang up** too early – they may need more information."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📰", titel:"Rescue in Snowdonia", art:"News · fill in the gaps",
+      anleitung:"Read the news report. Tap a gap and choose the right form.",
+      anleitungDe:"Lies die Nachrichtenmeldung. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Zeitangabe in der Vergangenheit → simple past. Ergebnis jetzt / ohne Zeitpunkt → present perfect.",
+      ueberschrift:"Boy rescued from old slate mine",
+      text:"A 13-year-old boy from Bangor [[has had|had|have had]] a lucky escape. Yesterday afternoon he [[went|has gone|goes]] into an old slate mine with two friends. Inside the mine he [[fell|has fallen|falls]] and hurt his ankle.\nHis friends [[called|have called|has called]] 999 at about 4 pm. The cave rescue team [[arrived|has arrived|have arrived]] an hour later and carried him out.\n“We [[have rescued|rescued|rescue]] six people from old mines this year,” a rescuer told us today. “We [[have told|told|tell]] the boys many times: old mines are dangerous! Have you ever [[seen|saw|see]] how deep these tunnels are?”",
+      erklaerung:"**Yesterday, at 4 pm, an hour later** → simple past. Ergebnis / ohne Zeitpunkt / **ever** → present perfect."}
+  ]
+});
+</script>
+</body>
+</html>

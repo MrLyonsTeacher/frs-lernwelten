@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Elves’ Job Fair – Comparison of adjectives &amp; adverbs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"cmp9", icon:"💼", kartenSymbol:"🍃",
+  titel:"The Elves’ Job Fair", untertitel:"Comparison of adjectives & adverbs",
+  text:"The elves are looking for new helpers: Who climbs higher, works more carefully and speaks better English? Compare candidates – and get ready for your own job application.",
+  lernen: {
+    cmp: { titel:"Comparing adjectives and adverbs", folien:[
+      {"bild":"📏","titel":"Adjectives – a quick review","formel":["fast | → | faster | → | the fastest","reliable | → | more reliable | → | the most reliable","good | → | better | → | the best"],"bsp":["Mia is **more reliable than** Tom.","She is **the best** candidate."],"de":"Kurze Adjektive **-er/-est**, lange **more/most**, unregelmäßig: good, bad, far …"},
+      {"bild":"🏃","titel":"Comparing adverbs","formel":["carefully | → | more carefully | → | most carefully","fast · hard · early | → | faster · harder · earlier","well | → | better | → | best","badly | → | worse | → | worst"],"bsp":["Tom works **harder than** Mia.","Mia speaks English **better than** Tom.","She drives **more carefully than** her brother."],"de":"Adverbien auf **-ly**: **more / most**. *fast, hard, early, late* wie Adjektive: **-er / -est**."},
+      {"bild":"⚖️","titel":"as … as · than · the …, the …","formel":["as … as | = | so … wie","not as … as | = | nicht so … wie","the more …, the better"],"bsp":["He isn’t **as experienced as** she is.","**The more** you practise, **the better** you get."],"de":"**the + Komparativ …, the + Komparativ** = je …, desto …"}
+    ]},
+    jobs: { titel:"Writing a job application", folien:[
+      {"bild":"📄","titel":"Your CV","text":"A **CV** (curriculum vitae) gives facts about you: **personal details, education, work experience, skills** and **interests**. In the UK you usually **don’t add a photo** or your date of birth.","de":"Ein **CV** (Lebenslauf) enthält **persönliche Daten, Schulbildung, Berufserfahrung, Fähigkeiten** und **Interessen**. In Großbritannien fügt man meist **kein Foto** und kein Geburtsdatum hinzu."},
+      {"bild":"✉️","titel":"The covering letter","text":"Start with *Dear Mr/Ms …*. Say **which job** you are applying for and **why** you are the right person. End with *Yours sincerely* if you know the name, *Yours faithfully* if you don’t.","de":"Beginne mit *Dear Mr/Ms …*. Nenne die **Stelle** und **warum** du passt. Schluss: *Yours sincerely*, wenn du den Namen kennst, sonst *Yours faithfully*."}
+    ]}
+  },
+  levels: [
+    { id:"rush", regel:"Adverb auf **-ly** → **more/most** · well → **better/best** · hard/fast/early → **-er/-est**.", typ:"rush", icon:"⚡", titel:"Fast, Faster, Fastest", art:"Comparative · 60 seconds",
+      anleitung:"Choose the **comparative**. **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die **erste Steigerungsform**. **Ziel: 12** in 60 Sekunden.",
+      tipp:"Adjektiv oder Adverb? Achte auf -ly!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"carefully", o:["more carefully","carefullier","carefuller"], c:0}, {q:"well", o:["better","weller","more well"], c:0}, {q:"hard", o:["harder","more hardly","hardlier"], c:0},
+        {q:"badly", o:["worse","badlier","more badly"], c:0}, {q:"early", o:["earlier","more early","earlyer"], c:0}, {q:"reliable", o:["more reliable","reliabler","reliablier"], c:0},
+        {q:"friendly", o:["friendlier","more friendlier","friendlyer"], c:0, e:"**friendly** is an adjective: friendlier (*more friendly* is also possible)."}, {q:"quickly", o:["more quickly","quicklier","quickerly"], c:0},
+        {q:"experienced", o:["more experienced","experienceder","experiencer"], c:0}, {q:"fast", o:["faster","more fastly","fastlier"], c:0}, {q:"politely", o:["more politely","politelier","more politer"], c:0},
+        {q:"good", o:["better","gooder","more good"], c:0}, {q:"late", o:["later","more late","latter"], c:0}, {q:"far", o:["further","farer","more far"], c:0},
+        {q:"easily", o:["more easily","easier-ly","easilier"], c:0}, {q:"creative", o:["more creative","creativer","creativest"], c:0}, {q:"busy", o:["busier","busyer","more busier"], c:0}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"cmp", icon:"🍃", titel:"Compare the Candidates", art:"Adjective or adverb · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Beschreibt das Wort ein Nomen (Adjektiv) oder ein Verb (Adverb)?",
+      fragen:[
+        {q:"Lena types **___** than Max.", o:["more quickly","quicker","more quick"], c:0, e:"How does she type? Adverb → **more quickly**."},
+        {q:"Max is a **___** worker than Lena.", o:["harder","more hardly","hardlier"], c:0, e:"*hard* (adj. and adv.) → **harder**."},
+        {q:"Of all the candidates, Aisha speaks English **___**.", o:["best","the better","most good"], c:0, e:"well → better → **best**."},
+        {q:"Ben answered the questions **___** than the others.", o:["more politely","politer","more polite"], c:0, e:"Adverb **politely** → **more politely**."},
+        {q:"This job is **___** than my last one.", o:["more interesting","interestinger","more interestingly"], c:0, e:"Adjective describing *job* → **more interesting**."},
+        {q:"She isn’t **___** experienced **___** her sister.", o:["as … as","so … than","as … than"], c:0, alt:["as as"], e:"**not as … as**."},
+        {q:"**___** you prepare, **___** you will feel in the interview.", o:["The more … the safer","More … more safe","The most … the safest"], c:0, alt:["The more the safer"], e:"**the + comparative, the + comparative** = je …, desto …"},
+        {q:"Tom arrived **___** than everybody else.", o:["later","more late","more lately"], c:0, e:"*late* → **later**. (*lately* = in letzter Zeit)"},
+        {q:"He did **___** in the test than he expected.", o:["worse","badder","more badly"], c:0, e:"badly → **worse** → worst."}
+      ]},
+    { id:"qual", typ:"memory", lernen:"jobs", icon:"🧩", titel:"Job Qualities", art:"Quality + meaning · memory",
+      anleitung:"Find the pairs: **quality + meaning**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Eigenschaft + Bedeutung**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"reliable = zuverlässig · punctual = pünktlich.",
+      paare:[ {a:"reliable", b:"people can trust you to do your job"}, {a:"punctual", b:"always on time"}, {a:"creative", b:"full of new ideas"},
+              {a:"patient", b:"stays calm and doesn’t get angry quickly"}, {a:"organised", b:"plans things well"}, {a:"a team player", b:"works well with others"},
+              {a:"motivated", b:"really wants to do something"}, {a:"experienced", b:"has done this work before"} ]},
+    { id:"build", regel:"Adverb auf -ly → **more … than** · good/well → **better** · je … desto → **the …, the …**.", typ:"satzbau", icon:"🧱", titel:"Application Sentences", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"than = als · as … as = so … wie.",
+      punkte:2,
+      saetze:[
+        {w:["I","work","more","carefully","than","my","brother"], hint:"🇩🇪 Ich arbeite sorgfältiger als mein Bruder."},
+        {w:["She","speaks","English","better","than","me"], alt:[["She","speaks","English","better","than","I","do"]], hint:"🇩🇪 Sie spricht besser Englisch als ich."},
+        {w:["I","am","not","as","experienced","as","you"], hint:"🇩🇪 Ich bin nicht so erfahren wie du."},
+        {w:["The","more","you","practise",",","the","better","you","get"], alt:[["The","more","you","practise","the","better","you","get"]], hint:"🇩🇪 Je mehr du übst, desto besser wirst du."},
+        {w:["He","is","the","most","reliable","person","in","our","team"], hint:"🇩🇪 Er ist die zuverlässigste Person in unserem Team."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"✉️", titel:"A Covering Letter", art:"Letter · fill in the gaps",
+      anleitung:"Emma applies for a summer job at a wildlife park. Tap a gap and choose the right words.",
+      anleitungDe:"Emma bewirbt sich um einen Ferienjob in einem Tierpark. Tippe auf eine Lücke und wähle die richtigen Wörter.",
+      tipp:"Briefformeln und Steigerungsformen beachten.",
+      ueberschrift:"Application: Summer helper",
+      text:"[[Dear|Hi|Hello dear]] Ms Walker,\nI am writing to apply for the job as a summer helper at Wildlife Park Sydney, which I saw on your website.\nI am 15 years old and I love animals. Last year I helped at a local animal shelter, so I am [[more experienced|experienceder|most experienced]] than many people of my age. My teachers say that I am [[reliable|reliably|relying]] and that I work [[more carefully|carefuller|most careful]] than most of my classmates.\nI speak German and English, and I can explain things [[clearly|clear|clearer]] to visitors. I think I would be a [[good|well|better]] team player, too.\nI am available from 1 July. I look forward to hearing from you.\nYours [[sincerely|faithfully|lovely]],\nEmma Schneider",
+      erklaerung:"Briefanfang **Dear Ms …** → Schluss **Yours sincerely**. Adverb **more carefully**, Adjektiv **reliable**."}
+  ]
+});
+</script>
+</body>
+</html>

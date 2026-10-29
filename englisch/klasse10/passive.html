@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Crystal Factory – The passive (revision): all tenses, by-agent, being done</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"grammar", id:"pass10", icon:"🏭", kartenSymbol:"❄️",
+  titel:"The Crystal Factory", untertitel:"The passive (revision): all tenses, by-agent, being done",
+  text:"In the Citadel’s factory ice crystals are cut, polished and shipped around the world – just like products made in India. Revise the passive in all tenses and present a company like a pro.",
+  lernen: {
+    pass: { titel:"The passive – revision", folien:[
+      {"bild":"🔁","titel":"When do we use it?","bsp":["Cotton **is grown** in Gujarat.","The phones **were assembled** in Chennai."],"de":"Passiv: Die **Handlung/das Produkt** ist wichtig, nicht **wer** etwas tut. Typisch für **Berichte, Prozesse, Nachrichten**."},
+      {"bild":"⏳","titel":"All tenses","formel":["simple present | → | is made","simple past | → | was made","present perfect | → | has been made","past perfect | → | had been made","will-future | → | will be made","modal | → | can/must be made"],"de":"Immer: **be** in der passenden Zeit + **3. Form**."},
+      {"bild":"⚙️","titel":"Progressive passive","formel":["is / are being + 3rd form","was / were being + 3rd form"],"bsp":["A new factory **is being built** at the moment.","The crystals **were being polished** when the power went off."],"de":"Gerade im Gange: **being** + 3. Form."},
+      {"bild":"👤","titel":"The agent: by …","bsp":["The company **was founded by** two brothers.","The calls **are answered by** 500 agents."],"de":"Der Handelnde steht mit **by** – aber nur, wenn er **wichtig** ist."}
+    ]}
+  },
+  levels: [
+    { id:"tense", typ:"sortieren", lernen:"pass", icon:"🗂️", titel:"Which Tense?", art:"Passive tenses · sort",
+      anleitung:"Which tense is the passive in? Tap the right box.",
+      anleitungDe:"In welcher Zeitform steht das Passiv? Tippe auf das richtige Kästchen.",
+      tipp:"Schau auf die Form von *be*.",
+      koerbe:[ {t:"present", info:"is/are (being) done", tipp:"**present**: is made, are being made."}, {t:"past", info:"was/were (being) done", tipp:"**past**: was made, were being made."}, {t:"present perfect", info:"has/have been done", tipp:"**present perfect**: has been made."}, {t:"future / modal", info:"will/can/must be done", tipp:"**future/modal**: will be made, must be made."} ],
+      items:[
+        {t:"Tea is grown in Assam.", k:0}, {t:"The road is being repaired.", k:0},
+        {t:"The company was founded in 1981.", k:1}, {t:"The goods were being loaded onto the ship.", k:1},
+        {t:"Millions of phones have been sold.", k:2}, {t:"The factory has been closed.", k:2},
+        {t:"The results will be published soon.", k:3}, {t:"Safety rules must be followed.", k:3}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"pass", icon:"🏭", titel:"Factory Tour", art:"Passive · quiz",
+      anleitung:"Choose the right passive form.",
+      anleitungDe:"Wähle die richtige Passivform.",
+      tipp:"Signalwörter zeigen die Zeit.",
+      fragen:[
+        {q:"Every year millions of T-shirts **___** in Tiruppur.", o:["are produced","produced","are producing"], c:0, e:"Simple present passive."},
+        {q:"The company **___** by two engineers in 1981.", o:["was founded","has been founded","is founded"], c:0, e:"**in 1981** → simple past."},
+        {q:"Look! A new machine **___** right now.", o:["is being installed","is installed","has installed"], c:0, e:"Right now → **is being installed**."},
+        {q:"Since 2020 more than 5,000 workers **___**.", o:["have been hired","were hired","are hired"], c:0, e:"**Since** → present perfect passive."},
+        {q:"The new product **___** next month.", o:["will be launched","will launched","is launching"], c:0, e:"Future → **will be launched**."},
+        {q:"When I arrived, the boxes **___** already **___**.", o:["had … been packed","have … been packed","were … packing"], c:0, alt:["had been packed"], e:"Before another past action → **had been packed**."},
+        {q:"Helmets **___** in this area.", o:["must be worn","must wear","must be wear"], c:0, e:"Modal passive → **must be worn**."},
+        {q:"The calls **___** by a team in Bangalore.", o:["are answered","answer","are answering"], c:0, e:"**are answered** + by-agent."},
+        {q:"While the tour **___**, the alarm went off.", o:["was being given","was given","is being given"], c:0, e:"Past progressive passive: **was being given**."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"pass", icon:"👤", titel:"Do We Need “by”?", art:"Swipe · by-agent",
+      anleitung:"Is the **by-agent** important here? Swipe **right if yes** and **left if it should be left out**.",
+      anleitungDe:"Ist der **by-Teil** hier wichtig? Wische nach **rechts für ja** und nach **links, wenn man ihn weglassen sollte**.",
+      tipp:"Unwichtig/selbstverständlich (by people, by someone, by workers) → weglassen.",
+      links:{t:"leave it out", icon:"✂️"}, rechts:{t:"keep it", icon:"👤"},
+      karten:[
+        {t:"English is spoken by people in many countries.", r:"l", e:"*by people* says nothing new → leave it out."},
+        {t:"The Taj Mahal was built by Shah Jahan for his wife.", r:"r", e:"**Who** built it is important information."},
+        {t:"My bike was stolen by someone.", r:"l", e:"*by someone* → leave it out."},
+        {t:"The film was directed by Satyajit Ray.", r:"r", e:"The director’s name is important."},
+        {t:"The boxes are loaded by workers.", r:"l", e:"Of course workers do it → leave it out."},
+        {t:"The prize was won by a 15-year-old girl.", r:"r", e:"The winner is the news!"},
+        {t:"Rice is eaten by many people in India.", r:"l", e:"→ *Rice is eaten a lot in India.*"},
+        {t:"The new app was developed by a start-up in Pune.", r:"r", e:"**Who** developed it matters."}
+      ]},
+    { id:"build", regel:"Passiv: **be** (Zeit!) + **3. Form** · gerade im Gange: **being** + 3. Form.", typ:"satzbau", icon:"🧱", titel:"Company Profile", art:"Sentence builder",
+      anleitung:"Build the sentence for a company profile.",
+      anleitungDe:"Bau den Satz für ein Firmenprofil.",
+      tipp:"Erst das Ding, dann be + 3. Form.",
+      punkte:2,
+      saetze:[
+        {w:["The","company","was","founded","in","1995"], alt:[["In","1995","the","company","was","founded"]], hint:"🇩🇪 Die Firma wurde 1995 gegründet."},
+        {w:["Our","products","are","sold","in","40","countries"], hint:"🇩🇪 Unsere Produkte werden in 40 Ländern verkauft."},
+        {w:["A","new","office","is","being","built"], hint:"🇩🇪 Ein neues Büro wird gerade gebaut."},
+        {w:["Over","1,000","jobs","have","been","created"], hint:"🇩🇪 Über 1.000 Arbeitsplätze sind geschaffen worden."},
+        {w:["All","workers","must","be","paid","fairly"], hint:"🇩🇪 Alle Arbeiter müssen fair bezahlt werden."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🧵", titel:"From Field to Shop", art:"Process description · fill in the gaps",
+      anleitung:"How is a T-shirt made? Tap a gap and choose the right passive form.",
+      anleitungDe:"Wie wird ein T-Shirt hergestellt? Tippe auf eine Lücke und wähle die richtige Passivform.",
+      tipp:"Prozessbeschreibungen stehen meist im simple present passive.",
+      ueberschrift:"The journey of a T-shirt",
+      text:"First, cotton [[is grown|grows|is growing]] on farms in Gujarat. When it is ready, it [[is picked|picks|is pick]], often by hand. Then the cotton [[is spun|is spinned|spun is]] into thread in a mill.\nAfter that, the cloth [[is dyed|is died|dyes]] and cut. Next, the T-shirts [[are sewn|are sew|sewn are]] in a factory in Tiruppur. Finally they [[are shipped|ship|are shipping]] to Europe.\nIn the past, many workers [[were paid|paid|were pay]] very little. Since then, new rules [[have been introduced|have introduced|were introduce]], and today more and more T-shirts [[are being made|are making|being made are]] with fair-trade cotton.",
+      erklaerung:"Prozess: **is grown, is picked, is spun, is dyed, are sewn, are shipped** · Vergangenheit: **were paid** · **have been introduced** · gerade: **are being made**."}
+  ]
+});
+</script>
+</body>
+</html>

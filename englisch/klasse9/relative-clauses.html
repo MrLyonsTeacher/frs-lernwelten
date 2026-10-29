@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Caribbean Tales – Relative clauses · contact clauses · whose, where</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"rel9", icon:"🏝️", kartenSymbol:"🍃",
+  titel:"Caribbean Tales", untertitel:"Relative clauses · contact clauses · whose, where",
+  text:"Sit down by the campfire in the Woodlands: the elves tell stories about islands, pirates and reggae stars. Learn how to describe people, places and things with relative clauses – with and without a relative pronoun.",
+  lernen: {
+    rel: { titel:"Relative clauses", folien:[
+      {"bild":"🧑","titel":"who · which · that","formel":["people | → | who / that","things, animals | → | which / that"],"bsp":["Bob Marley was a singer **who** became famous all over the world.","Jamaica is an island **which** has beautiful beaches."],"de":"**who** für Personen, **which** für Dinge/Tiere, **that** für beides."},
+      {"bild":"🏠","titel":"whose · where","formel":["whose | = | dessen / deren","where | = | wo"],"bsp":["That’s the girl **whose** brother is a pirate.","This is the beach **where** we found the treasure."],"de":"**whose** = Besitz · **where** = Ort."},
+      {"bild":"✂️","titel":"Contact clauses","formel":["the book **(which)** I read","the man **(who)** we met"],"bsp":["The story **I read** was about pirates.","The people **we met** were friendly."],"de":"Ist das Relativpronomen **Objekt** (danach folgt ein neues Subjekt: *I, we …*), kann man es **weglassen** → *contact clause*."},
+      {"bild":"⚠️","titel":"When you can’t leave it out","bsp":["The man **who lives** next door … (✗ The man lives next door …)"],"de":"Folgt direkt ein **Verb**, ist das Pronomen **Subjekt** – dann darf es **nicht** wegfallen!"}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"rel", icon:"🔥", titel:"Campfire Quiz", art:"who, which, whose, where · quiz",
+      anleitung:"Choose the right relative pronoun.",
+      anleitungDe:"Wähle das richtige Relativpronomen.",
+      tipp:"Person – Ding – Besitz – Ort?",
+      fragen:[
+        {q:"Bob Marley was the musician **___** sang *Three Little Birds*.", o:["who","which","where"], c:0, e:"A person → **who**."},
+        {q:"Kingston is the city **___** Bob Marley lived.", o:["where","which","who"], c:0, e:"A place → **where**."},
+        {q:"This is the pirate **___** ship sank near Port Royal.", o:["whose","who’s","which"], c:0, e:"Possession (his ship) → **whose**."},
+        {q:"Reggae is a kind of music **___** comes from Jamaica.", o:["which","who","where"], c:0, e:"A thing → **which** (or *that*)."},
+        {q:"The hotel **___** we stayed in was right on the beach.", o:["which","where","whose"], c:0, e:"*stay **in** the hotel* → **which**. (*where* without *in*: the hotel **where** we stayed)."},
+        {q:"I met a girl **___** grandma speaks Creole.", o:["whose","who","which"], c:0, e:"Her grandma → **whose**."},
+        {q:"Pirates were sailors **___** attacked other ships.", o:["who","which","whose"], c:0, e:"People → **who**."},
+        {q:"Grenada is an island **___** you can find lots of nutmeg.", o:["where","which","who"], c:0, e:"A place + new sentence → **where**."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"rel", icon:"✂️", titel:"Can You Leave It Out?", art:"Swipe · contact clauses",
+      anleitung:"Can you leave out the relative pronoun? Swipe **right for yes** and **left for no**.",
+      anleitungDe:"Kann man das Relativpronomen weglassen? Wische nach **rechts für ja** und nach **links für nein**.",
+      tipp:"Folgt ein neues Subjekt (I, we, she …) → ja. Folgt direkt ein Verb → nein.",
+      links:{t:"no", icon:"🚫"}, rechts:{t:"yes", icon:"✂️"},
+      karten:[
+        {t:"The song **that** we heard was by Bob Marley.", r:"r", e:"*we* is the subject → **The song we heard …**"},
+        {t:"The man **who** owns the boat is from Barbados.", r:"l", e:"*who* is the subject (**who owns**) → you need it."},
+        {t:"The beach **which** we visited was amazing.", r:"r", e:"→ **The beach we visited …**"},
+        {t:"Tourists **who** come in summer must be careful of hurricanes.", r:"l", e:"**who come** – subject → you need it."},
+        {t:"The food **which** my host mum cooked was spicy.", r:"r", e:"→ **The food my host mum cooked …**"},
+        {t:"The storm **that** hit the island was very strong.", r:"l", e:"**that hit** – subject → you need it."},
+        {t:"The book **that** I’m reading is about pirates.", r:"r", e:"→ **The book I’m reading …**"},
+        {t:"A girl **who** lives in Trinidad wrote this blog.", r:"l", e:"**who lives** – subject → you need it."},
+        {t:"The people **who** we met on the bus were very friendly.", r:"r", e:"→ **The people we met …**"},
+        {t:"An island **which** has no airport is hard to reach.", r:"l", e:"**which has** – subject → you need it."}
+      ]},
+    { id:"build", regel:"Contact clause: Objekt-Pronomen darf wegfallen – *The story (that) **I** told …*", typ:"satzbau", icon:"🧱", titel:"Contact Clause Builder", art:"Sentence builder · without pronoun",
+      anleitung:"Build the sentence **without** a relative pronoun.",
+      anleitungDe:"Bau den Satz **ohne** Relativpronomen.",
+      tipp:"Nomen + neues Subjekt + Verb.",
+      punkte:2,
+      saetze:[
+        {w:["The","song","I","like","best","is","by","Bob","Marley"], hint:"🇩🇪 Das Lied, das ich am liebsten mag, ist von Bob Marley."},
+        {w:["The","beach","we","visited","was","beautiful"], hint:"🇩🇪 Der Strand, den wir besucht haben, war wunderschön."},
+        {w:["Is","this","the","book","you","were","looking","for","?"], hint:"🇩🇪 Ist das das Buch, das du gesucht hast?"},
+        {w:["The","people","we","met","spoke","Creole"], hint:"🇩🇪 Die Leute, die wir getroffen haben, sprachen Kreolisch."},
+        {w:["The","story","Grandma","told","us","was","scary"], hint:"🇩🇪 Die Geschichte, die Oma uns erzählt hat, war gruselig."}
+      ]},
+    { id:"memory", typ:"memory", icon:"🧩", titel:"Holiday Definitions", art:"Word + definition · memory",
+      anleitung:"Find the pairs: **word + definition** (with a relative clause!). Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Wort + Definition** (mit Relativsatz!). Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Definitionen mit who/which/where kann man beim Erklären unbekannter Wörter gut nutzen.",
+      paare:[ {a:"a lifeguard", b:"a person who watches swimmers"}, {a:"a harbour", b:"a place where ships stay"}, {a:"a hurricane", b:"a storm which is very strong"},
+              {a:"a souvenir", b:"something which reminds you of a trip"}, {a:"a tourist guide", b:"a person who shows visitors around"}, {a:"a resort", b:"a place where people go on holiday"},
+              {a:"a passport", b:"a document which you need to travel"}, {a:"a pirate", b:"a sailor who attacks other ships"} ]},
+    { id:"story", E:{art:"Story · choose the right word"}, typ:"lueckentext", icon:"🏴‍☠️", titel:"The Pirate’s Map", art:"Story · fill in the gaps",
+      anleitung:"Read the story. Tap a gap and choose the right word. **—** means no pronoun is needed.",
+      anleitungDe:"Lies die Geschichte. Tippe auf eine Lücke und wähle das richtige Wort. **—** bedeutet: kein Pronomen nötig.",
+      tipp:"Wenn das Pronomen wegfallen kann (contact clause), ist **—** die richtige Wahl.",
+      ueberschrift:"The map of Captain Kidd",
+      text:"Last summer Maya stayed with her uncle, [[who|which|where]] lives on a small island in the Bahamas. One day they explored an old house [[where|who|whose]] pirates had lived 300 years ago.\nIn the attic Maya found a box [[which|who|where]] was full of old papers. Between them was a map – a map [[—|who|where]] nobody had seen for centuries! It showed a beach [[where|which|who]] a cross was drawn under a palm tree.\n“This was Captain Kidd’s map,” said her uncle, [[whose|who’s|who]] hands were shaking. “He was a pirate [[who|which|where]] hid his treasure on many islands.”\nThe next day they went to the beach. Did they find the treasure? That’s a story [[—|who|where]] I’ll tell you tomorrow …",
+      erklaerung:"who (Person), which (Ding), where (Ort), whose (Besitz) · **—** = contact clause (Objekt-Pronomen weggelassen)."}
+  ]
+});
+</script>
+</body>
+</html>

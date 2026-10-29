@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Crystal of Wishes – will-future · if-clauses I &amp; II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"if7", icon:"🔮", kartenSymbol:"💎",
+  titel:"The Crystal of Wishes", untertitel:"will-future · if-clauses I & II",
+  text:"The old dwarf king owns a magic crystal. It shows what WILL happen – and what WOULD happen if you had a wish. Learn the will-future and if-clauses type I and II.",
+  lernen: {
+    if1: { titel:"will-future and if-clauses type I", folien:[
+      {"bild":"🔮","titel":"will-future","formel":["will | + | infinitive","won’t | = | will not"],"bsp":["It **will rain** tomorrow.","We **won’t find** any gold."],"de":"Mit **will** sagst du voraus, was (wahrscheinlich) passieren wird."},
+      {"bild":"🌦️","titel":"if-clause type I – real","formel":["If + simple present | , | will + infinitive"],"bsp":["If it **rains**, we **will stay** in the cave.","If you **find** a gem, you **will be** rich."],"de":"**Typ I**: Es ist **gut möglich**. Im if-Satz **nie will**!"},
+      {"bild":"🔁","titel":"You can switch the parts","formel":["will + infinitive | + | if + simple present"],"bsp":["We **will stay** in the cave **if** it **rains**."],"de":"Steht der if-Satz hinten, brauchst du **kein Komma**."}
+    ]},
+    if2: { titel:"if-clauses type II – just imagine!", folien:[
+      {"bild":"✨","titel":"if-clause type II – unreal","formel":["If + simple past | , | would + infinitive"],"bsp":["If I **had** a dragon, I **would fly** to school.","If I **was** king, I **would build** a gold castle."],"de":"**Typ II**: Es ist **unwahrscheinlich** oder **ausgedacht** (Wünsche, Träume)."},
+      {"bild":"👑","titel":"If I were you …","formel":["If I were you, | I would …"],"bsp":["**If I were you, I would** ask for help."],"de":"Für einen **Rat**: *If I were you, I would …* (Wenn ich du wäre, würde ich …)"},
+      {"bild":"⚖️","titel":"Type I or type II?","formel":["real / possible | → | type I","unreal / a dream | → | type II"],"bsp":["If I **find** my phone, I**’ll call** you. (possible)","If I **found** a dragon egg, I**’d keep** it. (a dream)"],"de":"Frag dich: **Kann das wirklich passieren?**"}
+    ]}
+  },
+  levels: [
+    { id:"will", typ:"quiz", lernen:"if1", icon:"🔮", titel:"The Crystal Says …", art:"will-future · quiz",
+      anleitung:"What does the crystal say about the future? Choose the right form.",
+      anleitungDe:"Was sagt der Kristall über die Zukunft? Wähle die richtige Form.",
+      tipp:"will + Grundform – ohne *to*, ohne *-s*.",
+      fragen:[
+        {q:"Tomorrow it **___** sunny in Wales.", o:["will be","will is","is will"], c:0, e:"**will + be**."},
+        {q:"I think Ellie **___** the race.", o:["will win","wills win","will wins"], c:0, e:"will + infinitive: **will win** (no -s!)."},
+        {q:"Don’t worry – the dwarves **___** you.", o:["won’t hurt","will not hurts","don’t will hurt"], c:0, e:"Negative: **won’t** + infinitive."},
+        {q:"**___** we find the treasure?", o:["Will","Do","Are"], c:0, e:"Question: **Will** + subject + infinitive?"},
+        {q:"In 2050 people **___** on the moon.", o:["will live","will to live","living will"], c:0, e:"**will live** – no *to*."},
+        {q:"I’m sure you **___** the test.", o:["will pass","will passing","pass will"], c:0, e:"**will pass**."}
+      ]},
+    { id:"if1", typ:"quiz", lernen:"if1", icon:"⛏️", titel:"If … then …", art:"if-clauses type I · quiz",
+      anleitung:"Choose the right form for the **if-clause type I**.",
+      anleitungDe:"Wähle die richtige Form für den **if-Satz Typ I**.",
+      tipp:"if + simple present → will + Grundform.",
+      fragen:[
+        {q:"If it **___**, we will stay inside.", o:["rains","will rain","rained"], c:0, e:"In the if-clause: **simple present**."},
+        {q:"If you find a gem, you **___** rich.", o:["will be","are being","would be"], c:0, e:"Main clause: **will + infinitive**."},
+        {q:"If we **___** now, we will catch the bus.", o:["leave","will leave","left"], c:0, e:"**if + simple present**: leave."},
+        {q:"She **___** angry if you are late again.", o:["will be","is","be"], c:0, e:"Main clause → **will be**."},
+        {q:"If he **___** his homework, he can’t go out.", o:["doesn’t do","won’t do","not does"], c:0, e:"Negative simple present: **doesn’t do**."},
+        {q:"If you **___** the map, you will get lost.", o:["don’t take","won’t take","not take"], c:0, e:"if + simple present: **don’t take**."},
+        {q:"We **___** the castle if we hurry.", o:["will see","see will","would saw"], c:0, e:"**will see**."},
+        {q:"If the dragon **___** up, run!", o:["wakes","will wake","woke"], c:0, e:"he/she/it → **wakes** (with -s!)."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"if2", icon:"⚖️", titel:"Real or Dream?", art:"Type I or type II · swipe",
+      anleitung:"Which if-clause is it? Swipe **left for type I** and **right for type II**.",
+      anleitungDe:"Welcher if-Satz ist das? Wische nach **links für Typ I** (real) und nach **rechts für Typ II** (ausgedacht).",
+      tipp:"will → Typ I · would → Typ II.",
+      links:{t:"type I", icon:"🌦️"}, rechts:{t:"type II", icon:"✨"},
+      karten:[
+        {t:"If it snows, we will build a snowman.", r:"l", e:"simple present + **will** → type I."},
+        {t:"If I had a million pounds, I would buy an island.", r:"r", e:"simple past + **would** → type II."},
+        {t:"If you hurry, you will catch the train.", r:"l", e:"**will** → type I."},
+        {t:"If I were a dwarf, I would live in a cave.", r:"r", e:"**were … would** → type II."},
+        {t:"I’ll help you if you ask me.", r:"l", e:"**’ll** = will → type I."},
+        {t:"If dogs could talk, they would tell funny stories.", r:"r", e:"**could … would** → type II."},
+        {t:"If we win the match, we will celebrate.", r:"l", e:"**will** → type I."},
+        {t:"She would be happy if she lived in Dublin.", r:"r", e:"**would … lived** → type II."},
+        {t:"If you don’t study, you won’t pass.", r:"l", e:"**won’t** → type I."},
+        {t:"If I were you, I would say sorry.", r:"r", e:"Advice with **If I were you** → type II."}
+      ]},
+    { id:"if2", typ:"quiz", lernen:"if2", icon:"✨", titel:"Wish Upon a Crystal", art:"if-clauses type II · quiz",
+      anleitung:"Just imagine! Choose the right form for the **if-clause type II**.",
+      anleitungDe:"Stell dir vor! Wähle die richtige Form für den **if-Satz Typ II**.",
+      tipp:"if + simple past → would + Grundform.",
+      fragen:[
+        {q:"If I **___** a dragon, I would fly to school.", o:["had","have","would have"], c:0, e:"if + **simple past**: had."},
+        {q:"If I lived in Scotland, I **___** Nessie every day.", o:["would look for","will look for","looked for"], c:0, e:"Main clause: **would + infinitive**."},
+        {q:"If she **___** more time, she would learn the guitar.", o:["had","has","would have"], c:0, e:"**had** – never *would* in the if-clause."},
+        {q:"What **___** you do if you found a treasure?", o:["would","will","did"], c:0, e:"Question: **What would you do …?**"},
+        {q:"If I **___** you, I would tell your parents.", o:["were","am","would be"], c:0, e:"Advice: **If I were you**."},
+        {q:"If we **___** a car, we would drive to the coast.", o:["had","have","would have"], c:0, e:"if + simple past → **had**."},
+        {q:"He **___** happier if he didn’t play so many video games.", o:["would be","will be","was"], c:0, e:"**would be**."},
+        {q:"If I could choose, I **___** in a castle.", o:["would live","would lived","will live"], c:0, e:"would + **infinitive**: live."}
+      ]},
+    { id:"build", regel:"Typ I: if + **simple present**, **will** + Grundform · Typ II: if + **simple past**, **would** + Grundform.", typ:"satzbau", icon:"🧱", titel:"Crystal Sentences", art:"Sentence builder",
+      anleitung:"Build the if-sentence.",
+      anleitungDe:"Bau den if-Satz.",
+      tipp:"Der if-Satz kann vorne oder hinten stehen.",
+      punkte:2,
+      saetze:[
+        {w:["If","it","rains",",","we","will","stay","at","home"], alt:[["We","will","stay","at","home","if","it","rains"]], hint:"🇩🇪 Wenn es regnet, bleiben wir zu Hause."},
+        {w:["If","I","had","wings",",","I","would","fly"], alt:[["I","would","fly","if","I","had","wings"]], hint:"🇩🇪 Wenn ich Flügel hätte, würde ich fliegen."},
+        {w:["You","will","get","lost","if","you","go","alone"], alt:[["If","you","go","alone",",","you","will","get","lost"]], hint:"🇩🇪 Du wirst dich verlaufen, wenn du allein gehst."},
+        {w:["If","I","were","you",",","I","would","ask","for","help"], alt:[["I","would","ask","for","help","if","I","were","you"]], hint:"🇩🇪 An deiner Stelle würde ich um Hilfe bitten."},
+        {w:["What","would","you","do","if","you","found","a","gem","?"], hint:"🇩🇪 Was würdest du tun, wenn du einen Edelstein fändest?"}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"✉️", titel:"Advice from Aunt Aggie", art:"Text · fill in the gaps",
+      anleitung:"Liam writes to an advice page. Tap a gap and choose the right form.",
+      anleitungDe:"Liam schreibt an eine Ratgeber-Seite. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Real (Typ I) oder ausgedacht (Typ II)?",
+      ueberschrift:"Ask Aunt Aggie",
+      text:"Dear Aunt Aggie,\nmy best friend is moving to Belfast next month. If she [[leaves|will leave|left]], I will be really lonely. What can I do?\nLiam, 13\n\nDear Liam,\nI understand how you feel. But don’t worry! If you [[call|will call|called]] her every week, you will stay good friends. If I were you, I [[would plan|will plan|plan]] a visit in the holidays. Belfast isn’t far away!\nAnd if you [[join|will join|joined]] a club, you [[will meet|would met|meet]] new people. If I were 13 again, I [[would join|will join|joined]] a drama club – it’s great fun!\nAunt Aggie",
+      erklaerung:"Typ I: if + **simple present**, will … · Typ II (Rat/Traum): if + **simple past/were**, would …"}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Inventors’ Hall – Relative clauses: who, which, that</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"rel7", icon:"⚙️", kartenSymbol:"💡",
+  titel:"The Inventors’ Hall", untertitel:"Relative clauses: who, which, that",
+  text:"In the great hall of the dwarves stand the statues of famous inventors. Find out who they were – and learn how to connect sentences with who, which and that.",
+  lernen: {
+    rel: { titel:"who, which or that?", folien:[
+      {"bild":"🧑‍🔬","titel":"who – for people","formel":["person | + | who"],"bsp":["Bell was the man **who** invented the telephone.","A miner is a person **who** works under the ground."],"de":"**who** steht für **Personen**."},
+      {"bild":"⚙️","titel":"which – for things and animals","formel":["thing / animal | + | which"],"bsp":["The tyre **which** Dunlop invented was full of air.","Nessie is a monster **which** lives in Loch Ness."],"de":"**which** steht für **Dinge** und **Tiere**."},
+      {"bild":"🔗","titel":"that – for people and things","formel":["person / thing | + | that"],"bsp":["It’s the phone **that** changed the world.","He’s the boy **that** won the prize."],"de":"**that** kann **beides** ersetzen – Personen und Dinge."},
+      {"bild":"🧩","titel":"Two sentences → one sentence","formel":["Bell was an inventor. | + | He came from Edinburgh."],"bsp":["Bell was an inventor **who** came from Edinburgh."],"de":"Mit einem Relativsatz verbindest du zwei Sätze. Das Pronomen (**he**) fällt dann weg!"}
+    ]}
+  },
+  levels: [
+    { id:"swipe", typ:"swipe", lernen:"rel", icon:"👈", titel:"Who or Which?", art:"Swipe · person or thing",
+      anleitung:"Which word fits? Swipe **left for who** and **right for which**.",
+      anleitungDe:"Welches Wort passt? Wische nach **links für who** (Personen) und nach **rechts für which** (Dinge/Tiere).",
+      tipp:"Person → who · Ding oder Tier → which.",
+      links:{t:"who", icon:"🧑"}, rechts:{t:"which", icon:"⚙️"},
+      karten:[
+        {t:"John Logie Baird was the man ___ built the first TV.", r:"l", e:"A man = a person → **who**."},
+        {t:"The TV ___ he built was very small.", r:"r", e:"The TV = a thing → **which**."},
+        {t:"A pilot is someone ___ flies planes.", r:"l", e:"someone = a person → **who**."},
+        {t:"Haggis is a dish ___ comes from Scotland.", r:"r", e:"A dish = a thing → **which**."},
+        {t:"Andy Murray is a tennis player ___ comes from Scotland.", r:"l", e:"A player = a person → **who**."},
+        {t:"The Loch Ness monster is an animal ___ nobody has seen.", r:"r", e:"An animal → **which**."},
+        {t:"That’s the teacher ___ helped me with my project.", r:"l", e:"teacher = person → **who**."},
+        {t:"I’ve got a bike ___ has 21 gears.", r:"r", e:"bike = thing → **which**."},
+        {t:"Kids ___ like science should visit the Glasgow Science Centre.", r:"l", e:"Kids = people → **who**."},
+        {t:"Penicillin is a medicine ___ has saved millions of lives.", r:"r", e:"medicine = thing → **which**."}
+      ]},
+    { id:"memory", typ:"memory", icon:"🧠", titel:"Scottish Inventors", art:"Inventor + invention · memory",
+      lernen:{ titel:"Great Scottish inventors", folien:[
+        {"bild":"☎️","jahr":"1876","titel":"Alexander Graham Bell","text":"Bell was born in **Edinburgh**. He was the man **who** got the patent for the **telephone** in 1876.","de":"Bell wurde in **Edinburgh** geboren. Er erhielt 1876 das Patent für das **Telefon**."},
+        {"bild":"🚲","jahr":"1888","titel":"John Boyd Dunlop","text":"Dunlop invented a **tyre which was full of air** – first for his son’s tricycle.","de":"Dunlop erfand einen **luftgefüllten Reifen** – zuerst für das Dreirad seines Sohnes."},
+        {"bild":"📺","jahr":"1926","titel":"John Logie Baird","text":"Baird was the inventor **who** showed the first working **television** in London.","de":"Baird zeigte in London das erste funktionierende **Fernsehen**."},
+        {"bild":"💊","jahr":"1928","titel":"Alexander Fleming","text":"Fleming discovered **penicillin**, a medicine **which** kills bacteria.","de":"Fleming entdeckte das **Penicillin**, ein Medikament, das Bakterien tötet."},
+        {"bild":"🚂","jahr":"1765","titel":"James Watt","text":"Watt made the **steam engine** much better. The unit for power, the **watt**, is named after him.","de":"Watt verbesserte die **Dampfmaschine** stark. Die Einheit **Watt** ist nach ihm benannt."},
+        {"bild":"🧥","jahr":"1823","titel":"Charles Macintosh","text":"Macintosh made a **waterproof coat** – very useful in rainy Scotland!","de":"Macintosh erfand einen **wasserdichten Mantel** – sehr praktisch im regnerischen Schottland!"}
+      ]},
+      anleitung:"Find the pairs: **inventor + invention**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Erfinder + Erfindung**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Tippe auf 📖, um die Infokarten noch einmal zu sehen.",
+      paare:[ {a:"Alexander Graham Bell", b:"the telephone ☎️"}, {a:"John Boyd Dunlop", b:"the air-filled tyre 🚲"}, {a:"John Logie Baird", b:"the television 📺"},
+              {a:"Alexander Fleming", b:"penicillin 💊"}, {a:"James Watt", b:"a better steam engine 🚂"}, {a:"Charles Macintosh", b:"the waterproof coat 🧥"} ]},
+    { id:"quiz", typ:"quiz", lernen:"rel", icon:"🔧", titel:"Workshop Quiz", art:"who / which / that · quiz",
+      anleitung:"Choose the right relative pronoun. Sometimes two are possible – then choose the one that is **always** right.",
+      anleitungDe:"Wähle das richtige Relativpronomen.",
+      tipp:"who = Personen · which = Dinge/Tiere · that = beides.",
+      fragen:[
+        {q:"Fleming was the scientist **___** discovered penicillin.", o:["who","which","what"], c:0, e:"scientist = person → **who** (or *that*)."},
+        {q:"A tyre is a thing **___** you need for a bike.", o:["which","who","where"], c:0, e:"thing → **which** (or *that*)."},
+        {q:"I know a girl **___** can play the bagpipes.", o:["who","which","whose"], c:0, e:"girl = person → **who**."},
+        {q:"Where is the book **___** I bought yesterday?", o:["that","who","what"], c:0, e:"book = thing → **that** or *which*."},
+        {q:"Dolly was a sheep **___** was cloned in Scotland in 1996.", o:["which","who","when"], c:0, e:"An animal → **which**."},
+        {q:"Inventors are people **___** have new ideas.", o:["who","which","what"], c:0, e:"people → **who**."},
+        {q:"The dwarf **___** found the biggest gem became king.", o:["that","which","what"], c:0, e:"**that** works for people and things. (*who* would be right too.)"},
+        {q:"This is the hammer **___** my grandad made.", o:["which","who","whose"], c:0, e:"hammer = thing → **which**."}
+      ]},
+    { id:"build", regel:"Relativsatz: **Person + who** / **Ding + which** – das alte Pronomen (he, it) fällt weg.", typ:"satzbau", icon:"🧱", titel:"Join the Sentences", art:"Sentence builder",
+      anleitung:"Join the two sentences with **who** or **which**. Build the new sentence.",
+      anleitungDe:"Verbinde die zwei Sätze mit **who** oder **which**. Bau den neuen Satz.",
+      tipp:"Das Wort he/she/it fällt im Relativsatz weg.",
+      punkte:2,
+      saetze:[
+        {w:["Bell","was","a","man","who","invented","the","telephone"], alt:[["Bell","was","a","man","that","invented","the","telephone"]], hint:"Bell was a man. He invented the telephone."},
+        {w:["Haggis","is","a","dish","which","comes","from","Scotland"], alt:[["Haggis","is","a","dish","that","comes","from","Scotland"]], hint:"Haggis is a dish. It comes from Scotland."},
+        {w:["I","have","a","friend","who","lives","in","Glasgow"], alt:[["I","have","a","friend","that","lives","in","Glasgow"]], hint:"I have a friend. She lives in Glasgow."},
+        {w:["Nessie","is","a","monster","which","lives","in","a","lake"], alt:[["Nessie","is","a","monster","that","lives","in","a","lake"]], hint:"Nessie is a monster. It lives in a lake."},
+        {w:["Fleming","was","the","doctor","who","found","penicillin"], alt:[["Fleming","was","the","doctor","that","found","penicillin"]], hint:"Fleming was the doctor. He found penicillin."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🏛️", titel:"Museum Tour", art:"Text · fill in the gaps",
+      anleitung:"You’re in a museum in Edinburgh. Tap a gap and choose the right word.",
+      anleitungDe:"Du bist in einem Museum in Edinburgh. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Personen → who · Dinge und Tiere → which.",
+      ueberschrift:"Welcome to the National Museum of Scotland!",
+      text:"Welcome, everyone! I’m Fiona, the guide [[who|which]] will show you around today. In this room you can see machines [[which|who]] changed the world. This is the steam engine [[which|who]] James Watt improved.\nOver here is a photo of John Logie Baird, the man [[who|which]] showed the first TV. And this is Dolly, the famous sheep [[which|who]] was cloned in 1996. Children [[who|which]] want to try our experiments can go to the science room. Any questions? No? Then let’s look at the telephone [[which|who]] Bell invented!",
+      erklaerung:"**who** für Personen (guide, man, children) – **which** für Dinge und Tiere (machines, engine, sheep, telephone)."}
+  ]
+});
+</script>
+</body>
+</html>

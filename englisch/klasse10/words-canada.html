@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Sport, Energy &amp; Strong Feelings – Unit 1: talking about sport, giving reasons, energy, protest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"vocabulary", id:"vcan10", icon:"🍁", kartenSymbol:"❄️",
+  titel:"Words: Sport, Energy & Strong Feelings", untertitel:"Unit 1: talking about sport, giving reasons, energy, protest",
+  text:"Team spirit, competition, oil sands and wind farms – and the words you need when you feel strongly about something.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Energy Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Diese Wörter brauchst du für Diskussionen über Energie.",
+      paare:[ {a:"renewable energy", b:"erneuerbare Energie"}, {a:"fossil fuels", b:"fossile Brennstoffe"}, {a:"oil spill", b:"Ölpest"}, {a:"wind farm", b:"Windpark"},
+              {a:"greenhouse gas", b:"Treibhausgas"}, {a:"fracking", b:"Fracking"}, {a:"to drill", b:"bohren"}, {a:"to supply", b:"liefern, versorgen"} ]},
+    { id:"reasons", typ:"sortieren", icon:"💬", titel:"Giving Reasons", art:"Phrases · sort",
+      anleitung:"What does the phrase do? Tap the right box.",
+      anleitungDe:"Wozu dient die Wendung? Tippe auf das richtige Kästchen.",
+      tipp:"Meinung äußern, begründen oder widersprechen?",
+      koerbe:[ {t:"giving an opinion", info:"🗣️", tipp:"**opinion**: In my opinion …, I believe …, As far as I’m concerned …"}, {t:"giving a reason", info:"➡️", tipp:"**reason**: because …, That’s why …, The main reason is …"}, {t:"disagreeing", info:"🙅", tipp:"**disagreeing**: I see your point, but …, I’m not so sure …, That’s not true."} ],
+      items:[
+        {t:"In my opinion, …", k:0}, {t:"As far as I’m concerned, …", k:0}, {t:"I strongly believe that …", k:0},
+        {t:"The main reason is that …", k:1}, {t:"That’s why …", k:1}, {t:"… because of …", k:1},
+        {t:"I see your point, but …", k:2}, {t:"I’m not so sure about that.", k:2}, {t:"I totally disagree.", k:2}
+      ]},
+    { id:"feel", typ:"quiz", icon:"😤", titel:"Strong Feelings", art:"Explanations · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"Very angry.", o:["furious","curious","famous"], c:0, e:"**furious** = wütend."},
+        {q:"Very shocked and upset.", o:["horrified","hurried","honoured"], c:0, e:"**horrified** = entsetzt."},
+        {q:"Feeling that something is unfair and you want to change it.", o:["outraged","outgoing","outdated"], c:0, e:"**outraged** = empört."},
+        {q:"Very worried or nervous about something.", o:["anxious","ambitious","amazing"], c:0, e:"**anxious** = besorgt, ängstlich."},
+        {q:"To show in public that you are against something.", o:["protest","pretend","promote"], c:0, e:"**protest (against)** = protestieren."},
+        {q:"A sport where you compete alone, not in a team.", o:["individual sport","single sport","alone sport"], c:0, e:"**individual sport** = Einzelsport."},
+        {q:"The feeling of being part of a group that works together well.", o:["team spirit","team spite","team speech"], c:0, e:"**team spirit** = Teamgeist."},
+        {q:"A list of names of people who support or oppose something.", o:["petition","position","partition"], c:0, e:"**petition** = Petition, Unterschriftenliste."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **environment**, **opponent**, **competition**.", typ:"rush", icon:"⚡", titel:"Maple Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Wettbewerb", o:["competition","competion","competiton"], c:0}, {q:"Gegner(in)", o:["opponent","oponent","opponant"], c:0}, {q:"Schiedsrichter(in)", o:["referee","referie","refferee"], c:0},
+        {q:"Mannschaftsgeist", o:["team spirit","team sprit","teamspirt"], c:0}, {q:"Umwelt", o:["environment","enviroment","environmant"], c:0}, {q:"Brennstoff", o:["fuel","fool","fuell"], c:0},
+        {q:"erneuerbar", o:["renewable","renewible","renuable"], c:0}, {q:"Strom", o:["electricity","electrisity","electricty"], c:0}, {q:"Regierung", o:["government","goverment","governement"], c:0},
+        {q:"wütend", o:["furious","furius","furios"], c:0}, {q:"besorgt", o:["anxious","anxius","ancious"], c:0}, {q:"Gesundheit", o:["health","helth","healt"], c:0},
+        {q:"Verschmutzung", o:["pollution","polution","pollusion"], c:0}, {q:"Bürgermeister(in)", o:["mayor","major","mayer"], c:0}, {q:"Gemeinde, Gemeinschaft", o:["community","comunity","communitty"], c:0},
+        {q:"Vorteil", o:["advantage","advantege","advantige"], c:0}, {q:"Nachteil", o:["disadvantage","disadvantige","disadvantege"], c:0}, {q:"Ausdauer", o:["stamina","stamena","stamine"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📣", titel:"Debate Club", art:"Debate · fill in the gaps",
+      anleitung:"Two students discuss a new wind farm. Tap a gap and choose the right word.",
+      anleitungDe:"Zwei Schüler diskutieren über einen neuen Windpark. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Should our town build a wind farm?",
+      text:"Ethan: In my [[opinion|option|onion]], the wind farm is a great idea. We need more [[renewable|removable|reliable]] energy. The main [[reason|season|region]] is that burning [[fossil fuels|fossil fools|fossile fuels]] produces greenhouse gases.\nMaya: I see your [[point|paint|print]], but I’m not so sure. The turbines are noisy and they could harm birds. Many people in our [[community|commodity|company]] are [[furious|curious|famous]] about the plan.\nEthan: But one big [[advantage|advertisement|adventure]] is that the electricity will be cheaper. And it’s better for the [[environment|entertainment|equipment]].\nMaya: OK, let’s start a [[petition|position|partition]] and ask everybody!",
+      erklaerung:"Diskutieren: **in my opinion, the main reason, I see your point** · Energie: **renewable, fossil fuels, environment**."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Pipeline Protest – Present perfect simple &amp; progressive · since/for</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"grammar", id:"pp10", icon:"🛢️", kartenSymbol:"❄️",
+  titel:"The Pipeline Protest", untertitel:"Present perfect simple & progressive · since/for",
+  text:"The ice wizards have been watching a big oil pipeline for months. People have protested, scientists have written reports. Revise the present perfect – simple and progressive – and when to use the simple past instead.",
+  lernen: {
+    pp: { titel:"Present perfect simple and progressive", folien:[
+      {"bild":"✅","titel":"Present perfect simple","formel":["have / has | + | 3rd form"],"bsp":["They **have built** 500 km of the pipeline.","I**’ve** never **seen** a bear."],"de":"**Ergebnis** oder **Erfahrung** bis jetzt – ohne genauen Zeitpunkt. Oft mit *ever, never, already, yet, just, so far*."},
+      {"bild":"⏳","titel":"Present perfect progressive","formel":["have / has been | + | verb + ing"],"bsp":["People **have been protesting** for weeks.","It**’s been snowing** since this morning."],"de":"Eine Handlung **dauert schon an** (und läuft vielleicht noch). Betonung auf der **Dauer**."},
+      {"bild":"📅","titel":"since or for?","formel":["since | + | point in time (since 2019, since Monday)","for | + | period of time (for two years, for a week)"],"bsp":["We’ve lived here **since 2020**.","We’ve lived here **for six years**."],"de":"**since** = seit (Zeitpunkt) · **for** = seit/schon (Zeitraum)."},
+      {"bild":"🗓️","titel":"…or simple past?","bsp":["The project **started in 2018**.","Last year the company **lost** a lot of money."],"de":"Mit **Zeitpunkt in der Vergangenheit** (in 2018, last year, ago) → **simple past**."}
+    ]}
+  },
+  levels: [
+    { id:"since", typ:"swipe", lernen:"pp", icon:"📅", titel:"Since or For?", art:"Swipe · since / for",
+      anleitung:"Which word fits? Swipe **left for since** and **right for for**.",
+      anleitungDe:"Welches Wort passt? Wische nach **links für since** (Zeitpunkt) und nach **rechts für for** (Zeitraum).",
+      tipp:"Zeitpunkt → since · Zeitraum → for.",
+      links:{t:"since", icon:"📍"}, rechts:{t:"for", icon:"↔️"},
+      karten:[
+        {t:"___ 2018", r:"l", e:"A point in time → **since**."}, {t:"___ three months", r:"r", e:"A period → **for**."},
+        {t:"___ last summer", r:"l", e:"→ **since**."}, {t:"___ ages", r:"r", e:"→ **for**."},
+        {t:"___ I was ten", r:"l", e:"→ **since**."}, {t:"___ a long time", r:"r", e:"→ **for**."},
+        {t:"___ Monday", r:"l", e:"→ **since**."}, {t:"___ two weeks", r:"r", e:"→ **for**."},
+        {t:"___ the protest started", r:"l", e:"→ **since**."}, {t:"___ half an hour", r:"r", e:"→ **for**."}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"pp", icon:"🛢️", titel:"Protest Camp", art:"Simple, progressive or past · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Ergebnis → simple · Dauer → progressive · Zeitpunkt → simple past.",
+      fragen:[
+        {q:"The protesters **___** outside the office since 6 am.", o:["have been standing","stood","are standing"], c:0, e:"Duration up to now → **have been standing**."},
+        {q:"The company **___** three new pipelines so far.", o:["has built","has been building","built"], c:0, e:"Result / number → **has built**."},
+        {q:"The project **___** in 2018.", o:["started","has started","has been starting"], c:0, e:"**in 2018** → simple past."},
+        {q:"You look tired. **___** you **___** all night?", o:["Have … been studying","Did … studied","Have … studied"], c:0, alt:["Have been studying"], e:"Duration with a visible result now → **Have you been studying**."},
+        {q:"I **___** never **___** a moose in the wild.", o:["have … seen","have … been seeing","did … see"], c:0, alt:["have seen"], e:"Experience → **have never seen**."},
+        {q:"We **___** the documentary last night.", o:["watched","have watched","have been watching"], c:0, e:"**last night** → simple past."},
+        {q:"She **___** letters to the government for months.", o:["has been writing","wrote","writes"], c:0, e:"For months, still going on → **has been writing**."},
+        {q:"She **___** 40 letters so far.", o:["has written","has been writing","wrote"], c:0, e:"A **number** → **has written** (simple)."},
+        {q:"How long **___** you **___** in Alberta?", o:["have … lived","did … live","are … living"], c:0, alt:["have lived"], e:"**How long** + up to now → present perfect."}
+      ]},
+    { id:"rush", regel:"Present perfect progressive: **have/has been + -ing** · simple: **have/has + 3. Form**.", typ:"rush", icon:"⚡", titel:"Blizzard Rush", art:"Forms · 60 seconds",
+      anleitung:"Choose the right **present perfect** form. **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die richtige **present-perfect**-Form. **Ziel: 12** in 60 Sekunden.",
+      tipp:"has für he/she/it · have für die anderen.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"she / write (simple)", o:["she has written","she have written","she has wrote"], c:0}, {q:"they / wait (progressive)", o:["they have been waiting","they has been waiting","they have being waiting"], c:0},
+        {q:"I / see (simple)", o:["I have seen","I have saw","I has seen"], c:0}, {q:"it / snow (progressive)", o:["it has been snowing","it have been snowing","it has been snowed"], c:0},
+        {q:"we / go (simple)", o:["we have gone","we have went","we has gone"], c:0}, {q:"he / work (progressive)", o:["he has been working","he has working","he is been working"], c:0},
+        {q:"you / eat (simple)", o:["you have eaten","you have ate","you has eaten"], c:0}, {q:"Mia / study (progressive)", o:["Mia has been studying","Mia has been studing","Mia have been studying"], c:0},
+        {q:"they / build (simple)", o:["they have built","they have builded","they has built"], c:0}, {q:"I / run (progressive)", o:["I have been running","I have been runing","I has been running"], c:0},
+        {q:"he / fly (simple)", o:["he has flown","he has flew","he has flied"], c:0}, {q:"we / protest (progressive)", o:["we have been protesting","we have protesting","we been have protesting"], c:0},
+        {q:"she / choose (simple)", o:["she has chosen","she has chose","she has choosed"], c:0}, {q:"you / sleep (progressive)", o:["you have been sleeping","you have been sleeped","you has been sleeping"], c:0},
+        {q:"it / begin (simple)", o:["it has begun","it has began","it has beginned"], c:0}, {q:"the kids / play (progressive)", o:["the kids have been playing","the kids has been playing","the kids have been play"], c:0}
+      ]},
+    { id:"build", regel:"**since** + Zeitpunkt · **for** + Zeitraum · Dauer bis jetzt → **have/has been + -ing**.", typ:"satzbau", icon:"🧱", titel:"Banner Builder", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"Deutsch „seit“ = englisch present perfect!",
+      punkte:2,
+      saetze:[
+        {w:["We","have","been","protesting","for","three","weeks"], hint:"🇩🇪 Wir protestieren seit drei Wochen."},
+        {w:["They","have","lived","in","Calgary","since","2015"], hint:"🇩🇪 Sie leben seit 2015 in Calgary."},
+        {w:["Have","you","ever","seen","the","Northern","Lights","?"], hint:"🇩🇪 Hast du schon einmal die Nordlichter gesehen?"},
+        {w:["It","has","been","snowing","all","day"], hint:"🇩🇪 Es schneit schon den ganzen Tag."},
+        {w:["The","pipeline","opened","in","2019"], alt:[["In","2019","the","pipeline","opened"]], hint:"🇩🇪 Die Pipeline wurde 2019 eröffnet. (Zeitpunkt!)"}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"✉️", titel:"A Letter of Protest", art:"Letter · fill in the gaps",
+      anleitung:"Read the letter of protest. Tap a gap and choose the right form.",
+      anleitungDe:"Lies den Protestbrief. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Ergebnis, Dauer oder Zeitpunkt in der Vergangenheit?",
+      ueberschrift:"To the Mayor of Fort McMurray",
+      text:"Dear Mayor Thompson,\nI am writing to protest against the plan for a new oil pipeline near our town. I [[have lived|lived|have been live]] here [[since|for|from]] I was born, and I [[have always loved|always loved|have always been loved]] our lake and the forests around it.\nThe company [[started|has started|has been starting]] its research last year. Since then, its trucks [[have been driving|drove|have been drove]] through our quiet streets every day. Many people [[have signed|signed have|have been sign]] our petition so far – more than 2,000!\nI know that we need energy. But an oil spill could destroy our lake. We [[have been waiting|waited|are waiting since]] [[for|since|ago]] months for an answer.\nYours sincerely,\nOlivia Martin",
+      erklaerung:"**since** I was born · **for** months · Ergebnis/Zahl: **have signed** · Dauer: **have been driving/waiting** · **last year** → simple past."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Travel Smart: UK &amp; Ireland – Money, miles, meals &amp; more</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"country", id:"life7", icon:"🧳", kartenSymbol:"🧭",
+  titel:"Travel Smart: UK & Ireland", untertitel:"Money, miles, meals & more",
+  text:"The dwarves are planning a big trip to the British Isles. Before they leave they need to know: How do you pay? How far is a mile? And what is “tea” in the evening?",
+  lernen: {
+    life: { titel:"Everyday life in the UK and Ireland", folien:[
+      {"bild":"💷","titel":"Pounds and euros","text":"In the **UK** people pay with **pounds** and **pence** (£1 = 100p). In the **Republic of Ireland** they pay with **euros**. So in **Northern Ireland** you need pounds – just one hour from Dublin!","de":"Im **Vereinigten Königreich** bezahlt man mit **Pfund** und **Pence** (£1 = 100p). In der **Republik Irland** mit **Euro**. In **Nordirland** braucht man also Pfund – nur eine Stunde von Dublin entfernt!"},
+      {"bild":"📏","titel":"Miles, feet and pints","text":"The UK uses **imperial measures**: road signs show **miles** (1 mile ≈ 1.6 km), people give their height in **feet and inches** and you buy milk in **pints** (about half a litre).","de":"Im UK gibt es das **imperiale Maßsystem**: Straßenschilder zeigen **Meilen** (1 Meile ≈ 1,6 km), Körpergröße in **Fuß und Zoll**, Milch kauft man in **Pints** (etwa ein halber Liter)."},
+      {"bild":"🍽️","titel":"Tea or dinner?","text":"In many families the evening meal is called **tea** – for others it’s **dinner** or **supper**. A real **cup of tea** usually comes **with milk**.","de":"In vielen Familien heißt das Abendessen **tea** – andere sagen **dinner** oder **supper**. Eine echte **Tasse Tee** trinkt man meistens **mit Milch**."},
+      {"bild":"🛏️","titel":"B&Bs","text":"A **B&B** (bed and breakfast) is a private house where you rent a room. In the morning you get a big **full breakfast** – eggs, bacon, sausages, beans and toast.","de":"Ein **B&B** ist ein Privathaus, in dem man ein Zimmer mietet. Morgens gibt es ein großes **Frühstück** mit Eiern, Speck, Würstchen, Bohnen und Toast."},
+      {"bild":"🚑","titel":"999 and 112","text":"In an emergency you call **999** in the UK. In **Ireland** you can call **999 or 112**. Ask for the **police**, an **ambulance**, the **fire brigade** or the **coastguard**.","de":"Im Notfall wählt man im UK die **999**. In **Irland** **999 oder 112**. Man fragt nach **Polizei, Krankenwagen, Feuerwehr** oder **Küstenwache**."},
+      {"bild":"🚢","titel":"Made in Belfast","text":"The **Titanic** was built in **Belfast** in Northern Ireland. In **1912** it sank on its first trip to New York. Today there is a big Titanic museum in Belfast.","de":"Die **Titanic** wurde in **Belfast** in Nordirland gebaut. **1912** sank sie auf ihrer ersten Fahrt nach New York. Heute gibt es in Belfast ein großes Titanic-Museum."},
+      {"bild":"🎻","titel":"Irish music","text":"Traditional Irish music is played on the **fiddle** (violin), the **tin whistle**, the **bodhrán** (a hand drum) and the **harp**. The **harp** is a symbol of Ireland – you can see it on Irish euro coins!","de":"Traditionelle irische Musik spielt man auf der **Fiddle** (Geige), der **Tin Whistle**, der **Bodhrán** (Handtrommel) und der **Harfe**. Die **Harfe** ist ein Symbol Irlands – sie ist auf irischen Euromünzen."}
+    ]}
+  },
+  levels: [
+    { id:"quiz", typ:"quiz", lernen:"life", icon:"💷", titel:"Ready to Travel?", art:"Quiz · everyday life",
+      anleitung:"What do you know about everyday life in the UK and Ireland? Choose the right answer.",
+      anleitungDe:"Was weißt du über das Alltagsleben im UK und in Irland? Wähle die richtige Antwort.",
+      tipp:"Tippe auf 📖, wenn du die Infokarten noch einmal sehen willst.",
+      fragen:[
+        {q:"Which money do you need in Belfast?", o:["pounds","euros","dollars"], c:0, e:"Belfast is in **Northern Ireland** – part of the UK → **pounds**."},
+        {q:"Which money do you need in Dublin?", o:["euros","pounds","Irish pennies"], c:0, e:"Dublin is in the **Republic of Ireland** → **euros**."},
+        {q:"£1 = …", o:["100 pence","10 pence","1000 pence"], c:0, e:"**£1 = 100p**."},
+        {q:"What number do you call in an emergency in the UK?", o:["999","110","911"], c:0, e:"**999** (112 works too)."},
+        {q:"What is a B&B?", o:["a private house where you can rent a room with breakfast","a big hotel with a pool","a bus and bike ticket"], c:0, e:"**B&B = bed and breakfast**."},
+        {q:"Your host mum says: *Tea’s ready!* at 6 pm. What does she mean?", o:["The evening meal is ready.","She has made a cup of tea.","It’s time for breakfast."], c:0, e:"In many families **tea** = the evening meal."},
+        {q:"Which city was the Titanic built in?", o:["Belfast","London","Cardiff"], c:0, e:"In **Belfast**, Northern Ireland."},
+        {q:"Which instrument is a symbol of Ireland?", o:["the harp","the bagpipes","the piano"], c:0, e:"The **harp** – the bagpipes are typical of Scotland."}
+      ]},
+    { id:"guess", typ:"schaetzen", lernen:"life", icon:"📏", titel:"Miles & Pints", art:"Estimate · slider",
+      anleitung:"Guess the number! Move the slider and tap **OK**. The closer you are, the more flags you get.",
+      anleitungDe:"Schätze die Zahl! Bewege den Regler und tippe auf **OK**. Je näher du dran bist, desto mehr Flaggen bekommst du.",
+      tipp:"1 Meile ≈ 1,6 km · 1 Fuß ≈ 30 cm · 1 Pint ≈ 0,57 Liter.",
+      fragen:[
+        {q:"A sign says: *Edinburgh 10 miles*. How many kilometres is that?", min:1, max:40, step:1, start:5, unit:"km", dec:0, ans:16, tol:2, e:"10 miles ≈ **16 km** (1 mile ≈ 1.6 km)."},
+        {q:"A boy is **5 feet** tall. How many centimetres is that?", min:100, max:220, step:1, start:120, unit:"cm", dec:0, ans:152, tol:6, e:"5 feet ≈ **152 cm** (1 foot ≈ 30.5 cm)."},
+        {q:"You buy **2 pints** of milk. How many litres is that?", min:0.5, max:4, step:0.1, start:1, unit:"l", dec:1, ans:1.1, tol:0.2, e:"2 pints ≈ **1.1 litres**."},
+        {q:"In which year did the Titanic sink?", min:1850, max:1950, step:1, start:1900, unit:"", dec:0, ans:1912, tol:3, e:"In **1912**."},
+        {q:"How many pence are there in £5?", min:5, max:1000, step:5, start:50, unit:"p", dec:0, ans:500, tol:0, e:"£5 = **500p**."}
+      ]},
+    { id:"where", typ:"sortieren", icon:"🗺️", titel:"Where Am I?", art:"Sort · countries",
+      anleitung:"Where are you? Tap the right country.",
+      anleitungDe:"Wo bist du? Tippe auf das richtige Land.",
+      tipp:"Denk an die Infokarten und an die British-Isles-Lernwelt.",
+      koerbe:[ {t:"Wales", info:"🏴󠁧󠁢󠁷󠁬󠁳󠁿", tipp:"**Wales**: Cardiff, Snowdon, Welsh language, Zip World."}, {t:"Scotland", info:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", tipp:"**Scotland**: Edinburgh, Loch Ness, Ben Nevis, bagpipes."}, {t:"Northern Ireland", info:"🇬🇧 UK, pounds", tipp:"**Northern Ireland**: Belfast, Titanic, Giant’s Causeway."}, {t:"Republic of Ireland", info:"🇮🇪 euros", tipp:"**Ireland**: Dublin, Galway, the Luas, euros."} ],
+      items:[
+        {t:"You are at the top of Snowdon.", k:0}, {t:"Road signs are in English and Welsh.", k:0},
+        {t:"You are looking for Nessie.", k:1}, {t:"You are climbing Ben Nevis.", k:1},
+        {t:"You visit the Titanic museum.", k:2}, {t:"You walk on the Giant’s Causeway.", k:2, e:"The **Giant’s Causeway** is on the north coast of **Northern Ireland**."},
+        {t:"You take the Luas tram.", k:3}, {t:"You pay for your chips with euros.", k:3}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"life", icon:"✅", titel:"Travel Myths", art:"Swipe · true or false",
+      anleitung:"Is it true? Swipe **right for True** and **left for False**.",
+      anleitungDe:"Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
+      tipp:"Lies genau – oft ist nur ein Detail falsch.",
+      links:{t:"False", icon:"✘"}, rechts:{t:"True", icon:"✔"},
+      karten:[
+        {t:"In the UK road signs show distances in miles.", r:"r", e:"True – 1 mile ≈ 1.6 km."},
+        {t:"Northern Ireland uses the euro.", r:"l", e:"False – Northern Ireland is part of the UK → **pounds**."},
+        {t:"In a B&B you get breakfast.", r:"r", e:"True – that’s the second **B**!"},
+        {t:"In the UK cars drive on the right.", r:"l", e:"False – in the UK and Ireland they drive on the **left**."},
+        {t:"In Ireland you can call 112 in an emergency.", r:"r", e:"True – **999 and 112** both work."},
+        {t:"The Titanic was built in Liverpool.", r:"l", e:"False – it was built in **Belfast**."},
+        {t:"A bodhrán is an Irish drum.", r:"r", e:"True – you play it with a small stick."},
+        {t:"British people never drink tea with milk.", r:"l", e:"False – most people drink tea **with milk**."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"✉️", titel:"A Postcard from Belfast", art:"Reading · fill in the gaps",
+      anleitung:"Read Lea’s postcard. Tap a gap and choose the right word.",
+      anleitungDe:"Lies Leas Postkarte. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alles steht in den Infokarten.",
+      ueberschrift:"Greetings from Belfast!",
+      text:"Hi Grandma,\nwe’re in Belfast now! We came by train from Dublin – and in Belfast we had to change our [[euros|dollars|pence]] into [[pounds|kroner|cents]]. We’re staying in a lovely [[B&B|hostel bus|castle]] and every morning we get a huge breakfast.\nToday we visited the [[Titanic|Tower|Big Ben]] museum. The ship was built here and sank in [[1912|1812|2012]]. Tomorrow we’re driving to the Giant’s Causeway. It’s only 60 [[miles|metres|minutes]] from here – that’s almost 100 km!\nYesterday our host said, “[[Tea|Coffee|Lunch]]’s ready!” at 6 pm and we got fish and chips. 😋\nLots of love, Lea",
+      erklaerung:"Nordirland gehört zum UK: **pounds** statt euros, Entfernungen in **miles**. Abendessen = oft **tea**."}
+  ]
+});
+</script>
+</body>
+</html>

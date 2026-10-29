@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Green Future – will-future vs going to-future</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"fut9", icon:"🌱", kartenSymbol:"🍃",
+  titel:"Green Future", untertitel:"will-future vs going to-future",
+  text:"The elves want to make their forest – and the city of Hong Kong – greener. What are they going to do? And what will the world look like in 2050? Learn when to use will and when going to.",
+  lernen: {
+    fut: { titel:"will or going to?", folien:[
+      {"bild":"📝","titel":"going to – plans","formel":["am / is / are | + | going to | + | infinitive"],"bsp":["We **are going to plant** 100 trees next week.","I**’m going to cycle** to school from now on."],"de":"**going to**: **Pläne** und **Absichten** – das hat man schon vorher beschlossen."},
+      {"bild":"🌫️","titel":"going to – you can see it coming","bsp":["Look at the smog! It**’s going to be** a bad day for the lungs.","Watch out! You**’re going to fall**!"],"de":"**going to**: Man **sieht jetzt schon**, dass etwas passieren wird."},
+      {"bild":"🔮","titel":"will – predictions and opinions","formel":["will / won’t | + | infinitive"],"bsp":["I think there **will be** more electric buses in 2050.","Maybe the sea level **will rise**."],"de":"**will**: **Vorhersagen**, Vermutungen und Meinungen (I think, I’m sure, probably, maybe …)."},
+      {"bild":"💡","titel":"will – spontaneous decisions and promises","bsp":["It’s cold in here. – I**’ll close** the window.","I **won’t forget** to switch off the lights. I promise!"],"de":"**will**: **spontane Entscheidungen**, Angebote und **Versprechen**."}
+    ]}
+  },
+  levels: [
+    { id:"sort", typ:"sortieren", lernen:"fut", icon:"🗂️", titel:"Why will? Why going to?", art:"Use · sort",
+      anleitung:"Why is this form used? Tap the right box.",
+      anleitungDe:"Warum wird diese Form benutzt? Tippe auf das richtige Kästchen.",
+      tipp:"Plan, Anzeichen, Vorhersage oder spontane Entscheidung/Versprechen?",
+      koerbe:[ {t:"plan", info:"📝 going to", tipp:"**Plan**: schon vorher beschlossen → going to."}, {t:"you can see it coming", info:"🌫️ going to", tipp:"**Anzeichen jetzt** → going to."}, {t:"prediction", info:"🔮 will", tipp:"**Vorhersage/Meinung** → will."}, {t:"spontaneous / promise", info:"💡 will", tipp:"**spontan, Angebot, Versprechen** → will."} ],
+      items:[
+        {t:"We’re going to visit a solar farm on Friday.", k:0}, {t:"My family is going to buy an electric car.", k:0},
+        {t:"Look at those black clouds! It’s going to rain.", k:1}, {t:"The bin is full – it’s going to overflow!", k:1},
+        {t:"I think cities will be greener in the future.", k:2}, {t:"Robots will probably clean the streets.", k:2},
+        {t:"The phone is ringing. – I’ll get it!", k:3}, {t:"I’ll never use plastic straws again – I promise!", k:3}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"fut", icon:"🌱", titel:"Eco Plans", art:"will or going to · quiz",
+      anleitung:"Choose the right future form.",
+      anleitungDe:"Wähle die richtige Zukunftsform.",
+      tipp:"Plan/Anzeichen → going to · Vorhersage/spontan → will.",
+      fragen:[
+        {q:"We’ve already decided: we **___** a recycling club at school.", o:["are going to start","will start","start will"], c:0, e:"A plan that’s already decided → **going to**."},
+        {q:"I think Hong Kong **___** more green roofs in 2040.", o:["will have","is going to having","has"], c:0, e:"**I think** → prediction → **will**."},
+        {q:"Look at the smog! People **___** problems breathing today.", o:["are going to have","will having","have going"], c:0, e:"You can see it coming → **going to**."},
+        {q:"You’re carrying so many bags – I **___** you.", o:["’ll help","’m going to help","help"], c:0, alt:["will help"], e:"Spontaneous offer → **will**."},
+        {q:"Don’t worry, I **___** to switch off the lights.", o:["won’t forget","am not going to forgetting","don’t forget"], c:0, e:"A promise → **won’t**."},
+        {q:"Next summer my uncle **___** solar panels on his roof.", o:["is going to put","will putting","puts going"], c:0, e:"His plan → **going to**."},
+        {q:"Maybe sea levels **___** by one metre.", o:["will rise","are rise","going to rise"], c:0, e:"**Maybe** → prediction → **will**."},
+        {q:"**___** you **___** the bus or the MTR tomorrow?", o:["Are … going to take","Will … taking","Do … going to take"], c:0, alt:["Are going to take"], e:"Asking about a plan → **Are you going to take …?**"}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"fut", icon:"🔮", titel:"Plan or Prediction?", art:"Swipe · will / going to",
+      anleitung:"Which form fits better? Swipe **left for will** and **right for going to**.",
+      anleitungDe:"Welche Form passt besser? Wische nach **links für will** und nach **rechts für going to**.",
+      tipp:"Gibt es einen Plan oder ein sichtbares Anzeichen? → going to.",
+      links:{t:"will", icon:"🔮"}, rechts:{t:"going to", icon:"📝"},
+      karten:[
+        {t:"I’m sure people ___ live on Mars one day.", r:"l", e:"Opinion / prediction → **will**."},
+        {t:"We’ve bought the tickets – we ___ fly to Hong Kong in July.", r:"r", e:"Plan → **are going to**."},
+        {t:"Oh no, I’ve forgotten my wallet! – Don’t worry, I ___ pay.", r:"l", e:"Spontaneous offer → **will**."},
+        {t:"The sky is getting dark. There ___ be a storm.", r:"r", e:"You can see it → **is going to**."},
+        {t:"In 2100 the world ___ probably be much hotter.", r:"l", e:"**probably** → **will**."},
+        {t:"My sister has saved money. She ___ buy an e-bike.", r:"r", e:"Plan → **is going to**."},
+        {t:"I promise I ___ tidy my room.", r:"l", e:"Promise → **will**."},
+        {t:"Careful! That glass ___ fall off the table!", r:"r", e:"You can see it coming → **is going to**."}
+      ]},
+    { id:"build", regel:"Plan/Anzeichen: **am/is/are going to** + Grundform · Vorhersage/spontan: **will** + Grundform.", typ:"satzbau", icon:"🧱", titel:"Future Builder", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"going to braucht eine Form von *be*.",
+      punkte:2,
+      saetze:[
+        {w:["We","are","going","to","plant","more","trees"], hint:"🇩🇪 Wir werden (haben vor) mehr Bäume (zu) pflanzen."},
+        {w:["I","think","there","will","be","more","electric","cars"], hint:"🇩🇪 Ich glaube, es wird mehr Elektroautos geben."},
+        {w:["Look","!","It","is","going","to","rain"], alt:[["Look","It","is","going","to","rain"]], hint:"🇩🇪 Schau! Es wird gleich regnen."},
+        {w:["I","will","carry","your","bag","for","you"], hint:"🇩🇪 Ich trage dir deine Tasche. (spontanes Angebot)"},
+        {w:["Are","you","going","to","join","the","eco","club","?"], hint:"🇩🇪 Hast du vor, dem Umweltclub beizutreten?"}
+      ]},
+    { id:"story", E:{art:"Interview · choose the right word"}, typ:"lueckentext", icon:"🏙️", titel:"Talk Show: Greener Hong Kong", art:"Interview · fill in the gaps",
+      anleitung:"Read the talk show interview. Tap a gap and choose the right form.",
+      anleitungDe:"Lies das Talkshow-Interview. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Plan oder Vorhersage?",
+      ueberschrift:"Today on “City Talk”: young climate activist Chloe Wong",
+      text:"Host: Chloe, what are your plans for this year?\nChloe: Our group has a big plan. We [[are going to clean|will cleaning|clean going to]] the beaches on Lamma Island in May. And next month we [[are going to meet|will meeting|meet going]] the city council.\nHost: Do you think the air in Hong Kong [[will get|is getting going|gets will]] better?\nChloe: Yes, I think it [[will|is going|does]] – but only if more people use public transport.\nHost: Look at the sky outside – it [[’s going to|will to|’s will]] be another smoggy day.\nChloe: Exactly! That’s why we need action now.\nHost: Thank you, Chloe. One last question: will you come back to our show next year?\nChloe: Sure – I [[’ll|’m going|am]] be happy to!",
+      erklaerung:"Pläne: **are going to clean/meet** · Anzeichen: **’s going to be** · Meinung/Vorhersage/spontan: **will get, will, ’ll be**."}
+  ]
+});
+</script>
+</body>
+</html>

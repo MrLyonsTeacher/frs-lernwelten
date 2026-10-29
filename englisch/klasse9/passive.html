@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Ranger Station – The passive in different tenses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"pass9", icon:"🦏", kartenSymbol:"🍃",
+  titel:"Ranger Station", untertitel:"The passive in different tenses",
+  text:"The elves’ forest is protected – and so is the Kruger National Park in South Africa. Join the rangers: animals are counted, paths are checked and poachers will be caught! Learn the passive.",
+  lernen: {
+    pass: { titel:"The passive", folien:[
+      {"bild":"🔁","titel":"Active or passive?","formel":["active: | Rangers **protect** the rhinos.","passive: | The rhinos **are protected** (by rangers)."],"de":"Im **Passiv** ist wichtig, **was passiert** – nicht, **wer** es tut. Der Handelnde kommt mit **by** oder fällt weg."},
+      {"bild":"🧩","titel":"Form","formel":["form of **be** | + | 3rd form (past participle)"],"bsp":["The park **is visited** by millions of people.","The park **was opened** in 1926."],"de":"Passiv = **be** in der passenden Zeit + **3. Form**."},
+      {"bild":"⏳","titel":"Tenses","formel":["simple present | → | is/are + 3rd form","simple past | → | was/were + 3rd form","present perfect | → | has/have been + 3rd form","will-future | → | will be + 3rd form","modals | → | can/must be + 3rd form"],"bsp":["A new camp **has been built**.","The animals **will be counted** tomorrow.","Rubbish **must be taken** home."],"de":"Nur **be** ändert sich – die 3. Form bleibt immer gleich."}
+    ]},
+    kruger: { titel:"Kruger National Park", folien:[
+      {"bild":"🦁","titel":"The Big Five","text":"Kruger is one of the biggest national parks in Africa. It **was founded in 1926**. Here you can see the **Big Five**: lion, leopard, elephant, buffalo and rhino.","de":"Kruger ist einer der größten Nationalparks Afrikas, **1926 gegründet**. Hier leben die **Big Five**: Löwe, Leopard, Elefant, Büffel und Nashorn."},
+      {"bild":"🦏","titel":"Rhinos in danger","text":"Rhinos **are hunted** by **poachers** because their horns **are sold** for a lot of money. Today rhinos **are protected** by rangers, dogs and even drones.","de":"Nashörner **werden** von **Wilderern** **gejagt**, weil ihre Hörner für viel Geld **verkauft werden**. Heute werden sie von Rangern, Hunden und sogar Drohnen **geschützt**."}
+    ]}
+  },
+  levels: [
+    { id:"swipe", typ:"swipe", lernen:"pass", icon:"🔁", titel:"Active or Passive?", art:"Swipe · recognise the passive",
+      anleitung:"Is the sentence **active** or **passive**? Swipe **left for active** and **right for passive**.",
+      anleitungDe:"Steht der Satz im **Aktiv** oder **Passiv**? Wische nach **links für Aktiv** und nach **rechts für Passiv**.",
+      tipp:"Passiv: Form von **be** + 3. Form.",
+      links:{t:"active", icon:"🏃"}, rechts:{t:"passive", icon:"🔁"},
+      karten:[
+        {t:"The rangers count the elephants every year.", r:"l", e:"Active – the rangers **do** something."},
+        {t:"The elephants are counted every year.", r:"r", e:"**are counted** → passive."},
+        {t:"A new bridge was built last year.", r:"r", e:"**was built** → passive."},
+        {t:"Poachers killed three rhinos.", r:"l", e:"Active – **killed** is simple past."},
+        {t:"The park has been visited by a million people this year.", r:"r", e:"**has been visited** → passive."},
+        {t:"Tourists must stay in their cars.", r:"l", e:"Active – *must stay* is a modal + infinitive."},
+        {t:"The gates will be closed at 6 pm.", r:"r", e:"**will be closed** → passive."},
+        {t:"The guide showed us a leopard.", r:"l", e:"Active."},
+        {t:"Rubbish must be taken home.", r:"r", e:"**must be taken** → passive."},
+        {t:"The baby rhino was found near the river.", r:"r", e:"**was found** → passive."}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"pass", icon:"🦏", titel:"Ranger Reports", art:"Passive in different tenses · quiz",
+      anleitung:"Choose the right passive form.",
+      anleitungDe:"Wähle die richtige Passivform.",
+      tipp:"Signalwörter beachten: every day, yesterday, already, tomorrow …",
+      fragen:[
+        {q:"Every morning the water holes **___**.", o:["are checked","checked","are check"], c:0, e:"Simple present passive: **are checked**."},
+        {q:"The park **___** in 1926.", o:["was founded","is founded","was found"], c:0, e:"Simple past passive: **was founded**. (*found – founded* = gründen)"},
+        {q:"Two poachers **___** yesterday.", o:["were caught","was caught","were catched"], c:0, e:"catch – caught – **caught**; plural → **were**."},
+        {q:"A new camp **___** already **___**.", o:["has … been built","is … built","was … build"], c:0, alt:["has been built"], e:"**already** → present perfect passive."},
+        {q:"Tomorrow the lions **___** by a vet.", o:["will be examined","will examined","are examining"], c:0, e:"Future: **will be + 3rd form**."},
+        {q:"Animals **___** fed by tourists.", o:["mustn’t be","mustn’t","don’t be"], c:0, e:"Modal passive: **mustn’t be fed**."},
+        {q:"Rhino horns **___** for a lot of money.", o:["are sold","are sell","sold are"], c:0, e:"**are sold**."},
+        {q:"The elephants **___** from the air last week.", o:["were counted","are counted","have counted"], c:0, e:"**last week** → simple past passive."},
+        {q:"English **___** in many parts of South Africa.", o:["is spoken","is speaking","speaks"], c:0, e:"speak – spoke – **spoken**."}
+      ]},
+    { id:"rush", regel:"Passiv braucht die **3. Form**: build → **built**, catch → **caught**, see → **seen**.", typ:"rush", icon:"⚡", titel:"Safari Rush", art:"3rd form · 60 seconds",
+      anleitung:"Which form completes the passive? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Welche Form vervollständigt das Passiv? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Immer die 3. Form!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"The camp was ___ (build).", o:["built","build","builded"], c:0}, {q:"The thieves were ___ (catch).", o:["caught","catched","catch"], c:0},
+        {q:"The lions are ___ (feed) by nature.", o:["fed","feeded","feed"], c:0}, {q:"A rhino was ___ (see).", o:["seen","saw","seed"], c:0},
+        {q:"The rules are ___ (write) on a sign.", o:["written","wrote","writed"], c:0}, {q:"The gates are ___ (shut) at night.", o:["shut","shutted","shot"], c:0},
+        {q:"The car was ___ (drive) by a ranger.", o:["driven","drove","drived"], c:0}, {q:"The park was ___ (found) in 1926.", o:["founded","found","finded"], c:0, e:"Careful: **found – founded – founded** = gründen. (*find – found – found* = finden)"},
+        {q:"Zulu is ___ (speak) here.", o:["spoken","spoke","speaked"], c:0}, {q:"The baby was ___ (give) a name.", o:["given","gave","gived"], c:0},
+        {q:"The animals were ___ (take) to a new area.", o:["taken","took","taked"], c:0}, {q:"Many trees have been ___ (cut) down.", o:["cut","cutted","cuts"], c:0},
+        {q:"The poster was ___ (draw) by a child.", o:["drawn","drew","drawed"], c:0}, {q:"The tickets have been ___ (sell).", o:["sold","selled","sell"], c:0},
+        {q:"The news was ___ (tell) to everybody.", o:["told","telled","tell"], c:0}, {q:"Plastic bags are ___ (forbid).", o:["forbidden","forbade","forbidded"], c:0}
+      ]},
+    { id:"build", regel:"Passiv: **be** (in der passenden Zeit) + **3. Form** – Handelnder mit **by**.", typ:"satzbau", icon:"🧱", titel:"Park Rules", art:"Sentence builder · passive",
+      anleitung:"Build the passive sentence.",
+      anleitungDe:"Bau den Passivsatz.",
+      tipp:"Was passiert ist wichtiger als wer es tut.",
+      punkte:2,
+      saetze:[
+        {w:["The","park","was","founded","in","1926"], hint:"🇩🇪 Der Park wurde 1926 gegründet."},
+        {w:["Rhinos","are","protected","by","rangers"], hint:"🇩🇪 Nashörner werden von Rangern geschützt."},
+        {w:["Animals","must","not","be","fed"], alt:[["Animals","mustn't","be","fed"]], hint:"🇩🇪 Tiere dürfen nicht gefüttert werden."},
+        {w:["A","new","school","has","been","built"], hint:"🇩🇪 Eine neue Schule ist gebaut worden."},
+        {w:["The","results","will","be","published","tomorrow"], alt:[["Tomorrow","the","results","will","be","published"]], hint:"🇩🇪 Die Ergebnisse werden morgen veröffentlicht."}
+      ]},
+    { id:"story", typ:"lueckentext", lernen:"kruger", icon:"📰", titel:"Good News for Rhinos", art:"Magazine article · fill in the gaps",
+      anleitung:"Read the magazine article. Tap a gap and choose the right form.",
+      anleitungDe:"Lies den Zeitschriftenartikel. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Welche Zeit? Dann: be + 3. Form.",
+      ueberschrift:"Kruger Park: A new hope for rhinos",
+      text:"Every year thousands of tourists come to Kruger National Park, which [[was founded|is founded|was found]] in 1926. But the park has a big problem: rhinos [[are hunted|are hunting|hunted are]] by poachers.\nIn the last ten years many new rangers [[have been trained|have trained|has been trained]]. Today the park [[is watched|is watching|watched]] by drones at night. Last month three poachers [[were caught|was caught|were catched]] near the border.\nNext year a special school for rangers [[will be opened|will open be|is opened]]. The park director says: “Rhinos [[must be protected|must protected|must be protect]] – for our children and grandchildren.”",
+      erklaerung:"Passiv in vielen Zeiten: **was founded, are hunted, have been trained, is watched, were caught, will be opened, must be protected**."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>If Only … – If-clauses type III · all three types</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"grammar", id:"ifc10", icon:"🌋", kartenSymbol:"❄️",
+  titel:"If Only …", untertitel:"If-clauses type III · all three types",
+  text:"Some memories in the Ice Citadel are full of regrets: “If I had known …, I would have …”. Learn if-clauses type III – for things that didn’t happen – and compare all three types.",
+  lernen: {
+    if3: { titel:"If-clauses type III", folien:[
+      {"bild":"⏪","titel":"Type III – the past that didn’t happen","formel":["If + past perfect | , | would have + 3rd form"],"bsp":["If I **had left** earlier, I **would have caught** the bus.","If it **hadn’t rained**, we **would have gone** to the beach."],"de":"**Typ III**: Es geht um die **Vergangenheit** – und es ist **nicht** passiert (Bedauern, Vorwurf, „was wäre gewesen, wenn …“)."},
+      {"bild":"🔤","titel":"Short forms","formel":["I’d | = | I had (if-clause)","I’d | = | I would (main clause)","would have | → | would’ve"],"bsp":["If **I’d** known, **I’d** have helped you."],"de":"Achtung: **’d** kann *had* oder *would* sein!"},
+      {"bild":"📊","titel":"All three types","formel":["I: If + present, will …","II: If + past, would …","III: If + past perfect, would have + 3rd form"],"bsp":["If I **study**, I**’ll pass**. (possible)","If I **studied**, I**’d pass**. (unlikely / now)","If I**’d studied**, I**’d have passed**. (too late!)"],"de":"Je weiter weg von der Wirklichkeit, desto „weiter zurück“ geht die Zeit."}
+    ]},
+    quake: { titel:"Emergencies in New Zealand", folien:[
+      {"bild":"🌋","titel":"Shaky isles","text":"New Zealand lies on the border of two **tectonic plates**. That’s why there are many **earthquakes** and **volcanoes**. New Zealanders sometimes call their country the **Shaky Isles**.","de":"Neuseeland liegt an der Grenze zweier **Erdplatten**. Deshalb gibt es viele **Erdbeben** und **Vulkane**. Manchmal nennen die Neuseeländer ihr Land die **Shaky Isles** (wackelige Inseln)."},
+      {"bild":"🪑","titel":"Christchurch 2011","text":"On **22 February 2011** a strong earthquake hit **Christchurch**. **185 people** died. The memorial **“185 Empty Chairs”** – a different white chair for each person – reminds people of them.","de":"Am **22. Februar 2011** traf ein starkes Erdbeben **Christchurch**. **185 Menschen** starben. Das Mahnmal **„185 Empty Chairs“** – für jede Person ein anderer weißer Stuhl – erinnert an sie."},
+      {"bild":"☎️","titel":"Call 111","text":"In New Zealand the emergency number is **111**. At school children practise **Drop, Cover and Hold**: drop to the ground, get under a table and hold on.","de":"In Neuseeland ist die Notrufnummer **111**. In der Schule üben Kinder **Drop, Cover and Hold**: auf den Boden, unter einen Tisch, festhalten."}
+    ]}
+  },
+  levels: [
+    { id:"form", typ:"quiz", lernen:"if3", icon:"⏪", titel:"Too Late!", art:"Type III · quiz",
+      anleitung:"Choose the right form for the **if-clause type III**.",
+      anleitungDe:"Wähle die richtige Form für den **if-Satz Typ III**.",
+      tipp:"if + had + 3. Form · would have + 3. Form.",
+      fragen:[
+        {q:"If I **___** the alarm, I wouldn’t have been late.", o:["had heard","would have heard","heard"], c:0, e:"if-clause: **past perfect**."},
+        {q:"If we had left earlier, we **___** the ferry.", o:["would have caught","would caught","had caught"], c:0, e:"Main clause: **would have + 3rd form**."},
+        {q:"She **___** if she had trained harder.", o:["would have won","would win","had won"], c:0, e:"**would have won**."},
+        {q:"If they **___** the warning, they would have left the beach.", o:["had heard","have heard","would hear"], c:0, e:"**had heard**."},
+        {q:"If you’d told me, I **___** you.", o:["would have helped","would helped","had helped"], c:0, e:"**’d told** = had told → **would have helped**."},
+        {q:"What would you have done if you **___** in Christchurch in 2011?", o:["had been","were","would have been"], c:0, e:"if + **had been**."},
+        {q:"If he **___** his helmet, he would have been badly hurt.", o:["hadn’t worn","didn’t wear","wouldn’t have worn"], c:0, e:"Negative: **hadn’t worn**."}
+      ]},
+    { id:"types", typ:"sortieren", lernen:"if3", icon:"📊", titel:"Type I, II or III?", art:"All three types · sort",
+      anleitung:"Which type is the if-sentence? Tap the right box.",
+      anleitungDe:"Welcher Typ ist der if-Satz? Tippe auf das richtige Kästchen.",
+      tipp:"will → I · would → II · would have → III.",
+      koerbe:[ {t:"type I", info:"🌦️ possible", tipp:"**Typ I**: if + present, will."}, {t:"type II", info:"✨ unlikely / unreal now", tipp:"**Typ II**: if + past, would."}, {t:"type III", info:"⏪ unreal past", tipp:"**Typ III**: if + past perfect, would have + 3. Form."} ],
+      items:[
+        {t:"If it snows, the schools will close.", k:0}, {t:"You’ll feel better if you rest.", k:0}, {t:"If you call 111, help will come.", k:0},
+        {t:"If I lived in New Zealand, I’d go surfing every day.", k:1}, {t:"If there were no volcanoes, the island would look different.", k:1}, {t:"What would you do if you saw a shark?", k:1},
+        {t:"If I had known about the storm, I would have stayed at home.", k:2}, {t:"If they hadn’t built strong houses, more people would have died.", k:2}, {t:"We would have missed it if you hadn’t called.", k:2}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"if3", icon:"🔤", titel:"’d = had or would?", art:"Swipe · short forms",
+      anleitung:"What does the **’d** in bold mean? Swipe **left for had** and **right for would**.",
+      anleitungDe:"Was bedeutet das fett gedruckte **’d**? Wische nach **links für had** und nach **rechts für would**.",
+      tipp:"Im if-Satz (vor der 3. Form) meist *had* – vor *have* oder einer Grundform meist *would*.",
+      links:{t:"had", icon:"⏪"}, rechts:{t:"would", icon:"🔮"},
+      karten:[
+        {t:"If **I’d** known, I’d have come.", r:"l", e:"In the if-clause + 3rd form → **had**."},
+        {t:"If I’d known, **I’d** have come.", r:"r", e:"Before *have* → **would**."},
+        {t:"**She’d** love to visit Rotorua.", r:"r", e:"Before an infinitive (*love*) → **would**."},
+        {t:"When we arrived, **they’d** already left.", r:"l", e:"Before a 3rd form (*left*) → **had**."},
+        {t:"**We’d** be happy if you came.", r:"r", e:"**would** be."},
+        {t:"If **you’d** listened, you would have understood.", r:"l", e:"**had** listened."},
+        {t:"**He’d** never seen snow before.", r:"l", e:"**had** never seen."},
+        {t:"I think **you’d** like New Zealand.", r:"r", e:"**would** like."}
+      ]},
+    { id:"build", regel:"Typ III: **If + had + 3. Form**, … **would have + 3. Form**.", typ:"satzbau", icon:"🧱", titel:"Regrets", art:"Sentence builder",
+      anleitung:"Build the if-sentence type III.",
+      anleitungDe:"Bau den if-Satz Typ III.",
+      tipp:"Der if-Satz kann vorne (mit Komma) oder hinten stehen.",
+      punkte:2,
+      saetze:[
+        {w:["If","I","had","known",",","I","would","have","helped"], alt:[["I","would","have","helped","if","I","had","known"],["If","I","had","known","I","would","have","helped"]], hint:"🇩🇪 Wenn ich es gewusst hätte, hätte ich geholfen."},
+        {w:["We","would","have","missed","the","bus","if","we","had","stopped"], alt:[["If","we","had","stopped",",","we","would","have","missed","the","bus"],["If","we","had","stopped","we","would","have","missed","the","bus"]], hint:"🇩🇪 Wir hätten den Bus verpasst, wenn wir angehalten hätten."},
+        {w:["If","she","hadn't","called",",","nobody","would","have","come"], alt:[["Nobody","would","have","come","if","she","hadn't","called"],["If","she","hadn't","called","nobody","would","have","come"]], hint:"🇩🇪 Wenn sie nicht angerufen hätte, wäre niemand gekommen."},
+        {w:["What","would","you","have","done","?"], hint:"🇩🇪 Was hättest du getan?"}
+      ]},
+    { id:"story", typ:"lueckentext", lernen:"quake", icon:"📰", titel:"A Lucky Escape", art:"News report · fill in the gaps",
+      anleitung:"Read the newspaper report. Tap a gap and choose the right form.",
+      anleitungDe:"Lies den Zeitungsbericht. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Typ III: had + 3. Form / would have + 3. Form.",
+      ueberschrift:"Schoolgirl’s quick thinking saves her family",
+      text:"When a strong earthquake shook Wellington last night, 14-year-old Lily Ngata knew exactly what to do. “We had practised Drop, Cover and Hold at school,” she said. “If we [[hadn’t practised|didn’t practise|wouldn’t have practised]] it, I [[would have panicked|would panic|had panicked]].”\nLily pulled her little brother under the kitchen table. Seconds later a heavy shelf fell onto the floor. “If he [[had stayed|stayed|would have stayed]] on the sofa, he [[would have been|had been|would be]] hurt,” her mother said.\nThen Lily called 111. “If she [[hadn’t called|didn’t call|wouldn’t call]] so quickly, the ambulance [[wouldn’t have come|didn’t come|hadn’t come]] so fast,” a paramedic said. Luckily nobody was hurt.",
+      erklaerung:"Typ III: if + **had/hadn’t + 3. Form**, … **would/wouldn’t have + 3. Form**."}
+  ]
+});
+</script>
+</body>
+</html>

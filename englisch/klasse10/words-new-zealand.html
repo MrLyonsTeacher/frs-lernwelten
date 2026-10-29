@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Relationships, Advice &amp; Emergencies – Unit 3: relationships, giving advice, emergencies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"vocabulary", id:"vnz10", icon:"🥝", kartenSymbol:"❄️",
+  titel:"Words: Relationships, Advice & Emergencies", untertitel:"Unit 3: relationships, giving advice, emergencies",
+  text:"Friendship, love, arguments – and what to do when the ground starts shaking. The words you need for the New Zealand unit.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Relationship Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Phrasal verbs wie *break up* lernt man am besten als Ganzes.",
+      paare:[ {a:"to fall in love", b:"sich verlieben"}, {a:"to break up", b:"sich trennen"}, {a:"to get on well", b:"sich gut verstehen"}, {a:"to fall out", b:"sich zerstreiten"},
+              {a:"to make up", b:"sich versöhnen"}, {a:"to trust", b:"vertrauen"}, {a:"jealous", b:"eifersüchtig"}, {a:"peer pressure", b:"Gruppenzwang"} ]},
+    { id:"advice", typ:"sortieren", icon:"💡", titel:"Asking & Giving Advice", art:"Phrases · sort",
+      anleitung:"Is the phrase used to **ask for** advice or to **give** advice? Tap the right box.",
+      anleitungDe:"Bittet man mit der Wendung **um** Rat oder **gibt** man Rat? Tippe auf das richtige Kästchen.",
+      tipp:"Fragen nach Rat enden oft mit ?",
+      koerbe:[ {t:"asking for advice", info:"🙋", tipp:"**asking**: What should I do? Do you think I should …? Any ideas?"}, {t:"giving advice", info:"💡", tipp:"**giving**: You should …, If I were you, I’d …, Why don’t you …?"} ],
+      items:[
+        {t:"What should I do?", k:0}, {t:"Do you think I should talk to her?", k:0}, {t:"Have you got any tips?", k:0}, {t:"What would you do?", k:0},
+        {t:"If I were you, I’d apologise.", k:1}, {t:"Why don’t you call him?", k:1}, {t:"You’d better tell your parents.", k:1}, {t:"It might be a good idea to wait.", k:1}
+      ]},
+    { id:"emerg", typ:"quiz", icon:"🚨", titel:"Emergency!", art:"Emergency words · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"When the ground shakes.", o:["earthquake","earthworm","earmark"], c:0, e:"**earthquake** = Erdbeben."},
+        {q:"A huge wave caused by an earthquake under the sea.", o:["tsunami","typhoon","tornado"], c:0, e:"**tsunami**."},
+        {q:"The number you call in New Zealand in an emergency.", o:["111","999","110"], c:0, e:"**111** in New Zealand."},
+        {q:"To leave a dangerous place quickly and in an organised way.", o:["evacuate","evaluate","elevate"], c:0, e:"**evacuate** = evakuieren."},
+        {q:"A person who saw an accident or crime.", o:["witness","waitress","wizard"], c:0, e:"**witness** = Zeuge, Zeugin."},
+        {q:"Someone who is hurt.", o:["injured","injected","inspired"], c:0, e:"**injured** = verletzt."},
+        {q:"People who are trained to help in emergencies, e.g. in an ambulance.", o:["paramedics","paralympics","parameters"], c:0, e:"**paramedic** = Rettungssanitäter(in)."},
+        {q:"The damaged parts of buildings after a disaster.", o:["rubble","bubble","rumble"], c:0, e:"**rubble** = Trümmer, Schutt."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **relationship**, **jealous**, **emergency**.", typ:"rush", icon:"⚡", titel:"Kiwi Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Beziehung", o:["relationship","relationshipp","relashionship"], c:0}, {q:"Notfall", o:["emergency","emergancy","emergensy"], c:0}, {q:"eifersüchtig", o:["jealous","jelous","jealouse"], c:0},
+        {q:"Rat(schlag)", o:["advice","advise","advices"], c:0}, {q:"jemandem raten (Verb)", o:["advise","advice","advize"], c:0}, {q:"Streit", o:["argument","arguement","argumant"], c:0},
+        {q:"Vertrauen", o:["trust","thrust","truth"], c:0}, {q:"Schaden", o:["damage","damadge","demage"], c:0}, {q:"Zeuge", o:["witness","witnes","wittness"], c:0},
+        {q:"verletzt", o:["injured","injuried","enjured"], c:0}, {q:"überleben", o:["survive","servive","survife"], c:0}, {q:"Katastrophe", o:["disaster","desaster","dissaster"], c:0},
+        {q:"Gefühl", o:["feeling","feelling","filing"], c:0}, {q:"sich entschuldigen", o:["apologise","apologyse","appologise"], c:0}, {q:"peinlich", o:["embarrassing","embarassing","embarrasing"], c:0},
+        {q:"Freundschaft", o:["friendship","frienship","friendshipp"], c:0}, {q:"Generation", o:["generation","generacion","jeneration"], c:0}, {q:"Tradition", o:["tradition","tradision","tradittion"], c:0}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"💌", titel:"Dear Agony Aunt", art:"Advice column · fill in the gaps",
+      anleitung:"Read the letter and the answer. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Brief und die Antwort. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"Ask Aunt Kiri",
+      text:"Dear Aunt Kiri,\nmy boyfriend and I have been together for six months and we [[get on well|get up well|get off well]]. But he is very [[jealous|generous|jolly]] when I spend time with my friends. Last week we had a big [[argument|agreement|ornament]]. Should I [[break up|break down|break in]] with him? Please give me some [[advice|advise|advices]].\nTaylor, 16\n\nDear Taylor,\nevery [[relationship|relation ship|relative]] needs [[trust|thrust|truth]]. If I were you, I would talk to him calmly. Tell him how you feel and listen to him too. If he can’t change, it [[might|must not|mighty]] be better to end it. Good luck!\nAunt Kiri",
+      erklaerung:"Beziehungen: **get on well, jealous, argument, break up, relationship, trust** · **advice** (Nomen, kein Plural)."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Woodland Detectives – Past perfect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:9, kat:"grammar", id:"ppf9", icon:"🔍", kartenSymbol:"🍃",
+  titel:"Woodland Detectives", untertitel:"Past perfect",
+  text:"Someone had taken the elves’ golden acorn before the guards arrived! Find out what had happened first – and learn the past perfect, the “past before the past”.",
+  lernen: {
+    ppf: { titel:"The past perfect", folien:[
+      {"bild":"⏪","titel":"The past before the past","formel":["had | + | 3rd form (past participle)"],"bsp":["When the guards arrived, the thief **had** already **left**.","She was tired because she **had worked** all day."],"de":"**Past perfect**: Was war **vorher** schon passiert – vor einem anderen Ereignis in der Vergangenheit? (= Plusquamperfekt)"},
+      {"bild":"📏","titel":"Two actions in the past","formel":["1st action | → | past perfect","2nd action | → | simple past"],"bsp":["After we **had eaten**, we **went** to the beach.","I **didn’t know** the city because I **had** never **been** there."],"de":"Die **frühere** Handlung im past perfect, die **spätere** im simple past."},
+      {"bild":"🔦","titel":"Signal words","formel":["after · before · already · by the time · never … before"],"bsp":["**By the time** we got there, the film **had started**."],"de":"*after, before, by the time, already* zeigen oft die Reihenfolge."},
+      {"bild":"❓","titel":"Questions and negatives","formel":["Had | + | subject | + | 3rd form?","hadn’t | + | 3rd form"],"bsp":["**Had** you ever **seen** a lion before?","He **hadn’t done** his homework."],"de":"Frage mit **Had**, Verneinung mit **hadn’t**."}
+    ]}
+  },
+  levels: [
+    { id:"order", typ:"quiz", lernen:"ppf", icon:"🔢", titel:"What Happened First?", art:"Order of events · quiz",
+      anleitung:"Read the sentence. Which action happened **first**?",
+      anleitungDe:"Lies den Satz. Welche Handlung passierte **zuerst**?",
+      tipp:"Die Handlung mit **had + 3. Form** war zuerst.",
+      fragen:[
+        {q:"When the guards arrived, the thief had escaped.", o:["The thief escaped.","The guards arrived."], c:0, e:"**had escaped** → first."},
+        {q:"Ben had finished his homework before he played football.", o:["He finished his homework.","He played football."], c:0, e:"**had finished** → first."},
+        {q:"The bus had left when we got to the bus stop.", o:["The bus left.","We got to the bus stop."], c:0, e:"**had left** → first."},
+        {q:"After the storm had stopped, the children went outside.", o:["The storm stopped.","The children went outside."], c:0, e:"**had stopped** → first."},
+        {q:"Lisa told me that she had seen a giraffe.", o:["She saw a giraffe.","She told me."], c:0, e:"**had seen** → first."},
+        {q:"We were hungry because we hadn’t eaten all day.", o:["We didn’t eat all day.","We were hungry."], c:0, e:"**hadn’t eaten** → first (the reason)."}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"ppf", icon:"🔍", titel:"The Golden Acorn Case", art:"Past perfect · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Was war vorher? → had + 3. Form.",
+      fragen:[
+        {q:"When the guards came back, someone **___** the golden acorn.", o:["had taken","has taken","takes"], c:0, e:"Before they came back → **had taken**."},
+        {q:"The door was open because the thief **___** the lock.", o:["had broken","had broke","has broken"], c:0, e:"break – broke – **broken**."},
+        {q:"Nobody **___** the thief before.", o:["had seen","had saw","has seen"], c:0, e:"see – saw – **seen**."},
+        {q:"After the elves **___** the forest, they found footprints.", o:["had searched","have searched","searching"], c:0, e:"First action → **had searched**."},
+        {q:"**___** the guard **___** asleep before the theft happened?", o:["Had … fallen","Has … fallen","Did … fell"], c:0, alt:["Had fallen"], e:"Question: **Had … fallen?**"},
+        {q:"By the time the detective arrived, the rain **___** all the footprints away.", o:["had washed","washed had","has washed"], c:0, e:"**By the time** → past perfect."},
+        {q:"The squirrel **___** the acorn – it had only buried it!", o:["hadn’t stolen","didn’t stolen","hasn’t stole"], c:0, e:"Negative → **hadn’t + 3rd form**."},
+        {q:"I **___** never **___** such a big acorn before.", o:["had … found","have … find","did … found"], c:0, alt:["had found"], e:"**never … before** in the past → **had found**."}
+      ]},
+    { id:"forms", typ:"rush", regel:"Past perfect = **had + 3. Form** – unregelmäßige Verben lernen: go – went – **gone**.", icon:"⚡", titel:"Third Form Rush", art:"Irregular verbs · 60 seconds",
+      anleitung:"Choose the **3rd form** (past participle). **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die **3. Form**. **Ziel: 12** in 60 Sekunden.",
+      tipp:"Grundform – simple past – 3. Form.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"go", o:["gone","went","goed"], c:0}, {q:"see", o:["seen","saw","seed"], c:0}, {q:"take", o:["taken","took","taked"], c:0}, {q:"write", o:["written","wrote","writed"], c:0},
+        {q:"steal", o:["stolen","stole","stealed"], c:0}, {q:"break", o:["broken","broke","breaked"], c:0}, {q:"eat", o:["eaten","ate","eated"], c:0}, {q:"fly", o:["flown","flew","flied"], c:0},
+        {q:"begin", o:["begun","began","beginned"], c:0}, {q:"forget", o:["forgotten","forgot","forgetted"], c:0}, {q:"hide", o:["hidden","hid","hided"], c:0}, {q:"drive", o:["driven","drove","drived"], c:0},
+        {q:"run", o:["run","ran","runned"], c:0}, {q:"swim", o:["swum","swam","swimmed"], c:0}, {q:"find", o:["found","finded","fond"], c:0}, {q:"leave", o:["left","leaved","lefted"], c:0},
+        {q:"choose", o:["chosen","chose","choosed"], c:0}, {q:"speak", o:["spoken","spoke","speaked"], c:0}
+      ]},
+    { id:"build", regel:"Erst passiert → **had + 3. Form** · danach → **simple past**.", typ:"satzbau", icon:"🧱", titel:"Case Notes", art:"Sentence builder",
+      anleitung:"Build the sentence for the detective’s notebook.",
+      anleitungDe:"Bau den Satz für das Notizbuch der Detektivin.",
+      tipp:"had + 3. Form für das, was vorher passiert war.",
+      punkte:2,
+      saetze:[
+        {w:["The","thief","had","left","before","the","guards","came"], alt:[["Before","the","guards","came",",","the","thief","had","left"],["Before","the","guards","came","the","thief","had","left"]], hint:"🇩🇪 Der Dieb war gegangen, bevor die Wachen kamen."},
+        {w:["After","we","had","eaten",",","we","went","home"], alt:[["After","we","had","eaten","we","went","home"],["We","went","home","after","we","had","eaten"]], hint:"🇩🇪 Nachdem wir gegessen hatten, gingen wir nach Hause."},
+        {w:["She","had","never","been","to","Cape","Town","before"], hint:"🇩🇪 Sie war noch nie zuvor in Kapstadt gewesen."},
+        {w:["Had","you","finished","your","work","?"], hint:"🇩🇪 Hattest du deine Arbeit beendet?"},
+        {w:["He","hadn't","seen","the","accident"], hint:"🇩🇪 Er hatte den Unfall nicht gesehen."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🚗", titel:"Accident in Durban", art:"News · fill in the gaps",
+      anleitung:"Read the news report from South Africa. Tap a gap and choose the right form.",
+      anleitungDe:"Lies die Nachricht aus Südafrika. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Vorher passiert → had + 3. Form.",
+      ueberschrift:"Two cars crash on Durban beach road",
+      text:"Yesterday evening two cars crashed on Marine Parade in Durban. Luckily nobody was badly hurt.\nThe police said that one of the drivers [[had seen|has seen|saw had]] a dog on the road and [[had stopped|has stopped|stopping]] suddenly. The second driver [[hadn’t noticed|didn’t noticed|hasn’t noticed]] it and drove into the first car.\nWhen the ambulance arrived, a young man [[had already helped|has already helped|already helps]] the drivers out of their cars. He told reporters that he [[had learned|has learned|learns]] first aid at school. By the time the police came, the dog [[had run|had ran|has run]] away.",
+      erklaerung:"Alles, was **vor** dem Unfall bzw. **vor** dem Eintreffen passiert war: **had seen, had stopped, hadn’t noticed, had helped, had learned, had run**."}
+  ]
+});
+</script>
+</body>
+</html>

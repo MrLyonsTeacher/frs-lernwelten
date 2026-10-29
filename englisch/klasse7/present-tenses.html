@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Host Family Hideout – Simple present vs present progressive · mine, yours …</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"pres7", icon:"🏡", kartenSymbol:"🧳",
+  titel:"Host Family Hideout", untertitel:"Simple present vs present progressive · mine, yours …",
+  text:"You are staying with a host family in Ireland – or with a dwarf family in their cosy cave! What do they usually do, what are they doing right now – and whose toothbrush is this?",
+  lernen: {
+    pres: { titel:"Simple present or present progressive?", folien:[
+      {"bild":"🔁","titel":"Simple present – habits","formel":["I / you / we / they | + | verb","he / she / it | + | verb + s"],"bsp":["The O’Briens **have** dinner at six.","Aoife **plays** the fiddle every day."],"de":"**Simple present**: Gewohnheiten, Regeln, Dinge, die **immer** oder **regelmäßig** passieren."},
+      {"bild":"▶️","titel":"Present progressive – now","formel":["am / is / are | + | verb + ing"],"bsp":["Look! Aoife **is playing** the fiddle.","We **are having** dinner **at the moment**."],"de":"**Present progressive**: Was **gerade jetzt** passiert."},
+      {"bild":"🔦","titel":"Signal words","formel":["always · usually · often · every day | → | simple present","now · right now · at the moment · Look! Listen! | → | present progressive"],"bsp":["Dad **usually cooks**, but today Mum **is cooking**."],"de":"Achte auf die **Signalwörter**."}
+    ]},
+    poss: { titel:"Whose is it? Possessive pronouns", folien:[
+      {"bild":"🪥","titel":"my → mine","formel":["my | → | mine","your | → | yours","his | → | his","her | → | hers"],"bsp":["Is this **your** towel? – Yes, it’s **mine**."],"de":"**Possessivpronomen** stehen **ohne Nomen** dahinter."},
+      {"bild":"👨‍👩‍👧","titel":"our → ours","formel":["our | → | ours","your | → | yours","their | → | theirs"],"bsp":["This is **our** house. It’s **ours**.","Those bags are **theirs**."],"de":"Merke: **kein Apostroph** – *yours, hers, ours, theirs* (nicht *your’s*)."}
+    ]}
+  },
+  levels: [
+    { id:"swipe", typ:"swipe", lernen:"pres", icon:"⏯️", titel:"Usually or Right Now?", art:"Swipe · tenses",
+      anleitung:"Which tense is right? Swipe **left for simple present** and **right for present progressive**.",
+      anleitungDe:"Welche Zeitform ist richtig? Wische nach **links für simple present** und nach **rechts für present progressive**.",
+      tipp:"Immer/regelmäßig → simple present · gerade jetzt → present progressive.",
+      links:{t:"simple present", icon:"🔁"}, rechts:{t:"present progressive", icon:"▶️"},
+      karten:[
+        {t:"Mrs Murphy ___ (make) breakfast every morning.", r:"l", e:"**every morning** → simple present: *makes*."},
+        {t:"Shh! The baby ___ (sleep).", r:"r", e:"Right now → *is sleeping*."},
+        {t:"We usually ___ (go) swimming on Sundays.", r:"l", e:"**usually** → *go*."},
+        {t:"Look! It ___ (rain) again.", r:"r", e:"**Look!** → *is raining*."},
+        {t:"In Ireland people often ___ (drink) tea.", r:"l", e:"**often** → *drink*."},
+        {t:"I can’t talk now – I ___ (have) a shower.", r:"r", e:"**now** → *am having*."},
+        {t:"Dad ___ (work) in a bank.", r:"l", e:"A fact about his life → *works*."},
+        {t:"At the moment the kids ___ (watch) a hurling match.", r:"r", e:"**at the moment** → *are watching*."},
+        {t:"The bus to school ___ (leave) at 8:10.", r:"l", e:"Timetable → simple present: *leaves*."},
+        {t:"Listen! Someone ___ (play) the tin whistle.", r:"r", e:"**Listen!** → *is playing*."}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"pres", icon:"🍽️", titel:"A Day with the O’Briens", art:"Tenses · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"he/she/it: **-s** nicht vergessen!",
+      fragen:[
+        {q:"Aoife **___** to school by bus every day.", o:["goes","is going","go"], c:0, e:"**every day** → simple present, he/she/it + **-es**."},
+        {q:"Where is Liam? – He **___** his bike in the garage.", o:["is fixing","fixes","fix"], c:0, e:"Right now → **is fixing**."},
+        {q:"It often **___** in Galway – take an umbrella!", o:["rains","is raining","rain"], c:0, e:"**often** → simple present: it **rains**."},
+        {q:"**___** you usually **___** breakfast?", o:["Do … have","Are … having","Does … have"], c:0, alt:["Do have"], e:"**usually** → simple present question: Do you have …?"},
+        {q:"Be quiet! Granny **___**.", o:["is sleeping","sleeps","sleep"], c:0, e:"**Be quiet!** = now → *is sleeping*."},
+        {q:"Mr O’Brien **___** coffee. He only drinks tea.", o:["doesn’t drink","isn’t drinking","don’t drink"], c:0, e:"A general fact → **doesn’t drink**."},
+        {q:"What **___** you **___** right now?", o:["are … doing","do … do","does … do"], c:0, alt:["are doing"], e:"**right now** → *are you doing*."},
+        {q:"I **___** this book – it’s brilliant!", o:["love","am loving","loves"], c:0, e:"Verbs like **love, like, know, want** are usually in the **simple present**."}
+      ]},
+    { id:"poss", typ:"quiz", lernen:"poss", icon:"🪥", titel:"Whose Is It?", art:"Possessive pronouns · quiz",
+      anleitung:"Whose is it? Choose the right word.",
+      anleitungDe:"Wem gehört das? Wähle das richtige Wort.",
+      tipp:"Ohne Nomen danach → mine, yours, his, hers, ours, theirs.",
+      fragen:[
+        {q:"Is this your toothbrush? – Yes, it’s **___**.", o:["mine","my","me"], c:0, e:"Without a noun → **mine**."},
+        {q:"That’s not my towel. It’s **___**. (Aoife)", o:["hers","her","her’s"], c:0, e:"her → **hers** (no apostrophe!)."},
+        {q:"The red car is **___**. (the O’Briens)", o:["theirs","their","there’s"], c:0, e:"their → **theirs**."},
+        {q:"Is this **___** bag? (you)", o:["your","yours","you"], c:0, e:"With a noun (bag) → **your**."},
+        {q:"This room is **___**. We share it. (we)", o:["ours","our","our’s"], c:0, e:"our → **ours**."},
+        {q:"Liam says the hurley stick is **___**.", o:["his","him","he’s"], c:0, e:"his → **his** (same form)."},
+        {q:"Are these sweets **___**? (you)", o:["yours","your","your’s"], c:0, e:"Without a noun → **yours**."}
+      ]},
+    { id:"bath", typ:"memory", icon:"🛁", titel:"In the Bathroom", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Diese Wörter brauchst du für den Aufenthalt in einer Gastfamilie.",
+      paare:[ {a:"toothbrush", b:"Zahnbürste"}, {a:"toothpaste", b:"Zahnpasta"}, {a:"towel", b:"Handtuch"}, {a:"shower gel", b:"Duschgel"},
+              {a:"hairdryer", b:"Föhn"}, {a:"comb", b:"Kamm"}, {a:"tap", b:"Wasserhahn"}, {a:"mirror", b:"Spiegel"} ]},
+    { id:"story", typ:"lueckentext", icon:"💬", titel:"Texts from Ireland", art:"Text messages · fill in the gaps",
+      anleitung:"Jana texts her mum from her host family in Galway. Tap a gap and choose the right form.",
+      anleitungDe:"Jana schreibt ihrer Mutter aus der Gastfamilie in Galway. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Gewohnheit oder gerade jetzt? Und: Wem gehört was?",
+      ueberschrift:"Messages",
+      text:"Mum: Hi Jana! How are you? What are you doing?\nJana: Hi Mum! I [[am sitting|sit|sits]] in the garden right now. The family is really nice. They [[have|are having|has]] dinner at 6 o’clock every day – they call it “tea”!\nMum: Do you share a room?\nJana: Yes, with Aoife. Her bed is by the window, [[mine|my|me]] is by the door. She [[plays|is playing|play]] the fiddle every evening.\nMum: Have you got your towel?\nJana: No, I forgot it 🙈 I’m using [[hers|her|her’s]]. Oh, I have to go – Aoife’s dad [[is calling|calls|call]] us. We’re going to the beach!",
+      erklaerung:"**right now / gerade** → present progressive · **every day/evening** → simple present · ohne Nomen → **mine, hers**."}
+  ]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Dwarven Market – Comparison of adjectives · some &amp; any</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:7, kat:"grammar", id:"cmp7", icon:"⚖️", kartenSymbol:"💰",
+  titel:"The Dwarven Market", untertitel:"Comparison of adjectives · some & any",
+  text:"Which gem is bigger, which hammer is the most expensive – and have you got any money left? Shop at the dwarves’ market and learn to compare.",
+  lernen: {
+    cmp: { titel:"Comparing things", folien:[
+      {"bild":"📏","titel":"Short adjectives","formel":["cheap | → | cheaper | → | the cheapest","big | → | bigger | → | the biggest","easy | → | easier | → | the easiest"],"bsp":["This gem is **bigger than** that one.","It’s **the biggest** gem in the cave."],"de":"Kurze Adjektive: **-er / the -est**. Mitlaut verdoppeln (big → bigger), -y → **-ier/-iest**."},
+      {"bild":"💎","titel":"Long adjectives","formel":["expensive | → | more expensive | → | the most expensive"],"bsp":["This crown is **more expensive than** the hammer.","It’s **the most beautiful** crown."],"de":"Lange Adjektive (ab 3 Silben, meist auch 2): **more / the most**."},
+      {"bild":"⚠️","titel":"Irregular forms","formel":["good | → | better | → | the best","bad | → | worse | → | the worst","much/many | → | more | → | the most"],"bsp":["My shop is **better** than yours.","That was **the worst** day ever!"],"de":"Diese Formen muss man **auswendig** lernen."},
+      {"bild":"🟰","titel":"as … as / than","formel":["as big as | = | genauso groß wie","bigger than | = | größer als"],"bsp":["Lisburn is **not as big as** Belfast.","Belfast is **bigger than** Lisburn."],"de":"Gleich: **as … as** · Unterschied: **-er than / more … than** (nie *as* nach -er!)."}
+    ]},
+    some: { titel:"some or any?", folien:[
+      {"bild":"🍎","titel":"some – positive sentences","bsp":["I’ve got **some** apples.","There’s **some** milk in the fridge."],"de":"**some** = etwas, einige – in **bejahten** Sätzen."},
+      {"bild":"❓","titel":"any – questions and negatives","bsp":["Have you got **any** bread?","We haven’t got **any** sweets."],"de":"**any** in **Fragen** und **verneinten** Sätzen."},
+      {"bild":"🙏","titel":"Offers and requests: some","bsp":["Would you like **some** tea?","Can I have **some** crisps, please?"],"de":"Bei **Angeboten und Bitten** benutzt man **some** – auch in Fragen!"}
+    ]}
+  },
+  levels: [
+    { id:"rush", regel:"Kurz: **-er/-est** · lang: **more/most** · good–**better**–**best**, bad–**worse**–**worst**.", typ:"rush", icon:"⚡", titel:"Bargain Rush", art:"Comparative · 60 seconds",
+      anleitung:"Choose the **comparative** (the -er form). **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle die **erste Steigerungsform**. **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise und auf die unregelmäßigen Formen.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"cheap", o:["cheaper","more cheap","cheapper"], c:0}, {q:"big", o:["bigger","biger","more big"], c:0}, {q:"good", o:["better","gooder","more good"], c:0},
+        {q:"bad", o:["worse","badder","worst"], c:0}, {q:"expensive", o:["more expensive","expensiver","most expensive"], c:0}, {q:"easy", o:["easier","easyer","more easy"], c:0},
+        {q:"heavy", o:["heavier","heavyer","more heavy"], c:0}, {q:"beautiful", o:["more beautiful","beautifuller","beautifuler"], c:0}, {q:"hot", o:["hotter","hoter","more hot"], c:0},
+        {q:"old", o:["older","oldest","more old"], c:0}, {q:"interesting", o:["more interesting","interestinger","most interesting"], c:0}, {q:"happy", o:["happier","happyer","more happy"], c:0},
+        {q:"small", o:["smaller","smallier","more small"], c:0}, {q:"far", o:["further","farer","more far"], c:0, e:"far → **further / farther**."}, {q:"many", o:["more","manier","most"], c:0},
+        {q:"dangerous", o:["more dangerous","dangerouser","dangerouest"], c:0}, {q:"thin", o:["thinner","thiner","more thin"], c:0}, {q:"nice", o:["nicer","nicier","more nice"], c:0}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"cmp", icon:"🛒", titel:"Compare the Prices", art:"Comparison · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"than = als · as … as = so … wie.",
+      fragen:[
+        {q:"This hammer is **___** than that one.", o:["cheaper","cheapest","more cheap"], c:0, e:"Short adjective + **-er than**."},
+        {q:"It’s the **___** crown in the shop.", o:["most expensive","expensivest","more expensive"], c:0, e:"Long adjective: **the most expensive**."},
+        {q:"My gem is **___** than yours!", o:["better","gooder","best"], c:0, e:"good → **better** → the best."},
+        {q:"That was the **___** meal I’ve ever had.", o:["worst","baddest","worse"], c:0, e:"bad → worse → **the worst**."},
+        {q:"Lisburn is not as big **___** Belfast.", o:["as","than","like"], c:0, e:"**as … as**."},
+        {q:"Belfast is bigger **___** Lisburn.", o:["than","as","then"], c:0, e:"**-er than**. (*then* = dann!)"},
+        {q:"Gold is **___** than silver.", o:["more valuable","valuabler","most valuable"], c:0, e:"Long adjective → **more valuable**."},
+        {q:"The Giant’s Causeway is one of the **___** places in Ireland.", o:["most famous","famousest","more famous"], c:0, e:"**the most famous**."},
+        {q:"Today is **___** than yesterday.", o:["sunnier","sunnyer","more sunnier"], c:0, e:"-y → **-ier**."},
+        {q:"A dwarf is not as tall **___** an elf.", o:["as","than","then"], c:0, e:"**not as tall as** = nicht so groß wie."}
+      ]},
+    { id:"some", typ:"swipe", lernen:"some", icon:"🍞", titel:"Some or Any?", art:"Swipe · some / any",
+      anleitung:"Which word fits? Swipe **left for some** and **right for any**.",
+      anleitungDe:"Welches Wort passt? Wische nach **links für some** und nach **rechts für any**.",
+      tipp:"Bejaht und bei Angeboten/Bitten → some · Fragen und Verneinung → any.",
+      links:{t:"some", icon:"🍎"}, rechts:{t:"any", icon:"❓"},
+      karten:[
+        {t:"I’d like ___ potatoes, please.", r:"l", e:"A request → **some**."},
+        {t:"Have you got ___ soda bread?", r:"r", e:"A normal question → **any**."},
+        {t:"We haven’t got ___ eggs left.", r:"r", e:"Negative → **any**."},
+        {t:"There are ___ apples in the basket.", r:"l", e:"Positive → **some**."},
+        {t:"Would you like ___ tea?", r:"l", e:"An offer → **some**."},
+        {t:"Are there ___ shops near here?", r:"r", e:"Question → **any**."},
+        {t:"I didn’t buy ___ sweets.", r:"r", e:"Negative → **any**."},
+        {t:"She bought ___ new shoes.", r:"l", e:"Positive → **some**."},
+        {t:"Can I have ___ crisps, please?", r:"l", e:"A request → **some**."},
+        {t:"There isn’t ___ milk in the fridge.", r:"r", e:"Negative → **any**."}
+      ]},
+    { id:"build", regel:"Vergleich: **-er than** / **more … than** · Gleichheit: **as … as**.", typ:"satzbau", icon:"🧱", titel:"Market Sentences", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"than = als · as … as = genauso … wie.",
+      punkte:2,
+      saetze:[
+        {w:["This","gem","is","bigger","than","that","one"], hint:"🇩🇪 Dieser Edelstein ist größer als der da."},
+        {w:["It","is","the","most","expensive","crown","in","the","shop"], hint:"🇩🇪 Das ist die teuerste Krone im Laden."},
+        {w:["My","pasty","is","not","as","good","as","yours"], hint:"🇩🇪 Meine Pastete ist nicht so gut wie deine."},
+        {w:["Have","you","got","any","change","?"], hint:"🇩🇪 Hast du Wechselgeld?"},
+        {w:["Could","I","have","some","bread",",","please","?"], alt:[["Could","I","have","some","bread","please","?"]], hint:"🇩🇪 Könnte ich bitte etwas Brot haben?"}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🏪", titel:"At the Shop in Lisburn", art:"Dialogue · fill in the gaps",
+      anleitung:"Ciara is shopping in Northern Ireland. Tap a gap and choose the right word.",
+      anleitungDe:"Ciara kauft in Nordirland ein. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Vergleich und some/any – lies genau!",
+      ueberschrift:"At Mr O’Neill’s shop",
+      text:"Ciara: Hello! Have you got [[any|some]] soda bread?\nMr O’Neill: Yes, here you are. It’s [[fresher|freshest|more fresh]] than the bread in the supermarket.\nCiara: Great. And I’d like [[some|any]] apples, please. Which ones are [[better|gooder|best]], the red ones or the green ones?\nMr O’Neill: The red ones are [[sweeter|sweetest|more sweet]], but the green ones are [[cheaper|cheapest|more cheap]].\nCiara: I’ll take the red ones. Oh, and these sweets look like the [[most delicious|deliciousest|more delicious]] sweets in the world!\nMr O’Neill: Sorry, I haven’t got [[any|some]] change. Have you got a pound coin?",
+      erklaerung:"Kurze Adjektive **-er**, lange **more/most**, good → **better**. some (bejaht/Bitte) – any (Frage/Verneinung)."}
+  ]
+});
+</script>
+</body>
+</html>

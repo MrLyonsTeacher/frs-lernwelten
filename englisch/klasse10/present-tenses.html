@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Frozen Arena – Simple present vs present progressive (revision)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:10, kat:"grammar", id:"pres10", icon:"🏒", kartenSymbol:"❄️",
+  titel:"The Frozen Arena", untertitel:"Simple present vs present progressive (revision)",
+  text:"In the great ice hall of the Citadel, ice hockey teams train every day – and right now a big match is starting! Revise the two present tenses, including state verbs and the future meaning.",
+  lernen: {
+    pres: { titel:"Two present tenses", folien:[
+      {"bild":"🔁","titel":"Simple present","formel":["habits, routines, facts, timetables"],"bsp":["Canadians **love** ice hockey.","The game **starts** at 7 pm."],"de":"**Simple present**: Gewohnheiten, Fakten, Fahrpläne/Programme."},
+      {"bild":"▶️","titel":"Present progressive","formel":["now · temporary situations · trends"],"bsp":["Look! The players **are coming** onto the ice.","This year I**’m playing** in a new team.","More and more girls **are taking up** hockey."],"de":"**Present progressive**: gerade jetzt, **vorübergehend**, **Entwicklungen**."},
+      {"bild":"🧠","titel":"State verbs","formel":["know · believe · understand · like · love · hate · want · need · belong · own · seem"],"bsp":["I **know** the rules. (✗ I’m knowing)","This stick **belongs** to Sam."],"de":"**Zustandsverben** stehen (fast) nie in der -ing-Form."},
+      {"bild":"📅","titel":"Talking about the future","formel":["timetable | → | simple present","fixed arrangement | → | present progressive"],"bsp":["The train **leaves** at 8:15.","We**’re meeting** the coach tomorrow."],"de":"Für die **Zukunft**: Fahrplan → simple present · feste Verabredung → present progressive."}
+    ]}
+  },
+  levels: [
+    { id:"sort", typ:"sortieren", lernen:"pres", icon:"🗂️", titel:"Why This Tense?", art:"Use · sort",
+      anleitung:"Why is this tense used? Tap the right box.",
+      anleitungDe:"Warum wird diese Zeitform benutzt? Tippe auf das richtige Kästchen.",
+      tipp:"Gewohnheit, gerade jetzt, vorübergehend oder Zukunft?",
+      koerbe:[ {t:"habit / fact", info:"🔁 simple present", tipp:"**Gewohnheit/Fakt**: every day, always, in general."}, {t:"now / temporary", info:"▶️ present progressive", tipp:"**jetzt/vorübergehend**: now, at the moment, this week."}, {t:"future plan", info:"📅 both", tipp:"**Zukunft**: Fahrplan (simple present) oder Verabredung (progressive)."} ],
+      items:[
+        {t:"Water freezes at 0 °C.", k:0}, {t:"Liam practises every morning.", k:0}, {t:"Most Canadians speak English or French.", k:0},
+        {t:"Be quiet – the coach is talking.", k:1}, {t:"I’m staying with my aunt in Toronto this month.", k:1}, {t:"Prices are going up these days.", k:1},
+        {t:"The match starts at 7 tonight.", k:2}, {t:"We’re flying to Vancouver on Friday.", k:2}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"pres", icon:"🏒", titel:"Game Night", art:"Tenses · quiz",
+      anleitung:"Choose the right form.",
+      anleitungDe:"Wähle die richtige Form.",
+      tipp:"Zustandsverben (know, want, belong …) nicht in der -ing-Form!",
+      fragen:[
+        {q:"Listen! The fans **___** the national anthem.", o:["are singing","sing","sings"], c:0, e:"**Listen!** → now → *are singing*."},
+        {q:"In Canada most kids **___** to skate before they can ride a bike.", o:["learn","are learning","learns"], c:0, e:"A general fact → **learn**."},
+        {q:"I **___** what you mean.", o:["understand","am understanding","understands"], c:0, e:"**understand** = state verb."},
+        {q:"My brother **___** at a summer camp this week.", o:["is working","works","work"], c:0, e:"Temporary → **is working**."},
+        {q:"The bus to the arena **___** every 20 minutes.", o:["leaves","is leaving","leave"], c:0, e:"Timetable / routine → **leaves**."},
+        {q:"**___** this jacket **___** to you?", o:["Does … belong","Is … belonging","Do … belong"], c:0, alt:["Does belong"], e:"**belong** = state verb → *Does … belong*."},
+        {q:"We **___** the team captain after the game – it’s all arranged.", o:["are meeting","meet","meets"], c:0, e:"Fixed arrangement → **are meeting**."},
+        {q:"The climate **___** – winters in Canada are getting shorter.", o:["is changing","changes","change"], c:0, e:"A development/trend → **is changing**."},
+        {q:"Emma **___** ice hockey – she prefers figure skating.", o:["doesn’t like","isn’t liking","don’t like"], c:0, e:"**like** = state verb."}
+      ]},
+    { id:"swipe", typ:"swipe", lernen:"pres", icon:"🧠", titel:"State Verb Check", art:"Swipe · correct or wrong",
+      anleitung:"Is the sentence correct? Swipe **right for correct** and **left for wrong**.",
+      anleitungDe:"Ist der Satz richtig? Wische nach **rechts für richtig** und nach **links für falsch**.",
+      tipp:"Achtung bei Zustandsverben!",
+      links:{t:"wrong", icon:"✘"}, rechts:{t:"correct", icon:"✔"},
+      karten:[
+        {t:"I’m knowing the answer.", r:"l", e:"Wrong – **I know** the answer."},
+        {t:"She’s playing goalie today because Mia is sick.", r:"r", e:"Correct – temporary."},
+        {t:"This puck is belonging to me.", r:"l", e:"Wrong – **belongs**."},
+        {t:"They usually train on Tuesdays.", r:"r", e:"Correct – a routine."},
+        {t:"Do you want a hot chocolate?", r:"r", e:"Correct – *want* is a state verb."},
+        {t:"Look! It snows again.", r:"l", e:"Wrong – **Look!** → *It’s snowing*."},
+        {t:"We need new skates.", r:"r", e:"Correct – *need* is a state verb."},
+        {t:"He’s seeming tired.", r:"l", e:"Wrong – **He seems** tired."}
+      ]},
+    { id:"build", regel:"Zustandsverben (know, like, want, need, belong) → **simple present**.", typ:"satzbau", icon:"🧱", titel:"Commentator’s Booth", art:"Sentence builder",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz.",
+      tipp:"Gerade jetzt → am/is/are + -ing.",
+      punkte:2,
+      saetze:[
+        {w:["The","players","are","coming","onto","the","ice"], hint:"🇩🇪 Die Spieler kommen gerade aufs Eis."},
+        {w:["Hockey","is","Canada's","national","winter","sport"], hint:"🇩🇪 Eishockey ist Kanadas Nationalwintersport."},
+        {w:["I","don't","know","the","score"], hint:"🇩🇪 Ich kenne den Spielstand nicht."},
+        {w:["We","are","flying","to","Montreal","next","week"], alt:[["Next","week","we","are","flying","to","Montreal"]], hint:"🇩🇪 Wir fliegen nächste Woche nach Montreal. (fest geplant)"},
+        {w:["More","and","more","girls","are","playing","hockey"], hint:"🇩🇪 Immer mehr Mädchen spielen Eishockey."}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"💬", titel:"Online Comment: Team or Solo?", art:"Comment · fill in the gaps",
+      anleitung:"Read Noah’s online comment. Tap a gap and choose the right form.",
+      anleitungDe:"Lies Noahs Online-Kommentar. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Gewohnheit/Fakt oder gerade/vorübergehend?",
+      ueberschrift:"Team spirit or competition?",
+      text:"I’m Noah from Winnipeg and I [[play|am playing|plays]] ice hockey three times a week. Right now I [[am writing|write|writes]] this on the bus to practice.\nI [[believe|am believing|believes]] team sports are better than individual sports. In a team you [[learn|are learning|learns]] to trust other people. This season our team [[is doing|does|do]] really well – we haven’t lost a game yet!\nMy sister [[prefers|is preferring|prefer]] cross-country skiing because she [[doesn’t like|isn’t liking|don’t like]] it when others decide for her. Our next game [[starts|start|starting]] at 6 on Saturday. Come and watch!",
+      erklaerung:"Gewohnheit/Fakt: **play, learn** · jetzt/vorübergehend: **am writing, is doing** · Zustandsverben: **believe, prefers, doesn’t like** · Spielplan: **starts**."}
+  ]
+});
+</script>
+</body>
+</html>
