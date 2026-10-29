@@ -30,7 +30,7 @@ const TXT = {
       newFlags:n=>n===1?"+1 neue Flagge":`+${n} neue Flaggen`,noNew:"Keine neuen Flaggen – diese hattest du schon richtig.",thisRound:"Diese Runde",
       platHint:"Platin gibt es nur, wenn jedes Spiel beim ersten Versuch fehlerfrei war.",platGame:"Platin: beim ersten Versuch fehlerfrei!",
       rankNew:"Neuer Rang!",allRanks:"Alle Ränge",rankNext:(n,name)=>`noch ${n} bis ${name}`,rankTop:"Höchster Rang!",today:"heute",rankOk:"Weiter!",
-      review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
+      review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",cardsHow:"Lies die Infokarten in Ruhe durch. Tipp: Tippe auf **Abspielen** und **Vorlesen**.",cardsHead:"Infokarten",gamesHead:"Spiele",cardsN:n=>`${n} Karten`,cardsDone:"✓ Fertig",cardsRead:"gelesen",cardsNew:"noch nicht gelesen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
       videoNote:"Das Video wird von YouTube geladen.",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
   en:{map:"Games",pts:"points",stars:"stars",next:"Next",check:"Check",again:"Play again",nextLvl:"Next game",
       toMap:"All games",right:"Correct!",wrong:"Not quite.",correctIs:"Correct answer:",timeUp:"Time’s up!",
@@ -56,7 +56,7 @@ const TXT = {
       newFlags:n=>n===1?"+1 new flag":`+${n} new flags`,noNew:"No new flags – you already had these right.",thisRound:"This round",
       platHint:"Platinum only if every game was perfect on the first try.",platGame:"Platinum: perfect on the first try!",
       rankNew:"New rank!",allRanks:"All ranks",rankNext:(n,name)=>`${n} more to ${name}`,rankTop:"Top rank!",today:"today",rankOk:"Keep going!",
-      review:"Learn from your mistakes",gap:"Gap",learn:"Learn first",learnAgain:"Learn again",startGame:"Start the game ▸",read:"Read aloud",auto:"Play",pause:"Pause",prev:"Back",
+      review:"Learn from your mistakes",gap:"Gap",learn:"Learn first",learnAgain:"Learn again",cardsHow:"Read the cards in your own time. Tip: tap **Play** and **Read aloud**.",cardsHead:"Learn the facts",gamesHead:"Games",cardsN:n=>`${n} cards`,cardsDone:"✓ Done",cardsRead:"read",cardsNew:"not read yet",startGame:"Start the game ▸",read:"Read aloud",auto:"Play",pause:"Pause",prev:"Back",
       videoNote:"The video is loaded from YouTube.",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
 };
 
@@ -84,7 +84,8 @@ const FLAG_DE = `<svg viewBox="0 0 5 3" aria-hidden="true"><rect width="5" heigh
 let HEAR = null, STOPREAD = null;
 function stopAllAudio(){ hearStop(); try{ STOPREAD && STOPREAD(); }catch(e){} try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} }
 function hearStop(){ if(HEAR){ try{ HEAR.a.pause(); }catch(e){} HEAR.b && HEAR.b.classList.remove("on"); HEAR = null; } }
-function hearRow(h, txt){ return `<div class="ln-hear">${[].concat(h).map(x=>`<button type="button" class="hb" data-hear="${esc(x.src)}"><span class="hb-i" aria-hidden="true">▶</span>${esc(x.label||"Listen")}</button>`).join("")}</div>${txt?`<details class="ln-de hear-t"><summary>📄 ${W && W.sprache==="en" ? "What do they read?" : "Text"}</summary><p>${rich(txt)}</p></details>`:""}`; }
+function hearBtn(x){ return `<button type="button" class="hb" data-hear="${esc(x.src)}"><span class="hb-i" aria-hidden="true">▶</span>${esc(x.label||"Listen")}</button>`; }
+function hearRow(h, txt){ h = [].concat(h); const rows = h.some(Array.isArray); return `<div class="ln-hear${rows?" rows":""}">${rows ? h.map(r=>`<div class="hb-row">${[].concat(r).map(hearBtn).join("")}</div>`).join("") : h.map(hearBtn).join("")}</div>${txt?`<details class="ln-de hear-t"><summary>📄 ${W && W.sprache==="en" ? "What do they read?" : "Text"}</summary><p>${rich(txt)}</p></details>`:""}`; }
 function hearClick(b){
   const same = HEAR && HEAR.b === b; stopAllAudio(); if(same) return;
   const a = new Audio(b.dataset.hear); HEAR = {a, b}; b.classList.add("on");
@@ -274,7 +275,9 @@ function fit(){
   document.documentElement.style.setProperty("--avail", v+"px");
 }
 
+function decks(){ const seen = new Set(), out = []; LV().forEach(l=>{ const D = deckOf(l); if(!D || !D.folien || !D.folien.length) return; const k = deckKey(l); if(seen.has(k)) return; seen.add(k); out.push({k, D, l}); }); return out; }
 function home(){
+  const dk = decks();
   const lvls = LV();
   const st = lvls.reduce((a,l)=>a+starsFor(best(l.id),maxOf(l)),0);
   const tier = topicTier(), nextP = TIERS[tier] !== undefined ? Math.ceil(TIERS[tier]*MAX - 1e-9) - total() : 0;
@@ -287,6 +290,10 @@ function home(){
     <div class="panel stat medal-stat${tier?" has":""}">${medalSvg(tier, 46)}<div><b class="m-name">${T.medalNames[tier]}</b>
       <span>${tier>=4 ? T.medalTop : tier===3 ? T.platHint : T.medalNext(nextP, T.pts, T.medalNames[tier+1])}</span></div></div>
   </div>
+  ${dk.length ? `<h2 class="sec-h">📖 ${T.cardsHead}</h2><div class="levels decks">${dk.map(({k,D,l})=>`<button class="panel lvl deck${S.seen[k]?" read":""}" data-go="cards=${esc(l.id)}">
+      <span class="ic" aria-hidden="true">📖</span><span class="t">${esc(D.titel||l.titel)}</span>
+      <span class="k">${T.cardsN(D.folien.length)}</span><span class="s"><span>${S.seen[k]?"✓ "+T.cardsRead:T.cardsNew}</span></span></button>`).join("")}</div>
+  <h2 class="sec-h">🎮 ${T.gamesHead}</h2>` : ""}
   <div class="levels">${lvls.map(l=>{
     const m=maxOf(l), b=best(l.id);
     return `<button class="panel lvl" data-go="l=${esc(l.id)}">
@@ -310,11 +317,12 @@ function render(){
   }
   const lm = h.match(/^learn=(.+)$/), ll = lm && LV().find(x=>x.id===decodeURIComponent(lm[1]));
   if(ll && deckOf(ll)){ learnScreen(ll); return; }
+  const cm = h.match(/^cards=(.+)$/), cl = cm && LV().find(x=>x.id===decodeURIComponent(cm[1]));
+  if(cl && deckOf(cl)){ learnScreen(cl, true); return; }
   const m = h.match(/^l=(.+)$/), l = m && LV().find(x=>x.id===decodeURIComponent(m[1]));
   if(!l){ APP.innerHTML = home(); document.title = W.titel; return; }
-  if(deckOf(l) && !S.seen[deckKey(l)]){ history.replaceState(null, "", "#learn="+encodeURIComponent(l.id)); learnScreen(l); return; }
   CUR = l; TIER0 = topicTier();
-  const again = deckOf(l) ? `<button class="ln-again" data-go="learn=${esc(l.id)}" aria-label="${T.learnAgain}" title="${T.learnAgain}">📖</button>` : "";
+  const again = deckOf(l) ? (!S.seen[deckKey(l)] ? `<button class="ln-again new" data-go="learn=${esc(l.id)}" title="${T.learnAgain}">📖 ${T.learn}</button>` : `<button class="ln-again" data-go="learn=${esc(l.id)}" aria-label="${T.learnAgain}" title="${T.learnAgain}">📖</button>`) : "";
   APP.innerHTML = topbar({back:true, title:l.titel, icon:l.icon, art:l.art, pill:true}) + howBox(l.anleitung, l.anleitungDe, l.tipp, again) + `<div id="area"></div>`;
   document.title = l.titel+" – "+W.titel;
   fit();
@@ -329,9 +337,9 @@ const deckOf = l => !l || !l.lernen ? null : (typeof l.lernen === "string" ? (W.
 const deckKey = l => typeof l.lernen === "string" ? l.lernen : l.id;
 const yearNum = j => { const t = String(j||"").replace(/\b(c\.|AD|BC)\s*/gi,"").trim(); if(!/^\d[\d,]*s?$/.test(t)) return null; const n = +t.replace(/[,s]/g,""); return /BC/i.test(j) ? -n : n; };
 const plain = t => String(t||"").replace(/\*\*|~~|\*/g, "");
-function learnScreen(l){
+function learnScreen(l, fromHome){
   const D = deckOf(l), F = D.folien, key = deckKey(l), seen = !!S.seen[key];
-  APP.innerHTML = topbar({back:true, title:D.titel || l.titel, icon:"📖", art:T.learn}) + howBox(T.learnFirst, W.sprache==="en"?TXT.de.learnFirst:null) + `<div id="area"></div>`;
+  APP.innerHTML = topbar({back:true, title:D.titel || l.titel, icon:"📖", art:fromHome?T.cardsHead:T.learn}) + howBox(fromHome?T.cardsHow:T.learnFirst, W.sprache==="en"?TXT.de[fromHome?"cardsHow":"learnFirst"]:null) + `<div id="area"></div>`;
   document.title = (D.titel || l.titel)+" – "+W.titel; fit();
   const A = $("#area"), hasTTS = "speechSynthesis" in window && window.SpeechSynthesisUtterance, canSpeak = !!(W.audio || hasTTS);
   let player = null;
@@ -344,9 +352,9 @@ function learnScreen(l){
       ${canSpeak?`<button class="btn alt ln-b" id="lnVoice" aria-pressed="false">🔊 ${T.read}</button>`:""}
       <button class="btn alt ln-b" id="lnNext" aria-label="${T.next}">${T.next} ▸</button>
       <span class="sp"></span>
-      <button class="btn big" id="lnGo" ${seen?"":"disabled"}>${T.startGame}</button>
+      <button class="btn big" id="lnGo" ${seen||fromHome?"":"disabled"}>${fromHome?T.cardsDone:T.startGame}</button>
     </div></div>`;
-  let i = -1, auto = false, voice = false, tm = null, raf = null;
+  let i = -1, auto = false, voice = false, tm = null, raf = null, ENDREACHED = false;
   const hush = () => { hearStop(); if(player){ player.onended = player.onerror = null; try{ player.pause(); }catch(e){} player = null; } try{ hasTTS && speechSynthesis.cancel(); }catch(e){} };
   const stop = () => { clearTimeout(tm); cancelAnimationFrame(raf); hush(); };
   cleanups.push(stop);
@@ -413,7 +421,7 @@ function learnScreen(l){
     A.querySelectorAll(".ln-dot").forEach((d,n)=>{ d.classList.toggle("on", n===i); d.classList.toggle("done", n<i); });
     $("#lnFill").style.width = (F.length>1 ? i/(F.length-1)*100 : 100)+"%";
     $("#lnPrev").disabled = i===0; $("#lnNext").disabled = i===F.length-1;
-    if(i===F.length-1){ $("#lnGo").disabled = false; }
+    if(i===F.length-1){ $("#lnGo").disabled = false; ENDREACHED = true; }
     schedule();
   }
   A.onclick = e => {
@@ -424,7 +432,7 @@ function learnScreen(l){
     if(e.target.closest("#lnVoice")){ voice = !voice; const b=$("#lnVoice"); b.setAttribute("aria-pressed", voice); if(voice){ if(!F[i].video) say(F[i], auto ? ()=>{ tm=setTimeout(()=>{ if(auto) (i<F.length-1 ? show(i+1) : setAuto(false)); }, 900); } : null); } else { hush(); if(auto) schedule(); } return; }
     const y = e.target.closest("[data-yt]");
     if(y){ setAuto(false); $("#lnV").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(y.dataset.yt)}?rel=0&autoplay=1&playsinline=1&modestbranding=1&iv_load_policy=3" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
-    if(e.target.closest("#lnGo")){ stop(); S.seen[key] = 1; save(); location.hash = "l="+encodeURIComponent(l.id); }
+    if(e.target.closest("#lnGo")){ stop(); if(!fromHome || ENDREACHED) S.seen[key] = 1; save(); location.hash = fromHome ? "" : "l="+encodeURIComponent(l.id); }
   };
   show(0);
 }

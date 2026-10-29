@@ -115,7 +115,7 @@ const FRS = {
         { id:"car9", kat:"country", titel:"Island Vibes: The Caribbean", untertitel:"Jamaica, history, music & hurricanes", pfad:"englisch/klasse9/caribbean.html", icon:"🌴", max:35 },
         { id:"sa9", kat:"country", titel:"The Rainbow Nation", untertitel:"South Africa: apartheid, Mandela & a nation of many languages", pfad:"englisch/klasse9/south-africa.html", icon:"🇿🇦", max:38 },
         { id:"hk9", kat:"country", titel:"Hong Kong: Where East Meets West", untertitel:"History, city life, festivals & food", pfad:"englisch/klasse9/hong-kong.html", icon:"🏙️", max:40 },
-        { id:"acc9", kat:"country", titel:"Accent Detective", untertitel:"Listen to English around the world", pfad:"englisch/klasse9/accent-detective.html", icon:"🎧", max:28 }
+        { id:"acc9", kat:"country", titel:"Accent Detective", untertitel:"Listen to English around the world", pfad:"englisch/klasse9/accent-detective.html", icon:"🎧", max:34 }
       ] },
       { k:10, id:"e10",  themen:[
         { id:"pres10", kat:"grammar", titel:"The Frozen Arena", untertitel:"Simple present vs present progressive (revision)", pfad:"englisch/klasse10/present-tenses.html", icon:"🏒", max:43 },
@@ -130,7 +130,7 @@ const FRS = {
         { id:"can10", kat:"country", titel:"True North: Canada", untertitel:"Land, people, history & the Arctic", pfad:"englisch/klasse10/canada.html", icon:"🍁", max:41 },
         { id:"ind10", kat:"country", titel:"Incredible India", untertitel:"History, Gandhi, languages, food & festivals", pfad:"englisch/klasse10/india.html", icon:"🪷", max:35 },
         { id:"nz10", kat:"country", titel:"Aotearoa New Zealand", untertitel:"Māori culture, history, nature & the Kiwi way of life", pfad:"englisch/klasse10/new-zealand.html", icon:"🥝", max:38 },
-        { id:"acc10", kat:"country", titel:"Accent Detective: World Englishes", untertitel:"Ten accents from around the world", pfad:"englisch/klasse10/accent-detective.html", icon:"🎧", max:37 }
+        { id:"acc10", kat:"country", titel:"Accent Detective: World Englishes", untertitel:"Ten accents from around the world", pfad:"englisch/klasse10/accent-detective.html", icon:"🎧", max:47 }
       ] }
     ]
   },

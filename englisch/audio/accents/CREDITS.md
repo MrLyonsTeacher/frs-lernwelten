@@ -2,31 +2,32 @@
 
 Quelle: **The Speech Accent Archive**, George Mason University – Steven H. Weinberger & Matthew C. Kelley (https://accent.gmu.edu).
 Lizenz: **CC BY-NC-SA 4.0** (https://creativecommons.org/licenses/by-nc-sa/4.0/). Nur für nicht-kommerzielle Bildungszwecke.
-Bearbeitung: Lautstärke angeglichen, kurz eingeblendet, als MP3 (64 kbit/s, mono) gespeichert. Die bearbeiteten Dateien stehen unter derselben Lizenz.
+Bearbeitung: in kurze Ausschnitte geschnitten, Lautstärke angeglichen, kurz ein- und ausgeblendet, als MP3 (64 kbit/s, mono) gespeichert. Die bearbeiteten Dateien stehen unter derselben Lizenz.
 
-Alle Sprecher lesen denselben Text („Please call Stella …“).
+Alle Sprecher lesen denselben Text („Please call Stella …“). Die Sprecher wurden aus allen Aufnahmen eines Landes mit einem Akzent-Erkennungsmodell (CommonAccent) ausgewählt, damit die Unterschiede möglichst deutlich hörbar sind.
+Ausschnitte: -ask, -spoons, -cheese, -bob, -kids, -bags, -station (jeweils eine Wortgruppe aus dem Text).
 
 | Datei | Original | Herkunft |
 |---|---|---|
-| england-f.mp3 | https://accent.gmu.edu/samples/english306/ | London, England |
-| england-m.mp3 | https://accent.gmu.edu/samples/english13/ | Henley-on-Thames, England |
-| scotland-f.mp3 | https://accent.gmu.edu/samples/english440/ | Glasgow, Scotland |
-| scotland-m.mp3 | https://accent.gmu.edu/samples/english188/ | Edinburgh, Scotland |
-| ireland-f.mp3 | https://accent.gmu.edu/samples/english304/ | County Clare, Ireland |
-| ireland-m.mp3 | https://accent.gmu.edu/samples/english253/ | Dublin, Ireland |
-| usa-f.mp3 | https://accent.gmu.edu/samples/english10/ | Davenport, Iowa, USA |
-| usa-m.mp3 | https://accent.gmu.edu/samples/english121/ | Waconia, Minnesota, USA |
-| canada-f.mp3 | https://accent.gmu.edu/samples/english132/ | Toronto, Canada |
-| canada-m.mp3 | https://accent.gmu.edu/samples/english159/ | Ottawa, Canada |
-| australia-f.mp3 | https://accent.gmu.edu/samples/english274/ | Sydney, Australia |
-| australia-m.mp3 | https://accent.gmu.edu/samples/english148/ | Sydney, Australia |
-| newzealand-f.mp3 | https://accent.gmu.edu/samples/english241/ | Whanganui, New Zealand |
-| newzealand-m.mp3 | https://accent.gmu.edu/samples/english41/ | Wellington, New Zealand |
-| southafrica-f.mp3 | https://accent.gmu.edu/samples/english271/ | Cape Town, South Africa |
-| southafrica-m.mp3 | https://accent.gmu.edu/samples/english270/ | Cape Town, South Africa |
-| india-f.mp3 | https://accent.gmu.edu/samples/hindi18/ | New Delhi, India |
-| india-m.mp3 | https://accent.gmu.edu/samples/english111/ | Mumbai, India |
-| jamaica-f.mp3 | https://accent.gmu.edu/samples/english617/ | Kingston, Jamaica |
-| jamaica-m.mp3 | https://accent.gmu.edu/samples/english91/ | Kingston, Jamaica |
-| hongkong-f.mp3 | https://accent.gmu.edu/samples/cantonese11/ | Hong Kong |
-| hongkong-m.mp3 | https://accent.gmu.edu/samples/cantonese18/ | Hong Kong |
+| england.mp3, england-*.mp3 (Ausschnitte), england-quiz1.mp3 | https://accent.gmu.edu/samples/english365/ | Oxford, England |
+| england-quiz2.mp3 | https://accent.gmu.edu/samples/english227/ | Camberley, Surrey, England |
+| scotland.mp3, scotland-*.mp3 (Ausschnitte), scotland-quiz1.mp3 | https://accent.gmu.edu/samples/english448/ | Isle of Arran, Scotland |
+| scotland-quiz2.mp3 | https://accent.gmu.edu/samples/english488/ | Irvine, Scotland |
+| ireland.mp3, ireland-*.mp3 (Ausschnitte), ireland-quiz1.mp3 | https://accent.gmu.edu/samples/english258/ | Kilkenny, Ireland |
+| ireland-quiz2.mp3 | https://accent.gmu.edu/samples/english362/ | Cork, Ireland |
+| usa.mp3, usa-*.mp3 (Ausschnitte), usa-quiz1.mp3 | https://accent.gmu.edu/samples/english311/ | Detroit, Michigan, USA |
+| usa-quiz2.mp3 | https://accent.gmu.edu/samples/english88/ | Grand Rapids, Michigan, USA |
+| canada.mp3, canada-*.mp3 (Ausschnitte), canada-quiz1.mp3 | https://accent.gmu.edu/samples/english312/ | Edmonton, Alberta, Canada |
+| canada-quiz2.mp3 | https://accent.gmu.edu/samples/english324/ | St. Marys, Ontario, Canada |
+| australia.mp3, australia-*.mp3 (Ausschnitte), australia-quiz1.mp3 | https://accent.gmu.edu/samples/english285/ | Melbourne, Australia |
+| australia-quiz2.mp3 | https://accent.gmu.edu/samples/english405/ | Geelong, Australia |
+| newzealand.mp3, newzealand-*.mp3 (Ausschnitte), newzealand-quiz1.mp3 | https://accent.gmu.edu/samples/english490/ | Auckland, New Zealand |
+| newzealand-quiz2.mp3 | https://accent.gmu.edu/samples/english255/ | Oamaru, New Zealand |
+| southafrica.mp3, southafrica-*.mp3 (Ausschnitte), southafrica-quiz1.mp3 | https://accent.gmu.edu/samples/english130/ | Port Elizabeth, South Africa |
+| southafrica-quiz2.mp3 | https://accent.gmu.edu/samples/english271/ | Cape Town, South Africa |
+| india.mp3, india-*.mp3 (Ausschnitte), india-quiz1.mp3 | https://accent.gmu.edu/samples/hindi17/ | New Delhi, India |
+| india-quiz2.mp3 | https://accent.gmu.edu/samples/hindi34/ | Pune, India |
+| jamaica.mp3, jamaica-*.mp3 (Ausschnitte), jamaica-quiz1.mp3 | https://accent.gmu.edu/samples/english91/ | Kingston, Jamaica |
+| jamaica-quiz2.mp3 | https://accent.gmu.edu/samples/english489/ | Kingston, Jamaica |
+| hongkong.mp3, hongkong-*.mp3 (Ausschnitte), hongkong-quiz1.mp3 | https://accent.gmu.edu/samples/cantonese7/ | Hong Kong |
+| hongkong-quiz2.mp3 | https://accent.gmu.edu/samples/cantonese16/ | Hong Kong |
