@@ -145,7 +145,7 @@ export async function start(o){
     for(const t in groups){ const d = B[t];
       const mesh = new THREE.InstancedMesh(box, matsFor(t), groups[t].length);
       groups[t].forEach((b,i)=>{ dummy.position.set((b[0]+.5)*cell,(b[1]+.5)*cell,(b[2]+.5)*cell); dummy.scale.setScalar((d.scale||1)*cell*(cell<1 ? .985 : (d.alpha||d.cross) ? .996 : 1)); dummy.updateMatrix(); mesh.setMatrixAt(i,dummy.matrix); });
-      mesh.castShadow = !isFar && !d.em && !d.alpha; mesh.receiveShadow = !isFar && !d.alpha; if(d.alpha) mesh.renderOrder = 2;
+      mesh.castShadow = !isFar && !d.em && !d.alpha; mesh.receiveShadow = !isFar && !d.alpha && !(d.em >= .5);   // leuchtende Blöcke bekommen keinen Schatten (sonst Schatten-Akne/Flackern) if(d.alpha) mesh.renderOrder = 2;
       mesh.frustumCulled = false; scene.add(mesh); count += groups[t].length;
       // runder, weicher Lichtschein um Lampen (statt harter Würfelkanten)
       if(d.halo && !isFar){ const pos = new Float32Array(groups[t].length*3); groups[t].forEach((b,i)=>{ pos[i*3]=(b[0]+.5)*cell; pos[i*3+1]=(b[1]+.5)*cell; pos[i*3+2]=(b[2]+.5)*cell; });
