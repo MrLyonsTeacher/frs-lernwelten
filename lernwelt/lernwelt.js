@@ -81,14 +81,14 @@ const FLAG_DE = `<svg viewBox="0 0 5 3" aria-hidden="true"><rect width="5" heigh
 
 /* ---------- Echte Sprachaufnahmen (z. B. Akzente): Knöpfe zum Anhören ---------- */
 // h = [{src:"../audio/accents/x.mp3", label:"A woman from Sydney"}], txt = optionaler Text zum Aufklappen
-let HEAR = null;
+let HEAR = null, STOPREAD = null;
+function stopAllAudio(){ hearStop(); try{ STOPREAD && STOPREAD(); }catch(e){} try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} }
 function hearStop(){ if(HEAR){ try{ HEAR.a.pause(); }catch(e){} HEAR.b && HEAR.b.classList.remove("on"); HEAR = null; } }
 function hearRow(h, txt){ return `<div class="ln-hear">${[].concat(h).map(x=>`<button type="button" class="hb" data-hear="${esc(x.src)}"><span class="hb-i" aria-hidden="true">▶</span>${esc(x.label||"Listen")}</button>`).join("")}</div>${txt?`<details class="ln-de hear-t"><summary>📄 ${W && W.sprache==="en" ? "What do they read?" : "Text"}</summary><p>${rich(txt)}</p></details>`:""}`; }
 function hearClick(b){
-  const same = HEAR && HEAR.b === b; hearStop(); if(same) return;
-  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  const same = HEAR && HEAR.b === b; stopAllAudio(); if(same) return;
   const a = new Audio(b.dataset.hear); HEAR = {a, b}; b.classList.add("on");
-  a.onended = a.onerror = () => { if(HEAR && HEAR.a===a) hearStop(); };
+  a.onended = a.onerror = a.onpause = () => { if(HEAR && HEAR.a===a) hearStop(); };
   const pr = a.play(); if(pr && pr.catch) pr.catch(()=>hearStop());
 }
 
@@ -239,7 +239,7 @@ function sheet(kind, head, body, label, onNext){
     return d;
   }
   const d = bar(kind, `<div class="sheet-t" role="status"><b>${head}</b>${body?`<div>${body}</div>`:""}</div>${label?`<button class="btn big">${esc(label)}</button>`:""}`);
-  const b = d.querySelector(".btn"); if(b){ b.onclick = onNext; setTimeout(()=>b.focus({preventScroll:true}), 30); }
+  const b = d.querySelector(".btn"); if(b){ b.onclick = e => { stopAllAudio(); onNext && onNext(e); }; setTimeout(()=>b.focus({preventScroll:true}), 30); }
   return d;
 }
 
@@ -300,7 +300,7 @@ function home(){
 function render(){
   cleanups.forEach(f=>{ try{f();}catch(e){} }); cleanups=[];
   document.querySelectorAll("#confetti,.pop,.flyer,.medal-pop").forEach(x=>x.remove());
-  closeSheet(); CUR=null; RUN=0; RUNGAIN=0; MISS=[];
+  closeSheet(); CUR=null; RUN=0; RUNGAIN=0; MISS=[]; stopAllAudio(); STOPREAD = null;
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   const h = location.hash.slice(1);
   if(h==="fertig" && W.insel){ location.replace(W.insel.href+"#fertig"); return; }
@@ -350,6 +350,7 @@ function learnScreen(l){
   const hush = () => { hearStop(); if(player){ player.onended = player.onerror = null; try{ player.pause(); }catch(e){} player = null; } try{ hasTTS && speechSynthesis.cancel(); }catch(e){} };
   const stop = () => { clearTimeout(tm); cancelAnimationFrame(raf); hush(); };
   cleanups.push(stop);
+  STOPREAD = () => { if(auto) setAuto(false); clearTimeout(tm); if(player){ player.onended = player.onerror = null; try{ player.pause(); }catch(e){} player = null; } };
   // Stimme: zuerst die vorbereitete Audiodatei (natürliche Stimme), sonst die beste Systemstimme mit passendem Akzent
   const ACC = W.akzent || (W.sprache==="en" ? "en-GB" : "de-DE");
   function voiceFor(){ try{ const v = speechSynthesis.getVoices().filter(x=>x.lang && x.lang.replace("_","-").toLowerCase().startsWith(ACC.slice(0,2).toLowerCase()));
@@ -499,7 +500,7 @@ GAMES.quiz = (l, A, done) => {
   let i=0, pts=0, tId=null, answered=false;
   cleanups.push(()=>clearInterval(tId));
   function show(){
-    closeSheet(); answered=false;
+    closeSheet(); answered=false; stopAllAudio();
     const q = qs[i], order = shuffle(q.o.map((_,j)=>j));
     A.innerHTML = progressBar(fill(res,qs.length), i) +
       `<div class="panel qpanel">
