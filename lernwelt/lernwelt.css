@@ -434,3 +434,13 @@ input[type=range]{width:100%;height:48px;accent-color:var(--accent)}
 @media (max-width:560px), (max-height:700px){ .ln-foto img{max-height:min(20vh,200px)} .ln-foto .ln-cap{font-size:.88rem} .ln-foto{gap:.15rem} }
 @media (max-width:560px), (max-height:700px){ .ln-stage{overflow-y:auto;align-content:safe center;align-items:safe center;-webkit-overflow-scrolling:touch} }
 @media (max-height:700px){ .ln-foto img{max-height:15vh} }
+
+/* Hörknöpfe für echte Aufnahmen (Akzente) */
+.ln-hear{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.6rem 0 .2rem}
+.qpanel .ln-hear{margin:0 0 .7rem}
+.hb{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:.45rem .95rem;border-radius:999px;border:2.5px solid var(--ink);background:var(--surface);color:var(--ink);font:700 1rem Fredoka,system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.hb:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.hb .hb-i{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--accent,#FFC24A);color:var(--accent-ink,#24180A);font-size:.8em}
+.hb.on{background:var(--accent,#FFC24A);color:var(--accent-ink,#24180A)} .hb.on .hb-i{background:var(--ink);color:var(--surface)}
+.hb.on .hb-i::before{content:"⏸";} .hb.on .hb-i{font-size:0} .hb.on .hb-i::before{font-size:.8rem}
+.hear-t{margin-top:.3rem}

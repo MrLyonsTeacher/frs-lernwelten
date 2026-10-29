@@ -79,6 +79,19 @@ function medalSvg(t, size){
 }
 const FLAG_DE = `<svg viewBox="0 0 5 3" aria-hidden="true"><rect width="5" height="1" fill="#000"/><rect width="5" height="1" y="1" fill="#DD0000"/><rect width="5" height="1" y="2" fill="#FFCE00"/></svg>`;
 
+/* ---------- Echte Sprachaufnahmen (z. B. Akzente): Knöpfe zum Anhören ---------- */
+// h = [{src:"../audio/accents/x.mp3", label:"A woman from Sydney"}], txt = optionaler Text zum Aufklappen
+let HEAR = null;
+function hearStop(){ if(HEAR){ try{ HEAR.a.pause(); }catch(e){} HEAR.b && HEAR.b.classList.remove("on"); HEAR = null; } }
+function hearRow(h, txt){ return `<div class="ln-hear">${[].concat(h).map(x=>`<button type="button" class="hb" data-hear="${esc(x.src)}"><span class="hb-i" aria-hidden="true">▶</span>${esc(x.label||"Listen")}</button>`).join("")}</div>${txt?`<details class="ln-de hear-t"><summary>📄 ${W && W.sprache==="en" ? "What do they read?" : "Text"}</summary><p>${rich(txt)}</p></details>`:""}`; }
+function hearClick(b){
+  const same = HEAR && HEAR.b === b; hearStop(); if(same) return;
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  const a = new Audio(b.dataset.hear); HEAR = {a, b}; b.classList.add("on");
+  a.onended = a.onerror = () => { if(HEAR && HEAR.a===a) hearStop(); };
+  const pr = a.play(); if(pr && pr.catch) pr.catch(()=>hearStop());
+}
+
 let W, T, S, KEY, APP, MAX = 0, cleanups = [], CUR = null, RUN = 0, RUNGAIN = 0, TIER0 = 0, RANKED = false, RANK_I = 0;
 const LV = () => W.levels;
 const $ = (s, el=document) => el.querySelector(s);
@@ -334,7 +347,7 @@ function learnScreen(l){
       <button class="btn big" id="lnGo" ${seen?"":"disabled"}>${T.startGame}</button>
     </div></div>`;
   let i = -1, auto = false, voice = false, tm = null, raf = null;
-  const hush = () => { if(player){ player.onended = player.onerror = null; try{ player.pause(); }catch(e){} player = null; } try{ hasTTS && speechSynthesis.cancel(); }catch(e){} };
+  const hush = () => { hearStop(); if(player){ player.onended = player.onerror = null; try{ player.pause(); }catch(e){} player = null; } try{ hasTTS && speechSynthesis.cancel(); }catch(e){} };
   const stop = () => { clearTimeout(tm); cancelAnimationFrame(raf); hush(); };
   cleanups.push(stop);
   // Stimme: zuerst die vorbereitete Audiodatei (natürliche Stimme), sonst die beste Systemstimme mit passendem Akzent
@@ -376,7 +389,7 @@ function learnScreen(l){
     raf = requestAnimationFrame(step);
   }
   function show(k){
-    const prev = F[i]; i = k; const f = F[i]; cancelAnimationFrame(raf); hush();
+    const prev = F[i]; i = k; const f = F[i]; cancelAnimationFrame(raf); hush(); hearStop();
     const vb = $("#lnVoice"); if(vb) vb.hidden = !!f.video;
     const st = $("#lnStage");
     // Regel-Folie (Grammatik): Formel als Bausteine, Beispiele mit ✔, typischer Fehler mit ✘, kurze deutsche Regel immer sichtbar
@@ -392,7 +405,7 @@ function learnScreen(l){
       ? `<div class="ln-video"><div class="ln-vbox" id="lnV"><button class="ln-play" data-yt="${esc(f.video)}" aria-label="Play video">▶</button><p>${T.videoNote}</p></div>
           <div class="ln-body"><h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div></div>`
       : `<div class="ln-art">${f.foto ? `<figure class="ln-foto"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f.foto)}?width=800" alt="${esc(plain(f.titel||""))}" loading="eager" onerror="this.closest('figure').outerHTML='<span>${(f.bild||"📌").replace(/'/g,"")}</span>'"><figcaption>${f.fotoText?`<span class="ln-cap">${rich(f.fotoText)}</span>`:""}<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f.foto)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a></figcaption></figure>` : `<span>${f.bild||"📌"}</span>`}</div>
-         <div class="ln-body">${f.jahr?`<div class="ln-year" id="lnYear">${esc(f.jahr)}</div>`:""}<h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>
+         <div class="ln-body">${f.jahr?`<div class="ln-year" id="lnYear">${esc(f.jahr)}</div>`:""}<h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.hoeren?hearRow(f.hoeren, f.hoerText):""}
            ${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div>`;
     st.insertAdjacentHTML("beforeend", `<span class="ln-n">${i+1} / ${F.length}</span>`);
     if(f.jahr) countYear($("#lnYear"), prev && prev.jahr ? yearNum(prev.jahr) : null, yearNum(f.jahr), f.jahr);
@@ -492,7 +505,7 @@ GAMES.quiz = (l, A, done) => {
       `<div class="panel qpanel">
         ${l.zeit?`<div class="timer" id="tm"><i></i></div>`:""}
         ${q.szene?`<p class="scene"><span class="scene-n">${esc(l.szenenLabel||"")} ${i+1}/${qs.length}</span>${rich(q.szene)}</p>`:""}
-        <p class="q">${rich(q.q)}</p>
+        ${q.hoeren?hearRow(q.hoeren):""}<p class="q">${rich(q.q)}</p>
         <div class="opts g2">${order.map(j=>`<button class="opt" data-j="${j}">${esc(q.o[j])}</button>`).join("")}</div></div>`;
     if(l.zeit){
       const end = Date.now()+l.zeit*1000, b=$("#tm i"), box=$("#tm");
@@ -862,6 +875,7 @@ const LW = {
       if(tr){ const p=tr.parentElement.querySelector(".tr-pop"), open=p.hidden; p.hidden=!open; tr.setAttribute("aria-expanded", open); return; }
       if(e.target.closest("[data-trx]")){ const p=e.target.closest(".tr-pop"); p.hidden=true; const f=p.parentElement.querySelector("[data-tr]"); f.setAttribute("aria-expanded","false"); f.focus(); return; }
       document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ if(!p.contains(e.target)){ p.hidden=true; p.parentElement.querySelector("[data-tr]").setAttribute("aria-expanded","false"); } });
+      const hb = e.target.closest("[data-hear]"); if(hb){ hearClick(hb); return; }
       // Navigation
       const hr = e.target.closest("[data-href]");
       if(hr){ location.href = hr.dataset.href; return; }
@@ -871,7 +885,7 @@ const LW = {
       if(e.target.closest("#lwReset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); render(); }
     });
     document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ p.hidden=true; }); });
-    window.addEventListener("hashchange", ()=>{ render(); window.scrollTo(0,0); });
+    window.addEventListener("hashchange", ()=>{ hearStop(); render(); window.scrollTo(0,0); });
     window.addEventListener("resize", ()=>{ fit(); const s=$("#sheet"), a=$("#area"); if(s&&a) a.style.paddingBottom=(s.offsetHeight+10)+"px"; });
     render();
   },

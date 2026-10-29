@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Accent Detective – Listen to English around the world</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+ "k": 9,
+ "kat": "country",
+ "id": "acc9",
+ "icon": "🎧",
+ "kartenSymbol": "🎧",
+ "titel": "Accent Detective",
+ "untertitel": "Listen to English around the world",
+ "text": "Deep in the Woodlands the elves hear voices from far away. Where do they come from? Listen to real people from six countries – and become an accent detective!",
+ "lernen": {
+  "acc": {
+   "titel": "Englishes around the world",
+   "folien": [
+    {
+     "bild": "🌍",
+     "titel": "One text – many accents",
+     "text": "Over **1.5 billion people** speak English – in many different ways. Here, people from different countries read **the same short text**. Listen and compare! Remember: **no accent is “wrong”**, and not everyone from one country sounds the same.",
+     "de": "Über **1,5 Milliarden Menschen** sprechen Englisch – auf viele verschiedene Arten. Hier lesen Menschen aus verschiedenen Ländern **denselben kurzen Text**. Hör zu und vergleiche! Denk daran: **Kein Akzent ist „falsch“**, und nicht alle aus einem Land klingen gleich.",
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "video": "fy-bd5AC-Ms",
+     "titel": "Watch: one language, three accents",
+     "text": "Three people say the same sentences in **American**, **British** and **Australian** English. What differences can you hear?",
+     "de": "Drei Personen sagen dieselben Sätze auf **amerikanischem**, **britischem** und **australischem** Englisch. Welche Unterschiede hörst du?"
+    },
+    {
+     "bild": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+     "titel": "The accent of England",
+     "text": "Often **no “r”** at the end of a word: *car* sounds like “cah”. The **“t”** is clear: *water*. Words like *ask* and *bath* have a long “ah”.",
+     "de": "Oft **kein „r“** am Wortende: *car* klingt wie „cah“. Das **„t“** ist deutlich: *water*. Bei *ask* und *bath* hört man ein langes „ah“.",
+     "hoeren": [
+      {
+       "src": "../audio/accents/england-f.mp3",
+       "label": "A woman from London"
+      },
+      {
+       "src": "../audio/accents/england-m.mp3",
+       "label": "A man from Henley-on-Thames"
+      }
+     ],
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "bild": "🇺🇸",
+     "titel": "The accent of the USA",
+     "text": "The **“r”** is pronounced everywhere: *car*, *store*, *brother*. A **“t”** between vowels sounds like a soft “d”: *water* → “wadder”.",
+     "de": "Das **„r“** wird überall gesprochen: *car, store, brother*. Ein **„t“** zwischen Vokalen klingt wie ein weiches „d“: *water* → „wadder“.",
+     "hoeren": [
+      {
+       "src": "../audio/accents/usa-f.mp3",
+       "label": "A woman from Davenport, Iowa"
+      },
+      {
+       "src": "../audio/accents/usa-m.mp3",
+       "label": "A man from Waconia, Minnesota"
+      }
+     ],
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "bild": "🇦🇺",
+     "titel": "The accent of Australia",
+     "text": "*Day* sounds a bit like “die” and *mate* like “mite”. Often **no “r”** at the end: *car* → “cah”. Many sentences **go up** at the end – even when they are not questions.",
+     "de": "*Day* klingt ein bisschen wie „die“, *mate* wie „mite“. Oft **kein „r“** am Ende: *car* → „cah“. Viele Sätze **gehen am Ende nach oben** – auch wenn es keine Frage ist.",
+     "hoeren": [
+      {
+       "src": "../audio/accents/australia-f.mp3",
+       "label": "A woman from Sydney"
+      },
+      {
+       "src": "../audio/accents/australia-m.mp3",
+       "label": "A man from Sydney"
+      }
+     ],
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "bild": "🇿🇦",
+     "titel": "The accent of South Africa",
+     "text": "Words often sound **short and clipped**. *Yes* can sound like “yis”. Often no “r” at the end. Many people also speak Afrikaans, Zulu or Xhosa – you can hear that in their English.",
+     "de": "Wörter klingen oft **kurz und abgehackt**. *Yes* klingt manchmal wie „yis“. Oft kein „r“ am Ende. Viele sprechen auch Afrikaans, Zulu oder Xhosa – das hört man in ihrem Englisch.",
+     "hoeren": [
+      {
+       "src": "../audio/accents/southafrica-f.mp3",
+       "label": "A woman from Cape Town"
+      },
+      {
+       "src": "../audio/accents/southafrica-m.mp3",
+       "label": "A man from Cape Town"
+      }
+     ],
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "bild": "🇯🇲",
+     "titel": "The accent of Jamaica",
+     "text": "**“th”** often becomes “t” or “d”: *three* → “tree”, *this* → “dis”. The rhythm is very **musical**. Jamaican Patois influences how people speak English.",
+     "de": "**„th“** wird oft zu „t“ oder „d“: *three* → „tree“, *this* → „dis“. Der Rhythmus ist sehr **musikalisch**. Jamaican Patois beeinflusst, wie die Menschen Englisch sprechen.",
+     "hoeren": [
+      {
+       "src": "../audio/accents/jamaica-f.mp3",
+       "label": "A woman from Kingston"
+      },
+      {
+       "src": "../audio/accents/jamaica-m.mp3",
+       "label": "A man from Kingston"
+      }
+     ],
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "bild": "🇭🇰",
+     "titel": "The accent of Hong Kong",
+     "text": "Sounds at the **end of words** are often soft or left out: *snack* → “sna”. **“th”** can sound like “f” or “d”: *three* → “free”. Every syllable gets a similar beat, like in Cantonese.",
+     "de": "**Laute am Wortende** werden oft weich gesprochen oder weggelassen: *snack* → „sna“. **„th“** klingt manchmal wie „f“ oder „d“: *three* → „free“. Jede Silbe bekommt einen ähnlichen Takt – wie im Kantonesischen.",
+     "hoeren": [
+      {
+       "src": "../audio/accents/hongkong-f.mp3",
+       "label": "A woman from Hong Kong"
+      },
+      {
+       "src": "../audio/accents/hongkong-m.mp3",
+       "label": "A man from Hong Kong"
+      }
+     ],
+     "hoerText": "Please call Stella. Ask her to bring these things with her from the store: six spoons of fresh snow peas, five thick slabs of blue cheese, and maybe a snack for her brother Bob. We also need a small plastic snake and a big toy frog for the kids. She can scoop these things into three red bags, and we will go meet her Wednesday at the train station."
+    },
+    {
+     "bild": "🎙️",
+     "titel": "Where are the recordings from?",
+     "text": "The recordings come from the **Speech Accent Archive** of George Mason University (USA). Thousands of people from all over the world have read the same text for it.",
+     "de": "Die Aufnahmen stammen aus dem **Speech Accent Archive** der George Mason University (USA). Tausende Menschen aus aller Welt haben dafür denselben Text gelesen."
+    }
+   ]
+  }
+ },
+ "levels": [
+  {
+   "id": "detect",
+   "typ": "quiz",
+   "lernen": "acc",
+   "icon": "🎧",
+   "titel": "Where Is the Speaker From?",
+   "art": "Listening · accents",
+   "anleitung": "Tap **Listen** and hear the speaker. Where is the person from?",
+   "anleitungDe": "Tippe auf **Listen** und hör dir die Person an. Woher kommt sie?",
+   "tipp": "Achte auf das „r“ am Wortende, auf „th“ und auf die Sprachmelodie. Tippe auf 📖, um alle Akzente noch einmal zu hören.",
+   "fragen": [
+    {
+     "q": "Listen. Where is she from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/england-f.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "England",
+      "Hong Kong",
+      "the USA"
+     ],
+     "c": 0,
+     "e": "Often **no “r”** at the end of a word: *car* sounds like “cah”. The **“t”** is clear: *water*. Words like *ask* and *bath* have a long “ah”."
+    },
+    {
+     "q": "Listen. Where is he from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/england-m.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "England",
+      "Jamaica",
+      "South Africa"
+     ],
+     "c": 0,
+     "e": "Often **no “r”** at the end of a word: *car* sounds like “cah”. The **“t”** is clear: *water*. Words like *ask* and *bath* have a long “ah”."
+    },
+    {
+     "q": "Listen. Where is she from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/usa-f.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "the USA",
+      "South Africa",
+      "Jamaica"
+     ],
+     "c": 0,
+     "e": "The **“r”** is pronounced everywhere: *car*, *store*, *brother*. A **“t”** between vowels sounds like a soft “d”: *water* → “wadder”."
+    },
+    {
+     "q": "Listen. Where is he from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/usa-m.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "the USA",
+      "England",
+      "Hong Kong"
+     ],
+     "c": 0,
+     "e": "The **“r”** is pronounced everywhere: *car*, *store*, *brother*. A **“t”** between vowels sounds like a soft “d”: *water* → “wadder”."
+    },
+    {
+     "q": "Listen. Where is she from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/australia-f.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "Australia",
+      "Hong Kong",
+      "South Africa"
+     ],
+     "c": 0,
+     "e": "*Day* sounds a bit like “die” and *mate* like “mite”. Often **no “r”** at the end: *car* → “cah”. Many sentences **go up** at the end – even when they are not questions."
+    },
+    {
+     "q": "Listen. Where is he from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/australia-m.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "Australia",
+      "the USA",
+      "South Africa"
+     ],
+     "c": 0,
+     "e": "*Day* sounds a bit like “die” and *mate* like “mite”. Often **no “r”** at the end: *car* → “cah”. Many sentences **go up** at the end – even when they are not questions."
+    },
+    {
+     "q": "Listen. Where is she from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/southafrica-f.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "South Africa",
+      "Australia",
+      "Hong Kong"
+     ],
+     "c": 0,
+     "e": "Words often sound **short and clipped**. *Yes* can sound like “yis”. Often no “r” at the end. Many people also speak Afrikaans, Zulu or Xhosa – you can hear that in their English."
+    },
+    {
+     "q": "Listen. Where is he from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/southafrica-m.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "South Africa",
+      "Australia",
+      "Hong Kong"
+     ],
+     "c": 0,
+     "e": "Words often sound **short and clipped**. *Yes* can sound like “yis”. Often no “r” at the end. Many people also speak Afrikaans, Zulu or Xhosa – you can hear that in their English."
+    },
+    {
+     "q": "Listen. Where is she from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/jamaica-f.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "Jamaica",
+      "England",
+      "Australia"
+     ],
+     "c": 0,
+     "e": "**“th”** often becomes “t” or “d”: *three* → “tree”, *this* → “dis”. The rhythm is very **musical**. Jamaican Patois influences how people speak English."
+    },
+    {
+     "q": "Listen. Where is he from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/jamaica-m.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "Jamaica",
+      "South Africa",
+      "Hong Kong"
+     ],
+     "c": 0,
+     "e": "**“th”** often becomes “t” or “d”: *three* → “tree”, *this* → “dis”. The rhythm is very **musical**. Jamaican Patois influences how people speak English."
+    },
+    {
+     "q": "Listen. Where is she from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/hongkong-f.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "Hong Kong",
+      "Jamaica",
+      "Australia"
+     ],
+     "c": 0,
+     "e": "Sounds at the **end of words** are often soft or left out: *snack* → “sna”. **“th”** can sound like “f” or “d”: *three* → “free”. Every syllable gets a similar beat, like in Cantonese."
+    },
+    {
+     "q": "Listen. Where is he from?",
+     "hoeren": [
+      {
+       "src": "../audio/accents/hongkong-m.mp3",
+       "label": "Listen"
+      }
+     ],
+     "o": [
+      "Hong Kong",
+      "Australia",
+      "Jamaica"
+     ],
+     "c": 0,
+     "e": "Sounds at the **end of words** are often soft or left out: *snack* → “sna”. **“th”** can sound like “f” or “d”: *three* → “free”. Every syllable gets a similar beat, like in Cantonese."
+    }
+   ]
+  },
+  {
+   "id": "features",
+   "typ": "sortieren",
+   "lernen": "acc",
+   "icon": "🔎",
+   "titel": "Accent Clues",
+   "art": "Sort · features",
+   "anleitung": "Which accent is it typical of? Tap the right box.",
+   "anleitungDe": "Für welchen Akzent ist das typisch? Tippe auf das richtige Kästchen.",
+   "tipp": "Die Merkmale stehen auf den Infokarten.",
+   "koerbe": [
+    {
+     "t": "England",
+     "info": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+    },
+    {
+     "t": "the USA",
+     "info": "🇺🇸"
+    },
+    {
+     "t": "Australia",
+     "info": "🇦🇺"
+    },
+    {
+     "t": "Jamaica",
+     "info": "🇯🇲"
+    }
+   ],
+   "items": [
+    {
+     "t": "car sounds like “cah”",
+     "k": 0
+    },
+    {
+     "t": "a long “ah” in bath",
+     "k": 0
+    },
+    {
+     "t": "water sounds like “wadder”",
+     "k": 1
+    },
+    {
+     "t": "the “r” is pronounced everywhere",
+     "k": 1
+    },
+    {
+     "t": "day sounds a bit like “die”",
+     "k": 2
+    },
+    {
+     "t": "sentences go up at the end",
+     "k": 2
+    },
+    {
+     "t": "this sounds like “dis”",
+     "k": 3
+    },
+    {
+     "t": "very musical rhythm",
+     "k": 3
+    }
+   ]
+  },
+  {
+   "id": "facts",
+   "typ": "swipe",
+   "lernen": "acc",
+   "icon": "✅",
+   "titel": "True or False?",
+   "art": "Swipe · Englishes",
+   "anleitung": "Is it true? Swipe **right for True** and **left for False**.",
+   "anleitungDe": "Stimmt das? Wische nach **rechts für True** und nach **links für False**.",
+   "tipp": "Denk an die Infokarten.",
+   "links": {
+    "t": "False",
+    "icon": "✘"
+   },
+   "rechts": {
+    "t": "True",
+    "icon": "✔"
+   },
+   "karten": [
+    {
+     "t": "Everybody in Australia sounds exactly the same.",
+     "r": "l",
+     "e": "False – accents differ from person to person and from region to region."
+    },
+    {
+     "t": "There is no “wrong” accent of English.",
+     "r": "r",
+     "e": "True – all accents are normal ways of speaking English."
+    },
+    {
+     "t": "In American English the “r” at the end of *car* is pronounced.",
+     "r": "r",
+     "e": "True – in most of the USA the “r” is pronounced everywhere."
+    },
+    {
+     "t": "In southern England people usually say the “r” in *car*.",
+     "r": "l",
+     "e": "False – in southern England *car* sounds like “cah”."
+    },
+    {
+     "t": "In Jamaica *three* can sound like “tree”.",
+     "r": "r",
+     "e": "True – “th” often becomes “t”."
+    },
+    {
+     "t": "English is only spoken in the UK and the USA.",
+     "r": "l",
+     "e": "False – it is spoken all over the world, e.g. in Australia, India, South Africa and Jamaica."
+    },
+    {
+     "t": "In Hong Kong many people speak Cantonese and English.",
+     "r": "r",
+     "e": "True – both are official languages."
+    },
+    {
+     "t": "South Africa has only one official language.",
+     "r": "l",
+     "e": "False – it has **12** official languages."
+    }
+   ]
+  }
+ ]
+});
+</script>
+</body>
+</html>
