@@ -155,6 +155,7 @@ export async function start(o){
   addStore(api.near, 1, false);
   addStore(api.far, world.farCell || api.far.cell || 4, true);
   addStore(api.fine, .5, false);
+  try{ window.__count = { near:api.near.V.size, far:api.far.V.size, fine:api.fine.V.size, drawn:count }; }catch(e){}
 
   // Flächen (Meer, Wolken, Lava)
   for(const s of (world.planes||[])){
@@ -242,7 +243,7 @@ export async function start(o){
       if(glow.length){ const m = new THREE.Mesh(cubesGeo(glow, piv), new THREE.MeshBasicMaterial({vertexColors:true})); pg.add(m); }
       (pt.parent !== undefined ? movers[pt.parent].g : inner).add(pg);
       if(pt.parent !== undefined){ const pp = cr.parts[pt.parent].pivot || [0,0,0]; pg.position.set(piv[0]-pp[0], piv[1]-pp[1], piv[2]-pp[2]); }
-      movers.push({g:pg, rot:pt.rot, gait:!!pt.gait}); }
+      movers.push({g:pg, rot:pt.rot, gait:!!pt.gait, pulse:pt.pulse}); }
     if(cr.at){ outer.position.set(...cr.at); outer.rotation.y = cr.yaw||0; }
     scene.add(outer); creatures.push({cr, outer, movers});
   }
@@ -291,7 +292,7 @@ export async function start(o){
   o.labelHost.addEventListener("click", e=>{ const b=e.target.closest(".wlbl"); if(b) o.onSelect(b.dataset.kat); });
 
   // Kamera
-  const homeFor = () => (cam.aspect < 1 && world.homePortrait) ? world.homePortrait : world.home;
+  const homeFor = () => (o.still && window.__cam) ? window.__cam : (cam.aspect < 1 && world.homePortrait) ? world.homePortrait : world.home;   // __cam: nur für Prüfbilder
   const curPos = new THREE.Vector3(...homeFor().pos), curLook = new THREE.Vector3(...homeFor().look);
   let from=null, to=null, t0=0, dur=1, focus=null, running=false, frames=0;
   const ease = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
@@ -399,7 +400,9 @@ export async function start(o){
           outer.position.set(a[0]+dx*u, a[1]+(b[1]-a[1])*u + Math.sin(u*Math.PI*2*w[1]+(p.wph||0))*w[0], a[2]+dz*u + Math.cos(u*Math.PI*2*w[1]*.7+(p.wph||0))*w[0]*.6);
           outer.rotation.y = Math.atan2(-dz, dx); } }
       else if(cr.at && cr.hover){ outer.position.y = cr.at[1] + Math.sin(tt*(cr.hover[1]||1))*cr.hover[0]; }
-      for(const m of movers){ if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
+      for(const m of movers){
+        if(m.pulse){ const [pa,ps,pp=0] = m.pulse, q = Math.sin(tt*ps+pp); m.g.scale.set(1-pa*.55*q, 1+pa*q, 1-pa*.55*q); }   // Pulsieren (z. B. Quallenschirm)
+        if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
     for(const l of pls) if(l.userData.flicker){ const fs = typeof l.userData.flicker==="number" ? l.userData.flicker : 120, fa = fs>300 ? .35 : .15; l.intensity = l.userData.int*(1-fa+fa*Math.sin(now/fs+l.position.x)); }
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);
