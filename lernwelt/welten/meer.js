@@ -177,3 +177,73 @@ export function shadeDemon(){
     {cubes:wL.list(), pivot:[-1,35,3], parent:0, rot:["x",.2,1.2,0,-.15]}, {cubes:oL.list(), pivot:[-2,44,17], parent:7, rot:["x",.15,1.2,-.5]},
     {cubes:wR.list(), pivot:[-1,35,-3], parent:0, rot:["x",-.2,1.2,0,.15]}, {cubes:oR.list(), pivot:[-2,44,-17], parent:9, rot:["x",-.15,1.2,-.5]} ] };
 }
+
+/* ---------- Magma-Drache (eigener Entwurf): zweibeiniger Drache aus Basaltplatten mit Lavarissen, sehr fein gebaut ---------- */
+export function magmaDrake(){
+  const K=1.5;
+  const B1=0x1C1718, B2=0x2A2224, B3=0x3A2E2C, B4=0x121010, L1=0xFF6A10, L2=0xFFA030, L3=0xFFE08A, HORN=0x0E0B0C, HORN2=0x3A302E, TOOTH=0xF2E8D2, MEM=0x2A1210, MEM2=0x3E1A12;
+  // Panzerplatten: dunkle Basaltschollen, dazwischen glühende Fugen; Bauch heller mit Lavaquerrillen
+  const plate = (x,y,z) => { const X=x/K, Y=y/K, Z=z/K, v=Math.abs(Math.sin(X*.9+Y*.35)+Math.sin(Z*1.1-Y*.4)+.5*Math.sin(X*.4-Z*.7));
+    if(v<.07) return [L3,1]; if(v<.17) return [L1,1]; const k=((Math.round(x*.6)+Math.round(y*.45)*3+Math.round(z*.6)*5)%9+9)%9; return [k===0?B3:k<3?B2:k===4?B4:B1,0]; };
+  const belly = (x,y,z) => { const Y=y/K; return (Math.round(Y*1.4)%3===0) ? [L2,1] : [B3,0]; };
+  const E = (m,cx,cy,cz,rx,ry,rz,f) => { cx*=K; cy*=K; cz*=K; rx*=K; ry*=K; rz*=K; for(let x=Math.floor(cx-rx-1);x<=cx+rx+1;x++) for(let y=Math.floor(cy-ry-1);y<=cy+ry+1;y++) for(let z=Math.floor(cz-rz-1);z<=cz+rz+1;z++)
+      if(((x-cx)/(rx+.35))**2+((y-cy)/(ry+.35))**2+((z-cz)/(rz+.35))**2<=1){ const [c,e]=(typeof f==="function")?f(x,y,z):[f,0]; m.put(x,y,z,c,e); } };
+  const G = (m,a,b,r0,r1,f) => { const n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])*2)||1; for(let i=0;i<=n;i++){ const t=i/n, r=r0+(r1-r0)*t; E(m,a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,r,r,r,f); } };
+  const glow = c => [c,1];
+  const body = M();
+  // Rumpf: aufrecht, leicht nach vorn geneigt; breiter Brustkorb, schmaleres Becken
+  E(body,0,19,0,4.2,3.4,3.6,plate); G(body,[0,20,0],[1.6,26,0],3.8,4.6,plate); E(body,2.2,28.5,0,4.6,4.4,4.8,plate);
+  E(body,4.6,27,0,1.6,4.6,2.6,belly); E(body,3.8,21.5,0,1.4,3,2.3,belly);
+  // Lavakern in der Brust (Spalte zwischen den Platten)
+  for(let y=25;y<=31;y+=.5) for(let z=-1.6;z<=1.6;z+=.5){ const d=Math.abs(z)+Math.abs(y-28)*.45; if(d<1.9) body.put(Math.round(6.1*K),Math.round(y*K),Math.round(z*K), d<.8?L3:L2,1); }
+  // Rückenstacheln in einer Reihe, Schulterdornen
+  for(let i=0;i<8;i++){ const y=18+i*2.1, x=-3.6+i*.55-(i>5?(i-5)*.3:0), h=1.6+Math.sin(i/7*Math.PI)*2.4; G(body,[x,y,0],[x-h*.9,y+h*.6,0],.55,.12,HORN); body.put(Math.round((x-h*.9)*K),Math.round((y+h*.6)*K),0,L1,1); }
+  for(const s of [-1,1]){ E(body,1,31,4.4*s,2.6,2.2,2.2,plate); G(body,[0,32.5,4.6*s],[-1.6,35.5,6.4*s],.6,.15,HORN); G(body,[1.6,32.2,5*s],[1.2,34.6,7*s],.45,.12,HORN2); }
+  // Hals: S-Kurve nach vorn oben, Kehlplatten glühen
+  const neck = [[3,31,0,2.6],[5,34,0,2.2],[6.4,37,0,1.9],[8,39,0,1.7]]; for(let i=1;i<neck.length;i++) G(body,neck[i-1].slice(0,3),neck[i].slice(0,3),neck[i-1][3],neck[i][3],plate);
+  for(let i=0;i<4;i++) E(body,5.4+i*.9,32.5+i*1.9,0,.6,.5,1.2,glow(L2));
+  for(let i=0;i<4;i++){ const p=neck[Math.min(3,i)]; G(body,[p[0]-1.2,p[1]+1,0],[p[0]-2.4,p[1]+2.6,0],.4,.1,HORN); }
+  // Kopf: Drachenschädel mit Schnauze, Unterkiefer (öffnet sich), Zähne, glühende Augen, geschwungene Hörner, Wangendornen
+  const head = M();
+  E(head,10,40.5,0,2.6,2.1,2.2,plate); G(head,[11,40.4,0],[15.6,39.6,0],1.7,1.1,plate); E(head,15.8,39.8,0,1.1,.9,1,plate);
+  for(const s of [-1,1]){ E(head,11.6,41.6,1.5*s,.55,.35,.3,glow(L3)); E(head,11.3,42.1,1.6*s,.8,.25,.45,HORN); head.put(Math.round(16.6*K),Math.round(40.2*K),Math.round(.5*s*K),L2,1);
+    G(head,[9.4,42,1.4*s],[7,44.5,2.6*s],.55,.38,HORN); G(head,[7,44.5,2.6*s],[4.6,45.2,3*s],.38,.2,HORN2); G(head,[4.6,45.2,3*s],[3.6,44.4,3.2*s],.2,.1,HORN2);
+    G(head,[9.6,39,2*s],[8,38,3.2*s],.35,.1,HORN); G(head,[10.6,39.2,2*s],[9.6,37.8,3*s],.3,.1,HORN); }
+  for(let x=11.5;x<=15.5;x+=.8) for(const s of [-1,1]) head.put(Math.round(x*K),Math.round(38.9*K),Math.round(.85*s*K),TOOTH);
+  const jaw = M(); G(jaw,[10.4,39.2,0],[15,38.2,0],1.1,.75,plate); E(jaw,13,38.6,0,1.6,.3,.7,glow(L1));
+  for(let x=11.5;x<=14.5;x+=.8) for(const s of [-1,1]) jaw.put(Math.round(x*K),Math.round(39.2*K),Math.round(.7*s*K),TOOTH);
+  // Arme: kurze, kräftige Vorderarme mit Krallen
+  const arms=[]; for(const s of [-1,1]){ const a=M(); G(a,[3,29,4.4*s],[5.4,25.2,5*s],1.3,1.05,plate); G(a,[5.4,25.2,5*s],[8,23.4,4.4*s],1.05,.85,plate); E(a,5.4,25.2,5*s,1.1,1,1,plate);
+    for(const dz of [-.6,0,.6]){ G(a,[8,23.4,4.4*s+dz],[9.4,22.4,4.4*s+dz*1.4],.32,.12,HORN); a.put(Math.round(9.5*K),Math.round(22.3*K),Math.round((4.4*s+dz*1.4)*K),L2,1); } arms.push([a,[3,29,4.4*s].map(v=>v*K)]); }
+  // Beine: mächtige Oberschenkel, Fersengelenk hinten, Zehen mit Krallen (Vogel-/Drachenbein)
+  const legs=[]; for(const s of [-1,1]){ const l=M(); E(l,.4,17,3.2*s,2.6,3.4,2.2,plate); G(l,[.6,15,3.4*s],[2.6,10,3.8*s],2,1.5,plate); G(l,[2.6,10,3.8*s],[-.6,5,3.8*s],1.4,1.1,plate); G(l,[-.6,5,3.8*s],[.6,1.2,3.8*s],1.1,.9,plate);
+    E(l,2.6,10,3.8*s,1.3,1.3,1.3,glow(L1)); E(l,2.6,10,3.8*s,1.6,1.1,1.2,plate);
+    for(const dz of [-1,0,1]){ G(l,[.6,1,3.8*s+dz*.5],[3.4,.4,3.8*s+dz*1.5],.5,.35,plate); G(l,[3.4,.4,3.8*s+dz*1.5],[4.4,0,3.8*s+dz*1.7],.3,.12,HORN); } G(l,[.4,1,3.8*s],[-1.4,.3,3.8*s],.45,.15,HORN);
+    legs.push([l,[.4,18,3.2*s].map(v=>v*K)]); }
+  // Schwanz in drei Gliedern mit Stachelreihe und glühender Keule
+  const t1=M(), t2=M(), t3=M();
+  G(t1,[-3,18,0],[-8,14,0],2.6,2,plate); G(t2,[-8,14,0],[-14,10.5,0],2,1.4,plate); G(t3,[-14,10.5,0],[-20,9,0],1.4,.7,plate);
+  for(let i=0;i<5;i++){ const m=[t1,t2,t2,t3,t3][i], x=-6-i*3, y=17-i*1.7; G(m,[x,y,0],[x-1.2,y+1.6,0],.4,.1,HORN); }
+  E(t3,-20.5,9,0,1.1,.9,.9,glow(L2)); for(const s of [-1,1]) G(t3,[-20,9,0],[-22.4,9.6,1.4*s],.35,.1,HORN);
+  // Schwingen: Knochenarm mit drei Fingern, Haut mit glühenden Adern, ausgefranster Rand
+  const wings=[]; for(const s of [-1,1]){ const w=M(), o=M();
+    G(w,[-.4,32,3.6*s],[-2,36,9*s],.9,.7,plate); G(w,[-2,36,9*s],[-1,39,15*s],.7,.55,plate); E(w,-2,36,9*s,.9,.9,.9,plate);
+    // innere Haut: vom Körper bis zum Ellbogen
+    for(let u=0;u<=1;u+=.03) for(let v=0;v<=1;v+=.04){ const A=[-.4,32,3.6*s], Bp=[-2,36,9*s], C=[-6,22,4*s], D=[-7,26,9.5*s];
+      const p=[0,1,2].map(i=> (1-u)*(1-v)*A[i]+u*(1-v)*Bp[i]+(1-u)*v*C[i]+u*v*D[i]); const vein = Math.abs(Math.sin(u*9+v*2))<.12;
+      w.put(Math.round(p[0]*K),Math.round(p[1]*K),Math.round(p[2]*K), vein?L1:(((u*20+v*13)|0)%4===0?MEM2:MEM), vein?1:0); }
+    // äußere Schwinge: Finger und Haut
+    const root=[-1,39,15*s], tips=[[-1.6,44,23*s],[-6,37,25*s],[-10,30,21*s],[-9,25,15*s]];
+    G(o,[-2,36,9*s],root,.6,.5,plate); for(const tp of tips.slice(0,3)){ G(o,root,tp,.45,.18,plate); o.put(Math.round(tp[0]*K),Math.round(tp[1]*K),Math.round(tp[2]*K),HORN); }
+    for(let k=0;k<tips.length-1;k++) for(let u=0;u<=1;u+=.03) for(let v=0;v<=1;v+=.03){ if(u+v>1) continue; const a=tips[k], b=tips[k+1];
+      const p=[0,1,2].map(i=> root[i]+(a[i]-root[i])*u+(b[i]-root[i])*v); const edge=u+v>.93, vein=Math.abs(u-v*1.3)<.04||Math.abs(u*.7-v)<.035;
+      if(edge && ((u*40|0)%3===0)) continue; o.put(Math.round(p[0]*K),Math.round(p[1]*K),Math.round(p[2]*K), vein?L2:(edge?L1:(((u*31+v*17)|0)%5===0?MEM2:MEM)), (vein||edge)?1:0); }
+    wings.push([w,[-.4,32,3.6*s].map(v=>v*K),o,[-2,36,9*s].map(v=>v*K),s]); }
+  const parts = [ {cubes:body.list(), pivot:[0,19*K,0]},
+    {cubes:head.list(), pivot:[8*K,39*K,0], parent:0, rot:["z",.06,.9,0]}, {cubes:jaw.list(), pivot:[10.4*K,39.2*K,0], parent:1, rot:["z",.08,1.6,0,-.05]} ];
+  arms.forEach(([a,pv],i)=>parts.push({cubes:a.list(), pivot:pv, parent:0, rot:["z",.12,1.1,i*1.3]}));
+  legs.forEach(([l,pv])=>parts.push({cubes:l.list(), pivot:pv}));
+  parts.push({cubes:t1.list(), pivot:[-3*K,18*K,0], rot:["y",.12,.8,0]}); const ti=parts.length-1; parts.push({cubes:t2.list(), pivot:[-8*K,14*K,0], parent:ti, rot:["y",.18,.8,-.6]}); parts.push({cubes:t3.list(), pivot:[-14*K,10.5*K,0], parent:ti+1, rot:["y",.25,.8,-1.2]});
+  wings.forEach(([w,pv,o,pv2,s])=>{ parts.push({cubes:w.list(), pivot:pv, parent:0, rot:["x",.18*s,.9,0,-.05*s]}); const wi=parts.length-1; parts.push({cubes:o.list(), pivot:pv2, parent:wi, rot:["x",.14*s,.9,-.5]}); });
+  return { parts };
+}
