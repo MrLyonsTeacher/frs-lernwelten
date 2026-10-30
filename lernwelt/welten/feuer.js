@@ -185,6 +185,8 @@ export function build(A){
   const hut = (x0,y,z0,w,d) => { for(let yy=y;yy<y+4;yy++) for(let x=x0;x<x0+w;x++) for(let z=z0;z<z0+d;z++){ if(x!==x0&&x!==x0+w-1&&z!==z0&&z!==z0+d-1) continue; const c=(x===x0||x===x0+w-1)&&(z===z0||z===z0+d-1); set(x,yy,z, c?"beam":(yy===y+2&&(x+z)%3===0?"winS":"wood")); }
     const half=Math.ceil(d/2)+1; for(let k=0;k<half;k++) for(let x=x0-1;x<=x0+w;x++){ set(x,y+4+k,z0-1+k,"slate"); set(x,y+4+k,z0+d-k,"slate"); } set(x0+1,y,z0+d-1,"door"); set(x0+1,y+1,z0+d-1,"door"); };
   hut(-2,12,88,6,5); hut(6,12,94,5,4);
+  // Landefelsen des Drachen mitten im Magma: kantiger Basaltblock mit flacher Kuppe, glühende Risse
+  const PR=[88,76], PTOP=9; for(let y=SEA-2;y<=PTOP;y++){ const t=(y-SEA)/(PTOP-SEA), rr=10-t*2; for(let x=PR[0]-12;x<=PR[0]+12;x++) for(let z=PR[1]-12;z<=PR[1]+12;z++){ const an=Math.atan2(z-PR[1],x-PR[0]), r=rr*(1+.18*Math.sin(an*5+1)); if(Math.hypot(x-PR[0],z-PR[1])<=r) set(x,y,z, y===PTOP ? (rand()<.5?"basalt":"rock2") : (rand()<.06 ? "magma" : (rand()<.4?"rock2":"rock"))); } }
   lantern(9,12,90);
 
   // ---------- Burg vor dem Vulkan (Kulisse) ----------
@@ -249,7 +251,7 @@ export function build(A){
   // ---------- Menschen und Orks ----------
   const cols = [0x8A2A1E,0x2F4A8A,0x5A6A2A,0x6A3A6A,0x9A6A2A];
   const creatures = [
-    { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:14, clear:8}}, scale:.55 }
+    { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:14, clear:8}, perch:{pos:[PR[0]+.5, PTOP+1+7.4, PR[1]+.5], yaw:2.3, period:62, fly:40, land:6, stay:12, takeoff:4, arc:10, off:30}}, scale:.55, fire:{part:1, at:[35,10,0], dir:[1,-.15,0], n:90, rate:80, speed:24, life:.9, size:1.4, light:700} }
   ];
   const walkLine = (a,b,o) => { const cx=(a[0]+b[0])/2, cz=(a[2]+b[2])/2, len=Math.hypot(b[0]-a[0],b[2]-a[2])/2-1.5;
     creatures.push({ ...person(o.p), orbit:{c:[cx,(a[1]+b[1])/2+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), slope:(b[1]-a[1])/(2*len+3), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };

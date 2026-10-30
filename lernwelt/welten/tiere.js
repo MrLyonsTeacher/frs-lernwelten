@@ -75,9 +75,17 @@ export function dragon(){
   bone(outer,[-1,12,30],[-2,12,34],1); outer.line([-2,12,34],[-6,12,46],BONE).line([-2,12,34],[-16,11,40],BONE).line([-2,12,34],[-24,10,30],BONE);
   outer.put(-2,13,34,HORN).put(-3,14,35,HORN).put(-6,13,46,HORN);
   const innerR = inner.mirrorZ(), outerR = outer.mirrorZ();
-  return { parts:[ part(body,[0,0,0]), part(head,[22,12,0],["z",.08,1.1,0]), part(tail1,[-12,0,0],["y",.16,1.1,0]), {...part(tail2,[-28,-3,0],["y",.28,1.1,-.8]), parent:2},
-    part(inner,[4,8,5],["x",.55,2.0,0,-.05]), {...part(outer,[-1,12,30],["x",.35,2.0,-.6]), parent:4},
-    part(innerR,[4,8,-5],["x",-.55,2.0,0,.05]), {...part(outerR,[-1,12,-30],["x",-.35,2.0,-.6]), parent:6} ] };
+  // Bewegung: Flügelschlag wechselt zwischen kräftigem Schlagen und Gleiten; beim Sitzen werden die Flügel angelegt,
+  // der Kopf schaut umher und senkt sich beim Feuerspeien, der Schwanz pendelt langsam
+  const sit = cr => cr && cr._sit || 0, fire = cr => cr && cr._fire || 0;
+  const flap = (tt) => { const env = .5+.5*Math.sin(tt*.31), amp = .18+.55*env; return { amp, ph: tt*(1.6+1.2*env) }; };
+  const wing = (sg) => (g,tt,cr) => { const s0=sit(cr), f=flap(tt), w=Math.sin(f.ph)*f.amp*(1-s0); g.rotation.x = sg*(w - .05) + sg*(-1.15)*s0; g.rotation.y = sg*.55*s0; };
+  const wingO = (sg) => (g,tt,cr) => { const s0=sit(cr), f=flap(tt), w=Math.sin(f.ph-.6)*f.amp*.65*(1-s0); g.rotation.x = sg*w + sg*1.9*s0; };
+  const headF = (g,tt,cr) => { const s0=sit(cr), fi=fire(cr); g.rotation.z = .08*Math.sin(tt*1.1)*(1-s0) + s0*(.12*Math.sin(tt*.5)) - fi*.28; g.rotation.y = s0*(.45*Math.sin(tt*.27))*(1-fi); };
+  const tailF = (amp,sp,ph) => (g,tt,cr) => { const s0=sit(cr); g.rotation.y = amp*Math.sin(tt*sp*(1-.5*s0)+ph)*(1+s0*.6); g.rotation.z = -s0*.12; };
+  return { parts:[ part(body,[0,0,0]), {...part(head,[22,12,0]), fn:headF}, {...part(tail1,[-12,0,0]), fn:tailF(.16,1.1,0)}, {...part(tail2,[-28,-3,0]), parent:2, fn:tailF(.28,1.1,-.8)},
+    {...part(inner,[4,8,5]), fn:wing(1)}, {...part(outer,[-1,12,30]), parent:4, fn:wingO(1)},
+    {...part(innerR,[4,8,-5]), fn:wing(-1)}, {...part(outerR,[-1,12,-30]), parent:6, fn:wingO(-1)} ] };
 }
 
 /* ---------- Adler (Luftwelt) – mit einzelnen Federn (doppelte Auflösung, scale ≈ .5) ---------- */

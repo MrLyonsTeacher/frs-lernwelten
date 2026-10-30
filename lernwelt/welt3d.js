@@ -251,6 +251,10 @@ export async function start(o){
     scene.add(outer); creatures.push({cr, outer, movers});
   }
 
+  // Feuerstrahl (z. B. Drache): additive Funken, die aus einem Punkt am Kopf in Blickrichtung strömen
+  for(const c of creatures){ const fc=c.cr.fire; if(!fc) continue; c.fireP=[];
+    for(let i=0;i<(o.lite?40:fc.n||80);i++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:i%3?0xFF8A2A:0xFFD060, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:0})); sp.visible=false; scene.add(sp); c.fireP.push({sp, age:99, v:new THREE.Vector3()}); }
+    c.fireL = new THREE.PointLight(0xFF7A2A, 0, 40, 2); scene.add(c.fireL); }
   // Sicherheits-Höhenfeld für frei fliegende Tiere: höchster Block in der Umgebung (+ Spannweite), weich geglättet
   const safeFields = new Map();
   function safeField(R){ if(safeFields.has(R)) return safeFields.get(R);
@@ -418,6 +422,20 @@ export async function start(o){
           st.bank += (tBank-st.bank)*k; st.pitch += (tPitch-st.pitch)*k;
           outer.position.set(p0[0], st.y, p0[2]);
           outer.rotation.y = st.yaw; outer.rotation.x = st.bank; outer.rotation.z = st.pitch;
+          cr._sit = 0; cr._fire = 0;
+          // perch: ab und zu landen (z. B. auf einem Felsen), sitzen, dann wieder starten
+          if(ob.perch){ const pc=ob.perch, Pd=pc.period||70, fly=pc.fly||46, L=pc.land||6, S2=pc.stay||12, U=pc.takeoff||5, tc=(((tt+(pc.off||0))%Pd)+Pd)%Pd;
+            if(tc >= fly){ const spd=(ob.speed||.1)*dir, posAt = time => lift(P(time*spd+(ob.ph||0))), B=pc.pos, sm=u=>u*u*(3-2*u);
+              const ang = (a,b,u) => { let d=b-a; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return a+d*u; };
+              let X,Y,Z, yaw, bank=0, pitch=0, sit=0;
+              if(tc < fly+L){ const u=(tc-fly)/L, A=posAt(tt-(tc-fly)), e=sm(u), arc=Math.sin(u*Math.PI)*(pc.arc||8);
+                X=A[0]+(B[0]-A[0])*e; Y=A[1]+(B[1]-A[1])*e + arc*(1-u); Z=A[2]+(B[2]-A[2])*e;
+                const yawTo = Math.atan2(-(B[2]-A[2]), B[0]-A[0]); yaw = ang(yawTo, pc.yaw, sm(Math.max(0,(u-.6)/.4))); pitch = -.25*Math.sin(u*Math.PI)+(u>.75? (u-.75)*1.2:0); sit = sm(Math.max(0,(u-.7)/.3)); }
+              else if(tc < fly+L+S2){ const v=tc-fly-L; X=B[0]; Y=B[1]+Math.sin(v*1.8)*.06; Z=B[2]; yaw=pc.yaw; sit=1;
+                const f=v-1.5; cr._fire = (f>0 && f<S2-3 && (f%5)<2.6) ? Math.min(1,(f%5)/.4)*Math.min(1,(2.6-(f%5))/.4) : 0; }
+              else { const u=(tc-fly-L-S2)/U, C=posAt(tt+(Pd-tc)), e=sm(u); X=B[0]+(C[0]-B[0])*e; Y=B[1]+(C[1]-B[1])*e + Math.sin(u*Math.PI)*(pc.arc||8)*.6; Z=B[2]+(C[2]-B[2])*e;
+                yaw = ang(pc.yaw, Math.atan2(-(C[2]-B[2]), C[0]-B[0]), sm(Math.min(1,u*2.5))); pitch = .35*Math.sin(u*Math.PI); sit = 1-sm(Math.min(1,u/.3)); }
+              outer.position.set(X,Y,Z); outer.rotation.y = yaw; outer.rotation.x = bank; outer.rotation.z = pitch; st.y=Y; st.yaw=yaw; st.bank=bank; st.pitch=pitch; cr._sit = sit; } }
           // in Wolken ganz verschwinden: weich ausblenden, solange die Mitte in einer Wolke steckt
           if(cr.cloudHide){ const g = api.near.get, cxp=Math.round(p0[0]), cyp=Math.round(st.y), czp=Math.round(p0[2]); let n=0;
             for(let a=-2;a<=2;a+=2) for(let b=-2;b<=2;b+=2) for(let c=-2;c<=2;c+=2) if(g(cxp+a,cyp+b,czp+c)===cr.cloudHide) n++;
@@ -444,10 +462,15 @@ export async function start(o){
           outer.rotation.y = Math.atan2(-dz, dx); } }
       else if(cr.at && cr.hover){ outer.position.y = cr.at[1] + Math.sin(tt*(cr.hover[1]||1))*cr.hover[0]; }
       for(const m of movers){
-        if(m.fn){ m.fn(m.g, tt); continue; }
+        if(m.fn){ m.fn(m.g, tt, cr); continue; }
         if(m.pulse){ const [pa,ps,pp=0] = m.pulse, q = Math.sin(tt*ps+pp); m.g.scale.set(1-pa*.55*q, 1+pa*q, 1-pa*.55*q); }   // Pulsieren (z. B. Quallenschirm)
         if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
     for(const l of pls) if(l.userData.flicker){ const fs = typeof l.userData.flicker==="number" ? l.userData.flicker : 120, fa = fs>300 ? .35 : .15; l.intensity = l.userData.int*(1-fa+fa*Math.sin(now/fs+l.position.x)); }
+    for(const c of creatures){ if(!c.fireP) continue; const fc=c.cr.fire, on=c.cr._fire||0, g=c.movers[fc.part].g; const mouth=new THREE.Vector3(...fc.at), fwd=new THREE.Vector3(...(fc.at.map((v,i)=>v+(fc.dir||[1,0,0])[i])));
+      g.localToWorld(mouth); g.localToWorld(fwd); fwd.sub(mouth).normalize();
+      let spawn = on>0 ? on*(fc.rate||90)*dt : 0; c.fireL.position.copy(mouth); c.fireL.intensity = on*(fc.light||600)*(.8+.2*Math.sin(now/60));
+      for(const p of c.fireP){ if(p.age>=1 && spawn>=1){ spawn--; p.age=0; p.sp.position.copy(mouth); p.v.copy(fwd).multiplyScalar((fc.speed||22)*(.8+Math.random()*.4)).add(new THREE.Vector3((Math.random()-.5)*4,(Math.random()-.2)*3,(Math.random()-.5)*4)); p.sp.visible=true; }
+        if(p.age<1){ p.age += dt/(fc.life||.9); p.sp.position.addScaledVector(p.v, dt); p.v.y += dt*6; const sz=(fc.size||1.2)*(1+p.age*4); p.sp.scale.set(sz,sz,1); p.sp.material.opacity = Math.max(0,(1-p.age))*.9; p.sp.material.color.setHex(p.age<.35?0xFFE08A:(p.age<.7?0xFF8A2A:0x8A3A2A)); if(p.age>=1) p.sp.visible=false; } } }
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);
     // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander
