@@ -1,4 +1,5 @@
 // Klasse 7 · Dwarven Caves – Zwergenstadt in einer Riesenhöhle: Terrassen mit Treppen, Tempelfassade, Zwergenstatue, Kristallmine und Schmiede
+import { redDemon } from "./meer.js";
 import { dwarf, bat } from "./tiere.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, tex, P, noise, stripes, bricks, rings, planks } = A;
@@ -404,6 +405,11 @@ export function build(A){
     const o = [(i%3-1)*3 + (i*1.7)%2, ((i*5)%3-1)*2, (Math.floor(i/3)-1)*3];
     creatures.push({ ...bat(), pass:{a:[pa[0]+o[0]-i*.8,pa[1]+o[1],pa[2]+o[2]], b:[pb[0]+o[0]-i*.8,pb[1]+o[1],pb[2]+o[2]], period:P, dur:8.5, ph:ph0+i*.12, wave:[1.6,2+i%3], wph:i}, scale:.3 }); }
   const tun = [0x2F5DA8,0xA83A2A,0x3A8A4A,0x7A4AA8,0x8A6A2A], brd = [0xC86A2A,0xE8E2D8,0x6A4A2A,0xD8B060,0x2A2A2A];
+  // Dämon: landet alle 3 Minuten auf dem First der Königshalle, speit Feuer nach unten und fliegt wieder fort
+  { const hx=W+24, hz=16, top=L2+28; const P=[hx, top, hz+2.5];
+    creatures.push({ ...redDemon(), visit:{period:180, off:120, arrive:7, stay:11, leave:6, fireAt:3, fireDur:5, yaw:-Math.PI/2+.35, pos:P,
+      from:[hx+70, top+60, hz-60], c1:[hx+40, top+40, hz-10], c2:[hx+8, top+14, hz+18], c3:[hx-6, top+12, hz+10], c4:[hx-30, top+40, hz-20], to:[hx-60, top+70, hz-70]},
+      scale:.3, fire:{part:1, at:[10,1,0], dir:[1,-1.1,0], n:140, rate:120, speed:22, life:1.2, size:1.6, light:900} }); }
   creatures.push({ ...dwarf({tunic:0x6A3A2A, beard:0xE8E2D8, hammer:true}), at:[S.country.x-4, L0, S.country.z-1], yaw:0, scale:.5 });
   for(let i=0;i<5;i++) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[i], walk:true}), orbit:{c:[44, L0, 60], r:[9.5+(i%2)*.8, 6+(i%2)*.5], speed:.07+(i%3)*.012, ph:i*1.25, bob:.1, dir:i%2?1:-1}, scale:.42 });
   for(let i=0;i<3;i++) creatures.push({ ...dwarf({tunic:tun[(i+2)%5], beard:brd[(i+1)%5], walk:true}), orbit:{c:[30+i*14, L1, 36], r:[6, 2], speed:.2, ph:i*2, bob:.1, dir:i%2?1:-1}, scale:.42 });
@@ -427,6 +433,7 @@ export function build(A){
     puffs:[{n:8, pos:[S.country.x,L0+31,S.country.z-6], dx:2, dy:14, dz:2, s0:3, s1:8, color:0x4A4040, opacity:.4, speed:.05},
            ...chim.map(c=>({n:3, pos:c, dx:1, dy:7, dz:-1, s0:1, s1:3.5, color:0x4A4440, opacity:.35, speed:.07, spread:.5})),
            ...[9,79].map(fx=>({n:5, pos:[fx+1,L2,11.5], dx:0, dy:12, dz:2, s0:2, s1:6, color:0xFF8A4A, opacity:.18, speed:.08, spread:1.5, add:true}))],
+    zoomAmt:.18, zoomShift:[46,18,-16],
     home:{pos:[W/2,62,D+84], look:[W/2,12,D/2+2]}, homePortrait:{pos:[W/2,74,D+130], look:[W/2,14,D/2]},
     ui:{bg:"rgba(26,20,30,.9)", border:"#C9A6FF", glow:"rgba(184,138,255,.5)", text:"#F4EEFF", sub:"#C8BCD8", accent:"#FFC24A", "accent-ink":"#24180A", chip:"rgba(20,14,24,.82)"}
   };

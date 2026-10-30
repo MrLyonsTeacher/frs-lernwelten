@@ -204,7 +204,7 @@ export async function start(o){
   }
   /* Lichtwirbel (selten): baut sich spiralförmig rund um ein Bauwerk auf, zieht sich über der Spitze zusammen und schießt als Strahl in den Himmel.
      world.vortex = { c:[x,z], y0, top, R, color, period, off, build, squeeze, shoot, fade } */
-  let VX = null, NIGHT = 0, ZOOMV = 0;
+  let VX = null, NIGHT = 0, ZOOMV = 0, EVZ = 0, EVZacc = 0;
   if(world.vortex){ const v=world.vortex, n=o.lite?260:620, pos=new Float32Array(n*3), seed=[];
     for(let i=0;i<n;i++) seed.push([api.rand()*Math.PI*2, api.rand(), .75+api.rand()*.5, api.rand()]);
     const g=new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos,3));
@@ -408,9 +408,9 @@ export async function start(o){
     const sway = (focus || reduce || o.still || dragging || Math.abs(orbitA)>.02) ? 0 : Math.sin(now/5200)*2;
     orbitA += (orbitT-orbitA)*(o.still ? 1 : 1-Math.exp(-dt*10));
     // während des Lichtwirbels (nur in der Übersicht) weiter herausschwenken, danach zurück
-    { const want = (world.vortex && !focus && !to && !(world.vortex.zoom===0)) ? NIGHT : 0; ZOOMV += (want-ZOOMV)*(o.still ? 1 : 1-Math.exp(-dt*.8)); }
-    { const zf = 1 + (world.vortex ? (world.vortex.zoom ?? .55) : 0)*ZOOMV, dx=(curPos.x+sway-curLook.x)*zf, dz=(curPos.z-curLook.z)*zf, c=Math.cos(orbitA), sn=Math.sin(orbitA);
-      cam.position.set(curLook.x + dx*c - dz*sn, curLook.y + (curPos.y-curLook.y)*zf + 14*ZOOMV, curLook.z + dx*sn + dz*c); } cam.lookAt(curLook.x, curLook.y + 22*ZOOMV, curLook.z);
+    { const want = (!focus && !to) ? Math.max((world.vortex && world.vortex.zoom!==0) ? NIGHT : 0, EVZ) : 0; ZOOMV += (want-ZOOMV)*(o.still ? 1 : 1-Math.exp(-dt*.8)); }
+    { const zs = world.zoomShift || [0,22,0], zf = 1 + (world.zoomAmt ?? (world.vortex ? (world.vortex.zoom ?? .55) : .5))*ZOOMV, dx=(curPos.x+sway-curLook.x)*zf, dz=(curPos.z-curLook.z)*zf, c=Math.cos(orbitA), sn=Math.sin(orbitA);
+      cam.position.set(curLook.x + dx*c - dz*sn + zs[0]*ZOOMV, curLook.y + (curPos.y-curLook.y)*zf + 14*ZOOMV, curLook.z + dx*sn + dz*c + zs[2]*ZOOMV); } cam.lookAt(curLook.x + (world.zoomShift?world.zoomShift[0]:0)*ZOOMV, curLook.y + (world.zoomShift?world.zoomShift[1]:22)*ZOOMV, curLook.z + (world.zoomShift?world.zoomShift[2]:0)*ZOOMV);
     for(const [tx,[ax,ay]] of anim) tx.offset.set(now*ax/1000, now*ay/1000);
     for(const pp of parts){ const a=pp.g.attributes.position.array, p=pp.p, [x0,x1,y0,y1,z0,z1]=p.area;
       for(let i=0;i<pp.n;i++){ const k3=i*3;
@@ -471,7 +471,8 @@ export async function start(o){
         g.attributes.position.needsUpdate=true; pts.material.opacity=.95*e; const gs=(v.h||8)*(1.1+.25*Math.sin(tt*5))*e; glow.scale.set(gs*.8,gs,1); glow.material.opacity=.85*e; } }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
     const c_route = cr => { if(cr._route!==undefined) return !!cr._route; const c=creatures.find(q=>q.cr===cr); cr._route = c && c.route ? c.route : null; return !!cr._route; };
-    for(const {cr, outer, movers, safe:sf} of creatures){
+    EVZacc = 0;
+    for(const {cr, outer, movers, safe:sf} of creatures){ if(cr._ev) EVZacc = Math.max(EVZacc, cr._ev);
       let move = 1;
       if(cr.orbit){ const ob=cr.orbit, [cx,cy,cz]=ob.c, [rx,rz]=ob.r;
         // cycle: [Periode, Anteil Laufen, Versatz] – das Tier läuft nur einen Teil der Zeit und steht sonst
@@ -547,6 +548,19 @@ export async function start(o){
         let i=1; while(i<pts.length-1 && P._seg[i]<d) i++; const a0=pts[i-1], a1=pts[i], f=Math.max(0,Math.min(1,(d-P._seg[i-1])/Math.max(.001,P._seg[i]-P._seg[i-1])));
         outer.position.set(a0[0]+(a1[0]-a0[0])*f, a0[1]+(a1[1]-a0[1])*f, a0[2]+(a1[2]-a0[2])*f);
         outer.rotation.y = Math.atan2(-(a1[2]-a0[2])*fwd, (a1[0]-a0[0])*fwd); }
+      else if(cr.visit){ // Besuch (selten): anfliegen, auf einem Platz landen, Feuer speien, wegfliegen – sonst unsichtbar
+        const v=cr.visit, P=v.period||180, T=((tt+(v.off||0))%P+P)%P, A=v.arrive||7, S=v.stay||10, U=v.leave||6, sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
+        const bz=(a,b,c,d,u)=>{ const m=1-u; return [0,1,2].map(i=>m*m*m*a[i]+3*m*m*u*b[i]+3*m*u*u*c[i]+u*u*u*d[i]); };
+        const ang=(a,b,u)=>{ let d=b-a; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return a+d*u; };
+        cr._ev = T<A+S+U ? sm((T+3)/3)*(1-sm((T-(A+S+U-3))/3)) : (T>P-3 ? sm((T-(P-3))/3) : 0); cr._fire=0;
+        if(T>=A+S+U){ outer.visible=false; cr._ph="away"; }
+        else { outer.visible=true; let p, yaw, pitch=0, bank=0;
+          if(T<A){ const u=T/A, e=1-Math.pow(1-u,2.2), q0=bz(v.from,v.c1,v.c2,v.pos,e), q1=bz(v.from,v.c1,v.c2,v.pos,Math.min(1,e+.015)); p=q0;
+            const yt=Math.atan2(-(q1[2]-q0[2]), q1[0]-q0[0]); yaw = ang(yt, v.yaw, sm((u-.75)/.25)); pitch=-.25*(1-u)+(u>.85?(u-.85)*1.4:0); cr._ph="land"; cr._u=u; cr._sit=sm((u-.85)/.15); }
+          else if(T<A+S){ const w=T-A; p=v.pos; yaw=v.yaw; cr._ph="sit"; cr._u=w/S; cr._sit=1; const f=w-(v.fireAt||2.5); cr._fire = (f>0 && f<(v.fireDur||4.5)) ? Math.min(1,f/.4)*Math.min(1,((v.fireDur||4.5)-f)/.4) : 0; }
+          else { const u=(T-A-S)/U, e=u*u, q0=bz(v.pos,v.c3,v.c4,v.to,e), q1=bz(v.pos,v.c3,v.c4,v.to,Math.min(1,e+.015)); p=q0;
+            const yt=Math.atan2(-(q1[2]-q0[2]), q1[0]-q0[0]); yaw = ang(v.yaw, yt, sm(u/.3)); pitch=.3*Math.sin(Math.min(1,u*1.5)*Math.PI); cr._ph="up"; cr._u=u; cr._sit=1-sm(u/.2); }
+          outer.position.set(p[0],p[1],p[2]); outer.rotation.y=yaw; outer.rotation.x=bank; outer.rotation.z=pitch; } }
       else if(cr.pass){ // Vorbeiflug von a nach b, nur während des Flugs sichtbar (z. B. Fledermausschwarm)
         const p=cr.pass, P=p.period||30, x=(tt+(p.ph||0))%P, u=x/p.dur;
         outer.visible = u < 1;
@@ -559,6 +573,7 @@ export async function start(o){
         if(m.pulse){ const [pa,ps,pp=0] = m.pulse, q = Math.sin(tt*ps+pp); m.g.scale.set(1-pa*.55*q, 1+pa*q, 1-pa*.55*q); }   // Pulsieren (z. B. Quallenschirm)
         if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
     for(const l of pls) if(l.userData.flicker){ const fs = typeof l.userData.flicker==="number" ? l.userData.flicker : 120, fa = fs>300 ? .35 : .15; l.intensity = l.userData.int*(1-fa+fa*Math.sin(now/fs+l.position.x)); }
+    EVZ = EVZacc;
     for(const c of creatures){ if(!c.fireP) continue; const fc=c.cr.fire, on=c.cr._fire||0, g=c.movers[fc.part].g; const mouth=new THREE.Vector3(...fc.at), fwd=new THREE.Vector3(...(fc.at.map((v,i)=>v+(fc.dir||[1,0,0])[i])));
       g.localToWorld(mouth); g.localToWorld(fwd); fwd.sub(mouth).normalize();
       let spawn = on>0 ? on*(fc.rate||90)*dt : 0; c.fireL.position.copy(mouth); c.fireL.intensity = on*(fc.light||600)*(.8+.2*Math.sin(now/60));
