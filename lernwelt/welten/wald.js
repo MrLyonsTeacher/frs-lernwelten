@@ -242,7 +242,7 @@ export function build(A){
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:40, creatures,
-    sky:[[0,"#0E2A34"],[.35,"#2A5A5E"],[.7,"#9AB89A"],[1,"#E8D8A0"]], fog:[0x3E625A, 70, 300],
+    sky:[[0,"#0E2A34"],[.35,"#2A5A5E"],[.7,"#9AB89A"],[1,"#E8D8A0"]], fog:[0x4A6E64, 60, 260],
     hemi:[0xCFE8D8, 0x2A3A22, 1.45], sun:{color:0xFFDCA8, int:1.8, pos:[-60,80,50]}, bloom:[.55,.5,.8],
     lights:[{pos:[TX,24,TZ+14], color:0xFFC870, int:300, dist:36},
             {pos:[S.vocabulary.x,15,S.vocabulary.z], color:0x7FF0FF, int:50, dist:16},
@@ -259,6 +259,12 @@ export function build(A){
            {n:18, pos:[-20,8,40], dx:140, dy:2, dz:0, s0:14, s1:14, color:0xDDEEE4, opacity:.25, speed:.014, spread:30, flat:.4},
            {n:22, pos:[-50,FG+3,CZ1+14], dx:200, dy:2, dz:0, s0:20, s1:24, color:0xE4F0EA, opacity:.55, speed:.007, spread:22, flat:.35, sz:1.4},
            {n:16, pos:[-40,FG+9,CZ1+34], dx:190, dy:2, dz:0, s0:26, s1:28, color:0xE8F2EE, opacity:.32, speed:.006, spread:16, flat:.35},
+           {n:26, pos:[-46,6,-6], dx:0, dy:3, dz:80, s0:30, s1:34, color:0xD8EADF, opacity:.55, speed:.006, spread:16, flat:.45, sz:3},
+           {n:26, pos:[W+46,6,-6], dx:0, dy:3, dz:80, s0:30, s1:34, color:0xD8EADF, opacity:.55, speed:.006, spread:16, flat:.45, sz:3},
+           {n:18, pos:[-40,18,10], dx:0, dy:4, dz:60, s0:26, s1:30, color:0xE0EEE6, opacity:.4, speed:.005, spread:12, flat:.5, sz:3},
+           {n:18, pos:[W+40,18,10], dx:0, dy:4, dz:60, s0:26, s1:30, color:0xE0EEE6, opacity:.4, speed:.005, spread:12, flat:.5, sz:3},
+           {n:30, pos:[-40,10,-24], dx:W+80, dy:4, dz:0, s0:34, s1:38, color:0xD4E6DC, opacity:.6, speed:.005, spread:14, flat:.45},
+           {n:24, pos:[-30,26,-40], dx:W+60, dy:4, dz:0, s0:40, s1:44, color:0xDCECE2, opacity:.45, speed:.004, spread:18, flat:.45},
            {n:14, pos:[-30,CB+14,CZ0+9], dx:180, dy:3, dz:0, s0:18, s1:20, color:0xE0EEE8, opacity:.5, speed:.009, spread:6, flat:.4}],
     home:{pos:[W/2,56,D+92], look:[W/2,16,D/2-4]}, homePortrait:{pos:[W/2,72,D+140], look:[W/2,18,D/2-6]},
     ui:{bg:"rgba(14,36,30,.88)", border:"#E8C24A", glow:"rgba(232,194,74,.45)", text:"#F4F0DC", sub:"#B8D0B4", accent:"#E8C24A", "accent-ink":"#1E1A06", chip:"rgba(12,30,24,.8)"}

@@ -30,6 +30,10 @@ export function build(A){
     brass: noise(["#D8A848","#E8BC5A","#C8963A"], 6, ["#FFE08A"]), iron: noise(["#7A7E88","#6A6E78","#8A8E98"]),
     rope: stripes(["#C8A878","#B8986A","#D4B484"], false), woolR: noise(["#D83A3A","#E04848"]), woolB: noise(["#2E5EC8","#3A6AD4"]), woolY: noise(["#F5C542","#FFD95A"]),
     flowerR: noise(["#FF4A6A","#FF6A80"], 6, ["#FFE27A"]), flowerY: noise(["#FFE27A","#FFD24A"], 6, ["#FF9A3A"]), flowerB: noise(["#7AA8FF","#9AC0FF"], 6, ["#FFFFFF"]), flowerP: noise(["#C88AFF","#B070F0"], 6, ["#FFFFFF"]),
+    portal: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const a=Math.atan2(y-7.5,x-7.5), r=Math.hypot(x-7.5,y-7.5), v=Math.sin(a*2+r*.9); P(g,x,y, v>.6 ? "#F2A8FF" : v>.1 ? "#C060F0" : v>-.4 ? "#6A3ADC" : "#2A9AE8"); } }),
+    ancient: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, (y%8===7 || (x+(y>7?4:0))%8===7) ? "#2A3442" : pick(["#4A5666","#52606E","#44505E","#3E4A58"])); }),
+    rune: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, pick(["#4A5666","#52606E","#44505E"])); for(const [a,b] of [[4,3],[5,4],[6,5],[7,6],[8,6],[9,5],[10,4],[7,7],[7,8],[7,9],[7,10],[6,11],[8,11],[4,12],[10,12]]) P(g,a,b,"#7FF0FF"); }),
+    mist: noise(["#FFFFFF","#F0FAFF","#E6F6FF"]),
     path: noise(["#E8E0CC","#DCD2BA","#F0E8D6"], 8, ["#C8BEA6"]),
     snowP: noise(["#F4F8FF","#E6EEF8","#FFFFFF"], 6, ["#C8D4E4"]), crystal: noise(["#BFF8FF","#8AEAFF","#E6FFFF"], 6, ["#FFFFFF"]), lamp: noise(["#FFE6A8","#FFD27A","#FFF2CC"])
   };
@@ -43,7 +47,7 @@ export function build(A){
     hull:{side:T.hull}, canvas:{side:T.canvas}, canvasR:{side:T.canvasR}, brass:{side:T.brass, em:.15}, iron:{side:T.iron}, rope:{side:T.rope},
     woolR:{side:T.woolR}, woolB:{side:T.woolB}, woolY:{side:T.woolY},
     flowerR:{side:T.flowerR}, flowerY:{side:T.flowerY}, flowerB:{side:T.flowerB}, flowerP:{side:T.flowerP}, path:{side:T.path},
-    crystal:{side:T.crystal, em:1.0}, snowP:{side:T.snowP}, lamp:{side:T.lamp, em:1.1, scale:.6, halo:[0xFFE6A8,3.4,.75]}
+    crystal:{side:T.crystal, em:1.0}, portal:{side:T.portal, em:.5, alpha:.8, anim:[.12,.07]}, ancient:{side:T.ancient}, rune:{side:T.rune, em:.6}, mist:{side:T.mist, alpha:.45, em:.4, soft:true}, snowP:{side:T.snowP}, lamp:{side:T.lamp, em:1.1, scale:.6, halo:[0xFFE6A8,3.4,.75]}
   };
   const W=92, D=70;
 
@@ -83,7 +87,7 @@ export function build(A){
       cone(tx,y0+h+1,tz,r+.7,roofH,(a,b,c)=> (b-y0-h)%4===0 ? "roofT" : "roof");
       for(let i=0;i<8;i++){ const an=i/8*Math.PI*2; fs(tx+.5+Math.cos(an)*(r+.8),y0+h+1.5,tz+.5+Math.sin(an)*(r+.8),"gold"); }
       const ty=y0+h+roofH+1; fs(tx+.5,ty,tz+.5,"gold"); fs(tx+.5,ty+.5,tz+.5,"gold");
-      if(flag){ for(let k=0;k<6;k++) fs(tx+.5,ty+1+k*.5,tz+.5,"iron"); for(let a=0;a<4;a++) for(let b=0;b<2.5;b+=.5) fs(tx+1+a*.5,ty+3.5-b-(a%2)*.5*0,tz+.5, b<1?flag:"woolY"); } };
+      if(false && flag){ for(let k=0;k<6;k++) fs(tx+.5,ty+1+k*.5,tz+.5,"iron"); for(let a=0;a<4;a++) for(let b=0;b<2.5;b+=.5) fs(tx+1+a*.5,ty+3.5-b-(a%2)*.5*0,tz+.5, b<1?flag:"woolY"); } };
     // Gebäude mit Satteldach und Gauben
     const hall = (x0,z0,x1,z1,y0,h,ridgeX=true) => {
       fill(x0,y0,z0,x1,y0+h,z1,(a,b,c)=> (b-y0)%6===0 ? "trim" : "stone");
@@ -181,9 +185,18 @@ export function build(A){
       fill(ax-6,ay+1,az+4*s,ax-6,ay+3,az+4*s,"iron"); for(const [p,q] of [[0,1],[0,-1],[1,0],[-1,0]]) fs(ax-6.5+p*1.5,ay+2.5+q*1.5,az+4*s+(s>0?.75:.25),"brass"); }  // Propeller
     S.country.top=[x+4,y+22,z+2]; S.country.base=y+8; S.country.cam={pos:[x-22,y+32,z+70], look:[x+32,y+8,z+2]}; }
 
-  // ---------- Wasserfälle von den Inselrändern (fein, mit Gischt) ----------
-  for(const [wx,wz,yt,w] of [[30,30,24,2],[62,36,24,2],[5,50,18,1],[88,56,16,1]]){ const t=topAt(wx,wz,yt+3); if(t<0) continue;
-    for(let y=t;y>2;y--) fill(wx,y,wz,wx+w-1,y,wz,"water"); set(wx,t+1,wz,"pool"); }
+  // ---------- Wasserfälle: Quelle auf der Insel, Bach zum Rand, Fall an der Felswand entlang, unten Gischt ----------
+  const MIST = [];
+  const fall = (cx,cz,yt,an,w,len) => { const dx=Math.cos(an), dz=Math.sin(an); let px=cx+.5, pz=cz+.5, d=0;
+    // vom Inneren nach außen bis zur Kante: Bachbett aus Wasser in der Grasfläche
+    let ex=Math.round(px), ez=Math.round(pz);
+    for(d=0; d<60; d+=.5){ const x=Math.round(cx+.5+dx*d), z=Math.round(cz+.5+dz*d), t=topAt(x,z,yt+3); if(t<yt-3) break; ex=x; ez=z; if(d>3 && get(x,t,z)==="grass"){ for(let k=-Math.floor(w/2);k<=Math.floor(w/2);k++){ const X=Math.round(x-dz*k), Z=Math.round(z+dx*k); if(get(X,t,Z)==="grass"){ set(X,t,Z,"pool"); set(X,t+1,Z,null); } } } }
+    const top = topAt(ex,ez,yt+3); if(top<0) return;
+    // Fall: dicht an der Wand, wird nach unten breiter und löst sich auf
+    for(let k=0;k<len*2;k++){ const y=top-k*.5, f=k/(len*2), ww=w*.5+f*2.2, off=1+f*1.6;
+      for(let j=-ww;j<=ww;j+=.5){ if(f>.65 && rand()<(f-.65)*2.4) continue; const x=ex+.5+dx*off-dz*j, z=ez+.5+dz*off+dx*j; if(get(Math.floor(x),Math.floor(y),Math.floor(z))) continue; fs(x,y,z, f>.8 && rand()<.5 ? "mist" : "water"); } }
+    MIST.push([ex+dx*2, top-len*.9, ez+dz*2, w]); };
+  for(const [isl,ans] of [["grammar",[2.3,.85,1.6]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
   // Bogenbrücken aus Stein zwischen den Inseln
   const bridge = (x0,z0,x1,z1,y0,y1) => { const n=Math.ceil(Math.hypot(x1-x0,z1-z0)), nx=-(z1-z0)/n, nz=(x1-x0)/n;
     for(let i=0;i<=n;i++){ const f=i/n, x=x0+(x1-x0)*f, z=z0+(z1-z0)*f, y=Math.round(y0+(y1-y0)*f + Math.sin(f*Math.PI)*1.5);
@@ -194,12 +207,29 @@ export function build(A){
   // kleine Inseln nahe am Bild
   for(const [cx,cz,r,y,d] of [[34,62,4,10,"tree"],[60,64,5,8,"tree"],[90,34,3,26,"rock"],[2,30,3,22,"tree"],[26,8,4,36,"tree"],[68,6,4,38,"rock"]]){ island(cx,cz,r,y,{deep:1.1});
     const t=topAt(cx,cz,y+4); if(d==="tree") tree(cx,t+1,cz,4,2.2, rand()<.5?"blossom":"leaves"); else for(let k=1;k<=3;k++) set(cx,t+k,cz,"crystal"); }
+  for(const [cx,cz,y] of [[34,62,10],[60,64,8],[2,30,22],[26,8,36]]) fall(cx,cz,y,Math.PI/2,1,14);
+  // ---------- Portal-Insel: uralter Torbogen mit wirbelndem Portal, Steintreppe, Felsbrocken, Palmen ----------
+  { const cx=114, cz=6, y=38, r=9; island(cx,cz,r,y,{deep:1.5}); level(cx,cz,r-2,y);
+    const px=cx, pz=cz-1, H=15, half=4;
+    for(const sg of [-1,1]){ const x=px+sg*half; fill(x-1,y+1,pz-1,x+1,y+2,pz+1,"ancient"); fill(x,y+3,pz,x,y+H,pz,(a,b)=> (b-y)%4===0 ? "rune" : "ancient"); for(const dz of [-1,1]) fill(x,y+3,pz+dz,x,y+H-2,pz+dz,(a,b)=> (b-y)%3===1 ? "rune" : "ancient"); set(x+sg,y+H-3,pz,"ancient"); }
+    for(let i=0;i<=24;i++){ const th=i/24*Math.PI, ax=px+.5+Math.cos(th)*(half+.6), ay=y+H+Math.sin(th)*4; for(let dz=-1;dz<=1;dz+=.5) fs(ax,ay,pz+.5+dz, i%4===0 ? "rune" : "ancient"); fs(px+.5+Math.cos(th)*(half+1.3), y+H+Math.sin(th)*4.7, pz+.5, "ancient"); }
+    fs(px+.5,y+H+5,pz+.5,"crystal"); fs(px+.5,y+H+5.5,pz+.5,"crystal");
+    // Portalfläche (wirbelt durch bewegte Textur)
+    for(let x=-half+.5;x<=half-.5;x+=.5) for(let yy=y+1;yy<=y+H+4;yy+=.5){ const dx=x, dy=yy-(y+H); if(yy>y+H && dx*dx+(dy*dy)*(half*half/16) > (half-.4)*(half-.4)) continue; fs(px+.5+x, yy, pz+.5, "portal"); }
+    // Treppe an der Inselkante hinunter, Felsbrocken, Palmen
+    for(let k=0;k<9;k++){ const sx=cx+r-2+k, sy=y-k; fill(sx,sy,cz+3,sx,sy,cz+5,"ancient"); for(let yy=sy-1;yy>sy-4;yy--) for(let zz=cz+3;zz<=cz+5;zz++) if(!get(sx,yy,zz)) set(sx,yy,zz,"rock"); }
+    const palm = (x,z,h,lean) => { const t=topAt(x,z,y+3)+1; let ox=x+.5, oz=z+.5; for(let k=0;k<h*2;k++){ fs(ox,t+k*.5,oz,"log"); ox+=lean*.12; }
+      const tx=ox, ty=t+h; for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; for(let k=1;k<=7;k++){ const rr=k*.5; fs(tx+Math.cos(a)*rr, ty+Math.sin(k/7*Math.PI)*1.2-k*.2, oz+Math.sin(a)*rr, "leaves"); } } };
+    palm(cx+5,cz-4,8,1); palm(cx+6,cz+2,6,-1); palm(cx-6,cz+3,7,.6);
+    for(const [ox,oy,oz,rr] of [[-14,8,-4,1.6],[14,-2,-8,2],[-10,-6,8,1.2],[12,12,6,1.1]]) ellip(cx+ox,y+oy,cz+oz,rr,rr*.8,rr,(a,b,c)=> b>y+oy+rr*.4 ? "grass" : "rock");
+    S.portal=[px,y+8,pz]; }
+
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
   const farIsle = (cx,cz,r,y,deco) => { island(cx,cz,r,y,{deep:1.3, bare:true}); const t=topAt(cx,cz,y+4)+1;
     if(deco==="tree"){ tree(cx-1,t,cz,5,3,"leaves"); tree(cx+r*.5,t,cz+1,4,2.4,"blossom"); }
     if(deco==="tower"){ cyl(cx,t,cz,2,12,(a,b,c)=>(b-t)%5===0?"trim":"stone"); cone(cx,t+12,cz,2.8,8,"roof"); set(cx+2,t+6,cz,"win"); tree(cx+r*.55,t,cz-1,3,2,"leaves"); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
-    const wx=Math.round(cx+r*.7), wz=Math.round(cz); const tt=topAt(wx,wz,y+3); if(tt>0 && deco!=="ruin") for(let k=tt;k>tt-26 && k>2;k--) set(wx,k,wz,"water"); };
+    if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
   for(const [cx,cz,r,y,d] of [[-22,-12,8,32,"tree"],[118,-8,9,36,"tower"],[96,-46,10,48,"tree"],[-6,-50,7,42,"ruin"],[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[150,-40,8,44,"tree"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
   // ---------- Gipfel über dem Wolkenmeer (weit weg, grob) ----------
@@ -217,11 +247,12 @@ export function build(A){
     W, D, blocks, spots:S, exposure:1.1, fov:40,
     sky:[[0,"#1E62D0"],[.45,"#6AB0FA"],[.72,"#FFD2B4"],[1,"#F4E8E0"]], fog:[0xC8DCF4, 170, 560],
     hemi:[0xDDEBFF, 0x8A9AB0, 1.7], sun:{color:0xFFF4E0, int:2.1, pos:[60,120,90]}, bloom:[.3,.5,.9],
-    lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}],
+    lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[114,46,9], color:0xC88AFF, int:260, dist:30, flicker:1400}],
     planes:[{y:-30, size:1400, color:0xB8CCE6, em:0}],
     // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
     puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
-           {n:14, pos:[10,6,D/2], dx:W-20, dy:2, dz:0, s0:14, s1:18, color:0xFFFFFF, opacity:.35, speed:.01, spread:20, flat:.4}],
+           {n:14, pos:[10,6,D/2], dx:W-20, dy:2, dz:0, s0:14, s1:18, color:0xFFFFFF, opacity:.35, speed:.01, spread:20, flat:.4},
+           ...MIST.map(([x,y,z,w])=>({n:5, pos:[x,y,z], dx:0, dy:4, dz:0, s0:3+w, s1:8+w*2, color:0xFFFFFF, opacity:.5, speed:.05, spread:2+w}))],
     clouds:[
       // Wolkenmeer weit unten
       ...[[-160,-14,-120],[-40,-16,-140],[90,-14,-150],[220,-16,-120],[-180,-15,0],[260,-14,10],[-120,-12,110],[200,-12,120],[46,-18,150],[-30,-14,-30],[130,-15,-40]].map(p=>({pos:p, r:46, n:28, sx:1.8, sy:.35, sz:1.4, flat:true, lo:0xC8D6EA, opacity:.95})),
@@ -229,12 +260,13 @@ export function build(A){
       ...[[20,-2,30],[70,-3,26],[46,-4,64],[-6,-6,10],[100,-5,0]].map(p=>({pos:p, r:20, n:16, sx:1.6, sy:.35, sz:1.2, flat:true, lo:0xDCE6F4, opacity:.6})),
       // Haufenwolken mit Detail (in die der Adler hineinfliegen kann)
       {pos:[-18,44,-8], r:13, n:46, sx:1.5, sy:.8, sz:1.1, drift:.6},
-      {pos:[112,50,8], r:14, n:50, sx:1.6, sy:.85, sz:1.1, drift:.5},
+      {pos:[150,54,-30], r:14, n:50, sx:1.6, sy:.85, sz:1.1, drift:.5},
       {pos:[30,58,-46], r:11, n:38, sx:1.5, sy:.75, sz:1, drift:.4},
       {pos:[150,30,-80], r:20, n:44, sx:1.7, sy:.8, sz:1.2},
       {pos:[-90,36,-70], r:18, n:40, sx:1.6, sy:.8, sz:1.2}
     ],
-    particles:[{n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
+    particles:[{n:160, area:[106,122,38,58,0,12], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
+               {n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
     home:{pos:[W/2,64,D+96], look:[W/2,28,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},
     ui:{bg:"rgba(255,255,255,.9)", border:"#6AA8FF", glow:"rgba(106,168,255,.45)", text:"#16305A", sub:"#4A6A98", accent:"#FFC24A", "accent-ink":"#2A1E06", chip:"rgba(255,255,255,.85)"}
