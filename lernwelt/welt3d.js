@@ -289,12 +289,18 @@ export async function start(o){
   for(const c of creatures){ const fc=c.cr.fire; if(!fc) continue; c.fireP=[];
     for(let i=0;i<(o.lite?40:fc.n||80);i++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:i%3?0xFF8A2A:0xFFD060, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:0})); sp.visible=false; scene.add(sp); c.fireP.push({sp, age:99, v:new THREE.Vector3()}); }
     c.fireL = new THREE.PointLight(0xFF7A2A, 0, 40, 2); scene.add(c.fireL); }
-  // Blitze (z. B. aus dem Dreizack): zackige Lichtbahnen nach oben, flackern neu, mit Lichtblitz
-  for(const c of creatures){ const bc=c.cr.bolts; if(!bc) continue; c.boltL=[];
-    for(let i=0;i<(bc.n||4)*2;i++){ const g=new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(16*3),3));
-      const l=new THREE.Line(g, new THREE.LineBasicMaterial({color:i%2?0xFFF4B0:(bc.color||0xFFE45A), transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, fog:false})); l.frustumCulled=false; scene.add(l); c.boltL.push(l); }
-    c.boltG=[]; for(let i=0;i<40;i++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:bc.color||0xFFE45A, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); scene.add(sp); c.boltG.push(sp); }
-    c.boltLight = new THREE.PointLight(bc.color||0xFFE45A, 0, 60, 2); scene.add(c.boltLight); c.boltT=0; if(o.still) window.__bolt=c; }
+  // Blitze mit Aufladen (z. B. goldener Dreizack): bolts = { part, prongs:[[x,y,z],…] (lokal), shaft:[[x,y,z],[x,y,z]], timing:tt=>{charge,fire,after}, color }
+  for(const c of creatures){ const bc=c.cr.bolts; if(!bc) continue; const col=bc.color||0xFFE45A;
+    const mkLine = () => { const g=new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(24*3),3)); g.setDrawRange(0,0);
+      const l=new THREE.Line(g, new THREE.LineBasicMaterial({color:0xFFF8D0, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, fog:false})); l.frustumCulled=false; scene.add(l); return l; };
+    c.bLines = Array.from({length:110}, mkLine);
+    const spr = (n,sz,color) => Array.from({length:n},()=>{ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); sp.scale.set(sz,sz,1); scene.add(sp); return sp; });
+    c.bDots = spr(260, 1.1, 0xFFD028);          // Glühpunkte entlang der Blitze
+    c.bCharge = spr(160, .9, 0xFFC830);    // Funken, die zum Dreizack strömen
+    c.bTips = spr(bc.prongs.length, 4, 0xFFE070); c.bHalo = spr(1, 14, 0xFFC830)[0]; c.bFlash = spr(1, 30, 0xFFD040)[0];
+    c.bSeed = Array.from({length:160},()=>[Math.random()*Math.PI*2, Math.random(), Math.random()*2+1, Math.random()]);
+    c.bLight = new THREE.PointLight(col, 0, 70, 2); scene.add(c.bLight); c.bT=0;
+    c.bGlowMats = []; c.movers[bc.part].g.traverse(m=>{ if(m.isMesh && m.material && m.material.isMeshBasicMaterial) c.bGlowMats.push(m.material); }); }
   // Sicherheits-Höhenfeld für frei fliegende Tiere: höchster Block in der Umgebung (+ Spannweite), weich geglättet
   const safeFields = new Map();
   function safeField(R){ if(safeFields.has(R)) return safeFields.get(R);
@@ -558,16 +564,34 @@ export async function start(o){
       let spawn = on>0 ? on*(fc.rate||90)*dt : 0; c.fireL.position.copy(mouth); c.fireL.intensity = on*(fc.light||600)*(.8+.2*Math.sin(now/60));
       for(const p of c.fireP){ if(p.age>=1 && spawn>=1){ spawn--; p.age=0; p.sp.position.copy(mouth); p.v.copy(fwd).multiplyScalar((fc.speed||22)*(.8+Math.random()*.4)).add(new THREE.Vector3((Math.random()-.5)*4,(Math.random()-.2)*3,(Math.random()-.5)*4)); p.sp.visible=true; }
         if(p.age<1){ p.age += dt/(fc.life||.9); p.sp.position.addScaledVector(p.v, dt); p.v.y += dt*6; const sz=(fc.size||1.2)*(1+p.age*4); p.sp.scale.set(sz,sz,1); p.sp.material.opacity = Math.max(0,(1-p.age))*.9; p.sp.material.color.setHex(p.age<.35?0xFFE08A:(p.age<.7?0xFF8A2A:0x8A3A2A)); if(p.age>=1) p.sp.visible=false; } } }
-    for(const c of creatures){ if(!c.boltL) continue; const bc=c.cr.bolts, on=bc.active(tt), tip=new THREE.Vector3(...bc.at); c.movers[bc.part].g.localToWorld(tip);
-      c.boltLight.position.copy(tip); c.boltLight.intensity = on ? (bc.light||2000)*(.5+.5*Math.random()) : 0;
-      c.boltT -= Math.max(0,dt); const regen = on && (c.boltT<=0 || !c.boltDone); if(regen) c.boltDone=true; if(regen) c.boltT = .06+Math.random()*.06;
-      const n=bc.n||4; for(let b=0;b<n;b++){ const l1=c.boltL[b*2], l2=c.boltL[b*2+1];
-        if(regen){ const a=l1.geometry.attributes.position.array, ang=Math.random()*Math.PI*2, spread=.15+Math.random()*.35, len=(bc.len||40)*(.6+Math.random()*.5); let x=tip.x, y=tip.y, z=tip.z;
-          for(let k=0;k<16;k++){ a[k*3]=x; a[k*3+1]=y; a[k*3+2]=z; const st=len/15; y+=st; x+=Math.cos(ang)*st*spread+(Math.random()-.5)*st*.9; z+=Math.sin(ang)*st*spread+(Math.random()-.5)*st*.9; }
-          l1.geometry.attributes.position.needsUpdate=true; l2.geometry.attributes.position.array.set(a); for(let k=1;k<16;k++){ l2.geometry.attributes.position.array[k*3]+=.25; } l2.geometry.attributes.position.needsUpdate=true; }
-        l1.material.opacity = on ? .95 : 0; l2.material.opacity = on ? .7 : 0; }
-      c.boltG.forEach((sp,i)=>{ const a=c.boltL[(i%n)*2].geometry.attributes.position.array, k=(1+Math.floor(i/n)*2)%16*3; sp.position.set(a[k],a[k+1],a[k+2]); const sz=i===0?9:1.3; sp.scale.set(sz,sz,1); sp.material.opacity = on ? (i===0?.9:.8) : 0; });
-      if(on) c.boltG[0].position.copy(tip); }
+    for(const c of creatures){ if(!c.bLines) continue; const bc=c.cr.bolts, g=c.movers[bc.part].g, tm=bc.timing(tt), ch=tm.charge||0, fi=!!tm.fire, af=tm.after||0;
+      const W = v => { const p=new THREE.Vector3(...v); g.localToWorld(p); return p; };
+      const tips = bc.prongs.map(W), s0=W(bc.shaft[0]), s1=W(bc.shaft[1]), mid=tips.reduce((a,b)=>a.add(b.clone()),new THREE.Vector3()).multiplyScalar(1/tips.length);
+      // Dreizack glüht auf
+      const glow = 1 + ch*1.8*(1+.25*Math.sin(tt*(10+ch*30))) + (fi ? 2.2 : 0) + af*1.5; for(const m of c.bGlowMats) m.color.setScalar(glow);
+      // Aufladen: Funken spiralen von außen zum Dreizack, wandern am Schaft hoch
+      c.bCharge.forEach((sp,i)=>{ const [a0,r0,sp0,h]=c.bSeed[i]; if(ch<=0 || fi){ sp.material.opacity=0; return; }
+        if(i<110){ const u=((tt*sp0*.35 + r0)%1), r=(1-u)*(9+r0*6)*(1-ch*.35), ang=a0 + u*6 + tt*1.5, y=mid.y - 3 + (1-u)*(h*8-4);
+          sp.position.set(mid.x+Math.cos(ang)*r, y, mid.z+Math.sin(ang)*r); sp.material.opacity = ch*(.25+.75*u); const z=.5+u*.9; sp.scale.set(z,z,1); }
+        else { const u=((tt*(1.2+sp0*.5)+r0)%1); sp.position.lerpVectors(s0, s1, u).add(new THREE.Vector3((Math.random()-.5)*.6,0,(Math.random()-.5)*.6)); sp.material.opacity = ch*(.4+.6*Math.random()); sp.scale.set(.7,.7,1); } });
+      // Spitzen und Hof
+      c.bTips.forEach((sp,i)=>{ sp.position.copy(tips[i]); const z=(1.2+ch*2.6+(fi?2.4:0)+af*2)*(.85+.3*Math.random()); sp.scale.set(z,z,1); sp.material.opacity = Math.min(1, ch*1.2 + (fi?1:0) + af); });
+      c.bHalo.position.copy(mid); const hz=(4+ch*7+(fi?7:0))*(1+.08*Math.sin(tt*20)); c.bHalo.scale.set(hz,hz,1); c.bHalo.material.opacity = Math.min(.75, ch*.5 + (fi?.5:0) + af*.4);
+      c.bLight.position.copy(mid); c.bLight.intensity = (bc.light||2400)*(ch*.3 + (fi ? .45+.4*Math.random() : 0) + af*.3);
+      // Blitze: Hauptstränge aus jeder Spitze mit Verästelungen, flackern alle 50–90 ms neu
+      c.bT -= Math.max(0,dt); const regen = fi && (c.bT<=0 || !c.bDone); if(regen){ c.bT=.05+Math.random()*.04; c.bDone=true; }
+      if(!fi){ c.bDone=false; for(const l of c.bLines){ l.material.opacity = Math.max(0, l.material.opacity - dt*4); } c.bDots.forEach(d=>d.material.opacity=Math.max(0,d.material.opacity-dt*4)); c.bFlash.material.opacity=0; }
+      else { c.bFlash.position.copy(mid).add(new THREE.Vector3(0,20,0)); c.bFlash.material.opacity = regen ? .12+Math.random()*.15 : c.bFlash.material.opacity*.8; }
+      if(regen){ let li=0, di=0; const path = (from, dir, len, segs, jag) => { const pts=[from.clone()]; let p=from.clone(); for(let k=0;k<segs;k++){ const st=len/segs; p=p.clone().addScaledVector(dir, st).add(new THREE.Vector3((Math.random()-.5)*st*jag, (Math.random()-.3)*st*jag*.4, (Math.random()-.5)*st*jag)); pts.push(p); } return pts; };
+        const draw = (pts, op) => { const offs = op>.8 ? [[0,0],[.14,0],[-.14,0],[0,.14],[0,-.14]] : [[0,0],[.12,.08]]; offs.forEach(([ox,oz],oi)=>{ if(li>=c.bLines.length) return; const l=c.bLines[li++], a=l.geometry.attributes.position.array; pts.forEach((q,k)=>{ a[k*3]=q.x+ox; a[k*3+1]=q.y; a[k*3+2]=q.z+oz; }); l.geometry.setDrawRange(0,pts.length); l.geometry.attributes.position.needsUpdate=true; l.material.opacity = op*(oi?.85:1); l.material.color.setHex(oi?0xFFB000:0xFFE24A); });
+          for(let k=1;k<pts.length && di<c.bDots.length;k+=1){ const d=c.bDots[di++]; d.position.copy(pts[k]); const z=.5+op*.9; d.scale.set(z,z,1); d.material.opacity=.7*op; } };
+        tips.forEach((tp,ti)=>{ const spread = (ti-(tips.length-1)/2)*.35, dir = new THREE.Vector3(spread+(Math.random()-.5)*.3, 1, (Math.random()-.5)*.3).normalize();
+          const main = path(tp, dir, (bc.len||46)*(.75+Math.random()*.4), 20, .9); draw(main, 1);
+          for(let b=0;b<3;b++){ const k=4+Math.floor(Math.random()*12), bd=new THREE.Vector3((Math.random()-.5)*2, .4+Math.random()*.6, (Math.random()-.5)*2).normalize(); draw(path(main[k], bd, 6+Math.random()*12, 8, 1.1), .55);
+            if(Math.random()<.5){ const br=path(main[k], bd, 8, 6, 1.2); draw(path(br[3], new THREE.Vector3((Math.random()-.5)*2,.3,(Math.random()-.5)*2).normalize(), 5, 5, 1.2), .35); } } });
+        // Bögen zwischen den Zinken
+        for(let i=0;i+1<tips.length;i++) draw(path(tips[i], tips[i+1].clone().sub(tips[i]).normalize(), tips[i].distanceTo(tips[i+1]), 6, 1.4), .7);
+        for(;li<c.bLines.length;li++) c.bLines[li].material.opacity=0; for(;di<c.bDots.length;di++) c.bDots[di].material.opacity=0; } }
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);
     // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander

@@ -243,6 +243,7 @@ export function build(A){
     for(const s of [-1,1]){ Sg([tx+1.9*s,30.2,tz],[tx+1.9*s,34,tz],.34,.14,"goldG"); Sg([tx+1.9*s,33.4,tz],[tx+1.3*s,32.6,tz],.2,.12,"goldG"); }
     Sg([tx,34.6,tz],[tx-.6,33.8,tz],.2,.12,"goldG"); Sg([tx,34.6,tz],[tx+.6,33.8,tz],.2,.12,"goldG");
     FN.set = FSET; ARMP.shoulder = L(3.2,17.7,0).map(v=>v*2); ARMP.tip = L(tx,35.4,tz).map(v=>v*2);
+    ARMP.prongs = [L(tx-1.9,34.2,tz), L(tx,35.6,tz), L(tx+1.9,34.2,tz)].map(p=>p.map(v=>v*2)); ARMP.shaft = [L(tx,8,tz), L(tx,30,tz)].map(p=>p.map(v=>v*2));
     // Bewuchs am Sockel
     for(let i=0;i<14;i++){ const a=rand()*Math.PI*2, r=5.5+rand()*2.2, px=Math.round(sx+Math.cos(a)*r), pz=Math.round(sz+Math.sin(a)*r), t=topAt(px,pz,G+6)+1; [()=>anemone(px,t,pz,pick(CC)), ()=>seagrass(px,t,pz), ()=>fan(px,t,pz,pick(CC),2), ()=>glowPlant(px,t,pz)][i%4](); }
     coralTree(sx-6,G+1,sz-4,"coralR",11); coralTree(sx+6,G+1,sz-3,"coralB",9); }
@@ -382,11 +383,12 @@ export function build(A){
   const creatures = [];
   { const COL = {statue:0xF6F2EA, goldG:0xF5C542}, sh = ARMP.shoulder, sm = u=>u<=0?0:u>=1?1:u*u*(3-2*u), P = 180, OFF = 95;
     const phase = tt => { const t=((tt+OFF)%P+P)%P; return t; };
-    const lift = tt => { const t=phase(tt); return t<1 ? sm(t/1)*.9 : t<1.25 ? .9+.35*sm((t-1)/.25) : t<4.6 ? 1.25 + Math.sin(t*22)*.04 : t<6.2 ? 1.25*(1-sm((t-4.6)/1.6)) : 0; };
     const cubes = ARM.map(([i,j,k,t])=>[i,j,k,COL[t]||0xF6F2EA, t==="goldG"?1:0]);
-    creatures.push({ parts:[{cubes, pivot:sh, fn:(g,tt)=>{ const l=lift(tt); g.position.y = sh[1] + l*2.4; g.rotation.z = -l*.04; }}],
-      at:[.25,.25,.25], scale:.5, noShadow:true,
-      bolts:{part:0, at:ARMP.tip.map((v,i)=>v-sh[i]), active:tt=>{ const t=phase(tt); return t>1.15 && t<4.4; }, color:0xFFE45A, n:5, len:46, light:2600} }); }
+    const rel = p => p.map((v,i)=>v-sh[i]);
+    // Ablauf (alle 3 min): 6 s aufladen, 3,5 s Blitze, 2 s Nachglühen – der Dreizack selbst bewegt sich nicht
+    const timing = tt => { const t=phase(tt); return { charge: t<6 ? sm(t/6) : (t<9.5 ? 1 : 0), fire: t>=6 && t<9.5, after: t>=9.5 && t<11.5 ? 1-sm((t-9.5)/2) : 0 }; };
+    creatures.push({ parts:[{cubes, pivot:sh}], at:[.25,.25,.25], scale:.5, noShadow:true,
+      bolts:{part:0, prongs:ARMP.prongs.map(rel), shaft:ARMP.shaft.map(rel), timing, color:0xFFD028, len:48, light:1300} }); }
   // Fischschwärme: klein und detailliert, ziehen in Schleifen
   [["clown",[44,15,46],[22,10],.24,0],["tang",[30,20,30],[26,18],.2,1.5],["butter",[60,13,36],[16,10],.3,3],["pink",[44,30,24],[30,20],.16,4.2],
    ["angel",[12,12,40],[12,9],.26,2],["green",[80,14,40],[16,10],.22,5],["clown",[66,24,14],[18,12],.2,.8],["tang",[22,14,58],[14,8],.3,2.4],
