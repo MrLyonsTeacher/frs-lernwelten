@@ -181,6 +181,16 @@ export function polarBear(o={}){
   [[5,-3,0],[5,3,Math.PI],[-6,-3,Math.PI],[-6,3,0]].forEach(([lx,lz,ph])=>{ const l=M();
     l.ell(lx,6,lz,2.4,4,2.2,fur).box(lx-1,0,lz-1,lx+2,2,lz+1,fur).box(lx+2,0,lz-1,lx+2,0,lz+1,PAD).put(lx+3,0,lz,F3);
     parts.push({...part(l,[lx,9,lz], step?["z",.42,step,ph]:null), gait:true}); });
+  if(o.fish){ // Fischen am Eisloch (16 s): lauern, mit der rechten Tatze zuschlagen, jedes zweite Mal ein Fisch im Maul
+    const sm = u => u<=0 ? 0 : u>=1 ? 1 : u*u*(3-2*u), off=o.phase||0;
+    const st = tt => { const T=tt+off, P=16, t=((T%P)+P)%P, k=Math.floor(T/P), caught = k%2===1;
+      let paw = 0; if(t>6 && t<7.2) paw = sm((t-6)/.6)*1.25 - sm((t-6.6)/.4)*.75; else if(t>=7.2 && t<8.4) paw = .5 + sm((t-7.2)/.6)*.5 - sm((t-7.8)/.6)*1.0;
+      const look = t<6 ? .25+.05*Math.sin(T*1.3) : t<9 ? .35 : (caught ? -.15 : .25);
+      return {paw, look, fish: caught && t>8.2 && t<14.5, chew: caught && t>9 ? Math.sin(T*6)*.06 : 0}; };
+    parts[2].fn = (g,tt) => { g.rotation.z = st(tt).paw; };
+    parts[1].fn = (g,tt) => { const q=st(tt); g.rotation.z = -q.look + q.chew; g.rotation.y = 0; };
+    const f = M(); f.box(17,11,-3,20,11,-1,0xC8D8E4).put(16,11,-4,0x8AA4B8).put(16,11,0,0x8AA4B8).put(21,11,-2,0x5A6A7A).put(19,12,-2,0x9AB4C8);
+    parts.push({...part(f,[9,14,0]), parent:1, fn:(g,tt)=>{ g.visible = st(tt).fish; }}); }
   return { parts };
 }
 

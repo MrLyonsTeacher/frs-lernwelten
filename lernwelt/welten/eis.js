@@ -311,16 +311,19 @@ export function build(A){
     for(const [a,c] of [[0,0],[1,0],[-1,0],[0,1],[0,-1]]) Fr.set(cx+a,cy+1,cz+c,"pine"); Fr.set(cx,cy,cz,"bark"); Fr.set(cx,cy+2,cz,"pine"); Fr.set(cx,cy+3,cz,"snowB"); }
 
   // ---------- Tiere ----------
+  const HOLE=[5,38];
+  for(let a=-9;a<=4;a++) for(let c=-5;c<=5;c++) for(let yy=L; yy<L+20; yy++){ const b=get(HOLE[0]+a,yy,HOLE[1]+c); if(b==='pine'||b==='bark'||(b==='snowB' && yy>hAt(HOLE[0]+a,HOLE[1]+c))) set(HOLE[0]+a,yy,HOLE[1]+c,null); } for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++){ const d=Math.hypot(a,c); if(d<=1.3) set(HOLE[0]+a,L-1,HOLE[1]+c,null); }
+  for(let i=0;i<14;i++){ const an=i/14*Math.PI*2; fs(HOLE[0]+.5+Math.cos(an)*1.9, L-.25, HOLE[1]+.5+Math.sin(an)*1.9, i%3?"snowB":"floorIce"); }
   // Weg der Eisfüchse: über den hinteren See und hinter der Zitadelle entlang (verschwinden dort)
   const foxPath = []; for(let px=-24; px<=118; px+=2){ const pz = px<34 ? 4-(px+24)*.33 : -17 + Math.sin(px*.15)*1.5, ground = hAt(Math.round(px),Math.round(pz)); foxPath.push([px, ground<L ? L : ground, pz]); }
   const creatures = [
-    { ...polarBear({walk:true, speed:3.4}), orbit:{c:[S.vocabulary.x-2, hAt(S.vocabulary.x-2,S.vocabulary.z+15), S.vocabulary.z+15], r:[6,2.5], speed:.12, ph:1, bob:.05, cycle:[30,.35,4]}, scale:.36, clearR:3 },
+    { ...polarBear({fish:true}), at:[HOLE[0]-4.6, L, HOLE[1]+.5], yaw:0, scale:.36 },
     { ...frostFox({walk:true, speed:13}), path:{pts:foxPath, speed:4.2, pause:5, ph:0}, scale:.26 },
     { ...frostFox({walk:true, speed:13, col:0xF4FAFF}), path:{pts:foxPath.map(p=>[p[0],p[1],p[2]+1.6]), speed:4.6, pause:3, ph:.12}, scale:.23 },
     { ...frostFox({walk:true, speed:12}), path:{pts:foxPath.map(p=>[p[0],p[1],p[2]-1.5]), speed:3.8, pause:7, ph:.55}, scale:.24 },
     { ...frostFox({walk:false}), at:[S.vocabulary.x+6, hAt(S.vocabulary.x,S.vocabulary.z)+1, S.vocabulary.z+6], yaw:-.6, scale:.24 },
-    { ...stag(), at:[S.country.x-5, hAt(S.country.x-5,S.country.z+25), S.country.z+25], yaw:-1.9, scale:.24 },
-    { ...stag(), at:[S.country.x+3, hAt(S.country.x+3,S.country.z+29), S.country.z+29], yaw:-1.3, scale:.21 }
+    { ...stag({graze:true, phase:0}), orbit:{c:[S.country.x-5, hAt(S.country.x-5,S.country.z+25), S.country.z+25], r:[1.6,1.2], speed:.35, ph:0, bob:0, cycle:[40,.15,6]}, scale:.24, clearR:2 },
+    { ...stag({graze:true, phase:9}), orbit:{c:[S.country.x+3, hAt(S.country.x+3,S.country.z+29), S.country.z+29], r:[1.4,1.6], speed:.35, ph:2, bob:0, dir:-1, cycle:[44,.14,25]}, scale:.21, clearR:2 }
   ];
   for(let i=0;i<3;i++) creatures.push({ ...bird(0xFFFFFF), orbit:{c:[70+i*6,46+i*3,50], r:[46,30], speed:.09, ph:i*1.9, bob:1.5}, scale:.65, noShadow:true });
   // Laufwege freiräumen

@@ -331,31 +331,31 @@ export function build(A){
     for(let k=0;k<3;k++){ const r=.9*(1-k/3); for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; fs(lx+.5+Math.cos(a)*r,y+8+k*.5,lz+.5+Math.sin(a)*r, k%2?"domeL":"domeA"); } } fs(lx+.5,y+9.5,lz+.5,"goldG"); };
   for(let z=PZ+31; z<D+8; z+=10) for(const lx of [PX-5,PX+5]) lampPost(lx,z);
   // großes Stadttor am Anfang der Prachtstraße
-  { const gz=D+16, y=G, half=8, R=8;
+  { const gz=D+16, y=G, half=6, R=6;
     for(let z=gz-2; z<=gz+2; z++) for(let x=PX-half-4; x<=PX+half+4; x++) for(let yy=y; yy<y+30; yy++){ const b=get(x,yy,z); if(b && !["sand","sandstone","rock","rockD","prism","marble","marbleD","trim"].includes(b)) set(x,yy,z,null); }
     for(let i=-(2*half+4)*2;i<=(2*half+4)*2;i++) for(let j=-8;j<=8;j++) for(let k=0;k<70;k++) FN.set(PX*2+i,k,gz*2+j,null);
-    const PH=12;
+    const PH=8;
     for(const sgn of [-1,1]){ const cx=PX+sgn*(half+2);
       fill(cx-2,y,gz-2,cx+2,y+1,gz+2,"marbleB"); ring(cx,y+2,gz,2.6,"trim");
-      fill(cx-1,y+2,gz-1,cx+1,y+PH+9,gz+1,(X,Y,Z)=> (Y-y)%5===0 ? "trim" : "marbleB");
+      fill(cx-1,y+2,gz-1,cx+1,y+PH+R+1,gz+1,(X,Y,Z)=> (Y-y)%5===0 ? "trim" : "marbleB");
       for(const dz of [-2,2]) fill(cx,y+2,gz+dz,cx,y+PH,gz+dz,"pillar");
-      for(const hh of [5,9]) set(cx+(sgn>0?-2:2),y+hh,gz,"glowB");
-      fill(cx-2,y+PH+10,gz-2,cx+2,y+PH+10,gz+2,"trim");
-      for(let i=0;i<12;i++){ const a=i/12*Math.PI*2; fs(cx+.5+Math.cos(a)*2.4,y+PH+11,gz+.5+Math.sin(a)*2.4,"gold"); }
-      const R0=1.9, H=4; let top=0; for(let k=0;k<=H*2;k++){ const u=k/(H*2), r=R0*(u<.2 ? .9+.5*u : Math.pow(Math.cos((u-.2)/.8*Math.PI/2),.6)); const n=Math.max(6,Math.round(r*14)); for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; fs(cx+.5+Math.cos(a)*r, y+PH+11.5+k*.5, gz+.5+Math.sin(a)*r, (Math.round(a/(Math.PI/4))%2) ? "domeA" : "domeL"); } top=y+PH+11.5+k*.5; }
+      for(const hh of [4,7]) set(cx+(sgn>0?-2:2),y+hh,gz,"glowB");
+      fill(cx-2,y+PH+R+2,gz-2,cx+2,y+PH+R+2,gz+2,"trim");
+      for(let i=0;i<12;i++){ const a=i/12*Math.PI*2; fs(cx+.5+Math.cos(a)*2.4,y+PH+R+3,gz+.5+Math.sin(a)*2.4,"gold"); }
+      const R0=1.4, H=3; let top=0; for(let k=0;k<=H*2;k++){ const u=k/(H*2), r=R0*(u<.2 ? .9+.5*u : Math.pow(Math.cos((u-.2)/.8*Math.PI/2),.6)); const n=Math.max(6,Math.round(r*14)); for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; fs(cx+.5+Math.cos(a)*r, y+PH+R+3.5+k*.5, gz+.5+Math.sin(a)*r, (Math.round(a/(Math.PI/4))%2) ? "domeA" : "domeL"); } top=y+PH+R+3.5+k*.5; }
       fs(cx+.5,top+.5,gz+.5,"goldG"); fs(cx+.5,top+1,gz+.5,"pearl");
-      fs(cx+.5+sgn*2.4,y+8,gz+.5,"lantern"); }
+      fs(cx+.5+sgn*2.4,y+6,gz+.5,"lantern"); }
     // Halbkreisbogen (offen), dicke Bogenleibung mit Goldkante
     for(let i=0;i<=60;i++){ const th=i/60*Math.PI, c=Math.cos(th), sn=Math.sin(th);
       for(let r=R; r<=R+1.6; r+=.5) for(let dz=-1.5; dz<=1.5; dz+=.5) fs(PX+.5+c*r, y+PH+sn*r, gz+.5+dz, (r<R+.2) ? "trim" : "marbleB");
       for(const dz of [-1.75,1.75]) fs(PX+.5+c*(R+1.8), y+PH+sn*(R+1.8), gz+.5+dz, "goldG"); }
     // Aufsatz über dem Bogen mit leuchtendem Band, Muschel-Schlussstein und Perle
-    fill(PX-half-3,y+PH+10,gz-1,PX+half+3,y+PH+10,gz+1,"trim");
-    for(let x=PX-half+1;x<=PX+half-1;x++){ set(x,y+PH+11,gz, "marbleB"); set(x,y+PH+11,gz+1, x%2 ? "glowB" : "trim"); }
-    for(let i=0;i<=12;i++){ const th=i/12*Math.PI; fs(PX+.5+Math.cos(th)*2.2, y+PH+12+Math.sin(th)*2, gz+1.5, "shell"); fs(PX+.5+Math.cos(th)*1.6, y+PH+12+Math.sin(th)*1.4, gz+1.5, "shellIn"); }
-    fs(PX+.5,y+PH+12.5,gz+1.75,"pearl");
+    fill(PX-half-3,y+PH+R+2,gz-1,PX+half+3,y+PH+R+2,gz+1,"trim");
+    for(let x=PX-half+1;x<=PX+half-1;x++){ set(x,y+PH+R+3,gz, "marbleB"); set(x,y+PH+R+3,gz+1, x%2 ? "glowB" : "trim"); }
+    for(let i=0;i<=12;i++){ const th=i/12*Math.PI; fs(PX+.5+Math.cos(th)*2.2, y+PH+R+4+Math.sin(th)*2, gz+1.5, "shell"); fs(PX+.5+Math.cos(th)*1.6, y+PH+R+4+Math.sin(th)*1.4, gz+1.5, "shellIn"); }
+    fs(PX+.5,y+PH+R+4.5,gz+1.75,"pearl");
     // Korallen und Kelp am Fuß der Pfeiler
-    for(const sgn of [-1,1]){ coralTree(PX+sgn*(half+6), y, gz-1, sgn>0?"coralR":"coralB", 9); kelp(PX+sgn*(half+5), y, gz+2, 24); anemone(PX+sgn*(half-1), y, gz+3, "coralP"); } }
+    for(const sgn of [-1,1]){ coralTree(PX+sgn*(half+6), y, gz-1, sgn>0?"coralR":"coralB", 7); kelp(PX+sgn*(half+5), y, gz+2, 24); anemone(PX+sgn*(half-1), y, gz+3, "coralP"); } }
   // eingestürzte Tempelreste
   for(const [bx,bz] of [[4,44],[122,44],[34,0],[84,2],[0,78],[126,92]]){ if(edge(bx,bz)>.95) continue; const t=topAt(bx,bz,60)+1;
     for(const [ox,h] of [[0,8],[4,5],[8,9]]) fill(bx+ox,t,bz,bx+ox,t+h,bz,"pillar");

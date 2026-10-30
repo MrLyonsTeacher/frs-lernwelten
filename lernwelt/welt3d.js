@@ -129,6 +129,7 @@ export async function start(o){
   // Klötzchen nach Typ gruppieren, nur sichtbare
   const B = world.blocks, box = new THREE.BoxGeometry(1,1,1), dummy = new THREE.Object3D(), anim = [], mats = {};
   const solid = t => t && !(B[t] && (B[t].alpha || B[t].cross));
+  const matsFine = t => { const k="~"+t; if(mats[k]) return mats[k]; mats[k] = matsFor(t).map(m=>{ const c=m.clone(); c.polygonOffset=true; c.polygonOffsetFactor=-1; c.polygonOffsetUnits=-2; return c; }); return mats[k]; };
   const matsFor = t => { if(mats[t]) return mats[t]; const d = B[t];
     const mk = tx => new THREE.MeshLambertMaterial({ map:tx, ...(d.em ? {emissive:0xffffff, emissiveMap:tx, emissiveIntensity:d.em} : {}),
       ...(d.alpha ? {transparent:true, opacity:d.alpha, depthWrite:false} : {}) });
@@ -140,10 +141,11 @@ export async function start(o){
     gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(.18,"rgba(255,255,255,.75)"); gr.addColorStop(.5,"rgba(255,255,255,.18)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })());
   const addStore = (store, cell, isFar) => { const groups = {}, g = store.get; let minY = 1e9; for(const [, b] of store.V) if(b[1]<minY) minY=b[1];
     for(const [, b] of store.V){ const [x,y,z,t] = b; if(!B[t]) continue;
+      if(cell<1 && solid(api.near.get(Math.floor(x*cell),Math.floor(y*cell),Math.floor(z*cell))) && !B[t].alpha && !B[t].halo) continue;   // steckt im großen Block: unsichtbar, würde flimmern
       const vis = B[t].alpha || !solid(g(x+1,y,z)) || !solid(g(x-1,y,z)) || !solid(g(x,y+1,z)) || (y>minY && !solid(g(x,y-1,z))) || !solid(g(x,y,z+1)) || !solid(g(x,y,z-1));
       if(vis) (groups[t]=groups[t]||[]).push(b); }
     for(const t in groups){ const d = B[t];
-      const mesh = new THREE.InstancedMesh(box, matsFor(t), groups[t].length);
+      const mesh = new THREE.InstancedMesh(box, cell<1 ? matsFine(t) : matsFor(t), groups[t].length);
       groups[t].forEach((b,i)=>{ dummy.position.set((b[0]+.5)*cell,(b[1]+.5)*cell,(b[2]+.5)*cell); dummy.scale.setScalar((d.scale||1)*cell*(cell<1 ? .985 : (d.alpha||d.cross) ? .996 : 1)); dummy.updateMatrix(); mesh.setMatrixAt(i,dummy.matrix); });
       mesh.castShadow = !isFar && !d.em && !d.alpha; mesh.receiveShadow = !isFar && !d.alpha && !(d.em >= .5);   // leuchtende Blöcke bekommen keinen Schatten (sonst Schatten-Akne/Flackern) if(d.alpha) mesh.renderOrder = 2;
       mesh.frustumCulled = false; scene.add(mesh); count += groups[t].length;
