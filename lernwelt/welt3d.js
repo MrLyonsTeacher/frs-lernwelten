@@ -166,11 +166,12 @@ export async function start(o){
   }
   // Lichtstrahlen (z. B. unter Wasser)
   const rays = [];
-  if(world.rays){ const c=document.createElement("canvas"); c.width=8; c.height=128; const g=c.getContext("2d"), gr=g.createLinearGradient(0,0,0,128);
-    gr.addColorStop(0,"rgba(255,255,255,.9)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,8,128);
+  if(world.rays){ const c=document.createElement("canvas"); c.width=32; c.height=128; const g=c.getContext("2d"), gr=g.createLinearGradient(0,0,0,128);
+    gr.addColorStop(0,"rgba(255,255,255,.95)"); gr.addColorStop(.55,"rgba(255,255,255,.4)"); gr.addColorStop(.9,"rgba(255,255,255,.12)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,32,128);
+    const sg=g.createLinearGradient(0,0,32,0); sg.addColorStop(0,"rgba(0,0,0,1)"); sg.addColorStop(.5,"rgba(0,0,0,0)"); sg.addColorStop(1,"rgba(0,0,0,1)"); g.globalCompositeOperation="destination-out"; g.fillStyle=sg; g.fillRect(0,0,32,128);
     const rt = new THREE.CanvasTexture(c), ar = world.rays.area || [0,world.W,0,world.D];
-    for(let i=0;i<world.rays.n;i++){ const m=new THREE.Mesh(new THREE.PlaneGeometry(2+api.rand()*4, world.rays.len||70), new THREE.MeshBasicMaterial({map:rt, color:world.rays.color, transparent:true, opacity:.16, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, fog:false}));
-      m.position.set(ar[0]+api.rand()*(ar[1]-ar[0]), world.rays.y||34, ar[2]+api.rand()*(ar[3]-ar[2])); m.rotation.set(0, api.rand()*Math.PI, .25); m.userData.ph = api.rand()*6; scene.add(m); rays.push(m); } }
+    for(let i=0;i<world.rays.n;i++){ const m=new THREE.Mesh(new THREE.PlaneGeometry((world.rays.w||[2,4])[0]+api.rand()*(world.rays.w||[2,4])[1], world.rays.len||70), new THREE.MeshBasicMaterial({map:rt, color:world.rays.color, transparent:true, opacity:.16, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, fog:false}));
+      m.position.set(ar[0]+api.rand()*(ar[1]-ar[0]), world.rays.y||34, ar[2]+api.rand()*(ar[3]-ar[2])); m.rotation.set(0, api.rand()*Math.PI, world.rays.tilt??.25); m.userData.ph = api.rand()*6; m.userData.bx = m.position.x; m.userData.bz = m.position.z; scene.add(m); rays.push(m); } }
   // Lichtkegel (Scheinwerfer an Türmen): weiche, additive Kegel, die langsam schwenken
   const beams = [];
   if(world.beams){ const c=document.createElement("canvas"); c.width=32; c.height=128; const g=c.getContext("2d");
@@ -243,7 +244,7 @@ export async function start(o){
       if(glow.length){ const m = new THREE.Mesh(cubesGeo(glow, piv), new THREE.MeshBasicMaterial({vertexColors:true})); pg.add(m); }
       (pt.parent !== undefined ? movers[pt.parent].g : inner).add(pg);
       if(pt.parent !== undefined){ const pp = cr.parts[pt.parent].pivot || [0,0,0]; pg.position.set(piv[0]-pp[0], piv[1]-pp[1], piv[2]-pp[2]); }
-      movers.push({g:pg, rot:pt.rot, gait:!!pt.gait, pulse:pt.pulse}); }
+      movers.push({g:pg, rot:pt.rot, gait:!!pt.gait, pulse:pt.pulse, fn:pt.fn}); }
     if(cr.at){ outer.position.set(...cr.at); outer.rotation.y = cr.yaw||0; }
     scene.add(outer); creatures.push({cr, outer, movers});
   }
@@ -264,9 +265,30 @@ export async function start(o){
     const get = (x,z) => { const i=Math.round(x)-x0, k=Math.round(z)-z0; if(i<0||k<0||i>=X||k>=Z) return -50; return f[k*X+i]; };
     safeFields.set(R, get); return get; }
   for(const c of creatures) if(c.cr.orbit && c.cr.orbit.wander) c.safe = safeField(Math.round(c.cr.orbit.wander.span || 12));
+  /* route: feste, vorab berechnete Schwimm-/Flugbahn. Hohen Hindernissen wird seitlich ausgewichen,
+     über niedrige geht es langsam und rechtzeitig hinweg (Höhe stark geglättet). */
+  for(const c of creatures){ const ob=c.cr.orbit; if(!ob || !ob.route) continue; const R=ob.route, sf=safeField(Math.round(R.span||6)), N=720, [cx,cy,cz]=ob.c, [rx,rz]=ob.r;
+    const clear=R.clear??3, climb=R.climb??5, base=[], off=new Float32Array(N);
+    for(let i=0;i<N;i++){ const th=i/N*Math.PI*2; base.push([cx+Math.cos(th)*rx, cz+Math.sin(th)*rz + (R.eight ? Math.sin(th*2)*R.eight : 0), Math.cos(th), Math.sin(th)]); }
+    const need = (x,z) => sf(x,z)+clear;
+    for(let i=0;i<N;i++){ const [x,z,nx,nz]=base[i]; if(need(x,z) <= cy+climb) continue; let best=0;
+      for(let d=1; d<=(R.reach||30) && !best; d++) for(const sg of [1,-1]) if(!best && need(x+nx*d*sg, z+nz*d*sg) <= cy+climb) best=d*sg; off[i]=best; }
+    const circ = (arr, w, fn) => { const out=new Float32Array(N); for(let i=0;i<N;i++){ let acc=fn==="max"?-1e9:0; for(let k=-w;k<=w;k++){ const v=arr[(i+k+N)%N]; if(fn==="max"){ if(Math.abs(v)>Math.abs(acc)||acc===-1e9) acc=v; } else acc+=v; } out[i]= fn==="max" ? acc : acc/(2*w+1); } return out; };
+    let o2 = circ(off, 14, "max"); for(let k=0;k<3;k++) o2 = circ(o2, 16, "avg");
+    const pts = base.map(([x,z,nx,nz],i)=>[x+nx*o2[i], 0, z+nz*o2[i]]);
+    let ys = new Float32Array(N); for(let i=0;i<N;i++) ys[i]=Math.max(cy, need(pts[i][0],pts[i][2]));
+    // Steigung begrenzen: höchstens slope Einheiten pro Bahnpunkt, Anstieg beginnt rechtzeitig vor dem Hindernis
+    const len = 2*Math.PI*Math.sqrt((rx*rx+rz*rz)/2)/N, sl = (R.slope||.22)*len;
+    const limit = a => { for(let rep=0; rep<3; rep++){ for(let i=0;i<2*N;i++){ const j=i%N, p=(j-1+N)%N; if(a[j] < a[p]-sl) a[j]=a[p]-sl; } for(let i=2*N;i>=0;i--){ const j=i%N, n=(j+1)%N; if(a[j] < a[n]-sl) a[j]=a[n]-sl; } } return a; };
+    const yn = ys.slice(); let ym = limit(ys.slice()); ym = circ(circ(ym, 6, "avg"), 6, "avg"); for(let i=0;i<N;i++) ym[i]=Math.max(ym[i], yn[i]); ym = limit(ym);
+    for(let i=0;i<N;i++) pts[i][1]=ym[i]; c.route = pts; }
+
 
   // Prüfung (nur im Testmodus): berührt ein frei schwimmendes/fliegendes Tier auf seiner Bahn einen Block?
   if(o.still){ window.__swimHits = [];
+    creatures.forEach((c,ci)=>{ if(!c.route) return; const r=Math.max(1,Math.round((c.cr.orbit.route.span||6)*.5)); let hits=0, maxDy=0;
+      c.route.forEach((p,i)=>{ const q=c.route[(i+1)%c.route.length]; maxDy=Math.max(maxDy, Math.abs(q[1]-p[1])); let hit=false; for(let dx=-r;dx<=r&&!hit;dx++) for(let dy=-1;dy<=1&&!hit;dy++) for(let dz=-r;dz<=r&&!hit;dz++) if(api.near.get(Math.round(p[0]+dx),Math.round(p[1]+dy),Math.round(p[2]+dz))) hit=true; if(hit) hits++; });
+      window.__swimHits.push([ci, hits, +maxDy.toFixed(3)]); });
     creatures.forEach((c,ci)=>{ const ob=c.cr.orbit; if(!ob || !ob.wander || !c.safe) return; const [cx,cy,cz]=ob.c, [rx,rz]=ob.r, w=ob.wander; let hits=0;
       for(let k=0;k<720;k++){ const th=k/720*Math.PI*2*(1/(w.f||1))*Math.max(1,w.f*8);
         const a=th*w.f, f=1+w.r*Math.sin(a+.7)+w.r*.5*Math.sin(a*2.3+1.9), eight=w.eight ? Math.sin(th*2)*w.eight*(.5+.5*Math.sin(a*1.3)) : 0;
@@ -355,10 +377,12 @@ export async function start(o){
       { const s0 = ((tt % P) + P) % P; flash = s0 < 2.2 ? Math.sin(s0/2.2*Math.PI) : 0; }
       if(bombs.light) bombs.light.intensity = bw.light[1]*flash; }
     for(const c of cloudParts){ if(c.drift){ c.sp.position.x = c.base.x + Math.sin(tt*.02*c.drift + c.ph*.05)*c.drift*6; } }
-    for(const r of rays){ r.material.opacity = .08 + .08*Math.sin(now/1500 + r.userData.ph); }
+    for(const r of rays){ const u=r.userData, tr=now/1000; r.material.opacity = (world.rays.op||.08) + (world.rays.op||.08)*Math.sin(tr*.5 + u.ph)*Math.sin(tr*.17+u.ph*2);
+      if(world.rays.drift){ r.position.x = u.bx + Math.sin(tr*.05+u.ph)*world.rays.drift; r.position.z = u.bz + Math.cos(tr*.04+u.ph*1.3)*world.rays.drift*.6; r.scale.x = .7+.5*(.5+.5*Math.sin(tr*.13+u.ph*3)); r.rotation.z = (world.rays.tilt??.25) + Math.sin(tr*.07+u.ph)*.06; } }
     for(const {b, pivot, m} of beams){ const tb = o.still ? (o.stillTime||12) : (now-clock0)/1000, ph=b.ph||0, sp=b.speed||.25;
       pivot.rotation.z = (b.tilt??.35)*Math.sin(tb*sp+ph); pivot.rotation.x = (b.tilt??.35)*.6*Math.cos(tb*sp*.8+ph); m.material.opacity = (b.opacity||.22)*(.75+.25*Math.sin(tb*1.3+ph*2)); }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
+    const c_route = cr => { if(cr._route!==undefined) return !!cr._route; const c=creatures.find(q=>q.cr===cr); cr._route = c && c.route ? c.route : null; return !!cr._route; };
     for(const {cr, outer, movers, safe:sf} of creatures){
       let move = 1;
       if(cr.orbit){ const ob=cr.orbit, [cx,cy,cz]=ob.c, [rx,rz]=ob.r;
@@ -367,7 +391,14 @@ export async function start(o){
         if(ob.cycle){ const [P, fr, off=0] = ob.cycle, R = P*fr, x = tt + off, k = Math.floor(x/P), f = x - k*P;
           if(f < R){ const u = f/R; et = k*R + R*(u - Math.sin(2*Math.PI*u)/(2*Math.PI)); move = (1-Math.cos(2*Math.PI*u))/2; } else { et = (k+1)*R; move = 0; } }
         const t=et*(ob.speed||.1)*(ob.dir||1)+(ob.ph||0);
-        if(ob.wander){
+        if(c_route(cr)){ const pts=cr._route, N=pts.length, dir=ob.dir||1, tt2=((t%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+          const at = th => { const f=(((th%(Math.PI*2))+Math.PI*2)%(Math.PI*2))/(Math.PI*2)*N, i=Math.floor(f), u=f-i, a=pts[i%N], b=pts[(i+1)%N]; return [a[0]+(b[0]-a[0])*u, a[1]+(b[1]-a[1])*u, a[2]+(b[2]-a[2])*u]; };
+          const p0=at(tt2), pa=at(tt2+.04*dir), pb=at(tt2+.08*dir);
+          const hA=Math.atan2(-(pa[2]-p0[2]), pa[0]-p0[0]), hB=Math.atan2(-(pb[2]-pa[2]), pb[0]-pa[0]); let turn=hB-hA; if(turn>Math.PI) turn-=2*Math.PI; if(turn<-Math.PI) turn+=2*Math.PI;
+          const bob = Math.sin(et*.9 + (ob.ph||0)*3)*(ob.bob??.6)*.35;
+          outer.position.set(p0[0], p0[1]+bob, p0[2]); outer.rotation.y = hA; outer.rotation.x = Math.max(-.4,Math.min(.4,-turn*(ob.bank?8:0)));
+          outer.rotation.z = Math.max(-.25,Math.min(.25, Math.atan2(pa[1]-p0[1], Math.hypot(pa[0]-p0[0],pa[2]-p0[2])))); }
+        else if(ob.wander){
           // abwechslungsreicher Flug: Abstand, Höhe und Bahnform ändern sich langsam (Achter, Schleifen, nah heran, weit weg)
           const P = th => { const w=ob.wander, a=th*w.f, f = 1 + w.r*Math.sin(a+.7) + w.r*.5*Math.sin(a*2.3+1.9);
             const eight = w.eight ? Math.sin(th*2)*w.eight*(.5+.5*Math.sin(a*1.3)) : 0;
@@ -411,6 +442,7 @@ export async function start(o){
           outer.rotation.y = Math.atan2(-dz, dx); } }
       else if(cr.at && cr.hover){ outer.position.y = cr.at[1] + Math.sin(tt*(cr.hover[1]||1))*cr.hover[0]; }
       for(const m of movers){
+        if(m.fn){ m.fn(m.g, tt); continue; }
         if(m.pulse){ const [pa,ps,pp=0] = m.pulse, q = Math.sin(tt*ps+pp); m.g.scale.set(1-pa*.55*q, 1+pa*q, 1-pa*.55*q); }   // Pulsieren (z. B. Quallenschirm)
         if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
     for(const l of pls) if(l.userData.flicker){ const fs = typeof l.userData.flicker==="number" ? l.userData.flicker : 120, fa = fs>300 ? .35 : .15; l.intensity = l.userData.int*(1-fa+fa*Math.sin(now/fs+l.position.x)); }

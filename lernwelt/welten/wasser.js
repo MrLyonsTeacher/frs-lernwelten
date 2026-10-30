@@ -19,6 +19,10 @@ export function build(A){
     // heller Marmor des Palastes
     marble: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y, pick(["#F4F1EA","#EEEAE0","#F8F6F0","#E8E3D8"])); for(let i=0;i<5;i++){ let x=Math.floor(rand()*16), y=Math.floor(rand()*16); for(let k=0;k<5;k++){ P(g,x,y,"#D6D0C4"); x=(x+1)%16; y=(y+(rand()<.5?1:0))%16; } } }),
     marbleB: bricks(["#EEEAE0","#F4F1EA","#E6E1D6"], "#C9C2B2", 4, 8),
+    skinF: noise(["#EBD6BE","#E6CFB4","#F0DCC6","#E2C9AE"], 4, ["#D4BA9C"]),
+    skinB: noise(["#F6F2EA","#F0ECE2","#FAF7F0","#EAE5DA"], 6, ["#DCD6C8"]),
+    beard: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const w=Math.sin(x*1.1+y*.5)>.2; P(g,x,y, w ? pick(["#C6BCAA","#CEC4B2"]) : pick(["#A89E8C","#B2A896","#9E9482"])); } }),
+    scales: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const yy=y%4, xx=(x+(Math.floor(y/4)%2)*2)%4; P(g,x,y, yy===3 || (yy===2 && (xx===0||xx===3)) ? "#86B4A8" : (yy===0 ? pick(["#E6F4EE","#DCEEE6"]) : pick(["#BCDCD0","#C6E2D8","#B2D4C8"]))); } }),
     marbleD: noise(["#DCD5C6","#D2CBBB","#E2DCCF"], 6, ["#BDB5A4"]),
     marbleS: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const yy=y%4, xx=(x+(Math.floor(y/4)%2)*2)%4; P(g,x,y, yy===3 || (yy===2 && (xx===0||xx===3)) ? "#B8D8D4" : pick(["#E8F4F0","#DCEEEA","#F2FAF8"])); } }),
     pillar: tex(g=>{ for(let x=0;x<16;x++){ const c = x%4===0 ? "#CFC8BA" : x%4===1 ? "#F8F6F0" : x%4===2 ? "#EEEAE0" : "#E2DDD0"; for(let y=0;y<16;y++) P(g,x,y,c); } }),
@@ -53,7 +57,7 @@ export function build(A){
   const blocks = {
     sand:{side:T.sand}, sandstone:{side:T.sandstone, top:T.sand}, rock:{side:T.rock}, rockD:{side:T.rockD}, prism:{side:T.prism},
     marble:{side:T.marble}, marbleB:{side:T.marbleB, top:T.marble}, marbleD:{side:T.marbleD}, marbleS:{side:T.marbleS, em:.06}, pillar:{side:T.pillar, top:T.marble}, trim:{side:T.trim, top:T.marble},
-    statue:{side:T.marble, em:.05}, statueD:{side:T.marbleD, em:.04},
+    statue:{side:T.skinB, em:.05}, statueD:{side:T.beard, em:.03}, statueF:{side:T.skinF, em:.06}, statueT:{side:T.scales, em:.06},
     domeD:{side:T.domeD}, domeA:{side:T.domeA, em:.05}, domeL:{side:T.domeL, em:.08}, rib:{side:T.rib},
     glowB:{side:T.glowB, em:.7}, win:{side:T.win, em:.5}, canal:{side:T.canal, em:.3}, crystal:{side:T.crystal, em:.9, halo:[0xBFF8FF,7,.5]}, dark:{side:T.dark},
     lantern:{side:T.lantern, em:.75, halo:[0xBFF8FF,3.6,.6]},
@@ -212,15 +216,15 @@ export function build(A){
     const Sg = (a,b,r0,r1,t) => fSeg(L(...a),L(...b),r0*K,r1*K,t);
     // Fischschwanz, der sich über den Sockel windet, mit Schwanzflosse
     const tail = [[0,12,0,2.4],[.4,9.6,.5,2.25],[.6,7.2,1.3,2],[0,5,2.3,1.7],[-1.8,3.7,2.7,1.4],[-3.6,3.6,1.8,1.12],[-4.7,4.5,.3,.9],[-4.9,6,-1.1,.72]];
-    for(let i=1;i<tail.length;i++) Sg(tail[i-1].slice(0,3), tail[i].slice(0,3), tail[i-1][3], tail[i][3], "marbleS");
-    for(const [dx,dz] of [[-1.4,-.6],[1.1,-.9]]){ Sg([-4.9,6,-1.1],[-4.9+dx,8.2,-1.1+dz],.6,.22,"statue"); E(-4.9+dx*.6,7.4,-1.1+dz*.6,.75,.9,.25,"statue"); }
-    for(const s of [-1,1]) Sg([1.6*s,10.6,.6],[2.6*s,9.2,1.2],.45,.15,"statue");      // Seitenflossen an der Hüfte
+    for(let i=1;i<tail.length;i++) Sg(tail[i-1].slice(0,3), tail[i].slice(0,3), tail[i-1][3], tail[i][3], "statueT");
+    for(const [dx,dz] of [[-1.4,-.6],[1.1,-.9]]){ Sg([-4.9,6,-1.1],[-4.9+dx,8.2,-1.1+dz],.6,.22,"statueT"); E(-4.9+dx*.6,7.4,-1.1+dz*.6,.75,.9,.25,"statueT"); }
+    for(const s of [-1,1]) Sg([1.6*s,10.6,.6],[2.6*s,9.2,1.2],.45,.15,"statueT");      // Seitenflossen an der Hüfte
     // Gürtel, Bauch, Brust, Schultern
     E(0,12.1,0,2.6,.7,2,"gold");
     E(0,13.6,.3,2.2,1.6,1.5,"statue"); E(0,15.6,0,2.9,2.6,1.9,"statue");
     for(const s of [-1,1]){ E(1.25*s,16.6,.75,1.45,1.25,.95,"statue"); E(3*s,17.6,0,1.35,1.2,1.25,"statue"); }
     // Hals, Kopf, Bart, Haar, Krone
-    Sg([0,18.3,0],[0,19.6,.2],1.05,1,"statue"); E(0,20.9,.25,1.5,1.8,1.6,"statue");
+    Sg([0,18.3,0],[0,19.6,.2],1.05,1,"statue"); E(0,20.9,.25,1.5,1.8,1.6,"statueF");
     E(0,19.2,1.05,1.45,1.7,.95,"statueD"); Sg([0,18.2,1.3],[0,15.9,1.7],1.05,.3,"statueD");
     E(0,21,-.75,1.75,2,1.45,"statueD"); Sg([0,20.2,-1],[0,16.6,-1.7],1.45,.55,"statueD");
     for(const s of [-1,1]){ const p=L(.55*s,21.1,1.55); fEll(p[0],p[1],p[2],.28,.22,.22,"marbleD"); }       // Augen
@@ -319,9 +323,41 @@ export function build(A){
     else ellip(x,t,z,1+rand()*1.5,1+rand(),1+rand()*1.5,"rock"); }
   // Prachtstraße vom Haupttor nach vorne: Platten, Säulenpaare mit Laternen, kleine Pavillons
   for(let z=PZ+26; z<D+22; z++) for(let w=-3; w<=3; w++){ const t=topAt(PX+w,z,G+2); if(t<=G) set(PX+w,G-1,z, Math.abs(w)===3 ? "trim" : ((z+w)%2 ? "marble" : "marbleD")); }
-  for(let z=PZ+29; z<D+20; z+=5) for(const lx of [PX-4,PX+4]){ fill(lx,G,z,lx,G+4,z,"pillar"); set(lx,G+5,z,"trim"); set(lx,G+6,z,"lantern"); }
+  // verzierte Laternenpfosten: Sockel, kannelierte Säule mit Goldringen, Kapitell, Leuchtkugel im goldenen Käfig, kleine blaue Kuppel
+  const lampPost = (lx,lz) => { const y=G; fill(lx,y,lz,lx,y,lz,"marbleB"); for(const [a,c] of [[1,0],[-1,0],[0,1],[0,-1]]) fs(lx+.5+a*.75,y+.25,lz+.5+c*.75,"trim");
+    fill(lx,y+1,lz,lx,y+5,lz,"pillar"); for(const hh of [1.5,3.5]) for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; fs(lx+.5+Math.cos(a)*.6,y+hh,lz+.5+Math.sin(a)*.6,"gold"); }
+    set(lx,y+6,lz,"trim"); for(const [a,c] of [[1,0],[-1,0],[0,1],[0,-1]]){ fs(lx+.5+a*.8,y+6,lz+.5+c*.8,"trim"); fs(lx+.5+a*.8,y+6.5,lz+.5+c*.8,"goldG"); }
+    fs(lx+.5,y+7.25,lz+.5,"lantern"); for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; for(const hh of [7,7.5]) fs(lx+.5+Math.cos(a)*.9,y+hh,lz+.5+Math.sin(a)*.9,"gold"); }
+    for(let k=0;k<3;k++){ const r=.9*(1-k/3); for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; fs(lx+.5+Math.cos(a)*r,y+8+k*.5,lz+.5+Math.sin(a)*r, k%2?"domeL":"domeA"); } } fs(lx+.5,y+9.5,lz+.5,"goldG"); };
+  for(let z=PZ+31; z<D+8; z+=10) for(const lx of [PX-5,PX+5]) lampPost(lx,z);
+  // großes Stadttor am Anfang der Prachtstraße
+  { const gz=D+16, y=G, half=8, R=8;
+    for(let z=gz-2; z<=gz+2; z++) for(let x=PX-half-4; x<=PX+half+4; x++) for(let yy=y; yy<y+30; yy++){ const b=get(x,yy,z); if(b && !["sand","sandstone","rock","rockD","prism","marble","marbleD","trim"].includes(b)) set(x,yy,z,null); }
+    for(let i=-(2*half+4)*2;i<=(2*half+4)*2;i++) for(let j=-8;j<=8;j++) for(let k=0;k<70;k++) FN.set(PX*2+i,k,gz*2+j,null);
+    const PH=12;
+    for(const sgn of [-1,1]){ const cx=PX+sgn*(half+2);
+      fill(cx-2,y,gz-2,cx+2,y+1,gz+2,"marbleB"); ring(cx,y+2,gz,2.6,"trim");
+      fill(cx-1,y+2,gz-1,cx+1,y+PH+9,gz+1,(X,Y,Z)=> (Y-y)%5===0 ? "trim" : "marbleB");
+      for(const dz of [-2,2]) fill(cx,y+2,gz+dz,cx,y+PH,gz+dz,"pillar");
+      for(const hh of [5,9]) set(cx+(sgn>0?-2:2),y+hh,gz,"glowB");
+      fill(cx-2,y+PH+10,gz-2,cx+2,y+PH+10,gz+2,"trim");
+      for(let i=0;i<12;i++){ const a=i/12*Math.PI*2; fs(cx+.5+Math.cos(a)*2.4,y+PH+11,gz+.5+Math.sin(a)*2.4,"gold"); }
+      const R0=1.9, H=4; let top=0; for(let k=0;k<=H*2;k++){ const u=k/(H*2), r=R0*(u<.2 ? .9+.5*u : Math.pow(Math.cos((u-.2)/.8*Math.PI/2),.6)); const n=Math.max(6,Math.round(r*14)); for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; fs(cx+.5+Math.cos(a)*r, y+PH+11.5+k*.5, gz+.5+Math.sin(a)*r, (Math.round(a/(Math.PI/4))%2) ? "domeA" : "domeL"); } top=y+PH+11.5+k*.5; }
+      fs(cx+.5,top+.5,gz+.5,"goldG"); fs(cx+.5,top+1,gz+.5,"pearl");
+      fs(cx+.5+sgn*2.4,y+8,gz+.5,"lantern"); }
+    // Halbkreisbogen (offen), dicke Bogenleibung mit Goldkante
+    for(let i=0;i<=60;i++){ const th=i/60*Math.PI, c=Math.cos(th), sn=Math.sin(th);
+      for(let r=R; r<=R+1.6; r+=.5) for(let dz=-1.5; dz<=1.5; dz+=.5) fs(PX+.5+c*r, y+PH+sn*r, gz+.5+dz, (r<R+.2) ? "trim" : "marbleB");
+      for(const dz of [-1.75,1.75]) fs(PX+.5+c*(R+1.8), y+PH+sn*(R+1.8), gz+.5+dz, "goldG"); }
+    // Aufsatz über dem Bogen mit leuchtendem Band, Muschel-Schlussstein und Perle
+    fill(PX-half-3,y+PH+10,gz-1,PX+half+3,y+PH+10,gz+1,"trim");
+    for(let x=PX-half+1;x<=PX+half-1;x++){ set(x,y+PH+11,gz, "marbleB"); set(x,y+PH+11,gz+1, x%2 ? "glowB" : "trim"); }
+    for(let i=0;i<=12;i++){ const th=i/12*Math.PI; fs(PX+.5+Math.cos(th)*2.2, y+PH+12+Math.sin(th)*2, gz+1.5, "shell"); fs(PX+.5+Math.cos(th)*1.6, y+PH+12+Math.sin(th)*1.4, gz+1.5, "shellIn"); }
+    fs(PX+.5,y+PH+12.5,gz+1.75,"pearl");
+    // Korallen und Kelp am Fuß der Pfeiler
+    for(const sgn of [-1,1]){ coralTree(PX+sgn*(half+6), y, gz-1, sgn>0?"coralR":"coralB", 9); kelp(PX+sgn*(half+5), y, gz+2, 24); anemone(PX+sgn*(half-1), y, gz+3, "coralP"); } }
   // eingestürzte Tempelreste
-  for(const [bx,bz] of [[4,44],[122,44],[34,0],[84,2],[0,78],[126,92],[64,112]]){ if(edge(bx,bz)>.95) continue; const t=topAt(bx,bz,60)+1;
+  for(const [bx,bz] of [[4,44],[122,44],[34,0],[84,2],[0,78],[126,92]]){ if(edge(bx,bz)>.95) continue; const t=topAt(bx,bz,60)+1;
     for(const [ox,h] of [[0,8],[4,5],[8,9]]) fill(bx+ox,t,bz,bx+ox,t+h,bz,"pillar");
     fill(bx,t+9,bz,bx+8,t+9,bz,(X)=> X===bx+4 ? null : "trim"); set(bx,t+10,bz,"lantern"); for(let k=0;k<3;k++) ellip(bx+2+k*2,t,bz+3,0,1,1,"pillar"); glowPlant(bx+2,t,bz-2); }
 
@@ -347,19 +383,19 @@ export function build(A){
     for(let i=0;i<7;i++) creatures.push({ ...reefFish(k), orbit:{c:[ctr[0]+((i*3)%5)-2, ctr[1]+(i%3)*1.2-1, ctr[2]+((i*7)%5)-2], r:[rad[0]+(i%3), rad[1]+((i*2)%3)], speed:sp, ph:ph+i*.09, bob:.8+(i%2)*.4, dir: si%2 ? -1 : 1, wander:{f:.25, r:.1, y:1.5, eight:2, dx:2, dz:2, span:3, clear:2.5}}, scale:.2, noShadow:true }); });
   // große Quallen, die langsam treiben und pulsieren
   [[PX-34,40,PZ-8,0xF2F6FF,0x3A7AE8,0x6FA8FF],[PX+40,50,PZ-14,0xFFF0F6,0xE85A9A,0xFF9AC8],[PX-20,54,PZ+40,0xF0FFF8,0x2AB89A,0x7FE8D0],[PX-46,44,PZ+18,0xFFF0F6,0xE85A9A,0xFF9AC8]]
-    .forEach(([x,y,z,c1,c2,c3],i)=> creatures.push({ ...bigJelly(c1,c2,c3), orbit:{c:[x,y,z], r:[4+i,3+i%2], speed:.05+i*.008, ph:i*1.57, bob:2.4, wander:{f:.12, r:.08, y:2, eight:0, dx:3, dz:3, span:7, clear:9}}, scale:.55, noShadow:true }));
+    .forEach(([x,y,z,c1,c2,c3],i)=> creatures.push({ ...bigJelly(c1,c2,c3), orbit:{c:[x,y,z], r:[4+i,3+i%2], speed:.05+i*.008, ph:i*1.57, bob:2.4, route:{span:6, clear:11, climb:6}}, scale:.55, noShadow:true }));
   // Krake auf dem Felsen
   creatures.push({ ...octopus(), at:[OCTO[0]+.5, topAt(OCTO[0],OCTO[1],G+8)+.6, OCTO[1]+.5], yaw:-.9, scale:.62 });
   // Mantarochen, Schildkröten, Seepferdchen im Kelp, Delfine und Wal
-  creatures.push({ ...manta(), orbit:{c:[PX,36,PZ], r:[72,48], speed:.06, ph:0, bob:3, bank:.15, wander:{f:.2, r:.12, y:4, eight:6, dx:6, dz:6, span:12, clear:6}}, scale:.55 });
-  creatures.push({ ...manta(), orbit:{c:[PX+8,28,PZ+10], r:[56,42], speed:.07, ph:3.14, bob:2, bank:.15, dir:-1, wander:{f:.18, r:.12, y:4, eight:5, dx:6, dz:6, span:10, clear:6}}, scale:.42 });
-  creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:1.57, bob:1.5, bank:.1, wander:{f:.15, r:.1, y:3, eight:4, dx:4, dz:4, span:7, clear:5}}, scale:.5 });
-  creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:4.7, bob:1.2, bank:.1, dir:-1, wander:{f:.15, r:.1, y:3, eight:4, dx:4, dz:4, span:7, clear:5}}, scale:.42 });
+  creatures.push({ ...manta(), orbit:{c:[PX,36,PZ], r:[72,48], speed:.06, ph:0, bob:3, bank:.15, route:{span:9, clear:3, climb:6, eight:5}}, scale:.55 });
+  creatures.push({ ...manta(), orbit:{c:[PX+8,28,PZ+10], r:[56,42], speed:.07, ph:3.14, bob:2, bank:.15, dir:-1, route:{span:8, clear:3, climb:6, eight:4}}, scale:.42 });
+  creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:1.57, bob:1.5, bank:.1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.5 });
+  creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:4.7, bob:1.2, bank:.1, dir:-1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.42 });
   for(const [dx,dz,dy,c1,c2] of [[-4,7,6,0xFFB03A,0xFFD27A],[5,6,9,0xFF6FA0,0xFFB0CC],[7,-2,7,0xFFD23F,0xFFF0A0],[-6,-3,10,0xFF8A3A,0xFFC090]])
     creatures.push({ ...seahorse(c1,c2), at:[S.vocabulary.x+dx, G+dy, S.vocabulary.z+dz], yaw:Math.PI/2*(dx>0?1:-1), hover:[.6,.8+Math.abs(dx)*.05], scale:.3 });
-  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.4, bob:3.5, bank:.2, wander:{f:.2, r:.1, y:4, eight:6, dx:5, dz:5, span:6, clear:5}}, scale:.2 });
-  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.52, bob:3.5, bank:.2, wander:{f:.2, r:.1, y:4, eight:6, dx:5, dz:5, span:6, clear:5}}, scale:.18 });
-  creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:5.5, bob:1.4, bank:.1, dir:-1, wander:{f:.1, r:.08, y:3, eight:0, dx:6, dz:4, span:20, clear:8}}, scale:.6 });
+  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.4, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.2 });
+  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.52, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.18 });
+  creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:5.5, bob:.3, bank:.1, dir:-1, route:{span:12, clear:7, climb:10, slope:.05}}, scale:.6 });
 
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:42,
@@ -367,8 +403,8 @@ export function build(A){
     hemi:[0x9FEFFF, 0x1A4A6A, 1.85], sun:{color:0xDFFBFF, int:1.55, pos:[-30,90,40]}, bloom:[.32,.45,.9],
     lights:[{pos:[PX,G+40,PZ], color:0x7FE3FF, int:420, dist:48}, {pos:[PX,G+12,PZ+16], color:0xBFF8FF, int:120, dist:22}, {pos:[S.vocabulary.x,G+4,S.vocabulary.z], color:0xFFFFFF, int:80, dist:16},
             {pos:[STATUE[0]+6,G+44,STATUE[1]+1], color:0xFFE27A, int:90, dist:16}],
-    planes:[{y:G-3.6, tex:T.sand, repeat:400, size:1000}, {y:G+.05, tex:T.caust, repeat:120, size:300, em:.5, opacity:.22, anim:[.025,.012]}, {y:150, tex:T.surface, repeat:60, size:400, em:.4, opacity:.35, anim:[.02,.01]}],
-    rays:{n:40, color:0xBFF4FF, area:[-60,W+60,-60,D+20]},
+    planes:[{y:G-3.6, tex:T.sand, repeat:400, size:1000}, {y:G+.05, tex:T.caust, repeat:120, size:300, em:.5, opacity:.2, anim:[.018,.009]}, {y:G+.08, tex:T.caust, repeat:85, size:300, em:.45, opacity:.16, anim:[-.012,.016]}, {y:150, tex:T.surface, repeat:60, size:400, em:.4, opacity:.35, anim:[.02,.01]}],
+    rays:{n:46, color:0xCFF8FF, area:[-60,W+60,-60,D+20], y:G+74, len:150, w:[3,8], drift:12, op:.075, tilt:.16},
     particles:[{n:720, area:[-20,W+20,2,70,-10,D+40], vy:2.2, wob:.8, color:0xE6FBFF, size:.34, opacity:.8},
                {n:520, area:[0,W,2,34,0,D], vy:0, wob:.3, color:0xA8F0D8, size:.18, opacity:.7, add:true, twinkle:true}],
     creatures,

@@ -221,7 +221,16 @@ export function stag(o={}){
     for(const tp of [[15,32,2.5*s],[14,36,4*s],[12,41,5.5*s],[6,44,8*s],[9,46,6*s],[6.5,46,6.8*s],[8,36,7*s]]) E(h,tp[0],tp[1],tp[2],.22,.22,.22,TIP); }
   E(t,-9.6,17.2,0,.8,1.4,.8,RUMP); E(t,-9.9,18.3,0,.5,.5,.5,DARK);
   if(o.graze){ // Hals und Kopf senken sich immer wieder zum Grasen
-    return { parts:[ part(m,[0,0,0]), part(n,[7*K,16.5*K,0],["z",.5,.33,0,-.55]), {...part(h,[11*K,24*K,0],["z",.42,.33,0,-.45]), parent:1}, part(t,[-9*K,17*K,0],["y",.6,3,0]) ] }; }
+    // Ablauf (20 s): 15 s aufrecht – dazwischen schaut er mal 5 s nach links oder rechts –, dann 5 s grasen
+    const sm = u => u<=0 ? 0 : u>=1 ? 1 : u*u*(3-2*u), off = o.phase||0;
+    const st = tt => { const T=tt+off, P=20, t=((T%P)+P)%P, k=Math.floor(T/P);
+      const down = t<15 ? 0 : t<16.5 ? sm((t-15)/1.5) : t<18.5 ? 1 : sm((20-t)/1.5);
+      const side = (k%3===2) ? 0 : (k%2 ? 1 : -1), look = side * sm((t-5)/.8) * sm((10.8-t)/.8);
+      return {down, look, nib: down>.95 ? Math.sin(T*7)*.05 : 0}; };
+    return { parts:[ part(m,[0,0,0]),
+      {...part(n,[7*K,16.5*K,0]), fn:(g,tt)=>{ const q=st(tt); g.rotation.z = -.05 - 1.0*q.down; g.rotation.y = q.look*.18; }},
+      {...part(h,[11*K,24*K,0]), parent:1, fn:(g,tt)=>{ const q=st(tt); g.rotation.z = -.05 - .82*q.down + q.nib; g.rotation.y = q.look*.5; }},
+      part(t,[-9*K,17*K,0],["y",.6,3,0]) ] }; }
   return { parts:[ part(m,[0,0,0]), part(h,[11*K,24*K,0],["z",.26,.6,0,-.22]), part(t,[-9*K,17*K,0],["y",.6,3,0]) ] };
 }
 
