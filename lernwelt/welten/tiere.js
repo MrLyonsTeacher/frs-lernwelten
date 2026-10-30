@@ -51,11 +51,14 @@ export function dragon(){
   for(const s of [-1,1]){ head.line([24,15,2*s],[20,19,4*s],HORN).line([20,19,4*s],[16,20,5*s],HORN2).line([16,20,5*s],[14,19,5*s],HORN2);
     head.line([23,10,4*s],[20,9,6*s],SP).line([22,12,4*s],[19,12,6*s],SP); }
   // Beine mit Krallen
+  const legs = [];
   for(const s of [-1,1]){
-    body.seg([8,-4,5*s],[10,-9,6*s],2.4,1.8,scale).seg([10,-9,6*s],[13,-12,6*s],1.8,1.4,scale);
-    for(const dz of [-1,0,1]) body.line([13,-12,6*s+dz],[15,-13,6*s+dz*1.5],HORN);
-    body.ell(-8,-3,5.5*s,4,4,3,scale).seg([-8,-6,6*s],[-6,-11,6.5*s],2.2,1.6,scale);
-    for(const dz of [-1,0,1]) body.line([-6,-11,6.5*s+dz],[-3,-12,6.5*s+dz*1.5],HORN); }
+    const fl = M(); fl.seg([8,-4,5*s],[10,-9,6*s],2.4,1.8,scale).seg([10,-9,6*s],[13,-12,6*s],1.8,1.4,scale);
+    for(const dz of [-1,0,1]) fl.line([13,-12,6*s+dz],[15,-13,6*s+dz*1.5],HORN);
+    body.ell(-8,-3,5.5*s,4,4,3,scale);
+    const hl = M(); hl.seg([-8,-6,6*s],[-6,-11,6.5*s],2.2,1.6,scale);
+    for(const dz of [-1,0,1]) hl.line([-6,-11,6.5*s+dz],[-3,-12,6.5*s+dz*1.5],HORN);
+    legs.push([fl,[8,-3,5*s],true,s],[hl,[-8,-5,6*s],false,s]); }
   // Schwanz in zwei Gliedern (wellt sich)
   const tail1 = M(), tail2 = M();
   tail1.seg([-12,0,0],[-20,-1,0],5,4,scale).seg([-20,-1,0],[-28,-3,0],4,3,scale);
@@ -85,7 +88,15 @@ export function dragon(){
   const tailF = (amp,sp,ph) => (g,tt,cr) => { const s0=sit(cr); g.rotation.y = amp*Math.sin(tt*sp*(1-.5*s0)+ph)*(1+s0*.6); g.rotation.z = -s0*.12; };
   return { parts:[ part(body,[0,0,0]), {...part(head,[22,12,0]), fn:headF}, {...part(tail1,[-12,0,0]), fn:tailF(.16,1.1,0)}, {...part(tail2,[-28,-3,0]), parent:2, fn:tailF(.28,1.1,-.8)},
     {...part(inner,[4,8,5]), fn:wing(1)}, {...part(outer,[-1,12,30]), parent:4, fn:wingO(1)},
-    {...part(innerR,[4,8,-5]), fn:wing(-1)}, {...part(outerR,[-1,12,-30]), parent:6, fn:wingO(-1)} ] };
+    {...part(innerR,[4,8,-5]), fn:wing(-1)}, {...part(outerR,[-1,12,-30]), parent:6, fn:wingO(-1)},
+    // Beine: im Flug angezogen, beim Landen nach vorn gestreckt, beim Aufsetzen federnd, beim Sitzen ab und zu umgesetzt
+    ...legs.map(([m,pv,front,sg],i)=>({...part(m,pv), fn:(g,tt,cr)=>{ const ph=cr&&cr._ph||"fly", u=cr&&cr._u||0, sm=v=>v<=0?0:v>=1?1:v*v*(3-2*v);
+      const tuck = front ? -.95 : -1.15, reach = front ? .45 : .3; let r;
+      if(ph==="land"){ const e=sm((u-.45)/.35); r = tuck + (reach-tuck)*e; if(u>.9) r = reach - (reach+.25)*sm((u-.9)/.1); }
+      else if(ph==="sit"){ const shift = Math.max(0, Math.sin(tt*.7+i*1.7)-.85)*2.2; r = -.05 + Math.sin(tt*1.8+i)*.02 + shift*.25*(i%2?1:-1) + (u<.06 ? -.25*(1-u/.06) : 0); }
+      else if(ph==="up"){ r = u<.25 ? -.05 - .35*sm(u/.25) : -.4 + (tuck+.4)*sm((u-.25)/.4); }
+      else r = tuck + Math.sin(tt*1.3+i)*.06;
+      g.rotation.z = r; }}))] };
 }
 
 /* ---------- Adler (Luftwelt) – mit einzelnen Federn (doppelte Auflösung, scale ≈ .5) ---------- */

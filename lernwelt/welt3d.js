@@ -469,19 +469,20 @@ export async function start(o){
           st.bank += (tBank-st.bank)*k; st.pitch += (tPitch-st.pitch)*k;
           outer.position.set(p0[0], st.y, p0[2]);
           outer.rotation.y = st.yaw; outer.rotation.x = st.bank; outer.rotation.z = st.pitch;
-          cr._sit = 0; cr._fire = 0;
+          cr._sit = 0; cr._fire = 0; cr._ph = "fly"; cr._u = 0;
           // perch: ab und zu landen (z. B. auf einem Felsen), sitzen, dann wieder starten
           if(ob.perch){ const pc=ob.perch, Pd=pc.period||70, fly=pc.fly||46, L=pc.land||6, S2=pc.stay||12, U=pc.takeoff||5, tc=(((tt+(pc.off||0))%Pd)+Pd)%Pd;
             if(tc >= fly){ const spd=(ob.speed||.1)*dir, posAt = time => lift(P(time*spd+(ob.ph||0))), B=pc.pos, sm=u=>u*u*(3-2*u);
               const ang = (a,b,u) => { let d=b-a; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return a+d*u; };
               let X,Y,Z, yaw, bank=0, pitch=0, sit=0;
-              if(tc < fly+L){ const u=(tc-fly)/L, A=posAt(tt-(tc-fly)), e=sm(u), arc=Math.sin(u*Math.PI)*(pc.arc||8);
+              if(tc < fly+L){ const u=(tc-fly)/L; cr._ph="land"; cr._u=u; const A=posAt(tt-(tc-fly)), e=sm(u), arc=Math.sin(u*Math.PI)*(pc.arc||8);
                 X=A[0]+(B[0]-A[0])*e; Y=A[1]+(B[1]-A[1])*e + arc*(1-u); Z=A[2]+(B[2]-A[2])*e;
                 const yawTo = Math.atan2(-(B[2]-A[2]), B[0]-A[0]); yaw = ang(yawTo, pc.yaw, sm(Math.max(0,(u-.6)/.4))); pitch = -.25*Math.sin(u*Math.PI)+(u>.75? (u-.75)*1.2:0); sit = sm(Math.max(0,(u-.7)/.3)); }
-              else if(tc < fly+L+S2){ const v=tc-fly-L; X=B[0]; Y=B[1]+Math.sin(v*1.8)*.06; Z=B[2]; yaw=pc.yaw; sit=1;
+              else if(tc < fly+L+S2){ const v=tc-fly-L; cr._ph="sit"; cr._u=v/S2; X=B[0]; Y=B[1]+Math.sin(v*1.8)*.06; Z=B[2]; yaw=pc.yaw; sit=1;
                 const f=v-1.5; cr._fire = (f>0 && f<S2-3 && (f%5)<2.6) ? Math.min(1,(f%5)/.4)*Math.min(1,(2.6-(f%5))/.4) : 0; }
-              else { const u=(tc-fly-L-S2)/U, C=posAt(tt+(Pd-tc)), e=sm(u); X=B[0]+(C[0]-B[0])*e; Y=B[1]+(C[1]-B[1])*e + Math.sin(u*Math.PI)*(pc.arc||8)*.6; Z=B[2]+(C[2]-B[2])*e;
+              else { const u=(tc-fly-L-S2)/U; cr._ph="up"; cr._u=u; const C=posAt(tt+(Pd-tc)), e=sm(u); X=B[0]+(C[0]-B[0])*e; Y=B[1]+(C[1]-B[1])*e + Math.sin(u*Math.PI)*(pc.arc||8)*.6; Z=B[2]+(C[2]-B[2])*e;
                 yaw = ang(pc.yaw, Math.atan2(-(C[2]-B[2]), C[0]-B[0]), sm(Math.min(1,u*2.5))); pitch = .35*Math.sin(u*Math.PI); sit = 1-sm(Math.min(1,u/.3)); }
+              if(sf && cr._ph!=="sit"){ const uu = cr._ph==="land" ? cr._u : 1-cr._u, keep = 1-Math.min(1,Math.max(0,(uu-.7)/.3)); const m = sf(X,Z)+(ob.wander.clear??8)*keep; if(keep>0 && Y<m) Y = Y + (m-Y)*keep; }
               outer.position.set(X,Y,Z); outer.rotation.y = yaw; outer.rotation.x = bank; outer.rotation.z = pitch; st.y=Y; st.yaw=yaw; st.bank=bank; st.pitch=pitch; cr._sit = sit; } }
           // in Wolken ganz verschwinden: weich ausblenden, solange die Mitte in einer Wolke steckt
           if(cr.cloudHide){ const g = api.near.get, cxp=Math.round(p0[0]), cyp=Math.round(st.y), czp=Math.round(p0[2]); let n=0;
