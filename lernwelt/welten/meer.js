@@ -314,8 +314,8 @@ export function redDemon(){
     for(const [tz,ty] of tips) w.put(-8-Math.round((tz-8)*.08), Math.round(ty)-1, tz*s, EDGE);
     wings.push([w,[-8,40,8*s],s]); }
   const fly = cr => cr && (cr._ph==="land"||cr._ph==="up") ? 1-(cr._sit||0) : 0, fire = cr => cr && cr._fire || 0;
-  const parts=[ {cubes:body.list(), pivot:[0,21,0]}, {cubes:head.list(), pivot:[2,41,0], parent:0, fn:(g,tt,cr)=>{ const f=fire(cr); g.rotation.z = -.42*f + .03*Math.sin(tt*.8); g.rotation.y = (1-f)*.18*Math.sin(tt*.35); }} ];
-  arms.forEach(([a,pv,s])=>parts.push({cubes:a.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr), f=fire(cr); g.rotation.z = (s>0 ? .35 : -.05)*(1-fl) - fl*.5 + .1*Math.sin(tt*.9+(s>0?0:Math.PI)) + f*.5; g.rotation.x = s*fl*.25; }}));
+  const parts=[ {cubes:body.list(), pivot:[0,21,0]}, {cubes:head.list(), pivot:[2,41,0], parent:0, fn:(g,tt,cr)=>{ const f=fire(cr); g.rotation.z = .6*f + .03*Math.sin(tt*.8); g.rotation.y = (1-f)*.18*Math.sin(tt*.35); }} ];
+  arms.forEach(([a,pv,s])=>parts.push({cubes:a.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr), f=fire(cr); g.rotation.z = (s>0 ? .35 : -.05)*(1-fl) - fl*.5 + .1*Math.sin(tt*.9+(s>0?0:Math.PI)) + f*1.1; g.rotation.x = s*(fl*.25 + f*.35); }}));
   legs.forEach(([l,pv,s])=>parts.push({cubes:l.list(), pivot:pv, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = (s>0 ? .18 : -.1)*(1-fl) - fl*.55 + fl*.12*Math.sin(tt*3+s); }}));
   wings.forEach(([w,pv,s])=>parts.push({cubes:w.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.x = s*(-.36 + fl*.75*Math.sin(tt*5.5) + (1-fl)*.1*Math.sin(tt*1.3)); }}));
   return { parts };

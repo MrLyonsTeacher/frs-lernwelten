@@ -409,7 +409,7 @@ export function build(A){
   { const hx=W+24, hz=16, top=L2+28; const P=[hx, top, hz+2.5];
     creatures.push({ ...redDemon(), visit:{period:180, off:120, arrive:7, stay:11, leave:6, fireAt:3, fireDur:5, yaw:-Math.PI/2+.35, pos:P,
       from:[hx+70, top+60, hz-60], c1:[hx+40, top+40, hz-10], c2:[hx+8, top+14, hz+18], c3:[hx-6, top+12, hz+10], c4:[hx-30, top+40, hz-20], to:[hx-60, top+70, hz-70]},
-      scale:.3, fire:{part:1, at:[10,1,0], dir:[1,-1.1,0], n:140, rate:120, speed:22, life:1.2, size:1.6, light:900} }); }
+      scale:.3, fire:{part:1, at:[10,1,0], dir:[1,.15,0], n:160, rate:130, speed:26, life:1.3, size:1.6, light:900} }); }
   creatures.push({ ...dwarf({tunic:0x6A3A2A, beard:0xE8E2D8, hammer:true}), at:[S.country.x-4, L0, S.country.z-1], yaw:0, scale:.5 });
   for(let i=0;i<5;i++) creatures.push({ ...dwarf({tunic:tun[i], beard:brd[i], walk:true}), orbit:{c:[44, L0, 60], r:[9.5+(i%2)*.8, 6+(i%2)*.5], speed:.07+(i%3)*.012, ph:i*1.25, bob:.1, dir:i%2?1:-1}, scale:.42 });
   for(let i=0;i<3;i++) creatures.push({ ...dwarf({tunic:tun[(i+2)%5], beard:brd[(i+1)%5], walk:true}), orbit:{c:[30+i*14, L1, 36], r:[6, 2], speed:.2, ph:i*2, bob:.1, dir:i%2?1:-1}, scale:.42 });
