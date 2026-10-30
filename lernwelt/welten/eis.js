@@ -341,7 +341,7 @@ export function build(A){
             {pos:[S.country.x,S.country.base+4,S.country.z], color:0xBFF4FF, int:200, dist:26}],
     planes:[{y:L-.08, tex:T.lake, repeat:220, size:900, em:.25, anim:[.004,.002]}],
     beams:[{pos:[CX,HB+60,CZ-1], len:90, w:7, color:0x9AE8FF, opacity:.22, tilt:.4, speed:.15}],
-    vortex:{c:[CX+.5,CZ+1.5], y0:HB-6, top:S.grammar.beams ? S.grammar.beams[0][1] : HB+70, R:34, color:0x6AC8FF, period:200, off:150, build:10, squeeze:3.5, shoot:3, fade:4.5, beamW:7, light:2200},
+    vortex:{c:[S.grammar.beams[0][0]+.25, S.grammar.beams[0][2]+.25], y0:HB-6, top:S.grammar.beams[0][1], pre:8, post:9, dark:.88, R:34, color:0x6AC8FF, period:200, off:150, build:10, squeeze:3.5, shoot:3, fade:4.5, beamW:7, light:2200},
     ribbons:[{w:320, h:30, pos:[20,120,-150], rot:.1, color:0x9A8AFF, opacity:.16}, {w:240, h:22, pos:[-20,132,-170], rot:.3, color:0x7AD8FF, opacity:.14}],
     clouds:[...[[-220,90,40],[-240,110,160],[W+220,95,40],[W+240,115,160],[-150,130,-60],[W+150,130,-60],[-60,150,-250],[180,150,-250]].map(p=>({pos:p, r:26, n:42, sx:1.9, sy:.55, sz:1.2, drift:.3})),
             {pos:[-40,110,-120], r:20, n:44, sx:1.8, sy:.6, sz:1.1, drift:.4}, {pos:[100,120,-140], r:24, n:48, sx:1.9, sy:.6, sz:1.1, drift:.3},

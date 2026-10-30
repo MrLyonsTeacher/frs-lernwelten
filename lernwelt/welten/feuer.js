@@ -252,7 +252,7 @@ export function build(A){
   const PR=[68,86], PTOP=9;
   for(let y=SEA-2;y<=PTOP;y++){ const t=(y-SEA)/(PTOP-SEA), rr=10-t*2; for(let x=PR[0]-12;x<=PR[0]+12;x++) for(let z=PR[1]-12;z<=PR[1]+12;z++){ const an=Math.atan2(z-PR[1],x-PR[0]), r=rr*(1+.18*Math.sin(an*5+1)); if(Math.hypot(x-PR[0],z-PR[1])<=r) set(x,y,z, y===PTOP ? (rand()<.5?"basalt":"rock2") : (rand()<.06 ? "magma" : (rand()<.4?"rock2":"rock"))); } }
   const creatures = [
-    { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:22, clear:10}, perch:{pos:[PR[0]+.5, PTOP+1+7.4, PR[1]+.5], yaw:2.3, period:120, fly:96, land:7, stay:13, takeoff:4, arc:10, off:30}}, scale:.55, fire:{part:1, at:[35,10,0], dir:[1,-.2,0], n:160, rate:140, speed:30, life:1.1, size:2.4, light:1400} }
+    { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:22, clear:10}, perch:{pos:[PR[0]+.5, PTOP+1+7.4, PR[1]+.5], dir:[.55,1], period:120, fly:92, land:11, stay:12, takeoff:5, off:30}}, scale:.55, fire:{part:1, at:[35,10,0], dir:[1,-.2,0], n:160, rate:140, speed:30, life:1.1, size:2.4, light:1400} }
   ];
   const walkLine = (a,b,o) => { const cx=(a[0]+b[0])/2, cz=(a[2]+b[2])/2, len=Math.hypot(b[0]-a[0],b[2]-a[2])/2-1.5;
     creatures.push({ ...person(o.p), orbit:{c:[cx,(a[1]+b[1])/2+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), slope:(b[1]-a[1])/(2*len+3), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };

@@ -18,7 +18,7 @@ export function build(A){
     gold: noise(["#F5C542","#FFE27A","#E8B030","#FFD95A"]),
     win: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const arch = y<5 && Math.abs(x-7.5) > Math.sqrt(Math.max(0,25-(5-y)**2))+1.5; const fr = x<2||x>13||y>14||x===7||x===8||y===9||arch; P(g,x,y, fr ? "#C8C0A8" : (y<9 ? pick(["#FFE9A0","#FFDC80"]) : pick(["#9AD0F8","#7ABCEC"]))); } }),
     door: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ P(g,x,y, x%5===0 ? "#4A2E14" : (y%6===0 ? "#3A2410" : pick(["#7A4E28","#6E4424"]))); } }),
-    water: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(y*.8+x*.3)+rand()*.7; P(g,x,y, v>1.1?"#F0FCFF":v>.2?"#A0E0FF":"#6AC4F4"); } }),
+    water: tex(g=>{ for(let x=0;x<16;x++){ const ph=rand()*16, sp=.6+rand()*.6; for(let y=0;y<16;y++){ const v=Math.sin((y+ph)*sp*.8)+rand()*.5; P(g,x,y, v>1.05?"#FFFFFF":v>.45?"#CFF2FF":v>-.3?"#8AD4FA":"#5AB8F0"); } } }),
     pool: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(x*.7+y*.4)+rand()*.5; P(g,x,y, v>1.1?"#DFF6FF":v>.2?"#6CC8F0":"#4AA8E0"); } }),
     cloud: noise(["#FFFFFF","#F4F8FF","#EAF2FF"]), blossom: noise(["#FFB8D8","#FF9AC8","#FFD2E6","#F286B8"], 10, ["#FFFFFF","#FFE6F0"]),
     leaves: noise(["#4FAE3A","#5CBE44","#449E30","#3E9A2E"], 10, ["#78D458"]), hedge: noise(["#3E8A30","#468E36","#367A2A"], 8, ["#5AA848"]),
@@ -41,7 +41,7 @@ export function build(A){
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, rock:{side:T.rock}, rockD:{side:T.rockD}, root:{side:T.root},
     stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.roof}, roofT:{side:T.roofT},
     gold:{side:T.gold, em:.25}, win:{side:T.win, em:.55}, door:{side:T.door},
-    water:{side:T.water, alpha:.78, anim:[0,-.8], em:.25}, pool:{side:T.pool, alpha:.85, anim:[.05,.03], em:.2},
+    water:{side:T.water, alpha:.8, anim:[0,1.8], em:.3}, pool:{side:T.pool, alpha:.85, anim:[.05,.03], em:.2},
     cloud:{side:T.cloud, alpha:.92, em:.15, soft:true}, cloudS:{side:T.cloud, em:.3, soft:true},
     blossom:{side:T.blossom}, leaves:{side:T.leaves}, hedge:{side:T.hedge}, log:{side:T.log, top:T.logTop}, planks:{side:T.planks}, planksD:{side:T.planksD},
     hull:{side:T.hull}, canvas:{side:T.canvas}, canvasR:{side:T.canvasR}, brass:{side:T.brass, em:.15}, iron:{side:T.iron}, rope:{side:T.rope},
@@ -195,8 +195,8 @@ export function build(A){
     // Fall: dicht an der Wand, wird nach unten breiter und löst sich auf
     for(let k=0;k<len*2;k++){ const y=top-k*.5, f=k/(len*2), ww=w*.5+f*2.2, off=1+f*1.6;
       for(let j=-ww;j<=ww;j+=.5){ if(f>.65 && rand()<(f-.65)*2.4) continue; const x=ex+.5+dx*off-dz*j, z=ez+.5+dz*off+dx*j; if(get(Math.floor(x),Math.floor(y),Math.floor(z))) continue; fs(x,y,z, f>.8 && rand()<.5 ? "mist" : "water"); } }
-    MIST.push([ex+dx*2, top-len*.9, ez+dz*2, w]); };
-  for(const [isl,ans] of [["grammar",[2.3,.85,1.6]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
+    MIST.push([ex+dx*2.5, top-len*.85, ez+dz*2.5, w]); };
+  for(const [isl,ans] of [["grammar",[2.3,.85]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
   // Bogenbrücken aus Stein zwischen den Inseln
   const bridge = (x0,z0,x1,z1,y0,y1) => { const n=Math.ceil(Math.hypot(x1-x0,z1-z0)), nx=-(z1-z0)/n, nz=(x1-x0)/n;
     for(let i=0;i<=n;i++){ const f=i/n, x=x0+(x1-x0)*f, z=z0+(z1-z0)*f, y=Math.round(y0+(y1-y0)*f + Math.sin(f*Math.PI)*1.5);
@@ -253,7 +253,7 @@ export function build(A){
     // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
     puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
            {n:14, pos:[10,6,D/2], dx:W-20, dy:2, dz:0, s0:14, s1:18, color:0xFFFFFF, opacity:.35, speed:.01, spread:20, flat:.4},
-           ...MIST.map(([x,y,z,w])=>({n:5, pos:[x,y,z], dx:0, dy:4, dz:0, s0:3+w, s1:8+w*2, color:0xFFFFFF, opacity:.5, speed:.05, spread:2+w}))],
+           ...MIST.map(([x,y,z,w])=>({n:10, pos:[x,y-2,z], dx:0, dy:6, dz:0, s0:8+w*2, s1:14+w*3, color:0xFFFFFF, opacity:.85, speed:.04, spread:3+w}))],
     clouds:[
       // Wolkenmeer weit unten
       ...[[-160,-14,-120],[-40,-16,-140],[90,-14,-150],[220,-16,-120],[-180,-15,0],[260,-14,10],[-120,-12,110],[200,-12,120],[46,-18,150],[-30,-14,-30],[130,-15,-40]].map(p=>({pos:p, r:46, n:28, sx:1.8, sy:.35, sz:1.4, flat:true, lo:0xC8D6EA, opacity:.95})),

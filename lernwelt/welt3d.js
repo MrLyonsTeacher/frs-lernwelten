@@ -204,7 +204,7 @@ export async function start(o){
   }
   /* Lichtwirbel (selten): baut sich spiralförmig rund um ein Bauwerk auf, zieht sich über der Spitze zusammen und schießt als Strahl in den Himmel.
      world.vortex = { c:[x,z], y0, top, R, color, period, off, build, squeeze, shoot, fade } */
-  let VX = null;
+  let VX = null, NIGHT = 0, ZOOMV = 0;
   if(world.vortex){ const v=world.vortex, n=o.lite?260:620, pos=new Float32Array(n*3), seed=[];
     for(let i=0;i<n;i++) seed.push([api.rand()*Math.PI*2, api.rand(), .75+api.rand()*.5, api.rand()]);
     const g=new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos,3));
@@ -401,8 +401,10 @@ export async function start(o){
     if(to){ const p=Math.min(1,(now-t0)/dur), e=ease(p); curPos.lerpVectors(from.pos,to.pos,e); curLook.lerpVectors(from.look,to.look,e); if(p>=1){ to=null; frames=0; } }
     const sway = (focus || reduce || o.still || dragging || Math.abs(orbitA)>.02) ? 0 : Math.sin(now/5200)*2;
     orbitA += (orbitT-orbitA)*(o.still ? 1 : 1-Math.exp(-dt*10));
-    { const dx=curPos.x+sway-curLook.x, dz=curPos.z-curLook.z, c=Math.cos(orbitA), sn=Math.sin(orbitA);
-      cam.position.set(curLook.x + dx*c - dz*sn, curPos.y, curLook.z + dx*sn + dz*c); } cam.lookAt(curLook);
+    // während des Lichtwirbels (nur in der Übersicht) weiter herausschwenken, danach zurück
+    { const want = (world.vortex && !focus && !to && !(world.vortex.zoom===0)) ? NIGHT : 0; ZOOMV += (want-ZOOMV)*(o.still ? 1 : 1-Math.exp(-dt*.8)); }
+    { const zf = 1 + (world.vortex ? (world.vortex.zoom ?? .55) : 0)*ZOOMV, dx=(curPos.x+sway-curLook.x)*zf, dz=(curPos.z-curLook.z)*zf, c=Math.cos(orbitA), sn=Math.sin(orbitA);
+      cam.position.set(curLook.x + dx*c - dz*sn, curLook.y + (curPos.y-curLook.y)*zf + 14*ZOOMV, curLook.z + dx*sn + dz*c); } cam.lookAt(curLook.x, curLook.y + 22*ZOOMV, curLook.z);
     for(const [tx,[ax,ay]] of anim) tx.offset.set(now*ax/1000, now*ay/1000);
     for(const pp of parts){ const a=pp.g.attributes.position.array, p=pp.p, [x0,x1,y0,y1,z0,z1]=p.area;
       for(let i=0;i<pp.n;i++){ const k3=i*3;
@@ -415,7 +417,7 @@ export async function start(o){
       else if(p.twinkle) pp.m.material.opacity = (p.opacity||.9)*(.65+.35*Math.sin(now/400)); }
     for(const s of puffs){ const pf=s.userData.pf; s.userData.t=(s.userData.t+dt*(pf.speed||.05))%1; const t=s.userData.t;
       s.position.set(pf.pos[0]+(pf.dx||0)*t+Math.sin(t*6+s.userData.ox*9)*(pf.spread||2), pf.pos[1]+(pf.dy||0)*t + (pf.ry? (s.userData.oz-.5)*pf.ry : 0), pf.pos[2]+(pf.dz||0)*t+s.userData.ox*(pf.spread||2)*(pf.sz||1));
-      const sc=(pf.s0||4)+t*(pf.s1||12); s.scale.set(sc,sc*(pf.flat||1),1); s.material.opacity=(pf.opacity||.5)*Math.sin(Math.PI*t); }
+      const sc=(pf.s0||4)+t*(pf.s1||12); s.scale.set(sc,sc*(pf.flat||1),1); s.material.opacity=(pf.opacity||.5)*Math.sin(Math.PI*t)*(1-NIGHT*.85); }
     if(bombs.length){ const bw = world.bombs, P = bw.period||10, g = bw.g||-16, life = bw.life||4; let flash = 0;
       for(const b of bombs){ const u = b.userData, ph = (tt - u.off) % P, s = ph < 0 ? ph + P : ph;
         if(s < life){ const y = bw.pos[1] + u.v[1]*s + .5*g*s*s; b.visible = y > (bw.floor ?? 0); b.position.set(bw.pos[0]+u.v[0]*s, y, bw.pos[2]+u.v[2]*s); b.children[0].rotation.set(s*u.spin, s*u.spin*.7, 0); }
@@ -427,26 +429,34 @@ export async function start(o){
       if(world.rays.drift){ r.position.x = u.bx + Math.sin(tr*.05+u.ph)*world.rays.drift; r.position.z = u.bz + Math.cos(tr*.04+u.ph*1.3)*world.rays.drift*.6; r.scale.x = .7+.5*(.5+.5*Math.sin(tr*.13+u.ph*3)); r.rotation.z = (world.rays.tilt??.25) + Math.sin(tr*.07+u.ph)*.06; } }
     for(const {b, pivot, m} of beams){ const tb = o.still ? (o.stillTime||12) : (now-clock0)/1000, ph=b.ph||0, sp=b.speed||.25;
       pivot.rotation.z = (b.tilt??.35)*Math.sin(tb*sp+ph); pivot.rotation.x = (b.tilt??.35)*.6*Math.cos(tb*sp*.8+ph); m.material.opacity = (b.opacity||.22)*(.75+.25*Math.sin(tb*1.3+ph*2)); }
-    if(VX){ const {v,pts,g,seed,n,veils,beam,core,orb,L,mist,mg,mseed,mn}=VX, B=v.build||9, Q=v.squeeze||3, Sh=v.shoot||3, F=v.fade||4, P=v.period||180, T=((tt+(v.off||0))%P+P)%P, sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
-      const on = T < B+Q+Sh+F, s=sm(T/B), q=sm((T-B)/Q), sh=sm((T-B-Q)/(Sh*.35)), fade=1-sm((T-B-Q-Sh*.5)/(Sh*.5+F)), [cx,cz]=v.c, H=v.top-v.y0;
+    if(VX){ const {v,pts,g,seed,n,veils,beam,core,orb,L,mist,mg,mseed,mn}=VX, B=v.build||9, Q=v.squeeze||3, Sh=v.shoot||3, F=v.fade||4, P=v.period||180, PRE=v.pre||7, POST=v.post||8, TT=((tt+(v.off||0))%P+P)%P, T=TT-PRE, sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
+      const END=B+Q+Sh+F, night = TT<PRE+END+POST ? sm(TT/PRE)*(1-sm((T-END)/POST)) : 0;
+      const on = T>=0 && T < END, s=sm(T/B), q=sm((T-B)/Q), sh=sm((T-B-Q)/(Sh*.35)), thin=sm((T-B-Q-Sh*.5)/(Sh*.5+F)), fade=1-sm((T-B-Q-Sh*.5)/(Sh*.5+F*.6))*0, [cx,cz]=v.c, H=v.top-v.y0;
+      // Nacht: Licht, Leuchtblöcke und Lampen langsam dunkler, Fokus auf der Zitadelle
+      NIGHT = night;
+      if(night>0 || VX.base){ const dk=(v.dark??.8)*night;
+        if(!VX.base){ VX.base={exp:renderer.toneMappingExposure, hemi:hemiL.intensity, sun:sun.intensity, fog:scene.fog?scene.fog.color.clone():null, em:[], pl:pls.map(l=>l.userData.int), pts:[]};
+          scene.traverse(m=>{ if(m===pts||m===mist) return; const ms=m.material ? (Array.isArray(m.material)?m.material:[m.material]) : []; for(const mt of ms){ if(mt.emissiveIntensity) VX.base.em.push([mt, mt.emissiveIntensity]); if(m.isPoints && mt.blending===THREE.AdditiveBlending) VX.base.pts.push([mt, mt.opacity]); } }); }
+        scene.backgroundIntensity = 1-dk*.85; renderer.toneMappingExposure = VX.base.exp*(1-dk*.45); hemiL.intensity = VX.base.hemi*(1-dk*.92); sun.intensity = VX.base.sun*(1-dk*.97);
+        for(const [mt,e] of VX.base.em) mt.emissiveIntensity = e*(1-dk*.96); for(const [mt,o2] of VX.base.pts) mt.opacity = o2*(1-dk*.9);
+        pls.forEach((l,i)=>{ l.userData.int = VX.base.pl[i]*(1-dk*.9); l.intensity = l.userData.int; });
+        if(scene.fog) scene.fog.color.copy(VX.base.fog).lerp(new THREE.Color(0x061428), dk);
+        if(night<=0){ scene.backgroundIntensity=1; renderer.toneMappingExposure=VX.base.exp; hemiL.intensity=VX.base.hemi; sun.intensity=VX.base.sun; for(const [mt,e] of VX.base.em) mt.emissiveIntensity=e; for(const [mt,o2] of VX.base.pts) mt.opacity=o2; pls.forEach((l,i)=>{ l.userData.int=VX.base.pl[i]; l.intensity=l.userData.int; }); if(scene.fog) scene.fog.color.copy(VX.base.fog); VX.base=null; } }
       mist.visible = pts.visible = beam.visible = core.visible = orb.visible = on;
       if(on){ const a=g.attributes.position.array, rot=tt*(1.1+2.4*q);
         for(let i=0;i<n;i++){ const [a0,h,rr,ph]=seed[i]; const hh = h*(1-q) + (1-h*.15)*q, r = v.R*rr*(1-q*.94)*(.55+.45*Math.min(1,(1-h)*1.4+.2)), ang=a0+rot+h*4;
           const yy = v.y0 + hh*H*Math.min(1, s*1.6-h*.6+.6) + (sh>0 ? (ph*60*sh) : 0);
           a[i*3]=cx+Math.cos(ang)*r; a[i*3+1]=yy; a[i*3+2]=cz+Math.sin(ang)*r; }
-        g.attributes.position.needsUpdate=true; pts.material.opacity = .9*s*fade;
+        g.attributes.position.needsUpdate=true; pts.material.opacity = .9*s*(1-thin);
         { const m=mg.attributes.position.array; for(let i=0;i<mn;i++){ const [arm,h,j]=mseed[i], hh=h*(1-q)+(1-h*.2)*q, r=v.R*(1.05-h*.35)*(1-q*.93)+(j-.5)*4, ang=arm/3*Math.PI*2 + rot*.8 + h*5.5 + j*.4;
             m[i*3]=cx+Math.cos(ang)*r; m[i*3+1]=v.y0+hh*H*Math.min(1,s*1.5-h*.5+.5)+(sh>0?j*40*sh:0); m[i*3+2]=cz+Math.sin(ang)*r; } mg.attributes.position.needsUpdate=true;
-          mist.visible=on; mist.material.opacity=.32*s*fade*(1-sh*.5); }
+          mist.visible=on; mist.material.opacity=.32*s*(1-thin)*(1-sh*.5); }
         veils.forEach((m,i)=>{ m.visible=false; return; const r=v.R*(1.05-i*.12)*(1-q*.9); m.scale.set(r, H*(.7+.3*s), r); m.position.set(cx, v.y0+H*(.35+.15*s)+q*H*.3, cz); m.rotation.y = (i%2?-1:1)*tt*(.6+i*.25+q*2); m.material.map.offset.y = -tt*.25; m.material.opacity = (.85-i*.18)*s*fade*(1-sh*.6); m.visible=on; });
-        orb.position.set(cx, v.top+2, cz); const os = 4+q*14+sh*10; orb.scale.set(os,os,1); orb.material.opacity = Math.min(1,q*1.2)*fade;
-        const bw=(v.beamW||4)*(1+.3*Math.sin(tt*9))*(sh>0?1:0); beam.position.set(cx, v.y0+H*.55, cz); beam.scale.set(bw*1.8, (260+H*.45)*sh, bw*1.8); beam.rotation.y=tt*2; beam.material.map.offset.y=-tt*.8; beam.material.opacity=.55*fade*sh;
-        core.position.copy(beam.position); core.scale.set(bw*.45, (260+H*.45)*sh, bw*.45); core.material.opacity=.85*fade*sh;
-        L.position.set(cx, v.top+4, cz); L.intensity = (v.light||1600)*(s*.25+q*.5+sh)*fade;
-        const dk = (v.dark??.55)*s*fade; VX.base = VX.base || {exp:renderer.toneMappingExposure, hemi:hemiL.intensity, sun:sun.intensity, fog:scene.fog?scene.fog.color.clone():null};
-        renderer.toneMappingExposure = VX.base.exp*(1-dk*.55); hemiL.intensity = VX.base.hemi*(1-dk); sun.intensity = VX.base.sun*(1-dk);
-        if(scene.fog) scene.fog.color.copy(VX.base.fog).lerp(new THREE.Color(0x0A1E3A), dk); }
-      else { L.intensity=0; if(VX.base){ renderer.toneMappingExposure=VX.base.exp; hemiL.intensity=VX.base.hemi; sun.intensity=VX.base.sun; if(scene.fog) scene.fog.color.copy(VX.base.fog); VX.base=null; } } }
+        orb.position.set(cx, v.top+2, cz); const os = 4+q*14+sh*10; orb.scale.set(os,os,1); orb.material.opacity = Math.min(1,q*1.2)*(1-thin);
+        const bw=(v.beamW||4)*(sh>0?1:0)*(1-thin*.97); beam.position.set(cx, v.y0+H*.55, cz); beam.scale.set(bw*1.8, (260+H*.45)*sh, bw*1.8); beam.rotation.y=tt*2; beam.material.map.offset.y=-tt*.8; beam.material.opacity=.55*sh*(1-thin*.4);
+        core.position.copy(beam.position); core.scale.set(bw*.45, (260+H*.45)*sh, bw*.45); core.material.opacity=.85*sh*(1-thin*.3);
+        L.position.set(cx, v.top+4, cz); L.intensity = (v.light||1600)*(s*.25+q*.5+sh)*(1-thin); }
+      else L.intensity=0; }
     if(PF){ const {v,g,seed,n,pts,glow,L}=PF, P=v.period||120, T=((tt+(v.off||0))%P+P)%P, D=v.dur||9, sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u), on=T<D, e = on ? sm(T/1.5)*(1-sm((T-D+2)/2)) : 0;
       pts.visible = glow.visible = on; L.intensity = (v.light||900)*e*(.85+.15*Math.sin(tt*9));
       if(on){ const a=g.attributes.position.array, cy=Math.cos(v.yaw||0), sy=Math.sin(v.yaw||0), spin=tt*(2+3*e);
@@ -494,13 +504,23 @@ export async function start(o){
             if(tc >= fly){ const spd=(ob.speed||.1)*dir, posAt = time => lift(P(time*spd+(ob.ph||0))), B=pc.pos, sm=u=>u*u*(3-2*u);
               const ang = (a,b,u) => { let d=b-a; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return a+d*u; };
               let X,Y,Z, yaw, bank=0, pitch=0, sit=0;
-              if(tc < fly+L){ const u=(tc-fly)/L; cr._ph="land"; cr._u=u; const A=posAt(tt-(tc-fly)), e=sm(u), arc=Math.sin(u*Math.PI)*(pc.arc||8);
-                X=A[0]+(B[0]-A[0])*e; Y=A[1]+(B[1]-A[1])*e + arc*(1-u); Z=A[2]+(B[2]-A[2])*e;
-                const yawTo = Math.atan2(-(B[2]-A[2]), B[0]-A[0]); yaw = ang(yawTo, pc.yaw, sm(Math.max(0,(u-.6)/.4))); pitch = -.25*Math.sin(u*Math.PI)+(u>.75? (u-.75)*1.2:0); sit = sm(Math.max(0,(u-.7)/.3)); }
-              else if(tc < fly+L+S2){ const v=tc-fly-L; cr._ph="sit"; cr._u=v/S2; X=B[0]; Y=B[1]+Math.sin(v*1.8)*.06; Z=B[2]; yaw=pc.yaw; sit=1;
+              // Ankunftsrichtung: pc.dir (z. B. diagonal Richtung Kamera) – der Drache sitzt dann genau so, ohne Umdrehen
+              const dB = pc.dir ? (()=>{ const l=Math.hypot(pc.dir[0],pc.dir[1]); return [pc.dir[0]/l, pc.dir[1]/l]; })() : [Math.cos(pc.yaw), -Math.sin(pc.yaw)], yawB = Math.atan2(-dB[1], dB[0]);
+              const bez = (p0,p1,p2,p3,u) => { const m=1-u; return [m*m*m*p0[0]+3*m*m*u*p1[0]+3*m*u*u*p2[0]+u*u*u*p3[0], m*m*m*p0[1]+3*m*m*u*p1[1]+3*m*u*u*p2[1]+u*u*u*p3[1]]; };
+              const tangentAt = time => { const a=posAt(time), b=posAt(time+.15); const l=Math.hypot(b[0]-a[0],b[2]-a[2])||1; return [(b[0]-a[0])/l,(b[2]-a[2])/l]; };
+              if(tc < fly+L){ const u=(tc-fly)/L; cr._ph="land"; cr._u=u; const t0=tt-(tc-fly), A=posAt(t0), dA=tangentAt(t0), D=Math.hypot(B[0]-A[0],B[2]-A[2]);
+                const ctrl = [[A[0],A[2]],[A[0]+dA[0]*D*.55, A[2]+dA[1]*D*.55],[B[0]-dB[0]*D*.45, B[2]-dB[1]*D*.45],[B[0],B[2]]];
+                const ue = 1-Math.pow(1-u,1.6), xz=bez(...ctrl,ue), xz2=bez(...ctrl,Math.min(1,ue+.02));
+                X=xz[0]; Z=xz[1]; Y = B[1] + (A[1]-B[1])*Math.pow(1-u,2.6);          // erst steil, dann immer flacher
+                yaw = Math.atan2(-(xz2[1]-xz[1]), xz2[0]-xz[0]); if(u>.97) yaw = yawB;
+                const xz3=bez(...ctrl,Math.min(1,ue+.05)); let turn=Math.atan2(-(xz3[1]-xz2[1]), xz3[0]-xz2[0])-yaw; while(turn>Math.PI) turn-=2*Math.PI; while(turn<-Math.PI) turn+=2*Math.PI;
+                bank = Math.max(-.45,Math.min(.45,-turn*6))*(1-u); pitch = -.35*(1-u)*Math.min(1,u*5) + (u>.82 ? (u-.82)*1.6 : 0); sit = sm(Math.max(0,(u-.78)/.22)); }
+              else if(tc < fly+L+S2){ const v=tc-fly-L; cr._ph="sit"; cr._u=v/S2; X=B[0]; Y=B[1]+Math.sin(v*1.8)*.06; Z=B[2]; yaw=yawB; sit=1;
                 const f=v-1.5; cr._fire = (f>0 && f<S2-3 && (f%5)<2.6) ? Math.min(1,(f%5)/.4)*Math.min(1,(2.6-(f%5))/.4) : 0; }
-              else { const u=(tc-fly-L-S2)/U; cr._ph="up"; cr._u=u; const C=posAt(tt+(Pd-tc)), e=sm(u); X=B[0]+(C[0]-B[0])*e; Y=B[1]+(C[1]-B[1])*e + Math.sin(u*Math.PI)*(pc.arc||8)*.6; Z=B[2]+(C[2]-B[2])*e;
-                yaw = ang(pc.yaw, Math.atan2(-(C[2]-B[2]), C[0]-B[0]), sm(Math.min(1,u*2.5))); pitch = .35*Math.sin(u*Math.PI); sit = 1-sm(Math.min(1,u/.3)); }
+              else { const u=(tc-fly-L-S2)/U; cr._ph="up"; cr._u=u; const t1=tt+(Pd-tc), C=posAt(t1), dC=tangentAt(t1), D=Math.hypot(C[0]-B[0],C[2]-B[2]);
+                const ctrl = [[B[0],B[2]],[B[0]+dB[0]*D*.45, B[2]+dB[1]*D*.45],[C[0]-dC[0]*D*.45, C[2]-dC[1]*D*.45],[C[0],C[2]]];
+                const ue = Math.pow(u,1.5), xz=bez(...ctrl,ue), xz2=bez(...ctrl,Math.min(1,ue+.02));
+                X=xz[0]; Z=xz[1]; Y = B[1] + (C[1]-B[1])*(1-Math.pow(1-u,2)); yaw = u<.03 ? yawB : Math.atan2(-(xz2[1]-xz[1]), xz2[0]-xz[0]); pitch = .3*Math.sin(Math.min(1,u*1.4)*Math.PI); sit = 1-sm(Math.min(1,u/.25)); }
               if(sf && cr._ph!=="sit"){ const uu = cr._ph==="land" ? cr._u : 1-cr._u, keep = 1-Math.min(1,Math.max(0,(uu-.7)/.3)); const m = sf(X,Z)+(ob.wander.clear??8)*keep; if(keep>0 && Y<m) Y = Y + (m-Y)*keep; }
               outer.position.set(X,Y,Z); outer.rotation.y = yaw; outer.rotation.x = bank; outer.rotation.z = pitch; st.y=Y; st.yaw=yaw; st.bank=bank; st.pitch=pitch; cr._sit = sit; } }
           // in Wolken ganz verschwinden: weich ausblenden, solange die Mitte in einer Wolke steckt
