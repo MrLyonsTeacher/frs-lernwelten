@@ -258,3 +258,54 @@ export function magmaDrake(){
   wings.forEach(([w,pv,o,pv2,s])=>{ parts.push({cubes:w.list(), pivot:pv, parent:0, rot:["x",.18*s,.9,0,-.05*s]}); const wi=parts.length-1; parts.push({cubes:o.list(), pivot:pv2, parent:wi, rot:["x",.14*s,.9,-.5]}); });
   return { parts };
 }
+
+/* ---------- Roter Dämon (nach Vorlage des Nutzers): kantiger Körper, Rillenhörner, Kette, Metallbänder, Lendenschurz, Fledermausflügel ---------- */
+export function redDemon(){
+  const R=[0x9E2C22,0xA8322A,0x92281E,0xB03A2E], RD=[0x76201A,0x80241C], IRON=[0x8C8C8C,0x9A9A9A,0x7E7E7E], IRD=0x5E5E5E, BLK=[0x1E1A1C,0x262224], EYE=0xFFD23A, TOOTH=0xE8E2D2, MEM=[0xC8643C,0xD07044,0xBC5A34], MEMD=0x7A2018, MEMO=0xA83A28, BONE=0x8A2A22;
+  const pk = (a,x,y,z) => a[((x*7+y*13+z*5)%a.length+a.length)%a.length];
+  const skin = (x,y,z) => ((x*3+y*2+z)%11===0) ? pk(RD,x,y,z) : pk(R,x,y,z);
+  const body = M();
+  // Rumpf: breiter, tiefer Oberkörper mit Brust- und Bauchplatten
+  body.box(-6,22,-8,6,38,8,skin);
+  for(const s of [-1,1]) body.box(6,32,1*s,7,36,6*s,skin);                               // Brustmuskeln
+  for(let y=24;y<=30;y+=3) for(const s of [-1,1]) body.box(6,y,1*s,6,y+1,4*s,(x,yy,z)=>pk(RD,x,yy,z));   // Bauchrillen
+  body.box(-5,38,-6,5,40,6,skin);                                                          // Nacken/Schulteransatz
+  // Kette diagonal über die Brust (graue Glieder, abwechselnd quer/längs)
+  for(let i=0;i<9;i++){ const y=39-i*2, z=-6+i*1.5, x=7; if(i%2===0) body.box(x,y,Math.round(z)-1,x+1,y,Math.round(z)+1,(a,b,c)=>pk(IRON,a,b,c)).put(x+1,y,Math.round(z),IRD); else body.box(x,y-1,Math.round(z),x+1,y+1,Math.round(z),(a,b,c)=>pk(IRON,a,b,c)).put(x+1,y,Math.round(z),IRD); }
+  for(let i=0;i<4;i++) body.box(-7,38-i*3,8-i*2,-6,38-i*3,8-i*2,(a,b,c)=>pk(IRON,a,b,c));       // Kette läuft auf dem Rücken weiter
+  // Gürtel mit Schnalle, Lendenschurz
+  body.box(-6,20,-8,7,21,8,(a,b,c)=>pk(IRON,a,b,c)); body.box(7,19,-2,8,22,2,IRD); body.box(8,20,-1,8,21,1,pk(IRON,1,1,1));
+  body.box(-6,14,-7,7,19,7,(a,b,c)=>pk(BLK,a,b,c)); body.box(7,10,-3,8,18,3,(a,b,c)=>pk(BLK,a,b,c));
+  // Kopf: großer kantiger Schädel, Brauenwulst, gelbe Augen, Zahnreihe, Ohrspitzen, Rillenhörner schräg nach außen
+  const head = M();
+  head.box(-4,39,-8,10,55,8,skin); head.box(10,51,-8,11,53,8,(x,y,z)=>pk(RD,x,y,z));
+  for(const s of [-1,1]){ head.box(11,48,2*s,11,50,5*s,EYE); head.put(11,50,4*s,0xFFF2A0,1).put(11,48,2*s,0xE8A020); }
+  head.box(11,46,-1,11,47,1,pk(RD,1,1,1));                                                  // Nase
+  head.box(10,41,-6,11,45,6,0x2A0E0A); for(let z=-6;z<=6;z+=2){ head.put(11,45,z,TOOTH).put(11,44,z,TOOTH); } for(let z=-5;z<=5;z+=2){ head.put(11,41,z,TOOTH).put(11,42,z,TOOTH); }
+  
+  head.box(2,56,-1,3,57,1,0x6A6A6A);                                            // kleiner Stachel oben
+  for(const s of [-1,1]) for(let k=0;k<10;k++){ const y=54+k*1.2, z=(6+k*1.05)*s, x=2-k*.2; head.box(Math.round(x)-2,Math.round(y),Math.round(z)-2,Math.round(x)+2,Math.round(y)+1,Math.round(z)+2,(a,b,c)=> (b===Math.round(y)+1 && k%2) ? IRD : pk(IRON,a,b,c)); }
+  // Arme: massig, Schulterband und Unterarmband aus Metall, große Fäuste
+  const arms=[]; for(const s of [-1,1]){ const a=M(); a.box(-4,30,8*s,4,40,13*s,skin); a.box(-4,34,8*s,4,35,13*s,(x,y,z)=>pk(IRON,x,y,z));
+    a.box(-3,18,8*s,4,30,13*s,skin); a.box(-3,21,8*s,4,23,13*s,(x,y,z)=>pk(IRON,x,y,z)); a.box(-3,12,8*s,5,18,13*s,skin); a.box(5,13,8*s,5,17,13*s,(x,y,z)=>pk(RD,x,y,z));
+    arms.push([a,[0,38,10*s]]); }
+  // Beine: kurz und dick, Metallband am Knöchel, breite Füße
+  const legs=[]; for(const s of [-1,1]){ const l=M(); l.box(-4,4,1*s,4,14,7*s,skin); l.box(-3,2,1*s,4,4,7*s,(x,y,z)=>pk(IRON,x,y,z)); l.box(-3,0,1*s,6,2,7*s,skin); l.box(6,0,2*s,6,1,6*s,(x,y,z)=>pk(RD,x,y,z)); legs.push([l,[0,14,4*s]]); }
+  // Fledermausflügel: Knochenarm, Finger, Haut in zwei Tönen mit Fingern als dunklen Rippen
+  const wing = s => { const w=M(), o=M(), root=[-6,36,7*s], el=[-9,40,20*s];
+    w.line(root,el,BONE).line([root[0],root[1]+1,root[2]],[el[0],el[1]+1,el[2]],BONE);
+    for(let u=0;u<=1;u+=.02) for(let v=0;v<=1;v+=.03){ const A=root, B=el, C=[-8,28,8*s], D=[-11,32,20*s]; const p=[0,1,2].map(i=>(1-u)*(1-v)*A[i]+u*(1-v)*B[i]+(1-u)*v*C[i]+u*v*D[i]); w.put(p[0],p[1],p[2], pk(MEM,Math.round(p[0]),Math.round(p[1]),Math.round(p[2]))); }
+    const tips=[[-9,44,46*s],[-12,38,48*s],[-14,33,42*s],[-14,30,32*s],[-11,32,20*s]];
+    o.line(el,[-8,43,30*s],BONE); o.line([-8,43,30*s],[-9,44,46*s],BONE);
+    for(const tp of tips.slice(0,4)) o.line(el,tp,MEMD);
+    for(let k=0;k<tips.length-1;k++) for(let u=0;u<=1;u+=.015) for(let v=0;v<=1;v+=.015){ if(u+v>1) continue; const a=tips[k], b=tips[k+1], sag=1-Math.sin(Math.PI*(v/((u+v)||1)))*.18*(u+v);
+      const p=[0,1,2].map(i=> el[i]+((a[i]-el[i])*u+(b[i]-el[i])*v)*sag); if(u+v>.95 && ((Math.round(u*60)+k)%3===0)) continue;
+      o.put(p[0],p[1],p[2], (u+v)>.82 ? MEMO : pk(MEM,Math.round(p[0]*3),Math.round(p[1]),Math.round(p[2]))); }
+    for(const tp of tips.slice(0,4)) o.put(tp[0],tp[1],tp[2],MEMD);
+    return [w,o,root,el]; };
+  const parts=[ {cubes:body.list(), pivot:[0,20,0]}, {cubes:head.list(), pivot:[2,40,0], parent:0, rot:["y",.12,.6,0]} ];
+  arms.forEach(([a,pv],i)=>parts.push({cubes:a.list(), pivot:pv, parent:0, rot:["z",.18,.9,i*Math.PI]}));
+  legs.forEach(([l,pv],i)=>parts.push({cubes:l.list(), pivot:pv, rot:["z",.12,.9,i*Math.PI]}));
+  for(const s of [-1,1]){ const [w,o,root,el]=wing(s); parts.push({cubes:w.list(), pivot:root, parent:0, rot:["x",.25*s,1.4,0,-.1*s]}); const wi=parts.length-1; parts.push({cubes:o.list(), pivot:el, parent:wi, rot:["x",.18*s,1.4,-.5]}); }
+  return { parts };
+}
