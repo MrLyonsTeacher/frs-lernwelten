@@ -135,3 +135,45 @@ export function magmaGiant(){
   return { parts:[ {cubes:body.list(), pivot:[0,20,0]}, {cubes:head.list(), pivot:[9,35,0], parent:0},
     ...arms.map(([a,pv])=>({cubes:a.list(), pivot:pv, parent:0})), ...legs.map(([l,pv])=>({cubes:l.list(), pivot:pv})) ] };
 }
+
+/* ---------- Obsidian-Dämon (eigener Entwurf): schlank, Rabenschwingen aus Knochenfedern, Schnabelschädel mit drei Augen, violettes Seelenfeuer ---------- */
+export function shadeDemon(){
+  const OB=0x141018, OB2=0x221A28, OB3=0x302438, BONE=0xE8E4DC, BONE2=0xC8C2B8, VI=0xB040FF, VI2=0xE090FF, VI3=0x6A1AB0, CY=0x7FF0FF;
+  const skin = (x,y,z) => ((x*3+y*5+z*7)%9===0) ? OB3 : ((x+y+z)%3===0 ? OB2 : OB);
+  const body = M();
+  // Becken, schmale Taille, Brustkorb mit glühenden Rippenspalten
+  body.ell(0,20,0,3,2.4,3.4,skin); body.seg([0,21,0],[0,26,0],2.2,2.6,skin); body.ell(.5,30,0,3.6,4,4.6,skin);
+  for(const y of [27,29,31,33]) for(let z=-3;z<=3;z++){ if(Math.abs(z)<1) continue; body.put(4,y,z,VI,1); body.put(3,y,z, Math.abs(z)>2?VI3:VI2,1); }
+  body.ell(4.2,30,0,.8,2.6,.8,VI2,1);                                                   // Brustbein glüht
+  // Schultern mit Knochenplatten
+  for(const s of [-1,1]){ body.ell(0,34,5*s,2.4,2,2.2,skin); body.box(-1,36,4*s,2,36,6*s,BONE2); body.put(0,37,5*s,BONE); }
+  // Hals
+  body.seg([1,34,0],[3,38,0],1.6,1.3,skin);
+  // Kopf: langer Schnabelschädel, drei Augen, nach hinten gerichtete Kristallkrone
+  const head = M();
+  head.ell(4,40,0,2.6,2.4,2.2,BONE); head.seg([5,39.5,0],[12,37,0],1.8,.5,BONE); head.seg([5,38,0],[11,36.4,0],1.1,.35,BONE2);
+  head.put(10,37,0,OB).put(9,37,0,OB);
+  for(const z of [-1,1]) head.box(6,40,z*1.6,6,40,z*1.6,VI2,1); head.put(6,41,0,CY,1).put(5,41,0,CY,1);
+  for(let i=0;i<7;i++){ const a=(i-3)*.42; head.seg([3,42,0],[-4,45+Math.cos(a)*3,Math.sin(a)*6],.6,.25,OB3); head.put(-4,46+Math.cos(a)*3,Math.sin(a)*6,VI2,1); }
+  // Arme: lang, dünn, Krallen
+  const arms=[]; for(const s of [-1,1]){ const a=M(); a.seg([0,34,6*s],[3,28,8*s],1.3,1.1,skin).seg([3,28,8*s],[7,22,8*s],1.1,.9,skin);
+    for(const dz of [-.8,0,.8]) a.line([7,22,8*s+dz],[9,19,8*s+dz*1.6],BONE); a.put(9,19,8*s,VI2,1); arms.push([a,[0,34,6*s]]); }
+  // Beine: rückwärts geknickt, Klauen
+  const legs=[]; for(const s of [-1,1]){ const l=M(); l.seg([0,19,2.4*s],[2,13,2.8*s],1.6,1.2,skin).seg([2,13,2.8*s],[-1,6,2.8*s],1.2,.9,skin).seg([-1,6,2.8*s],[1,1,2.8*s],.9,.8,skin);
+    for(const dz of [-.9,0,.9]) l.line([1,1,2.8*s+dz],[4,0,2.8*s+dz*1.8],BONE); l.line([1,1,2.8*s],[-1,0,2.8*s],BONE); legs.push([l,[0,19,2.4*s]]); }
+  // Schwanz mit Kristallstachel
+  const tail = M(); tail.seg([-2,20,0],[-8,16,0],1.4,1,skin).seg([-8,16,0],[-14,14,0],1,.6,skin).seg([-14,14,0],[-18,15,0],.6,.4,skin); tail.line([-18,15,0],[-21,17,0],VI2,1); tail.put(-21,17,0,CY,1);
+  // Schwingen: Knochenarm, lange Federklingen (dunkel, Kanten violett glühend), Ober- und Unterflügel
+  const wing = s => { const w=M(), o=M();
+    w.seg([-1,35,3*s],[-3,40,10*s],.9,.7,BONE2).seg([-3,40,10*s],[-2,44,17*s],.7,.5,BONE2);
+    for(let i=0;i<9;i++){ const bx=-3+(i*.2), bz=(5+i*1.4)*s, by=37+i*.8; for(let k=0;k<14+i;k++){ const y=by-k*.9, x=bx-k*.55; w.put(x,y,bz, k>=12+i ? VI2 : (k%3===0 ? OB3 : OB2), k>=12+i ? 1 : 0); w.put(x,y,bz+(s*.6), OB); } }
+    o.seg([-2,44,17*s],[1,49,29*s],.6,.35,BONE);
+    for(let i=0;i<10;i++){ const bz=(17+i*1.2)*s, by=44+i*.5, bx=-2+i*.3; for(let k=0;k<18+i*.6;k++){ const y=by-k*.95, x=bx-k*.6; o.put(x,y,bz, k>=16+i*.6 ? VI2 : (k%3===1 ? OB3 : OB2), k>=16+i*.6 ? 1 : 0); } o.put(bx+.6,by+1,bz,VI,1); }
+    return [w,o]; };
+  const [wL,oL]=wing(1), [wR,oR]=wing(-1);
+  return { parts:[ {cubes:body.list(), pivot:[0,20,0]}, {cubes:head.list(), pivot:[3,38,0], parent:0},
+    ...arms.map(([a,pv])=>({cubes:a.list(), pivot:pv, parent:0})), ...legs.map(([l,pv])=>({cubes:l.list(), pivot:pv})),
+    {cubes:tail.list(), pivot:[-2,20,0]},
+    {cubes:wL.list(), pivot:[-1,35,3], parent:0, rot:["x",.2,1.2,0,-.15]}, {cubes:oL.list(), pivot:[-2,44,17], parent:7, rot:["x",.15,1.2,-.5]},
+    {cubes:wR.list(), pivot:[-1,35,-3], parent:0, rot:["x",-.2,1.2,0,.15]}, {cubes:oR.list(), pivot:[-2,44,-17], parent:9, rot:["x",-.15,1.2,-.5]} ] };
+}
