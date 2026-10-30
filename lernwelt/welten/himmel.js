@@ -205,11 +205,11 @@ export function build(A){
       if(i%6===3){ fs(x+nx*2+.5,y+1.5,z+nz*2+.5,"pillar"); set(x+nx*2,y+2,z+nz*2,"lamp"); } } };
   bridge(30,36,22,44,24,18); bridge(62,36,70,44,24,16);
   // kleine Inseln nahe am Bild
-  for(const [cx,cz,r,y,d] of [[34,62,4,10,"tree"],[60,64,5,8,"tree"],[90,34,3,26,"rock"],[2,30,3,22,"tree"],[26,8,4,36,"tree"],[68,6,4,38,"rock"]]){ island(cx,cz,r,y,{deep:1.1});
+  for(const [cx,cz,r,y,d] of [[34,62,4,10,"tree"],[60,64,5,8,"tree"],[118,44,3,24,"rock"],[2,30,3,22,"tree"],[26,8,4,36,"tree"],[68,6,4,38,"rock"]]){ island(cx,cz,r,y,{deep:1.1});
     const t=topAt(cx,cz,y+4); if(d==="tree") tree(cx,t+1,cz,4,2.2, rand()<.5?"blossom":"leaves"); else for(let k=1;k<=3;k++) set(cx,t+k,cz,"crystal"); }
   for(const [cx,cz,y] of [[34,62,10],[60,64,8],[2,30,22],[26,8,36]]) fall(cx,cz,y,Math.PI/2,1,14);
   // ---------- Portal-Insel: uralter Torbogen mit wirbelndem Portal, Steintreppe, Felsbrocken, Palmen ----------
-  { const cx=114, cz=6, y=38, r=9; island(cx,cz,r,y,{deep:1.5}); level(cx,cz,r-2,y);
+  { const cx=94, cz=14, y=34, r=9; island(cx,cz,r,y,{deep:1.5}); level(cx,cz,r-2,y);
     const px=cx, pz=cz-1, H=15, half=4;
     for(const sg of [-1,1]){ const x=px+sg*half; fill(x-1,y+1,pz-1,x+1,y+2,pz+1,"ancient"); fill(x,y+3,pz,x,y+H,pz,(a,b)=> (b-y)%4===0 ? "rune" : "ancient"); for(const dz of [-1,1]) fill(x,y+3,pz+dz,x,y+H-2,pz+dz,(a,b)=> (b-y)%3===1 ? "rune" : "ancient"); set(x+sg,y+H-3,pz,"ancient"); }
     for(let i=0;i<=24;i++){ const th=i/24*Math.PI, ax=px+.5+Math.cos(th)*(half+.6), ay=y+H+Math.sin(th)*4; for(let dz=-1;dz<=1;dz+=.5) fs(ax,ay,pz+.5+dz, i%4===0 ? "rune" : "ancient"); fs(px+.5+Math.cos(th)*(half+1.3), y+H+Math.sin(th)*4.7, pz+.5, "ancient"); }
@@ -222,7 +222,7 @@ export function build(A){
       const tx=ox, ty=t+h; for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; for(let k=1;k<=7;k++){ const rr=k*.5; fs(tx+Math.cos(a)*rr, ty+Math.sin(k/7*Math.PI)*1.2-k*.2, oz+Math.sin(a)*rr, "leaves"); } } };
     palm(cx+5,cz-4,8,1); palm(cx+6,cz+2,6,-1); palm(cx-6,cz+3,7,.6);
     for(const [ox,oy,oz,rr] of [[-14,8,-4,1.6],[14,-2,-8,2],[-10,-6,8,1.2],[12,12,6,1.1]]) ellip(cx+ox,y+oy,cz+oz,rr,rr*.8,rr,(a,b,c)=> b>y+oy+rr*.4 ? "grass" : "rock");
-    S.portal=[px,y+8,pz]; }
+    S.portal=[px+.5,y+1+(H+4)/2,pz+.5,half*2-.6,H+3.6]; }
 
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
   const farIsle = (cx,cz,r,y,deco) => { island(cx,cz,r,y,{deep:1.3, bare:true}); const t=topAt(cx,cz,y+4)+1;
@@ -230,7 +230,7 @@ export function build(A){
     if(deco==="tower"){ cyl(cx,t,cz,2,12,(a,b,c)=>(b-t)%5===0?"trim":"stone"); cone(cx,t+12,cz,2.8,8,"roof"); set(cx+2,t+6,cz,"win"); tree(cx+r*.55,t,cz-1,3,2,"leaves"); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
     if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
-  for(const [cx,cz,r,y,d] of [[-22,-12,8,32,"tree"],[118,-8,9,36,"tower"],[96,-46,10,48,"tree"],[-6,-50,7,42,"ruin"],[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[150,-40,8,44,"tree"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
+  for(const [cx,cz,r,y,d] of [[-22,-12,8,32,"tree"],[150,-34,9,40,"tower"],[96,-46,10,48,"tree"],[-6,-50,7,42,"ruin"],[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[150,-40,8,44,"tree"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
   // ---------- Gipfel über dem Wolkenmeer (weit weg, grob) ----------
   const F = A.far; F.cell = 3;
@@ -247,7 +247,8 @@ export function build(A){
     W, D, blocks, spots:S, exposure:1.1, fov:40,
     sky:[[0,"#1E62D0"],[.45,"#6AB0FA"],[.72,"#FFD2B4"],[1,"#F4E8E0"]], fog:[0xC8DCF4, 170, 560],
     hemi:[0xDDEBFF, 0x8A9AB0, 1.7], sun:{color:0xFFF4E0, int:2.1, pos:[60,120,90]}, bloom:[.3,.5,.9],
-    lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[114,46,9], color:0xC88AFF, int:260, dist:30, flicker:1400}],
+    portalFx:{pos:S.portal.slice(0,3), w:S.portal[3], h:S.portal[4], yaw:0, color:0xD08AFF, period:120, off:20, dur:10, light:1400},
+    lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[94,42,17], color:0xC88AFF, int:260, dist:30, flicker:1400}],
     planes:[{y:-30, size:1400, color:0xB8CCE6, em:0}],
     // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
     puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
@@ -265,7 +266,7 @@ export function build(A){
       {pos:[150,30,-80], r:20, n:44, sx:1.7, sy:.8, sz:1.2},
       {pos:[-90,36,-70], r:18, n:40, sx:1.6, sy:.8, sz:1.2}
     ],
-    particles:[{n:160, area:[106,122,38,58,0,12], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
+    particles:[{n:160, area:[86,102,34,54,8,20], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
                {n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
     home:{pos:[W/2,64,D+96], look:[W/2,28,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},

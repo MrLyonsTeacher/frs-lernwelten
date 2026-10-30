@@ -229,6 +229,13 @@ export async function start(o){
     const orb=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:0xBFF4FF, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); scene.add(orb);
     const L=new THREE.PointLight(v.color||0x7FD8FF, 0, v.R*4, 2); scene.add(L);
     VX={v, pts, g, seed, n, veils, beam, core, orb, L, mist, mg, mseed, mn}; if(o.still) window.__vx=VX; }
+  /* Portal-Aktivierung (selten): world.portalFx = { pos:[x,y,z], w, h, yaw, color, period, off, dur } */
+  let PF=null;
+  if(world.portalFx){ const v=world.portalFx, n=o.lite?200:520, g=new THREE.BufferGeometry(), seed=[]; g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n*3),3));
+    for(let i=0;i<n;i++) seed.push([api.rand(), api.rand()*Math.PI*2, api.rand()]);
+    const pts=new THREE.Points(g, new THREE.PointsMaterial({color:0xFFE6FF, size:2.2, map:softTex, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); pts.frustumCulled=false; scene.add(pts);
+    const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:0xF0D8FF, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); glow.position.set(...v.pos); scene.add(glow);
+    const L=new THREE.PointLight(v.color||0xD08AFF, 0, 50, 2); L.position.set(...v.pos); scene.add(L); PF={v,g,seed,n,pts,glow,L}; }
   // Echte Wolken: Haufen aus weichen Bällchen (oben hell, unten grau-blau). Sie verdecken Tiere, die hineinfliegen, nach und nach.
   const cloudParts = [];
   if(world.clouds){ const ct = (() => { const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d");
@@ -282,6 +289,12 @@ export async function start(o){
   for(const c of creatures){ const fc=c.cr.fire; if(!fc) continue; c.fireP=[];
     for(let i=0;i<(o.lite?40:fc.n||80);i++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:i%3?0xFF8A2A:0xFFD060, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:0})); sp.visible=false; scene.add(sp); c.fireP.push({sp, age:99, v:new THREE.Vector3()}); }
     c.fireL = new THREE.PointLight(0xFF7A2A, 0, 40, 2); scene.add(c.fireL); }
+  // Blitze (z. B. aus dem Dreizack): zackige Lichtbahnen nach oben, flackern neu, mit Lichtblitz
+  for(const c of creatures){ const bc=c.cr.bolts; if(!bc) continue; c.boltL=[];
+    for(let i=0;i<(bc.n||4)*2;i++){ const g=new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(16*3),3));
+      const l=new THREE.Line(g, new THREE.LineBasicMaterial({color:i%2?0xFFF4B0:(bc.color||0xFFE45A), transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, fog:false})); l.frustumCulled=false; scene.add(l); c.boltL.push(l); }
+    c.boltG=[]; for(let i=0;i<40;i++){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:bc.color||0xFFE45A, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); scene.add(sp); c.boltG.push(sp); }
+    c.boltLight = new THREE.PointLight(bc.color||0xFFE45A, 0, 60, 2); scene.add(c.boltLight); c.boltT=0; if(o.still) window.__bolt=c; }
   // Sicherheits-Höhenfeld für frei fliegende Tiere: höchster Block in der Umgebung (+ Spannweite), weich geglättet
   const safeFields = new Map();
   function safeField(R){ if(safeFields.has(R)) return safeFields.get(R);
@@ -434,6 +447,12 @@ export async function start(o){
         renderer.toneMappingExposure = VX.base.exp*(1-dk*.55); hemiL.intensity = VX.base.hemi*(1-dk); sun.intensity = VX.base.sun*(1-dk);
         if(scene.fog) scene.fog.color.copy(VX.base.fog).lerp(new THREE.Color(0x0A1E3A), dk); }
       else { L.intensity=0; if(VX.base){ renderer.toneMappingExposure=VX.base.exp; hemiL.intensity=VX.base.hemi; sun.intensity=VX.base.sun; if(scene.fog) scene.fog.color.copy(VX.base.fog); VX.base=null; } } }
+    if(PF){ const {v,g,seed,n,pts,glow,L}=PF, P=v.period||120, T=((tt+(v.off||0))%P+P)%P, D=v.dur||9, sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u), on=T<D, e = on ? sm(T/1.5)*(1-sm((T-D+2)/2)) : 0;
+      pts.visible = glow.visible = on; L.intensity = (v.light||900)*e*(.85+.15*Math.sin(tt*9));
+      if(on){ const a=g.attributes.position.array, cy=Math.cos(v.yaw||0), sy=Math.sin(v.yaw||0), spin=tt*(2+3*e);
+        for(let i=0;i<n;i++){ const [r0,a0,h]=seed[i], arm=i%3, r=Math.pow(r0,.7), ang=a0*.15 + arm/3*Math.PI*2 + spin - r*5, x=Math.cos(ang)*r*(v.w||4)*.5, y=Math.sin(ang)*r*(v.h||8)*.5, d=(h<.5?-1:1)*(1+h*.6);
+          a[i*3]=v.pos[0]+x*cy-d*sy; a[i*3+1]=v.pos[1]+y; a[i*3+2]=v.pos[2]+x*(-sy)-d*cy; }
+        g.attributes.position.needsUpdate=true; pts.material.opacity=.95*e; const gs=(v.h||8)*(1.1+.25*Math.sin(tt*5))*e; glow.scale.set(gs*.8,gs,1); glow.material.opacity=.85*e; } }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
     const c_route = cr => { if(cr._route!==undefined) return !!cr._route; const c=creatures.find(q=>q.cr===cr); cr._route = c && c.route ? c.route : null; return !!cr._route; };
     for(const {cr, outer, movers, safe:sf} of creatures){
@@ -519,6 +538,16 @@ export async function start(o){
       let spawn = on>0 ? on*(fc.rate||90)*dt : 0; c.fireL.position.copy(mouth); c.fireL.intensity = on*(fc.light||600)*(.8+.2*Math.sin(now/60));
       for(const p of c.fireP){ if(p.age>=1 && spawn>=1){ spawn--; p.age=0; p.sp.position.copy(mouth); p.v.copy(fwd).multiplyScalar((fc.speed||22)*(.8+Math.random()*.4)).add(new THREE.Vector3((Math.random()-.5)*4,(Math.random()-.2)*3,(Math.random()-.5)*4)); p.sp.visible=true; }
         if(p.age<1){ p.age += dt/(fc.life||.9); p.sp.position.addScaledVector(p.v, dt); p.v.y += dt*6; const sz=(fc.size||1.2)*(1+p.age*4); p.sp.scale.set(sz,sz,1); p.sp.material.opacity = Math.max(0,(1-p.age))*.9; p.sp.material.color.setHex(p.age<.35?0xFFE08A:(p.age<.7?0xFF8A2A:0x8A3A2A)); if(p.age>=1) p.sp.visible=false; } } }
+    for(const c of creatures){ if(!c.boltL) continue; const bc=c.cr.bolts, on=bc.active(tt), tip=new THREE.Vector3(...bc.at); c.movers[bc.part].g.localToWorld(tip);
+      c.boltLight.position.copy(tip); c.boltLight.intensity = on ? (bc.light||2000)*(.5+.5*Math.random()) : 0;
+      c.boltT -= Math.max(0,dt); const regen = on && (c.boltT<=0 || !c.boltDone); if(regen) c.boltDone=true; if(regen) c.boltT = .06+Math.random()*.06;
+      const n=bc.n||4; for(let b=0;b<n;b++){ const l1=c.boltL[b*2], l2=c.boltL[b*2+1];
+        if(regen){ const a=l1.geometry.attributes.position.array, ang=Math.random()*Math.PI*2, spread=.15+Math.random()*.35, len=(bc.len||40)*(.6+Math.random()*.5); let x=tip.x, y=tip.y, z=tip.z;
+          for(let k=0;k<16;k++){ a[k*3]=x; a[k*3+1]=y; a[k*3+2]=z; const st=len/15; y+=st; x+=Math.cos(ang)*st*spread+(Math.random()-.5)*st*.9; z+=Math.sin(ang)*st*spread+(Math.random()-.5)*st*.9; }
+          l1.geometry.attributes.position.needsUpdate=true; l2.geometry.attributes.position.array.set(a); for(let k=1;k<16;k++){ l2.geometry.attributes.position.array[k*3]+=.25; } l2.geometry.attributes.position.needsUpdate=true; }
+        l1.material.opacity = on ? .95 : 0; l2.material.opacity = on ? .7 : 0; }
+      c.boltG.forEach((sp,i)=>{ const a=c.boltL[(i%n)*2].geometry.attributes.position.array, k=(1+Math.floor(i/n)*2)%16*3; sp.position.set(a[k],a[k+1],a[k+2]); const sz=i===0?9:1.3; sp.scale.set(sz,sz,1); sp.material.opacity = on ? (i===0?.9:.8) : 0; });
+      if(on) c.boltG[0].position.copy(tip); }
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
     composer ? composer.render() : renderer.render(scene, cam);
     // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander

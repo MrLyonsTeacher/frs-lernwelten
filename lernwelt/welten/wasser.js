@@ -71,7 +71,7 @@ export function build(A){
   const PX=62, PZ=34;                                     // Mitte von Atlantis
   const S = {
     grammar:   {x:PX, z:PZ, r:26, col:0x7FE3FF, ort:"Palace of Atlantis"},
-    vocabulary:{x:100,z:20, r:9,  col:0x7CFF9A, ort:"Kelp Garden"},
+    vocabulary:{x:100,z:20, r:9,  col:0x7CFF9A, ort:"King's Statue"},
     country:   {x:104,z:70, r:11, col:0xFFC44A, ort:"Sunken Ship"}
   };
   const STATUE = [30, 80], TOWER = [18, 16], OCTO = [84, 90];
@@ -208,6 +208,7 @@ export function build(A){
     S.grammar.top=[x,lt+4,z]; S.grammar.base=y0+14; S.grammar.lift=2; S.grammar.cam={pos:[x-10,y+34,z+66], look:[x+20,y+18,z]}; }
 
   // ---------- Statue des Meerkönigs mit goldenem Dreizack (eigener Entwurf) ----------
+  const ARM = [], ARMP = {}; let GARDEN = [100,20];
   { const [sx,sz] = STATUE, K=1.18, base=G+3;
     // Felssockel mit Marmorstufe
     ellip(sx,G,sz,7.5,2.5,6.5,(X,Y,Z)=> rand()<.3 ? "rockD" : "rock"); cyl(sx,G+1,sz,5.2,2,"marbleB"); ring(sx,G+2,sz,5.2,"trim");
@@ -231,7 +232,8 @@ export function build(A){
     E(0,22.6,.15,1.55,.35,1.55,"gold");
     for(let i=0;i<10;i++){ const a=i/10*Math.PI*2, hh = i%2 ? 1.6 : .9; Sg([Math.cos(a)*1.45,22.7,.15+Math.sin(a)*1.45],[Math.cos(a)*1.55,22.7+hh,.15+Math.sin(a)*1.55],.32,.14,"gold"); }
     { const p=L(0,23.7,1.55); fEll(p[0],p[1],p[2],.4,.4,.4,"pearl"); }
-    // rechter Arm hoch mit Dreizack, linker Arm in die Hüfte gestützt
+    // rechter Arm hoch mit Dreizack (wird als bewegliches Teil aufgezeichnet), linker Arm in die Hüfte gestützt
+    const FSET = FN.set; FN.set = (i,j,k,t) => { if(t) ARM.push([i,j,k,t]); };
     Sg([3.2,17.7,0],[4.6,20.1,.4],1.05,.92,"statue"); E(4,19.1,.25,1.05,1.25,1.05,"statue"); Sg([4.6,20.1,.4],[4.9,22.9,.8],.92,.72,"statue"); E(4.9,23.4,.8,.8,.85,.8,"statue");
     Sg([-3.2,17.7,0],[-4.5,15,.4],1.05,.9,"statue"); Sg([-4.5,15,.4],[-3.5,12.9,1.6],.9,.72,"statue"); E(-3.2,12.6,1.8,.8,.7,.8,"statue");
     // goldener Dreizack
@@ -240,6 +242,7 @@ export function build(A){
     Sg([tx,30.2,tz],[tx,35.4,tz],.38,.14,"goldG");
     for(const s of [-1,1]){ Sg([tx+1.9*s,30.2,tz],[tx+1.9*s,34,tz],.34,.14,"goldG"); Sg([tx+1.9*s,33.4,tz],[tx+1.3*s,32.6,tz],.2,.12,"goldG"); }
     Sg([tx,34.6,tz],[tx-.6,33.8,tz],.2,.12,"goldG"); Sg([tx,34.6,tz],[tx+.6,33.8,tz],.2,.12,"goldG");
+    FN.set = FSET; ARMP.shoulder = L(3.2,17.7,0).map(v=>v*2); ARMP.tip = L(tx,35.4,tz).map(v=>v*2);
     // Bewuchs am Sockel
     for(let i=0;i<14;i++){ const a=rand()*Math.PI*2, r=5.5+rand()*2.2, px=Math.round(sx+Math.cos(a)*r), pz=Math.round(sz+Math.sin(a)*r), t=topAt(px,pz,G+6)+1; [()=>anemone(px,t,pz,pick(CC)), ()=>seagrass(px,t,pz), ()=>fan(px,t,pz,pick(CC),2), ()=>glowPlant(px,t,pz)][i%4](); }
     coralTree(sx-6,G+1,sz-4,"coralR",11); coralTree(sx+6,G+1,sz-3,"coralB",9); }
@@ -265,7 +268,7 @@ export function build(A){
     for(let i=0;i<14;i++){ const a=rand()*Math.PI*2, r=6+rand()*4, px=Math.round(x+Math.cos(a)*r), pz=Math.round(z+Math.sin(a)*r), t=topAt(px,pz,30)+1;
       [()=>branch(px,t,pz,pick(CC),4,2), ()=>brain(px,t-1,pz,1.6+rand()), ()=>fan(px,t,pz,pick(CC),3), ()=>tubes(px,t,pz), ()=>anemone(px,t,pz,pick(CC)), ()=>glowPlant(px,t,pz)][i%6](); }
     for(let i=0;i<8;i++) starfish(x-6+Math.floor(rand()*13), y, z+5+Math.floor(rand()*3));
-    S.vocabulary.top=[x,y+16,z]; S.vocabulary.base=y+3; S.vocabulary.cam={pos:[x+18,y+30,z+50], look:[x+16,y+4,z-6]}; }
+    GARDEN=[x,z]; }
 
   // ---------- Country & people: zerbrochene Galeone mit Schatz ----------
   { const {x,z} = S.country, y=G, L=17;
@@ -375,7 +378,15 @@ export function build(A){
   for(let i=0;i<90;i++){ const x=-180+rand()*(W+360), z=-200+rand()*(D+260); if(edge(x,z)<1.1) continue; const t=fh(x,z); if(t>12) continue; const hh=6+rand()*18; for(let y=t;y<t+hh;y+=3) fset(x,y,z,"kelp"); }
 
   // ---------- Tiere ----------
+  S.vocabulary = {x:STATUE[0], z:STATUE[1], r:9, col:0x7CFF9A, ort:"King's Statue", top:[STATUE[0]+2, G+44, STATUE[1]], base:G+20, cam:{pos:[STATUE[0]+30,G+32,STATUE[1]+50], look:[STATUE[0]+4,G+22,STATUE[1]]}};
   const creatures = [];
+  { const COL = {statue:0xF6F2EA, goldG:0xF5C542}, sh = ARMP.shoulder, sm = u=>u<=0?0:u>=1?1:u*u*(3-2*u), P = 180, OFF = 95;
+    const phase = tt => { const t=((tt+OFF)%P+P)%P; return t; };
+    const lift = tt => { const t=phase(tt); return t<1 ? sm(t/1)*.9 : t<1.25 ? .9+.35*sm((t-1)/.25) : t<4.6 ? 1.25 + Math.sin(t*22)*.04 : t<6.2 ? 1.25*(1-sm((t-4.6)/1.6)) : 0; };
+    const cubes = ARM.map(([i,j,k,t])=>[i,j,k,COL[t]||0xF6F2EA, t==="goldG"?1:0]);
+    creatures.push({ parts:[{cubes, pivot:sh, fn:(g,tt)=>{ const l=lift(tt); g.position.y = sh[1] + l*2.4; g.rotation.z = -l*.04; }}],
+      at:[.25,.25,.25], scale:.5, noShadow:true,
+      bolts:{part:0, at:ARMP.tip.map((v,i)=>v-sh[i]), active:tt=>{ const t=phase(tt); return t>1.15 && t<4.4; }, color:0xFFE45A, n:5, len:46, light:2600} }); }
   // Fischschwärme: klein und detailliert, ziehen in Schleifen
   [["clown",[44,15,46],[22,10],.24,0],["tang",[30,20,30],[26,18],.2,1.5],["butter",[60,13,36],[16,10],.3,3],["pink",[44,30,24],[30,20],.16,4.2],
    ["angel",[12,12,40],[12,9],.26,2],["green",[80,14,40],[16,10],.22,5],["clown",[66,24,14],[18,12],.2,.8],["tang",[22,14,58],[14,8],.3,2.4],
@@ -392,7 +403,7 @@ export function build(A){
   creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:1.57, bob:1.5, bank:.1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.5 });
   creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:4.7, bob:1.2, bank:.1, dir:-1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.42 });
   for(const [dx,dz,dy,c1,c2] of [[-4,7,6,0xFFB03A,0xFFD27A],[5,6,9,0xFF6FA0,0xFFB0CC],[7,-2,7,0xFFD23F,0xFFF0A0],[-6,-3,10,0xFF8A3A,0xFFC090]])
-    creatures.push({ ...seahorse(c1,c2), at:[S.vocabulary.x+dx, G+dy, S.vocabulary.z+dz], yaw:Math.PI/2*(dx>0?1:-1), hover:[.6,.8+Math.abs(dx)*.05], scale:.3 });
+    creatures.push({ ...seahorse(c1,c2), at:[GARDEN[0]+dx, G+dy, GARDEN[1]+dz], yaw:Math.PI/2*(dx>0?1:-1), hover:[.6,.8+Math.abs(dx)*.05], scale:.3 });
   creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.4, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.2 });
   creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.52, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.18 });
   creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:5.5, bob:.3, bank:.1, dir:-1, route:{span:12, clear:7, climb:10, slope:.05}}, scale:.6 });
@@ -401,7 +412,7 @@ export function build(A){
     W, D, blocks, spots:S, exposure:1.18, fov:42,
     sky:[[0,"#5FD3F2"],[.3,"#2E9BD0"],[.6,"#0E5C8C"],[1,"#062A46"]], fog:[0x0E5C8C, 105, 340],
     hemi:[0x9FEFFF, 0x1A4A6A, 1.85], sun:{color:0xDFFBFF, int:1.55, pos:[-30,90,40]}, bloom:[.32,.45,.9],
-    lights:[{pos:[PX,G+40,PZ], color:0x7FE3FF, int:420, dist:48}, {pos:[PX,G+12,PZ+16], color:0xBFF8FF, int:120, dist:22}, {pos:[S.vocabulary.x,G+4,S.vocabulary.z], color:0xFFFFFF, int:80, dist:16},
+    lights:[{pos:[PX,G+40,PZ], color:0x7FE3FF, int:420, dist:48}, {pos:[PX,G+12,PZ+16], color:0xBFF8FF, int:120, dist:22}, {pos:[GARDEN[0],G+4,GARDEN[1]], color:0xFFFFFF, int:80, dist:16},
             {pos:[STATUE[0]+6,G+44,STATUE[1]+1], color:0xFFE27A, int:90, dist:16}],
     planes:[{y:G-3.6, tex:T.sand, repeat:400, size:1000}, {y:G+.05, tex:T.caust, repeat:120, size:300, em:.5, opacity:.2, anim:[.018,.009]}, {y:G+.08, tex:T.caust, repeat:85, size:300, em:.45, opacity:.16, anim:[-.012,.016]}, {y:150, tex:T.surface, repeat:60, size:400, em:.4, opacity:.35, anim:[.02,.01]}],
     rays:{n:46, color:0xCFF8FF, area:[-60,W+60,-60,D+20], y:G+74, len:150, w:[3,8], drift:12, op:.075, tilt:.16},
