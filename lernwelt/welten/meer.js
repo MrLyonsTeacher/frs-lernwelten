@@ -225,20 +225,31 @@ export function magmaDrake(){
   G(t1,[-3,18,0],[-8,14,0],2.6,2,plate); G(t2,[-8,14,0],[-14,10.5,0],2,1.4,plate); G(t3,[-14,10.5,0],[-20,9,0],1.4,.7,plate);
   for(let i=0;i<5;i++){ const m=[t1,t2,t2,t3,t3][i], x=-6-i*3, y=17-i*1.7; G(m,[x,y,0],[x-1.2,y+1.6,0],.4,.1,HORN); }
   E(t3,-20.5,9,0,1.1,.9,.9,glow(L2)); for(const s of [-1,1]) G(t3,[-20,9,0],[-22.4,9.6,1.4*s],.35,.1,HORN);
-  // Schwingen: Knochenarm mit drei Fingern, Haut mit glühenden Adern, ausgefranster Rand
-  const wings=[]; for(const s of [-1,1]){ const w=M(), o=M();
-    G(w,[-.4,32,3.6*s],[-2,36,9*s],.9,.7,plate); G(w,[-2,36,9*s],[-1,39,15*s],.7,.55,plate); E(w,-2,36,9*s,.9,.9,.9,plate);
-    // innere Haut: vom Körper bis zum Ellbogen
-    for(let u=0;u<=1;u+=.03) for(let v=0;v<=1;v+=.04){ const A=[-.4,32,3.6*s], Bp=[-2,36,9*s], C=[-6,22,4*s], D=[-7,26,9.5*s];
-      const p=[0,1,2].map(i=> (1-u)*(1-v)*A[i]+u*(1-v)*Bp[i]+(1-u)*v*C[i]+u*v*D[i]); const vein = Math.abs(Math.sin(u*9+v*2))<.12;
-      w.put(Math.round(p[0]*K),Math.round(p[1]*K),Math.round(p[2]*K), vein?L1:(((u*20+v*13)|0)%4===0?MEM2:MEM), vein?1:0); }
-    // äußere Schwinge: Finger und Haut
-    const root=[-1,39,15*s], tips=[[-1.6,44,23*s],[-6,37,25*s],[-10,30,21*s],[-9,25,15*s]];
-    G(o,[-2,36,9*s],root,.6,.5,plate); for(const tp of tips.slice(0,3)){ G(o,root,tp,.45,.18,plate); o.put(Math.round(tp[0]*K),Math.round(tp[1]*K),Math.round(tp[2]*K),HORN); }
-    for(let k=0;k<tips.length-1;k++) for(let u=0;u<=1;u+=.03) for(let v=0;v<=1;v+=.03){ if(u+v>1) continue; const a=tips[k], b=tips[k+1];
-      const p=[0,1,2].map(i=> root[i]+(a[i]-root[i])*u+(b[i]-root[i])*v); const edge=u+v>.93, vein=Math.abs(u-v*1.3)<.04||Math.abs(u*.7-v)<.035;
-      if(edge && ((u*40|0)%3===0)) continue; o.put(Math.round(p[0]*K),Math.round(p[1]*K),Math.round(p[2]*K), vein?L2:(edge?L1:(((u*31+v*17)|0)%5===0?MEM2:MEM)), (vein||edge)?1:0); }
-    wings.push([w,[-.4,32,3.6*s].map(v=>v*K),o,[-2,36,9*s].map(v=>v*K),s]); }
+  // Schwingen: groß und dämonisch – kräftiger Knochenarm mit Dornen, Daumenkralle, vier lange Finger mit Hakenkrallen,
+  // Haut mit Lavaadern, Rissen und Löchern, zerfetzter glühender Hinterrand
+  const wings=[]; for(const s of [-1,1]){ const w=M(), o=M(), WS=1.55;
+    const sh=[-.4,32,3.6*s], el=[-2.6,38.5,11*s], wr=[-1,44,20*s];
+    G(w,sh,el,1.1,.85,plate); G(w,el,wr,.85,.6,plate); E(w,el[0],el[1],el[2],1.1,1.1,1.1,plate);
+    for(let k=1;k<=4;k++){ const t=k/5, p=[0,1,2].map(i=>sh[i]+(el[i]-sh[i])*t); G(w,[p[0],p[1]+.6,p[2]],[p[0]-.4,p[1]+2,p[2]+.2*s],.35,.1,HORN); }
+    // innere Haut: Schulter, Ellbogen bis zur Hüfte
+    for(let u=0;u<=1;u+=.02) for(let v=0;v<=1;v+=.025){ const A=sh, Bp=el, C=[-5,19,4*s], D=[-8,22,12*s];
+      const p=[0,1,2].map(i=> (1-u)*(1-v)*A[i]+u*(1-v)*Bp[i]+(1-u)*v*C[i]+u*v*D[i]); const vein = Math.abs(Math.sin(u*11+v*3))<.1, hole=((Math.round(u*14)*7+Math.round(v*12)*3)%23===0);
+      if(hole) continue; w.put(Math.round(p[0]*K),Math.round(p[1]*K),Math.round(p[2]*K), vein?L1:(((u*24+v*15)|0)%4===0?MEM2:MEM), vein?1:0); }
+    // äußere Schwinge
+    const tips=[[-.5,55,30*s],[-7,47,36*s],[-13,36,34*s],[-15,26,27*s],[-11,20,18*s]];
+    G(o,el,wr,.85,.6,plate);
+    G(o,wr,[1.2,47,21*s],.45,.25,HORN); G(o,[1.2,47,21*s],[2.4,46.2,22*s],.25,.1,HORN2);                       // Daumenkralle
+    for(const tp of tips.slice(0,4)){ G(o,wr,tp,.55,.22,plate); const d=[0,1,2].map(i=>tp[i]-wr[i]), l=Math.hypot(...d), u=d.map(v=>v/l);
+      G(o,tp,[tp[0]+u[0]*2.2-.8,tp[1]+u[1]*2.2-1.2,tp[2]+u[2]*2.2],.3,.08,HORN);                                // Hakenkralle
+      for(let k=1;k<=3;k++){ const q=[0,1,2].map(i=>wr[i]+d[i]*k/4); G(o,q,[q[0]-.3,q[1]+1.2,q[2]],.22,.06,HORN2); } }   // Dornen an den Fingern
+    for(let k=0;k<tips.length-1;k++) for(let u=0;u<=1;u+=.018) for(let v=0;v<=1;v+=.018){ if(u+v>1) continue; const a=tips[k], b=tips[k+1];
+      // Hinterrand zwischen den Fingerspitzen nach innen gewölbt (Bogen), zerfetzt
+      const sag = (u+v>.0) ? Math.sin(Math.PI*(v/(u+v||1)))*.22*(u+v) : 0, f = 1-sag;
+      const p=[0,1,2].map(i=> wr[i]+((a[i]-wr[i])*u+(b[i]-wr[i])*v)*f);
+      const edge=u+v>.92, vein=Math.abs(u-v*1.25)<.03||Math.abs(u*.65-v)<.028||Math.abs(Math.sin((u+v)*14))<.06;
+      const tear = ((Math.round(u*30)*11+Math.round(v*30)*7+k*5)%37===0) || (edge && ((Math.round(u*50)+k)%4===0));
+      if(tear) continue; o.put(Math.round(p[0]*K),Math.round(p[1]*K),Math.round(p[2]*K), vein?L2:(edge?L1:(((u*37+v*19)|0)%5===0?MEM2:MEM)), (vein||edge)?1:0); }
+    wings.push([w,sh.map(v=>v*K),o,el.map(v=>v*K),s]); }
   const parts = [ {cubes:body.list(), pivot:[0,19*K,0]},
     {cubes:head.list(), pivot:[8*K,39*K,0], parent:0, rot:["z",.06,.9,0]}, {cubes:jaw.list(), pivot:[10.4*K,39.2*K,0], parent:1, rot:["z",.08,1.6,0,-.05]} ];
   arms.forEach(([a,pv],i)=>parts.push({cubes:a.list(), pivot:pv, parent:0, rot:["z",.12,1.1,i*1.3]}));
