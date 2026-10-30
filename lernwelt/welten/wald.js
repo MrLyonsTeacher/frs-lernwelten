@@ -13,7 +13,7 @@ export function build(A){
     elfWood: planks(["#9A6E40","#A87A48","#8E6438"], "#5E4022"), elfWoodD: stripes(["#6A4A2C","#5E4026","#74522F"], true),
     elfStone: bricks(["#E8E2CE","#DCD4BC","#EEE8D6"], "#B8AE92"), elfPillar: stripes(["#F0EAD8","#E2DAC4","#F6F0E2"], true), elfFloor: rings(["#E6E0CC","#D8D0B8","#EEE8D6"]),
     win: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const d=Math.hypot(x-7.5,y-7.5); P(g,x,y, d>7.2?"#5E4022": d>6 ? "#8A6236" : (x===7||x===8||y===7||y===8) ? "#8A6236" : pick(["#FFD27A","#FFC860","#FFE09A"])); } }),
-    lantern: noise(["#FFE6A0","#FFD27A","#FFF2CC"], 4, ["#E8A040"]), gold: noise(["#E8C24A","#F5D46A","#D8AE30"]),
+    lantern: noise(["#FFB040","#FFA030","#FFC060"], 4, ["#FF8A20"]), gold: noise(["#E8C24A","#F5D46A","#D8AE30"]),
     water: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(x*.7+y*.3)+rand()*.4; P(g,x,y, v>1.3?"#6AB0A8":v>.2?"#2E6E70":"#245C62"); } }),
     fall: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(x*1.3)+rand()*.8; P(g,x,y, v>1.2?"#FFFFFF":v>.3?"#CFF6F6":"#8ADCE0"); } }),
     moon: noise(["#BFF4FF","#8AE6FF","#E6FCFF"], 8, ["#FFFFFF"]), planks: planks(["#8A6236","#9A6E3E","#7A5530"], "#4E3820"),
@@ -26,9 +26,9 @@ export function build(A){
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, stone:{side:T.stone}, moss:{side:T.moss},
     bark:{side:T.bark, top:T.barkTop}, leaves:{side:T.leaves}, leaves2:{side:T.leaves2}, leafRoof:{side:T.leafRoof}, mossRoof:{side:T.mossRoof},
     elfWood:{side:T.elfWood}, elfWoodD:{side:T.elfWoodD}, elfStone:{side:T.elfStone}, elfPillar:{side:T.elfPillar, top:T.elfFloor}, elfFloor:{side:T.elfStone, top:T.elfFloor},
-    win:{side:T.win, em:.95}, lantern:{side:T.lantern, em:1.1, scale:.55, halo:[0xFFC870,4.2,.8]}, gold:{side:T.gold, em:.25},
+    win:{side:T.win, em:.95}, lantern:{side:T.lantern, em:.85, scale:.32, halo:[0xFFA040,5.2,.95]}, gold:{side:T.gold, em:.25},
     water:{side:T.water, anim:[.04,.02], em:.12}, fall:{side:T.fall, alpha:.8, anim:[0,-.9], em:.35}, moon:{side:T.moon, em:.3, anim:[.02,.03]},
-    planks:{side:T.planks}, rope:{side:T.rope}, flowerB:{side:T.flowerB, em:.6}, flowerW:{side:T.flowerW, em:.3}, mush:{side:T.mush}, glowMush:{side:T.glowMush, em:1.0, halo:[0x7AF0E0,1.6,.35]},
+    planks:{side:T.planks}, rope:{side:T.rope}, flowerB:{side:T.flowerB, em:.6, scale:.45}, flowerW:{side:T.flowerW, em:.3, scale:.45}, mush:{side:T.mush}, glowMush:{side:T.glowMush, em:.8, scale:.5, halo:[0x7AF0E0,1.8,.4]},
     rune:{side:T.rune, top:T.stone, em:.35}, vine:{side:T.vine}, fern:{side:T.fern}, capR:{side:T.capR}, stem:{side:T.stem}, flowerP:{side:T.flowerP, em:.6}, barkTopB:{side:T.barkTop}
   };
   const FN = A.fine, fs = (x,y,z,t) => FN.set(Math.round(x*2),Math.round(y*2),Math.round(z*2),t);
@@ -175,7 +175,7 @@ export function build(A){
   // Wald vorne: große Bäume an den Seiten, in der Mitte niedrige Büsche (freie Sicht)
   for(let i=0;i<70;i++){ const x=-40+Math.floor(rand()*(W+80)), z=CZ1+4+Math.floor(rand()*44); const mid=Math.abs(x-48);
     const t=topAt(x,z,40)+1; if(mid<8 && z<CZ1+12) continue;
-    if(mid>26 || z>D+52){ const hh=8+Math.floor(rand()*10); fill(x,t,z,x,t+hh,z,"bark"); if(hh>12) fill(x+1,t,z,x+1,t+hh-4,z,"bark"); ellip(x,t+hh+1,z,3+rand()*1.5,2.4,3+rand()*1.5,()=>rand()<.3?"leaves2":"leaves"); }
+    if(mid>26 || (z>D+52 && mid>16)){ const hh=8+Math.floor(rand()*10); fill(x,t,z,x,t+hh,z,"bark"); if(hh>12) fill(x+1,t,z,x+1,t+hh-4,z,"bark"); ellip(x,t+hh+1,z,3+rand()*1.5,2.4,3+rand()*1.5,()=>rand()<.3?"leaves2":"leaves"); }
     else { ellip(x,t,z,1.6+rand(),1+rand()*.6,1.6+rand(),()=>rand()<.3?"leaves2":"leaves"); if(rand()<.3) set(x,t+1,z,"glowMush"); } }
 
   // ---------- Ränder links und rechts: weitere Riesenbäume mit Plattformen, Baumhäusern und Brücken ----------
@@ -222,7 +222,10 @@ export function build(A){
   for(let i=0;i<220;i++){ const x=2+Math.floor(rand()*(W-4)), z=14+Math.floor(rand()*(D-16)); if(!free(x,z,1)) continue; const t=topAt(x,z,30); if(t<WL || t>13) continue; const g=get(x,t,z); if(g!=="grass" && g!=="moss") continue; if(get(x,t+1,z)) continue;
     const r=rand(); if(r<.45) fern(x,t+1,z); else if(r<.75) shroom(x,t+1,z); else if(r<.9){ for(let k=0;k<4;k++) fs(x+.5+(rand()-.5)*1.5,t+1,z+.5+(rand()-.5)*1.5, pick(["flowerB","flowerW","flowerP"])); } else { ellip(x,t+1,z,1+rand(),.9,1+rand(),"stone"); for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++){ const tt=topAt(x+a,z+c,t+4); if(get(x+a,tt,z+c)==="stone" && tt>t) set(x+a,tt,z+c,"moss"); } } }
   for(const [lx,lz,len,dir] of [[30,40,7,1],[62,48,6,0],[8,40,6,1],[70,64,7,1],[36,62,5,0],[90,30,5,0]]) if(free(lx,lz,0)) log(lx,lz,len,dir);
-  const creatures = [{ ...stag(), at:[S.vocabulary.x-5, 13, S.vocabulary.z+1], yaw:-.85, scale:.225 }];
+  const SG=[31,57], SGy=topAt(SG[0],SG[1],30)+1;
+  for(let a=-4;a<=4;a++) for(let c=-3;c<=3;c++) for(let yy=SGy; yy<SGy+8; yy++){ const b=get(SG[0]+a,yy,SG[1]+c); if(b==='leaves'||b==='leaves2'||b==='glowMush'||b==='mush'||b==='flowerB'||b==='flowerW'||b==='elfPillar'||b==='lantern') set(SG[0]+a,yy,SG[1]+c,null); }
+  for(let i=-8;i<=8;i++) for(let j=-6;j<=6;j++) for(let k=SGy*2; k<SGy*2+16; k++) FN.set(SG[0]*2+i,k,SG[1]*2+j,null);
+  const creatures = [{ ...stag({graze:true}), at:[SG[0], SGy, SG[1]], yaw:.4, scale:.225 }];
   // ein paar Elben: über die große Brücke, über Hängebrücken, am Brunnen; dazu zwei kleine Elfen
   const rev = a => a.slice().reverse();
   creatures.push({ ...elf({walk:true, robe:0x2E6A3E, hair:0xF0E0A0, lantern:true}), path:{pts:BIG.map(p=>[p[0]-1,p[1],p[2]]), speed:1.3, pause:4, ph:0}, scale:.17 },

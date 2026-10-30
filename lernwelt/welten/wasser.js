@@ -344,22 +344,22 @@ export function build(A){
   [["clown",[44,15,46],[22,10],.24,0],["tang",[30,20,30],[26,18],.2,1.5],["butter",[60,13,36],[16,10],.3,3],["pink",[44,30,24],[30,20],.16,4.2],
    ["angel",[12,12,40],[12,9],.26,2],["green",[80,14,40],[16,10],.22,5],["clown",[66,24,14],[18,12],.2,.8],["tang",[22,14,58],[14,8],.3,2.4],
    ["butter",[44,38,20],[22,16],.14,3.7],["pink",[90,20,56],[14,10],.24,1.1]].forEach(([k,ctr0,rad,sp,ph],si)=>{ const ctr=[sx(ctr0[0]), ctr0[1], sz(ctr0[2])];
-    for(let i=0;i<7;i++) creatures.push({ ...reefFish(k), orbit:{c:[ctr[0]+((i*3)%5)-2, ctr[1]+(i%3)*1.2-1, ctr[2]+((i*7)%5)-2], r:[rad[0]+(i%3), rad[1]+((i*2)%3)], speed:sp, ph:ph+i*.09, bob:.8+(i%2)*.4, dir: si%2 ? -1 : 1}, scale:.2, noShadow:true }); });
+    for(let i=0;i<7;i++) creatures.push({ ...reefFish(k), orbit:{c:[ctr[0]+((i*3)%5)-2, ctr[1]+(i%3)*1.2-1, ctr[2]+((i*7)%5)-2], r:[rad[0]+(i%3), rad[1]+((i*2)%3)], speed:sp, ph:ph+i*.09, bob:.8+(i%2)*.4, dir: si%2 ? -1 : 1, wander:{f:.25, r:.1, y:1.5, eight:2, dx:2, dz:2, span:3, clear:2.5}}, scale:.2, noShadow:true }); });
   // große Quallen, die langsam treiben und pulsieren
   [[PX-34,40,PZ-8,0xF2F6FF,0x3A7AE8,0x6FA8FF],[PX+40,50,PZ-14,0xFFF0F6,0xE85A9A,0xFF9AC8],[PX-20,54,PZ+40,0xF0FFF8,0x2AB89A,0x7FE8D0],[PX-46,44,PZ+18,0xFFF0F6,0xE85A9A,0xFF9AC8]]
-    .forEach(([x,y,z,c1,c2,c3],i)=> creatures.push({ ...bigJelly(c1,c2,c3), orbit:{c:[x,y,z], r:[4+i,3+i%2], speed:.05+i*.008, ph:i*1.3, bob:2.4}, scale:.55, noShadow:true }));
+    .forEach(([x,y,z,c1,c2,c3],i)=> creatures.push({ ...bigJelly(c1,c2,c3), orbit:{c:[x,y,z], r:[4+i,3+i%2], speed:.05+i*.008, ph:i*1.57, bob:2.4, wander:{f:.12, r:.08, y:2, eight:0, dx:3, dz:3, span:7, clear:9}}, scale:.55, noShadow:true }));
   // Krake auf dem Felsen
   creatures.push({ ...octopus(), at:[OCTO[0]+.5, topAt(OCTO[0],OCTO[1],G+8)+.6, OCTO[1]+.5], yaw:-.9, scale:.62 });
   // Mantarochen, Schildkröten, Seepferdchen im Kelp, Delfine und Wal
-  creatures.push({ ...manta(), orbit:{c:[PX,36,PZ], r:[72,48], speed:.06, ph:1, bob:3, bank:.15}, scale:.55 });
-  creatures.push({ ...manta(), orbit:{c:[PX+8,28,PZ+10], r:[56,42], speed:.07, ph:3.4, bob:2, bank:.15, dir:-1}, scale:.42 });
-  creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:.4, bob:1.5, bank:.1}, scale:.5 });
-  creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:2.2, bob:1.2, bank:.1, dir:-1}, scale:.42 });
+  creatures.push({ ...manta(), orbit:{c:[PX,36,PZ], r:[72,48], speed:.06, ph:0, bob:3, bank:.15, wander:{f:.2, r:.12, y:4, eight:6, dx:6, dz:6, span:12, clear:6}}, scale:.55 });
+  creatures.push({ ...manta(), orbit:{c:[PX+8,28,PZ+10], r:[56,42], speed:.07, ph:3.14, bob:2, bank:.15, dir:-1, wander:{f:.18, r:.12, y:4, eight:5, dx:6, dz:6, span:10, clear:6}}, scale:.42 });
+  creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:1.57, bob:1.5, bank:.1, wander:{f:.15, r:.1, y:3, eight:4, dx:4, dz:4, span:7, clear:5}}, scale:.5 });
+  creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:4.7, bob:1.2, bank:.1, dir:-1, wander:{f:.15, r:.1, y:3, eight:4, dx:4, dz:4, span:7, clear:5}}, scale:.42 });
   for(const [dx,dz,dy,c1,c2] of [[-4,7,6,0xFFB03A,0xFFD27A],[5,6,9,0xFF6FA0,0xFFB0CC],[7,-2,7,0xFFD23F,0xFFF0A0],[-6,-3,10,0xFF8A3A,0xFFC090]])
     creatures.push({ ...seahorse(c1,c2), at:[S.vocabulary.x+dx, G+dy, S.vocabulary.z+dz], yaw:Math.PI/2*(dx>0?1:-1), hover:[.6,.8+Math.abs(dx)*.05], scale:.3 });
-  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:.6, bob:3.5, bank:.2}, scale:.2 });
-  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:.72, bob:3.5, bank:.2}, scale:.18 });
-  creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:2.6, bob:1.4, bank:.1, dir:-1}, scale:.6 });
+  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.4, bob:3.5, bank:.2, wander:{f:.2, r:.1, y:4, eight:6, dx:5, dz:5, span:6, clear:5}}, scale:.2 });
+  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.52, bob:3.5, bank:.2, wander:{f:.2, r:.1, y:4, eight:6, dx:5, dz:5, span:6, clear:5}}, scale:.18 });
+  creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:5.5, bob:1.4, bank:.1, dir:-1, wander:{f:.1, r:.08, y:3, eight:0, dx:6, dz:4, span:20, clear:8}}, scale:.6 });
 
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:42,

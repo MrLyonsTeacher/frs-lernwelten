@@ -185,10 +185,10 @@ export function polarBear(o={}){
 }
 
 /* ---------- Hirsch (Waldwelt) – sehr fein (Faktor 3,2 gegenüber einfachen Tieren, im Spiel scale ≈ .22) ---------- */
-export function stag(){
+export function stag(o={}){
   const K=1.6, BR=0x8A5630, BR2=0x74462A, BR3=0xA06A3E, DARK=0x5A3820, DARK2=0x4A2E1A, BELLY=0xDCC498, THROAT=0xF0E6D2, RUMP=0xF6F0E4, MANE=0x5E3A22, HOOF=0x221410, NOSE=0x16100C,
         ANT=0xE8D8B0, ANT2=0xC8B48A, ANT3=0x9A8660, TIP=0xFCF6E8, EYE=0x100A06, EAR=0xD8A890;
-  const m = M(), h = M(), t = M();
+  const m = M(), h = M(), t = M(), n = o.graze ? M() : m;
   const E = (o,x,y,z,rx,ry,rz,c) => o.ell(x*K,y*K,z*K,rx*K,ry*K,rz*K,c), G = (o,a,b,r0,r1,c) => o.seg(a.map(v=>v*K),b.map(v=>v*K),r0*K,r1*K,c);
   const coat = (x,y,z) => { const Y=y/K; if(Y < 12.6) return BELLY; const k=((Math.round(x*.9)+Math.round(y)*2+Math.round(z*1.3))%7+7)%7;
     if(Y > 17.3) return k<2 ? DARK : (k===4 ? DARK2 : BR2); return k===0 ? BR3 : k===3 ? BR2 : (k===5 ? BR3 : BR); };
@@ -199,10 +199,10 @@ export function stag(){
     G(m,[lx,9,lz],[lx+(fr?.3:-1),5,lz],1.0,.75,BR2); G(m,[lx+(fr?.3:-1),5,lz],[lx,1.2,lz],.72,.62,(x,y,z)=> y/K<3.2 ? DARK : BR2);
     E(m,lx+(fr?.3:-1),5,lz,.95,.8,.9,BR2);                                                    // Knöchel
     E(m,lx+.3,.55,lz,.9,.55,.8,HOOF); m.put((lx+.9)*K,0,lz*K-1,HOOF).put((lx+.9)*K,0,lz*K+1,HOOF); }
-  G(m,[7,17,0],[10,22,0],2.9,2.2,coat); G(m,[10,22,0],[12,25,0],2.2,1.9,coat);
-  E(m,8.8,17.6,0,2.5,3.2,2.7,(x,y,z)=> y/K<17.5 ? MANE : coat(x,y,z));
-  for(let i=0;i<14;i++) G(m,[8+i*.32,15.2+i*.28,0],[8.4+i*.32,14.2+i*.28,0],.55,.35,MANE);         // Halsmähne
-  E(m,10.4,21.2,0,1.2,1.6,1.4,THROAT);                                                       // heller Kehlfleck
+  G(n,[7,17,0],[10,22,0],2.9,2.2,coat); G(n,[10,22,0],[12,25,0],2.2,1.9,coat);
+  E(n,8.8,17.6,0,2.5,3.2,2.7,(x,y,z)=> y/K<17.5 ? MANE : coat(x,y,z));
+  for(let i=0;i<14;i++) G(n,[8+i*.32,15.2+i*.28,0],[8.4+i*.32,14.2+i*.28,0],.55,.35,MANE);         // Halsmähne
+  E(n,10.4,21.2,0,1.2,1.6,1.4,THROAT);                                                       // heller Kehlfleck
   // Kopf
   E(h,13,26,0,2.5,2.3,2.1,coat);
   G(h,[14,25.6,0],[18.2,24.5,0],1.6,1.0,(x,y,z)=> y/K<24.4 ? BELLY : BR3);
@@ -220,6 +220,8 @@ export function stag(){
     A([8,40,6.2*s],[6,44,8*s],.28,.18); A([7,43,6.5*s],[9,46,6*s],.26,.16); A([7,43,6.5*s],[6.5,46,6.8*s],.24,.15); A([10,35,4.5*s],[8,36,7*s],.28,.16,ANT2);
     for(const tp of [[15,32,2.5*s],[14,36,4*s],[12,41,5.5*s],[6,44,8*s],[9,46,6*s],[6.5,46,6.8*s],[8,36,7*s]]) E(h,tp[0],tp[1],tp[2],.22,.22,.22,TIP); }
   E(t,-9.6,17.2,0,.8,1.4,.8,RUMP); E(t,-9.9,18.3,0,.5,.5,.5,DARK);
+  if(o.graze){ // Hals und Kopf senken sich immer wieder zum Grasen
+    return { parts:[ part(m,[0,0,0]), part(n,[7*K,16.5*K,0],["z",.5,.33,0,-.55]), {...part(h,[11*K,24*K,0],["z",.42,.33,0,-.45]), parent:1}, part(t,[-9*K,17*K,0],["y",.6,3,0]) ] }; }
   return { parts:[ part(m,[0,0,0]), part(h,[11*K,24*K,0],["z",.26,.6,0,-.22]), part(t,[-9*K,17*K,0],["y",.6,3,0]) ] };
 }
 

@@ -265,6 +265,16 @@ export async function start(o){
     safeFields.set(R, get); return get; }
   for(const c of creatures) if(c.cr.orbit && c.cr.orbit.wander) c.safe = safeField(Math.round(c.cr.orbit.wander.span || 12));
 
+  // Prüfung (nur im Testmodus): berührt ein frei schwimmendes/fliegendes Tier auf seiner Bahn einen Block?
+  if(o.still){ window.__swimHits = [];
+    creatures.forEach((c,ci)=>{ const ob=c.cr.orbit; if(!ob || !ob.wander || !c.safe) return; const [cx,cy,cz]=ob.c, [rx,rz]=ob.r, w=ob.wander; let hits=0;
+      for(let k=0;k<720;k++){ const th=k/720*Math.PI*2*(1/(w.f||1))*Math.max(1,w.f*8);
+        const a=th*w.f, f=1+w.r*Math.sin(a+.7)+w.r*.5*Math.sin(a*2.3+1.9), eight=w.eight ? Math.sin(th*2)*w.eight*(.5+.5*Math.sin(a*1.3)) : 0;
+        const x=cx+Math.cos(th)*rx*f+Math.sin(a*1.7)*(w.dx||0), z=cz+Math.sin(th)*rz*f+eight+Math.cos(a*1.1)*(w.dz||0); let y=cy+Math.sin(a*1.4+.3)*(w.y||0)+Math.sin(th*2)*(ob.bob??.6);
+        const m=c.safe(x,z)+(w.clear??10); if(y<m) y=m;
+        let hit=false; for(let dx=-1;dx<=1&&!hit;dx++) for(let dy=-1;dy<=1&&!hit;dy++) for(let dz=-1;dz<=1&&!hit;dz++){ if(api.near.get(Math.round(x+dx),Math.round(y+dy),Math.round(z+dz)) || api.fine.get(Math.round((x+dx*.5)*2),Math.round((y+dy*.5)*2),Math.round((z+dz*.5)*2))) hit=true; }
+        if(hit) hits++; }
+      window.__swimHits.push([ci, hits]); }); }
   // Prüfung (nur im Testmodus): kommt ein Bodentier mit seiner Bahn einem Block zu nahe?
   if(o.still){ window.__pathHits = [];
     creatures.forEach((c,ci)=>{ const ob=c.cr.orbit; if(!ob || !ob.cycle || ob.wander) return; const [cx,cy,cz]=ob.c, [rx,rz]=ob.r, rad=c.cr.clearR||3; let hits=0; const types={};
