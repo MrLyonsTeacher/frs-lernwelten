@@ -118,7 +118,7 @@ export async function start(o){
   const cam = new THREE.PerspectiveCamera(world.fov || 38, innerWidth/innerHeight, .5, 1200);
 
   const h = world.hemi || [0xffffff, 0x666666, 1.3];
-  scene.add(new THREE.HemisphereLight(h[0], h[1], h[2]));
+  const hemiL = new THREE.HemisphereLight(h[0], h[1], h[2]); scene.add(hemiL);
   const sd = world.sun || {color:0xffffff, int:2, pos:[-50,80,60]};
   const sun = new THREE.DirectionalLight(sd.color, sd.int); sun.position.set(sd.pos[0]+world.W/2, sd.pos[1], sd.pos[2]+world.D/2); sun.castShadow = !o.lite;
   const ext = Math.max(world.W, world.D) * .8;
@@ -202,6 +202,33 @@ export async function start(o){
       ...(p.square ? {} : {map:softTex}), ...(p.add||p.blink?{blending:THREE.AdditiveBlending}:{}) }));
     scene.add(m); parts.push({p, g, sp, ph, m, n, base});
   }
+  /* Lichtwirbel (selten): baut sich spiralförmig rund um ein Bauwerk auf, zieht sich über der Spitze zusammen und schießt als Strahl in den Himmel.
+     world.vortex = { c:[x,z], y0, top, R, color, period, off, build, squeeze, shoot, fade } */
+  let VX = null;
+  if(world.vortex){ const v=world.vortex, n=o.lite?260:620, pos=new Float32Array(n*3), seed=[];
+    for(let i=0;i<n;i++) seed.push([api.rand()*Math.PI*2, api.rand(), .75+api.rand()*.5, api.rand()]);
+    const g=new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos,3));
+    const pts=new THREE.Points(g, new THREE.PointsMaterial({color:v.color||0x7FD8FF, size:v.size||6, map:softTex, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false}));
+    pts.frustumCulled=false; scene.add(pts);
+    const mn=o.lite?180:420, mpos=new Float32Array(mn*3), mseed=[]; for(let i=0;i<mn;i++) mseed.push([i%3, api.rand(), api.rand()]);
+    const mg=new THREE.BufferGeometry(); mg.setAttribute("position", new THREE.BufferAttribute(mpos,3));
+    const mist=new THREE.Points(mg, new THREE.PointsMaterial({color:v.color||0x7FD8FF, size:22, map:softTex, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); mist.frustumCulled=false; scene.add(mist);
+    // Schleier: drei gegenläufig drehende, offene Trichter mit schrägen Lichtstreifen
+    const c=document.createElement("canvas"); c.width=128; c.height=128; const cg=c.getContext("2d"); cg.fillStyle="rgba(0,0,0,0)"; cg.fillRect(0,0,128,128);
+    for(let i=0;i<22;i++){ const x=api.rand()*128, w=3+api.rand()*10, gr=cg.createLinearGradient(x-w,0,x+w,0); gr.addColorStop(0,"rgba(255,255,255,0)"); gr.addColorStop(.5,`rgba(255,255,255,${.55+api.rand()*.45})`); gr.addColorStop(1,"rgba(255,255,255,0)");
+      cg.save(); cg.translate(64,64); cg.rotate(-.5); cg.translate(-64,-64); cg.fillStyle=gr; cg.fillRect(x-w,-60,2*w,260); cg.restore(); }
+    const vg=cg.createLinearGradient(0,0,0,128); vg.addColorStop(0,"rgba(0,0,0,1)"); vg.addColorStop(.2,"rgba(0,0,0,0)"); vg.addColorStop(.85,"rgba(0,0,0,0)"); vg.addColorStop(1,"rgba(0,0,0,1)"); cg.globalCompositeOperation="destination-out"; cg.fillStyle=vg; cg.fillRect(0,0,128,128);
+    const st=new THREE.CanvasTexture(c); st.wrapS=THREE.RepeatWrapping;
+    const veils=[0,1,2].map(i=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,48,1,true), new THREE.MeshBasicMaterial({map:st.clone(), color:v.color||0x7FD8FF, transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide, blending:THREE.AdditiveBlending, fog:false}));
+      m.material.map.wrapS=THREE.RepeatWrapping; m.material.map.repeat.set(2+i,1); m.material.map.needsUpdate=true; m.frustumCulled=false; scene.add(m); return m; });
+    // Strahl in den Himmel und Lichtball an der Spitze
+    const beamG=new THREE.CylinderGeometry(1,1,1,24,1,true); beamG.translate(0,.5,0);
+    const beam=new THREE.Mesh(beamG, new THREE.MeshBasicMaterial({map:st, color:v.color||0x7FD8FF, transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide, blending:THREE.AdditiveBlending, fog:false}));
+    const core=new THREE.Mesh(beamG, new THREE.MeshBasicMaterial({color:0xE6FAFF, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false}));
+    beam.frustumCulled=core.frustumCulled=false; scene.add(beam, core);
+    const orb=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex, color:0xBFF4FF, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, fog:false})); scene.add(orb);
+    const L=new THREE.PointLight(v.color||0x7FD8FF, 0, v.R*4, 2); scene.add(L);
+    VX={v, pts, g, seed, n, veils, beam, core, orb, L, mist, mg, mseed, mn}; if(o.still) window.__vx=VX; }
   // Echte Wolken: Haufen aus weichen Bällchen (oben hell, unten grau-blau). Sie verdecken Tiere, die hineinfliegen, nach und nach.
   const cloudParts = [];
   if(world.clouds){ const ct = (() => { const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d");
@@ -387,6 +414,26 @@ export async function start(o){
       if(world.rays.drift){ r.position.x = u.bx + Math.sin(tr*.05+u.ph)*world.rays.drift; r.position.z = u.bz + Math.cos(tr*.04+u.ph*1.3)*world.rays.drift*.6; r.scale.x = .7+.5*(.5+.5*Math.sin(tr*.13+u.ph*3)); r.rotation.z = (world.rays.tilt??.25) + Math.sin(tr*.07+u.ph)*.06; } }
     for(const {b, pivot, m} of beams){ const tb = o.still ? (o.stillTime||12) : (now-clock0)/1000, ph=b.ph||0, sp=b.speed||.25;
       pivot.rotation.z = (b.tilt??.35)*Math.sin(tb*sp+ph); pivot.rotation.x = (b.tilt??.35)*.6*Math.cos(tb*sp*.8+ph); m.material.opacity = (b.opacity||.22)*(.75+.25*Math.sin(tb*1.3+ph*2)); }
+    if(VX){ const {v,pts,g,seed,n,veils,beam,core,orb,L,mist,mg,mseed,mn}=VX, B=v.build||9, Q=v.squeeze||3, Sh=v.shoot||3, F=v.fade||4, P=v.period||180, T=((tt+(v.off||0))%P+P)%P, sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
+      const on = T < B+Q+Sh+F, s=sm(T/B), q=sm((T-B)/Q), sh=sm((T-B-Q)/(Sh*.35)), fade=1-sm((T-B-Q-Sh*.5)/(Sh*.5+F)), [cx,cz]=v.c, H=v.top-v.y0;
+      mist.visible = pts.visible = beam.visible = core.visible = orb.visible = on;
+      if(on){ const a=g.attributes.position.array, rot=tt*(1.1+2.4*q);
+        for(let i=0;i<n;i++){ const [a0,h,rr,ph]=seed[i]; const hh = h*(1-q) + (1-h*.15)*q, r = v.R*rr*(1-q*.94)*(.55+.45*Math.min(1,(1-h)*1.4+.2)), ang=a0+rot+h*4;
+          const yy = v.y0 + hh*H*Math.min(1, s*1.6-h*.6+.6) + (sh>0 ? (ph*60*sh) : 0);
+          a[i*3]=cx+Math.cos(ang)*r; a[i*3+1]=yy; a[i*3+2]=cz+Math.sin(ang)*r; }
+        g.attributes.position.needsUpdate=true; pts.material.opacity = .9*s*fade;
+        { const m=mg.attributes.position.array; for(let i=0;i<mn;i++){ const [arm,h,j]=mseed[i], hh=h*(1-q)+(1-h*.2)*q, r=v.R*(1.05-h*.35)*(1-q*.93)+(j-.5)*4, ang=arm/3*Math.PI*2 + rot*.8 + h*5.5 + j*.4;
+            m[i*3]=cx+Math.cos(ang)*r; m[i*3+1]=v.y0+hh*H*Math.min(1,s*1.5-h*.5+.5)+(sh>0?j*40*sh:0); m[i*3+2]=cz+Math.sin(ang)*r; } mg.attributes.position.needsUpdate=true;
+          mist.visible=on; mist.material.opacity=.32*s*fade*(1-sh*.5); }
+        veils.forEach((m,i)=>{ m.visible=false; return; const r=v.R*(1.05-i*.12)*(1-q*.9); m.scale.set(r, H*(.7+.3*s), r); m.position.set(cx, v.y0+H*(.35+.15*s)+q*H*.3, cz); m.rotation.y = (i%2?-1:1)*tt*(.6+i*.25+q*2); m.material.map.offset.y = -tt*.25; m.material.opacity = (.85-i*.18)*s*fade*(1-sh*.6); m.visible=on; });
+        orb.position.set(cx, v.top+2, cz); const os = 4+q*14+sh*10; orb.scale.set(os,os,1); orb.material.opacity = Math.min(1,q*1.2)*fade;
+        const bw=(v.beamW||4)*(1+.3*Math.sin(tt*9))*(sh>0?1:0); beam.position.set(cx, v.y0+H*.55, cz); beam.scale.set(bw*1.8, (260+H*.45)*sh, bw*1.8); beam.rotation.y=tt*2; beam.material.map.offset.y=-tt*.8; beam.material.opacity=.55*fade*sh;
+        core.position.copy(beam.position); core.scale.set(bw*.45, (260+H*.45)*sh, bw*.45); core.material.opacity=.85*fade*sh;
+        L.position.set(cx, v.top+4, cz); L.intensity = (v.light||1600)*(s*.25+q*.5+sh)*fade;
+        const dk = (v.dark??.55)*s*fade; VX.base = VX.base || {exp:renderer.toneMappingExposure, hemi:hemiL.intensity, sun:sun.intensity, fog:scene.fog?scene.fog.color.clone():null};
+        renderer.toneMappingExposure = VX.base.exp*(1-dk*.55); hemiL.intensity = VX.base.hemi*(1-dk); sun.intensity = VX.base.sun*(1-dk);
+        if(scene.fog) scene.fog.color.copy(VX.base.fog).lerp(new THREE.Color(0x0A1E3A), dk); }
+      else { L.intensity=0; if(VX.base){ renderer.toneMappingExposure=VX.base.exp; hemiL.intensity=VX.base.hemi; sun.intensity=VX.base.sun; if(scene.fog) scene.fog.color.copy(VX.base.fog); VX.base=null; } } }
     for(const r of ribbons){ const a=r.geometry.attributes.position.array, b=r.userData.base; for(let i=0;i<a.length;i+=3){ a[i+2]=b[i+2]+Math.sin(now/1600+b[i]*.08)*3; a[i+1]=b[i+1]+Math.sin(now/2100+b[i]*.05)*1.2; } r.geometry.attributes.position.needsUpdate=true; }
     const c_route = cr => { if(cr._route!==undefined) return !!cr._route; const c=creatures.find(q=>q.cr===cr); cr._route = c && c.route ? c.route : null; return !!cr._route; };
     for(const {cr, outer, movers, safe:sf} of creatures){

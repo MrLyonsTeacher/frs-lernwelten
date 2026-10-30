@@ -312,7 +312,7 @@ export function build(A){
 
   // ---------- Tiere ----------
   const HOLE=[5,38];
-  for(let a=-9;a<=4;a++) for(let c=-5;c<=5;c++) for(let yy=L; yy<L+20; yy++){ const b=get(HOLE[0]+a,yy,HOLE[1]+c); if(b==='pine'||b==='bark'||(b==='snowB' && yy>hAt(HOLE[0]+a,HOLE[1]+c))) set(HOLE[0]+a,yy,HOLE[1]+c,null); } for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++){ const d=Math.hypot(a,c); if(d<=1.3) set(HOLE[0]+a,L-1,HOLE[1]+c,null); }
+  for(let a=-12;a<=9;a++) for(let c=-9;c<=8;c++) for(let yy=L; yy<L+24; yy++){ const b=get(HOLE[0]+a,yy,HOLE[1]+c); if(b==='pine'||b==='bark'||(b==='snowB' && yy>hAt(HOLE[0]+a,HOLE[1]+c))) set(HOLE[0]+a,yy,HOLE[1]+c,null); } for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++){ const d=Math.hypot(a,c); if(d<=1.3) set(HOLE[0]+a,L-1,HOLE[1]+c,null); }
   for(let i=0;i<14;i++){ const an=i/14*Math.PI*2; fs(HOLE[0]+.5+Math.cos(an)*1.9, L-.25, HOLE[1]+.5+Math.sin(an)*1.9, i%3?"snowB":"floorIce"); }
   // Weg der Eisfüchse: über den hinteren See und hinter der Zitadelle entlang (verschwinden dort)
   const foxPath = []; for(let px=-24; px<=118; px+=2){ const pz = px<34 ? 4-(px+24)*.33 : -17 + Math.sin(px*.15)*1.5, ground = hAt(Math.round(px),Math.round(pz)); foxPath.push([px, ground<L ? L : ground, pz]); }
@@ -322,8 +322,8 @@ export function build(A){
     { ...frostFox({walk:true, speed:13, col:0xF4FAFF}), path:{pts:foxPath.map(p=>[p[0],p[1],p[2]+1.6]), speed:4.6, pause:3, ph:.12}, scale:.23 },
     { ...frostFox({walk:true, speed:12}), path:{pts:foxPath.map(p=>[p[0],p[1],p[2]-1.5]), speed:3.8, pause:7, ph:.55}, scale:.24 },
     { ...frostFox({walk:false}), at:[S.vocabulary.x+6, hAt(S.vocabulary.x,S.vocabulary.z)+1, S.vocabulary.z+6], yaw:-.6, scale:.24 },
-    { ...stag({graze:true, phase:0}), orbit:{c:[S.country.x-5, hAt(S.country.x-5,S.country.z+25), S.country.z+25], r:[1.6,1.2], speed:.35, ph:0, bob:0, cycle:[40,.15,6]}, scale:.24, clearR:2 },
-    { ...stag({graze:true, phase:9}), orbit:{c:[S.country.x+3, hAt(S.country.x+3,S.country.z+29), S.country.z+29], r:[1.4,1.6], speed:.35, ph:2, bob:0, dir:-1, cycle:[44,.14,25]}, scale:.21, clearR:2 }
+    { ...stag({graze:true, phase:0}), orbit:{c:[S.country.x-5, hAt(S.country.x-5,S.country.z+25), S.country.z+25], r:[1.6,1.2], speed:.35, ph:0, bob:0, cycle:[40,.15,6]}, scale:.16, clearR:2 },
+    { ...stag({graze:true, phase:9}), orbit:{c:[S.country.x+3, hAt(S.country.x+3,S.country.z+29), S.country.z+29], r:[1.4,1.6], speed:.35, ph:2, bob:0, dir:-1, cycle:[44,.14,25]}, scale:.145, clearR:2 }
   ];
   for(let i=0;i<3;i++) creatures.push({ ...bird(0xFFFFFF), orbit:{c:[70+i*6,46+i*3,50], r:[46,30], speed:.09, ph:i*1.9, bob:1.5}, scale:.65, noShadow:true });
   // Laufwege freiräumen
@@ -341,6 +341,7 @@ export function build(A){
             {pos:[S.country.x,S.country.base+4,S.country.z], color:0xBFF4FF, int:200, dist:26}],
     planes:[{y:L-.08, tex:T.lake, repeat:220, size:900, em:.25, anim:[.004,.002]}],
     beams:[{pos:[CX,HB+60,CZ-1], len:90, w:7, color:0x9AE8FF, opacity:.22, tilt:.4, speed:.15}],
+    vortex:{c:[CX+.5,CZ+1.5], y0:HB-6, top:S.grammar.beams ? S.grammar.beams[0][1] : HB+70, R:34, color:0x6AC8FF, period:200, off:150, build:10, squeeze:3.5, shoot:3, fade:4.5, beamW:7, light:2200},
     ribbons:[{w:320, h:30, pos:[20,120,-150], rot:.1, color:0x9A8AFF, opacity:.16}, {w:240, h:22, pos:[-20,132,-170], rot:.3, color:0x7AD8FF, opacity:.14}],
     clouds:[...[[-220,90,40],[-240,110,160],[W+220,95,40],[W+240,115,160],[-150,130,-60],[W+150,130,-60],[-60,150,-250],[180,150,-250]].map(p=>({pos:p, r:26, n:42, sx:1.9, sy:.55, sz:1.2, drift:.3})),
             {pos:[-40,110,-120], r:20, n:44, sx:1.8, sy:.6, sz:1.1, drift:.4}, {pos:[100,120,-140], r:24, n:48, sx:1.9, sy:.6, sz:1.1, drift:.3},
