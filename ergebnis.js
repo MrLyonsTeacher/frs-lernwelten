@@ -182,6 +182,8 @@
       @keyframes gc-spin{to{transform:rotate(360deg)}}
       @media (prefers-reduced-motion:reduce){.gc-card,.gc-shine::after,.gc-rays,.gc-holo,.gc-stars i{animation:none}.gc-stars i{opacity:.7}}
       .xp-row.xp-secret.cur{cursor:pointer}
+      .xp-tap{display:block;font:600 .74rem Lexend,system-ui,sans-serif;font-style:normal;color:#FFE27A;margin-top:1px;animation:xp-tapb 1.6s ease-in-out infinite}
+      @keyframes xp-tapb{0%,100%{opacity:.65}50%{opacity:1}}
       @keyframes gc-in{0%{opacity:0;transform:scale(.2) rotateY(180deg)}60%{opacity:1;transform:scale(1.06) rotateY(-8deg)}100%{transform:scale(1) rotateY(0)}}
       @keyframes gc-sh{0%{transform:translateX(-60%)}55%,100%{transform:translateX(60%)}}
       @keyframes gc-spin{to{transform:rotate(360deg)}}
@@ -262,7 +264,8 @@
     const row = (j, img, name, extra) => { const st = j===cur ? "cur" : j<cur ? "ok" : j===nx ? "nx" : "no", b0 = j<6 ? p6(j) : 100;
       return `<div class="xp-row ${st}${extra||""}" data-p0="${b0}%" data-p1="${pos(j)}%" style="bottom:${pos(j)}%">${img}<span><b>${name}</b><small>${AT[j]} ${flagsTxt}${j===nx?` · ${en===false?"noch":"still"} ${AT[j]-n}`:""}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?`<span class="ck">✔</span>`:j===N-1&&sec?`<span class="lock">🔒</span>`:""}</div>`; };
     let rows = R.map((r,j)=>row(j, rankImg(rFile(r),""), rName(r))).join("");
-    if(sec) rows += row(N-1, `<img class="${god?"rk-god":"xp-sil"}" src="${godImg(k)}" alt="" draggable="false">`, god ? godName(k) : "???", " xp-secret");
+    if(sec){ let gr = row(N-1, `<img class="${god?"rk-god":"xp-sil"}" src="${godImg(k)}" alt="" draggable="false">`, god ? godName(k) : "???", " xp-secret");
+      if(god) gr = gr.replace("</small></span>", `</small><em class="xp-tap">👆 ${en===false?"Tippe für deine Karte":"Tap to see your card"}</em></span>`); rows += gr; }
     const ticks = AT.map((t,j)=>`<i class="xp-tick${j<=cur?" on":""}${j===6?" sec":""}" data-p0="${j<6?p6(j):100}%" data-p1="${pos(j)}%" style="bottom:${pos(j)}%"></i>`).join("");
     const C = XPC[k] || XPC[5], vars = `--x1:${C[0]};--x2:${C[1]};--x3:${C[2]};--x4:${C[3]};--xg:${C[4]};--xa:${C[5]};--xi:${C[6]}`;
     return `<div class="xp" style="${vars}"><div class="xp-col"><div class="xp-track"><div class="xp-fill" data-h0="${h0}" data-hm="${sec ? pos(N-2) : 0}%" data-h="${h1}" style="height:0%"></div>${sec?`<div class="xp-zone" data-p0="100%" data-p1="${pos(N-2)}%" style="bottom:${pos(N-2)}%"></div>`:""}</div>${ticks}<div class="xp-knob" style="bottom:0%"><span>${n}</span></div></div><div class="xp-rows">${rows}</div></div>`;
