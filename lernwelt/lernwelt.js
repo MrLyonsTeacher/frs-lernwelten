@@ -100,6 +100,12 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 // In Inhalten: **fett**, *kursiv*, ~~durchgestrichen~~
 const rich = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/~~(.+?)~~/g, "<s>$1</s>");
 function shuffle(a){ const b=a.slice(); for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
+// Antwortreihenfolge mischen, aber die richtige Antwort nie dreimal hintereinander an derselben Stelle (A, B, C …) – hist merkt sich die letzten Stellen
+function orderFor(n, c, hist){ let o; for(let t=0;t<40;t++){ o=shuffle([...Array(n).keys()]); const p=o.indexOf(c), h=hist.length;
+    if(!(h>=2 && hist[h-1]===p && hist[h-2]===p) && !(t<20 && h>=1 && hist[h-1]===p && Math.random()<.35)) break; }
+  hist.push(o.indexOf(c)); return o; }
+// Reihenfolge mit höchstens max gleichen Werten (key) hintereinander, z. B. bei Wischkarten oder Sortierkörben
+function noRuns(a, key, max){ let b=shuffle(a); for(let t=0;t<60;t++){ let run=1, ok=true; for(let i=1;i<b.length && ok;i++){ run = key(b[i])===key(b[i-1]) ? run+1 : 1; if(run>max) ok=false; } if(ok) return b; b=shuffle(a); } return b; }
 const fmt = (v,d) => Number(v).toLocaleString(W.sprache==="en"?"en-GB":"de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
 const reduced = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -504,18 +510,20 @@ GAMES.memory = (l, A, done) => {
 };
 
 GAMES.quiz = (l, A, done) => {
-  const qs = l.mischen===false ? l.fragen.slice() : shuffle(l.fragen), P = l.punkte||1, res = [];
+  const qs = l.mischen===false ? l.fragen.slice() : shuffle(l.fragen), P = l.punkte||1, res = [], hist = [];
   let i=0, pts=0, tId=null, answered=false;
   cleanups.push(()=>clearInterval(tId));
   function show(){
     closeSheet(); answered=false; stopAllAudio();
-    const q = qs[i], order = shuffle(q.o.map((_,j)=>j));
+    const q = qs[i], order = (q.fest||l.fest) ? q.o.map((_,j)=>j) : orderFor(q.o.length, q.c, hist);
     A.innerHTML = progressBar(fill(res,qs.length), i) +
       `<div class="panel qpanel">
         ${l.zeit?`<div class="timer" id="tm"><i></i></div>`:""}
         ${q.szene?`<p class="scene"><span class="scene-n">${esc(l.szenenLabel||"")} ${i+1}/${qs.length}</span>${rich(q.szene)}</p>`:""}
         ${q.hoeren?hearRow(q.hoeren):""}<p class="q">${rich(q.q)}</p>
-        <div class="opts g2">${order.map(j=>`<button class="opt" data-j="${j}">${esc(q.o[j])}</button>`).join("")}</div></div>`;
+        ${q.tippen ? `${q.hilfe?`<p class="hint">${rich(q.hilfe)}</p>`:""}<div class="row type-row"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer" placeholder="…"><button class="btn big" id="chk">${T.check}</button></div>`
+          : `<div class="opts g2">${order.map(j=>`<button class="opt" data-j="${j}">${esc(q.o[j])}</button>`).join("")}</div>`}</div>`;
+    if(q.tippen){ const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } }); }
     if(l.zeit){
       const end = Date.now()+l.zeit*1000, b=$("#tm i"), box=$("#tm");
       tId = setInterval(()=>{ const left=(end-Date.now())/1000; b.style.width=Math.max(0,left/l.zeit*100)+"%";
@@ -524,19 +532,22 @@ GAMES.quiz = (l, A, done) => {
   }
   function answer(j){
     if(answered) return; answered=true; clearInterval(tId);
-    const q = qs[i], ok = j===q.c;
+    const q = qs[i], ok = j===q.c, tip = A.querySelector("#ans");
+    if(tip){ tip.disabled=true; tip.classList.add(ok?"ok":"no"); }
     A.querySelectorAll(".opt").forEach(b=>{ const k=+b.dataset.j; b.disabled=true; if(k===q.c) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
     res.push(ok);
-    if(ok){ pts+=P; award([["q"+l.fragen.indexOf(q), P]], A.querySelector(`.opt[data-j="${q.c}"]`)); } else { A.querySelector(".qpanel").classList.add("shake"); miss((q.szene?q.szene+" – ":"")+q.q, q.o[q.c], q.e||l.regel); }
+    if(ok){ pts+=P; award([["q"+l.fragen.indexOf(q), P]], tip || A.querySelector(`.opt[data-j="${q.c}"]`)); } else { A.querySelector(".qpanel").classList.add("shake"); miss((q.szene?q.szene+" – ":"")+q.q, q.o[q.c], q.e||l.regel); }
     const head = ok ? `${l.richtigText||T.right} +${P}` : `${j===-1?T.timeUp:T.wrong} ${T.correctIs} „${q.o[q.c]}“`;
     sheet(ok?"ok":"no", esc(head), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result, ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); });
   }
-  A.onclick = e => { const o = e.target.closest(".opt"); if(o) answer(+o.dataset.j); };
+  A.onclick = e => { const o = e.target.closest(".opt"); if(o){ answer(+o.dataset.j); return; }
+    if(e.target.closest("#chk") && !answered){ const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
+      answer(same(v, [String(q.o[q.c])].concat(q.alt||[]), q.strict) ? q.c : -2); } };
   show();
 };
 
 GAMES.swipe = (l, A, done) => {
-  const cs = shuffle(l.karten), res=[]; let i=0, pts=0, busy=false;
+  const cs = l.mischen===false ? l.karten.slice() : noRuns(l.karten, k=>k.r, 3), res=[]; let i=0, pts=0, busy=false;
   function show(){
     closeSheet();
     const c = cs[i], nx = cs[i+1];
@@ -573,7 +584,7 @@ GAMES.swipe = (l, A, done) => {
 };
 
 GAMES.sortieren = (l, A, done) => {
-  const its = shuffle(l.items), res=[], cnt=l.koerbe.map(()=>0); let i=0, pts=0, lock=false, tm=null;
+  const its = noRuns(l.items, x=>x.k, 3), res=[], cnt=l.koerbe.map(()=>0); let i=0, pts=0, lock=false, tm=null;
   cleanups.push(()=>clearTimeout(tm));
   const nextItem = () => { i++; if(i<its.length) show(); else done(pts, T.correctN(pts)+" / "+its.length); };
   function show(){
@@ -599,15 +610,16 @@ GAMES.sortieren = (l, A, done) => {
 };
 
 GAMES.rush = (l, A, done) => {
-  const dur = l.zeit||60; let pool=[], hits=0, combo=0, left=dur, tId=null, lock=false, cur=null, over=false;
+  const dur = l.zeit||60, hist=[]; let pool=[], hits=0, combo=0, left=dur, tId=null, lock=false, cur=null, over=false;
   cleanups.push(()=>clearInterval(tId));
   A.innerHTML = `<div class="panel rush-start"><p class="q">${T.rushGoal(l.ziel, dur)}</p><button class="btn big" id="go">${T.start}</button></div>`;
   function next(){
     if(over || !$("#rq")) return;
     if(!pool.length) pool = shuffle(l.items);
-    cur = pool.pop(); const order = l.fest ? cur.o.map((_,j)=>j) : shuffle(cur.o.map((_,j)=>j));
+    cur = pool.pop(); const order = l.fest ? cur.o.map((_,j)=>j) : orderFor(cur.o.length, cur.c, hist);
     $("#rq").innerHTML = rich(cur.q);
-    $("#ro").innerHTML = order.map(j=>`<button class="opt" data-j="${j}">${esc(cur.o[j])}</button>`).join("");
+    if(l.tippen){ const inp=$("#rin"); inp.value=""; inp.disabled=false; inp.classList.remove("ok","no"); $("#rfix").textContent=""; setTimeout(()=>inp.focus({preventScroll:true}),20); }
+    else $("#ro").innerHTML = order.map(j=>`<button class="opt" data-j="${j}">${esc(cur.o[j])}</button>`).join("");
     lock=false;
   }
   function tick(){ left--; $("#rt").textContent=left; if(left<=10) $("#rt").classList.add("low"); if(left<=0) end(); }
@@ -616,7 +628,8 @@ GAMES.rush = (l, A, done) => {
     A.innerHTML = `<div class="rush-top"><div><span class="lbl">${T.time}</span><div class="rush-big" id="rt">${dur}</div></div>
       <div class="combo" id="cb"></div><div style="text-align:right"><span class="lbl">${T.score}</span><div class="rush-big" id="rs">0</div></div></div>
       <div class="timer"><i id="rbar" style="width:0%"></i></div>
-      <div class="panel rush-q" id="rq"></div><div class="opts rush-o" id="ro"></div>`;
+      <div class="panel rush-q" id="rq"></div>${l.tippen ? `<div class="row type-row rush-type"><input id="rin" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer" placeholder="…"><button class="btn big" id="rok">OK</button></div><p class="hint" id="rfix"></p>` : `<div class="opts rush-o" id="ro"></div>`}`;
+    if(l.tippen) $("#rin").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#rok").click(); } });
     next(); tId = setInterval(tick, 1000);
   }
   A.onclick = e => {
@@ -624,6 +637,12 @@ GAMES.rush = (l, A, done) => {
       let n=3; A.innerHTML=`<div class="count" id="cd">3</div>`;
       const c = setInterval(()=>{ n--; if(n>0) $("#cd").textContent=n; else { clearInterval(c); play(); } }, 700); cleanups.push(()=>clearInterval(c)); return;
     }
+    if(e.target.closest("#rok")){ if(lock || over) return; const inp=$("#rin"), v=inp.value.trim(); if(!v){ inp.classList.add("shake"); setTimeout(()=>inp.classList.remove("shake"),400); return; }
+      lock=true; inp.disabled=true; const ans=String(cur.o[cur.c]), strict=cur.o.some((x,k)=>k!==cur.c && normA(x)===normA(ans));
+      if(same(v, ans.split(/\s+\/\s+/).concat(cur.alt||[]), strict)){ hits++; combo++; inp.classList.add("ok"); if(hits<=l.ziel) award([["hits", hits]], inp); else pop(inp, "🔥");
+        $("#rs").textContent=hits; $("#rbar").style.width=Math.min(100,hits/l.ziel*100)+"%"; $("#cb").textContent = combo>=3 ? `🔥 ×${combo}` : ""; setTimeout(next, 300); }
+      else { combo=0; $("#cb").textContent=""; inp.classList.add("no","shake"); $("#rfix").innerHTML = `✔ <strong>${esc(ans)}</strong>`; miss(cur.q, ans, cur.e||l.regel); setTimeout(next, 1500); }
+      return; }
     const o = e.target.closest(".opt"); if(!o || lock || over) return; lock=true;
     const j=+o.dataset.j;
     if(j===cur.c){ hits++; combo++; o.classList.add("right");
@@ -727,7 +746,7 @@ GAMES.schaetzen = (l, A, done) => {
 // tolerante Prüfung getippter Antworten: Groß/klein, Satzzeichen, Apostrophe, Kurzformen
 const normA = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/\bcan't\b/g,"cannot").replace(/\bwon't\b/g,"will not").replace(/\bshan't\b/g,"shall not")
   .replace(/n't\b/g," not").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ve\b/g," have").replace(/'ll\b/g," will").replace(/'d\b/g," would").replace(/\b(it|he|she|that|what|there|who|where|here|how)'s\b/g,"$1 is")
-  .replace(/can not/g,"cannot").replace(/[.,!?;:"“”()–—-]/g," ").replace(/\s+/g," ").trim();
+  .replace(/can not/g,"cannot").replace(/[.,!?;:"“”()–—…-]/g," ").replace(/\s+/g," ").trim();
 const normS = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/[.,!?;:"“”()]/g," ").replace(/\s+/g," ").trim(),
   noArt = v => v.replace(/^(at |in |to |on )?(the |a |an )/,"").replace(/^to /,"");
 const same = (v, ans, strict) => v!==null && v!==undefined && [].concat(ans).some(a => strict ? normS(a)===normS(v) : (normA(a)===normA(v) || noArt(normA(a))===noArt(normA(v))));
@@ -751,7 +770,7 @@ GAMES.eingabe = (l, A, done) => {
 
 GAMES.lueckentext = (l, A, done) => {
   const parts = l.text.split(/(\[\[[^\]]+\]\])/g), gaps=[];
-  parts.forEach(p=>{ const m=p.match(/^\[\[(.+)\]\]$/); if(m){ const o=m[1].split("|"); gaps.push({ans:o[0], opts:shuffle(o)}); } });
+  { const hist=[]; parts.forEach(p=>{ const m=p.match(/^\[\[(.+)\]\]$/); if(m){ const o=m[1].split("|"); gaps.push({ans:o[0], opts:orderFor(o.length,0,hist).map(j=>o[j])}); } }); }
   const pick = gaps.map(()=>null); let act=0, checked=false, pts=0;
   function story(){
     let g=-1;
@@ -817,6 +836,20 @@ function finale(A){
   draw();
 }
 
+/* Eintippen auf E: Wortstamm als Hinweis bei Lückenfragen (z. B. is swimming / are swimming / swims → „swim…“) */
+function gapHint(q){ if(!/_{2,}/.test(q.q||"")) return ""; const FW=/^(the|a|an|you|your|will|won't|would|have|has|had|haven't|hasn't|are|is|am|was|were|wasn't|weren't|isn't|aren't|did|didn't|do|does|don't|doesn't|not|can|can't|could|should|must|more|most|going|been|be|to|of|than|them|they|their|there|this|that|these|those|already|never|ever|just|yet|still|being|really)$/;
+  const toks=q.o.map(o=>String(o).toLowerCase().match(/[a-z']+/g)||[]), ans=toks[q.c]||[], qq=String(q.q).toLowerCase();
+  for(const t of ans){ if(t.length<3 || FW.test(t)) continue; const p3=t.slice(0,3); if(!toks.every(ts=>ts.some(w=>w.startsWith(p3) && !FW.test(w)))) continue;
+    const ws=toks.flatMap(ts=>ts.filter(w=>w.startsWith(p3) && !FW.test(w))); let pre=ws[0]; for(const w of ws){ let k=0; while(k<pre.length && k<w.length && pre[k]===w[k]) k++; pre=pre.slice(0,k); }
+    if(pre.length>5 && pre.endsWith("ing")) pre=pre.slice(0,-3); if(pre.length<3 || qq.includes(pre)) return "";
+    if(ans.length===1 && ans[0]===pre) return ""; return "💡 " + (ws.includes(pre) ? `**${pre}**` : `**${pre}…**`); }
+  return ""; }
+function typable(q){ const a=String(q.o[q.c]), w=a.split(/\s+/).length; if(q.hoeren || a.length>28 || w>4 || /[–—]/.test(a)) return false;
+  if(q.o.some((o,j)=>j!==q.c && normA(o)===normA(a)) && q.o.some((o,j)=>j!==q.c && normS(o)===normS(a))) return false;
+  const gap=/_{2,}/.test(q.q||""), prompt=!/[?.!:]/.test(q.q||"") && String(q.q||"").replace(/\*/g,"").trim().split(/\s+/).length<=2;
+  const FWT=/^(have|has|had|haven't|hasn't|is|are|am|was|were|do|does|did|don't|doesn't|didn't|will|won't|would|can|can't|could|must|should|a|an|the|some|any|me|him|her|us|them|my|your|his|its|our|their|mine|yours|hers|ours|theirs|who|what|where|when|why|how|which|whose|in|on|at|to|for|from|by|with|since|ago|than|then|and|but|or|because|if|unless)$/i;
+  return (gap && (gapHint(q) || (w===1 && FWT.test(a.replace(/’/g,"'"))))) || (prompt && w<=3); }
+
 /* ---------- Niveau G/M/E: automatische Anpassung, wenn ein Spiel keine eigene Fassung hat ---------- */
 function autoNiveau(l, nv, world){
   const c = JSON.parse(JSON.stringify(l)), cut = (a,n) => a.length<=n ? a : a.filter((_,i)=> i < n);
@@ -842,14 +875,19 @@ function autoNiveau(l, nv, world){
     switch(c.typ){
       case "lueckentext": c.tippen = true; c.anleitung = "Read the text. Tap a gap and **type** the right word."; c.anleitungDe = "Lies den Text. Tippe auf eine Lücke und **schreibe** das richtige Wort."; break;
       case "quiz": { const ok = c.fragen.every(q => { const a=String(q.o[q.c]); return a.length<=24 && a.split(/\s+/).length<=4; });
-        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:String(q.o[q.c]).split(/\s+\/\s+/).concat(q.alt||[]), e:q.e, tipp:q.o.filter((_,j)=>j!==q.c).length ? "" : ""}));
+        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, hilfe: gapHint(q), strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:String(q.o[q.c]).split(/\s+\/\s+/).concat(q.alt||[]), e:q.e}));
           c.anleitung = (c.anleitung||"")+" **Type** the answer – no choices this time!"; c.anleitungDe = (c.anleitungDe||"")+" Schreibe die Antwort selbst – diesmal ohne Auswahl!"; }
-        else if(c.zeit) c.zeit = Math.max(8, Math.round(c.zeit*.75)); break; }
+        else { let n=0; if(kat!=="country") c.fragen = c.fragen.map(q=>{ if(!typable(q)) return q; n++; return Object.assign({}, q, {tippen:true, hilfe:gapHint(q), strict:q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c]))}); });
+          if(n){ c.anleitung = (c.anleitung||"")+" Some answers you have to **type** yourself!"; c.anleitungDe = (c.anleitungDe||"")+" Manche Antworten musst du selbst **schreiben**!"; }
+          if(c.zeit) c.zeit = Math.max(8, Math.round(c.zeit*(n?1.4:.75))); } break; }
+      case "rush": { const ok = kat!=="country" && c.items.every(q=>{ const a=String(q.o[q.c]); return a.length<=26 && a.split(/\s+/).length<=4 && !/[–—]/.test(a) && a.trim()!=="-"; });
+        if(ok){ c.tippen=true; c.ziel=Math.max(6, Math.round(c.ziel*.8)); c.zeit=(c.zeit||60)+30; c.art=(c.art||"").replace(/\d+ seconds/, c.zeit+" seconds")+" · type";
+          c.anleitung = `**Type** the answer and press Enter. **Goal: ${c.ziel}** in ${c.zeit} seconds.`; c.anleitungDe = `**Schreibe** die Antwort und drücke Enter. **Ziel: ${c.ziel}** in ${c.zeit} Sekunden.`; }
+        else c.ziel = Math.round(c.ziel*1.25); break; }
       case "satzbau": { const all = c.saetze.flatMap(x=>x.w);
         c.saetze = c.saetze.map(x=>{ const own = new Set(x.w.map(w=>w.toLowerCase())), pool = all.filter(w=>!own.has(w.toLowerCase()) && !/^[?.!,]$/.test(w));
           const ex = []; for(let k=0;k<pool.length && ex.length<2;k++){ const w = pool[(k*7+x.w.length*3)%pool.length]; if(!ex.includes(w)) ex.push(w); } return Object.assign(x,{extra:ex}); });
         c.anleitung = (c.anleitung||"")+" Careful: two words are **extra**!"; c.anleitungDe = (c.anleitungDe||"")+" Achtung: zwei Wörter sind **zu viel**!"; break; }
-      case "rush": c.ziel = Math.round(c.ziel*1.25); break;
       case "schaetzen": c.fragen = c.fragen.map(q=>Object.assign(q,{tol:q.tol*.6})); break;
       case "sortieren": c.koerbe = c.koerbe.map(k=>Object.assign(k,{info:""})); c.anleitung = (c.anleitung||"")+" No examples this time!"; c.anleitungDe = (c.anleitungDe||"")+" Diesmal ohne Beispiele!"; break;
       case "memory": { const de = /german/i.test((c.art||"")+(c.anleitung||"")), Q = p => de ? p.b : p.a, Aw = p => de ? p.a : p.b;
