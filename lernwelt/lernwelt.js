@@ -7,7 +7,7 @@
 
 const TXT = {
   de:{map:"Übersicht",pts:"Punkte",stars:"Sterne",next:"Weiter",check:"Prüfen",again:"Nochmal",nextLvl:"Nächstes Spiel",
-      toMap:"Übersicht",right:"Richtig!",wrong:"Leider falsch.",correctIs:"Richtig wäre:",timeUp:"Zeit abgelaufen!",
+      toMap:"Übersicht",right:"Richtig!",wrong:"Leider falsch.",correctIs:"Richtig wäre:",forExample:"Zum Beispiel:",timeUp:"Zeit abgelaufen!",
       start:"Los geht’s",record:"Neuer Bestwert!",best:"Bestwert",open:"noch offen",result:"Auswertung",
       saved:"Dein Fortschritt wird nur auf diesem Gerät gespeichert.",reset:"Alles zurücksetzen",
       resetQ:"Wirklich alles zurücksetzen? Alle Punkte und dein Kürzel werden gelöscht.",
@@ -33,7 +33,7 @@ const TXT = {
       review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",cardsHow:"Lies die Infokarten in Ruhe durch. Tipp: Tippe auf **Abspielen** und **Vorlesen**.",cardsHead:"Infokarten",gamesHead:"Spiele",cardsN:n=>`${n} Karten`,cardsDone:"✓ Fertig",cardsRead:"gelesen",cardsNew:"noch nicht gelesen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
       videoNote:"Das Video wird von YouTube geladen.",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
   en:{map:"Games",pts:"points",stars:"stars",next:"Next",check:"Check",again:"Play again",nextLvl:"Next game",
-      toMap:"All games",right:"Correct!",wrong:"Not quite.",correctIs:"Correct answer:",timeUp:"Time’s up!",
+      toMap:"All games",right:"Correct!",wrong:"Not quite.",correctIs:"Correct answer:",forExample:"For example:",timeUp:"Time’s up!",
       start:"Start",record:"New best score!",best:"Best",open:"not played yet",result:"See results",
       saved:"Your progress is only saved on this device.",reset:"Start again from zero",
       resetQ:"Delete all points and your initials?",
@@ -742,9 +742,9 @@ GAMES.eingabe = (l, A, done) => {
     const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } });
   }
   A.onclick = e => { if(!e.target.closest("#chk") || locked) return; const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
-    locked=true; $("#ans").disabled=true; const ok = same(v, q.a, q.strict); res.push(ok);
+    locked=true; $("#ans").disabled=true; const ok = (q.re && [].concat(q.re).some(r=>new RegExp(r).test(normA(v)))) || same(v, q.a, q.strict); res.push(ok);
     if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e||l.regel); }
-    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result,
+    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : `${T.wrong} ${q.re?(T.forExample||"e.g."):T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result,
       ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); }); };
   show();
 };

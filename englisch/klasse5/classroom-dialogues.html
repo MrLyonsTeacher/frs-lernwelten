@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Easy Classroom Dialogues</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:5, kat:"vocabulary", id:"dia5", icon:"💬", kartenSymbol:"💬",
+  titel:"Easy Classroom Dialogues", untertitel:"Hello, how are you? · My name is … · Can I …, please?",
+  text:"Say hello, talk about yourself and ask politely: complete easy classroom dialogues – and then write your own answers.",
+  levels: [
+    { id:"say", typ:"quiz", icon:"🙋", titel:"What Do You Say?", art:"Phrases · quiz",
+      anleitung:"What do you say? Choose the right answer.",
+      anleitungDe:"Was sagst du? Wähle die richtige Antwort.",
+      tipp:"Ganze Sätze lernen hilft!",
+      fragen:[
+        {q:"It’s 8 o’clock in the morning. You meet your teacher. You say:", o:["Good morning!","Good evening!","Good night!"], c:0, e:"Am Morgen: **Good morning!** – am Abend: Good evening."},
+        {q:"Your teacher asks: “How are you?” You say:", o:["I’m fine, thank you.","I’m eleven.","My name is Mia."], c:0, e:"„How are you?“ fragt, **wie es dir geht** → I’m fine / good / OK / not so well."},
+        {q:"Somebody asks: “What’s your name?” You say:", o:["My name is Tom.","I’m from Germany.","I like pizza."], c:0, e:"Name → **My name is …**"},
+        {q:"Somebody asks: “How old are you?” You say:", o:["I’m eleven years old.","I’m fine.","I’m from Germany."], c:0, e:"Alter → **I’m … years old.**"},
+        {q:"Somebody asks: “Where are you from?” You say:", o:["I’m from Germany.","I’m twelve.","I like dogs."], c:0, e:"Herkunft → **I’m from …**"},
+        {q:"You need to go to the toilet. You ask:", o:["Can I go to the toilet, please?","I go toilet.","Where is your toilet?"], c:0, e:"Höflich fragen: **Can I go to the toilet, please?**"},
+        {q:"School is over. You say to your teacher:", o:["Goodbye! Have a nice day.","Good morning!","Nice to meet you."], c:0, e:"Zum Abschied: **Goodbye! Have a nice day.**"},
+        {q:"You don’t feel good today. Your friend asks: “How are you?”", o:["I’m not so well.","I’m fine, thanks.","I’m from London."], c:0, e:"Mir geht es nicht so gut = **I’m not so well.**"},
+        {q:"What does **“I like …”** mean?", o:["Ich mag …","Ich bin …","Ich komme aus …"], c:0, e:"**I like** = ich mag, I’m = ich bin, I’m from = ich komme aus."},
+        {q:"In the evening you meet your neighbour. You say:", o:["Good evening!","Good morning!","Have a nice morning!"], c:0, e:"Am Abend: **Good evening!**"}
+      ]},
+    { id:"d1", typ:"lueckentext", icon:"🏫", titel:"The First English Lesson", art:"Dialogue · fill in the gaps",
+      anleitung:"Read the dialogue. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Dialog. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Sätze kommen aus deiner Liste „Classroom phrases“.",
+      ueberschrift:"Hello, class!",
+      text:"**Teacher:** Good [[morning|night|name]], class!\n**Class:** Good morning, Mr Smith!\n**Teacher:** How [[are|is|old]] you today?\n**Lena:** I’m [[fine|five|from]], thank you.\n**Teacher:** What’s your [[name|game|nose]]?\n**Lena:** My name [[is|am|are]] Lena.\n**Teacher:** Where are you [[from|for|fine]], Lena?\n**Lena:** I’m from Germany.\n**Teacher:** And how [[old|good|are]] are you?\n**Lena:** I’m eleven [[years|days|ears]] old.\n**Teacher:** What do you like?\n**Lena:** I [[like|am|have]] horses and pizza.",
+      erklaerung:"**Good morning – How are you? – I’m fine – What’s your name? – My name is … – Where are you from? – How old are you? – I’m … years old – I like …**"},
+    { id:"build", typ:"satzbau", icon:"🧱", titel:"Phrase Builder", art:"Sentence builder",
+      regel:"Fragen beginnen oft mit **Can I …** oder einem Fragewort (**What, Where, How**).",
+      anleitung:"Build the sentence.",
+      anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst.",
+      tipp:"Schau auf den deutschen Satz.",
+      punkte:2,
+      saetze:[
+        {w:["Can","I","go","to","the","toilet",",","please","?"], hint:"🇩🇪 Darf ich bitte auf die Toilette gehen?"},
+        {w:["How","are","you","?"], hint:"🇩🇪 Wie geht es dir?"},
+        {w:["My","name","is","Ben","."], hint:"🇩🇪 Mein Name ist Ben."},
+        {w:["I'm","eleven","years","old","."], hint:"🇩🇪 Ich bin elf Jahre alt."},
+        {w:["I'm","from","Germany","."], hint:"🇩🇪 Ich komme aus Deutschland."},
+        {w:["Have","a","nice","day","!"], hint:"🇩🇪 Schönen Tag noch!"}
+      ]},
+    { id:"d2", typ:"lueckentext", icon:"👋", titel:"A New Friend", art:"Dialogue · fill in the gaps",
+      anleitung:"Read the dialogue. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Dialog. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"I’m = I am.",
+      ueberschrift:"In the playground",
+      text:"**Max:** [[Hello|Goodbye|Thanks]]! I’m Max. What’s your name?\n**Amira:** Hi, Max. My [[name|names|nice]] is Amira.\n**Max:** How are you, Amira?\n**Amira:** I’m [[good|old|from]], thanks. And you?\n**Max:** I’m OK. I’m [[twelve|twelfth|twenty]] years old. And you?\n**Amira:** I’m eleven. I’m [[from|for|of]] Syria.\n**Max:** Cool! I like [[football|foot|ball]]. What do you like?\n**Amira:** I like [[cats|cat|catch]] and the colour purple.\n**Max:** Oh, the bell! See you later!\n**Amira:** Bye, Max! Have a nice [[day|date|dog]]!",
+      erklaerung:"**Hello – My name is … – I’m good, thanks – I’m … years old – I’m from … – I like … – Have a nice day!**"},
+    { id:"write", typ:"eingabe", icon:"✍️", titel:"Your Turn: Write!", art:"Write your own answer",
+      regel:"Antworte immer in einem **ganzen Satz**: My name is … / I’m … years old. / I’m from … / I like …",
+      anleitung:"Read the situation and **write your own answer** in English – a whole sentence.",
+      anleitungDe:"Lies die Situation und **schreibe deine eigene Antwort** auf Englisch – als ganzen Satz.",
+      tipp:"Es zählt der richtige Satzanfang – der Inhalt darf von dir sein!",
+      fragen:[
+        {szene:"🧑‍🏫 Your teacher asks:", q:"“What’s your name?”", a:["My name is Tom."], re:["^(my name is|i am|my names is) [a-zäöüßéèàçñ' ]+$"], e:"**My name is …** oder **I’m …**"},
+        {szene:"🧑‍🏫 Your teacher asks:", q:"“How old are you?”", a:["I’m eleven years old."], re:["^i am ([0-9]+|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen)( years old| years)?$"], e:"**I’m … years old.** – z. B. I’m eleven years old."},
+        {szene:"🧑‍🏫 Your teacher asks:", q:"“Where are you from?”", a:["I’m from Germany."], re:["^i am from [a-zäöüß' ]+$","^i come from [a-zäöüß' ]+$"], e:"**I’m from …** – z. B. I’m from Germany."},
+        {szene:"👧 Your friend asks:", q:"“How are you?”", a:["I’m fine, thank you."], re:["^((thanks|thank you|hi|hello) )?(i am )?(very |really )?(fine|good|ok|okay|great|well|not so well|not so good|not good|bad|not bad|super)( thank you| thanks)?( and you)?$"], e:"**I’m fine / good / OK / not so well, thank you.**"},
+        {szene:"🚽 You need to go to the toilet. Ask your teacher politely.", q:"Write the question.", a:["Can I go to the toilet, please?"], re:["^(please )?(can|may|could) i (please )?go to the (toilet|loo|bathroom)( please)?$"], e:"**Can I go to the toilet, please?**"},
+        {szene:"🍕 What do you like?", q:"Write a sentence with **I like …**", a:["I like pizza."], re:["^i (really )?like [a-zäöüß' ]+$"], e:"**I like …** – z. B. I like dogs and football."},
+        {szene:"🌅 It’s 8 o’clock. You come into the classroom.", q:"Say hello to your teacher.", a:["Good morning!"], re:["^(good morning|hello|hi)( [a-z ]+)?$"], e:"Am Morgen: **Good morning!** (oder Hello!)"},
+        {szene:"🔔 School is over. You leave the classroom.", q:"Say goodbye to your teacher.", a:["Goodbye! Have a nice day."], re:["\\b(goodbye|good bye|bye|see you|have a nice day)\\b"], e:"**Goodbye! Have a nice day.**"}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

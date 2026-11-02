@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Intro Course Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:5, kat:"vocabulary", id:"vin5", icon:"🌋", kartenSymbol:"🔤",
+  titel:"Intro Course Words", untertitel:"Numbers, animals, days, months, school, body, easy words",
+  text:"All the words from the intro course: count to 100, name animals, days and months, school things, body parts, colours and easy English words.",
+  levels: [
+    { id:"num", typ:"quiz", icon:"🔢", titel:"Number Volcano", art:"Numbers 0–100 · quiz",
+      regel:"Zehner: twenty, thirty, **forty** (ohne u!), fifty, sixty, seventy, eighty, ninety. Dazwischen ein Bindestrich: **forty-seven**.",
+      anleitung:"How do you write the number? Choose the right word.",
+      anleitungDe:"Wie schreibt man die Zahl? Wähle das richtige Wort.",
+      tipp:"Achte auf -teen (13–19) und -ty (20, 30, 40 …).",
+      fragen:[
+        {q:"What is **0**?", o:["zero","nil","null"], c:0, e:"0 = **zero**."},
+        {q:"What is **12**?", o:["twelve","twenty","twelf"], c:0, e:"12 = **twelve**, 20 = twenty."},
+        {q:"What is **13**?", o:["thirteen","thirty","threeteen"], c:0, e:"13 = **thirteen** (-teen), 30 = thirty (-ty)."},
+        {q:"What is **15**?", o:["fifteen","fiveteen","fifty"], c:0, e:"15 = **fifteen** – nicht „fiveteen“!"},
+        {q:"What is **19**?", o:["nineteen","ninety","nineten"], c:0, e:"19 = **nineteen**, 90 = ninety."},
+        {q:"What is **40**?", o:["forty","fourty","fourteen"], c:0, e:"40 = **forty** – ohne u! (aber: four, fourteen)"},
+        {q:"What is **47**?", o:["forty-seven","seventy-four","fourty-seven"], c:0, e:"47 = **forty-seven**: erst die Zehner, dann die Einer – anders als im Deutschen!"},
+        {q:"What is **58**?", o:["fifty-eight","eighty-five","fivety-eight"], c:0, e:"58 = **fifty-eight**."},
+        {q:"What is **66**?", o:["sixty-six","sixteen-six","sixty-sex"], c:0, e:"66 = **sixty-six**."},
+        {q:"What is **72**?", o:["seventy-two","twenty-seven","seventeen-two"], c:0, e:"72 = **seventy-two** – nicht „zweiundsiebzig“ umdrehen!"},
+        {q:"What is **89**?", o:["eighty-nine","ninety-eight","eighteen-nine"], c:0, e:"89 = **eighty-nine**."},
+        {q:"What is **100**?", o:["one hundred","one thousand","ten hundred"], c:0, e:"100 = **one hundred**."},
+        {q:"**six + seven** = ?", o:["thirteen","thirty","twelve"], c:0, e:"6 + 7 = 13 = **thirteen**."},
+        {q:"**ten × ten** = ?", o:["one hundred","twenty","ten ten"], c:0, e:"10 × 10 = 100 = **one hundred**."}
+      ]},
+    { id:"ani", typ:"rush", icon:"🦁", titel:"Animal Rush", art:"German → English · 60 seconds",
+      regel:"Achte auf die Schreibweise: **giraffe**, **elephant**, **guinea pig**, **budgie**, **rhino**, **hippo**.",
+      anleitung:"What’s the animal in English? **Goal: 14** in 60 seconds.",
+      anleitungDe:"Wie heißt das Tier auf Englisch? **Ziel: 14** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:14,
+      items:[
+        {q:"Frosch",o:["frog","frock","fog"],c:0},{q:"Löwe",o:["lion","lyon","loin"],c:0},{q:"Hamster",o:["hamster","hampster","hamstr"],c:0},
+        {q:"Kuh",o:["cow","cuh","coo"],c:0},{q:"Wellensittich",o:["budgie","budgy","parrot"],c:0},{q:"Schwein",o:["pig","pick","swine"],c:0},
+        {q:"Elefant",o:["elephant","elefant","elephent"],c:0},{q:"Giraffe",o:["giraffe","giraf","girafe"],c:0},{q:"Hund",o:["dog","dock","hound"],c:0},
+        {q:"Schaf",o:["sheep","ship","shep"],c:0},{q:"Pferd",o:["horse","hors","house"],c:0},{q:"Nilpferd",o:["hippo","hipo","rhino"],c:0},
+        {q:"Katze",o:["cat","cad","kat"],c:0},{q:"Meerschweinchen",o:["guinea pig","sea pig","guinea pick"],c:0},{q:"Fisch",o:["fish","fisch","fich"],c:0},
+        {q:"Hase",o:["rabbit","rabit","hare"],c:0},{q:"Krokodil",o:["crocodile","crocodil","krokodile"],c:0},{q:"Ente",o:["duck","dug","dack"],c:0},
+        {q:"Huhn",o:["chicken","kitchen","chiken"],c:0},{q:"Tiger",o:["tiger","tigre","teiger"],c:0},{q:"Schlange",o:["snake","snack","snak"],c:0},
+        {q:"Spinne",o:["spider","spinner","spyder"],c:0},{q:"Esel",o:["donkey","donky","monkey"],c:0},{q:"Zebra",o:["zebra","zebre","sebra"],c:0},
+        {q:"Affe",o:["monkey","monky","donkey"],c:0},{q:"Fledermaus",o:["bat","bad","flutter mouse"],c:0},{q:"Vogel",o:["bird","bord","burd"],c:0},
+        {q:"Schildkröte",o:["turtle","turtel","tortle"],c:0},{q:"Maus",o:["mouse","mous","mice"],c:0},{q:"Nashorn",o:["rhino","rino","hippo"],c:0},
+        {q:"Pinguin",o:["penguin","pinguin","penguine"],c:0},{q:"Bär",o:["bear","beer","bare"],c:0},{q:"Schmetterling",o:["butterfly","butterflie","buttafly"],c:0},
+        {q:"Wal",o:["whale","wale","wail"],c:0}
+      ]},
+    { id:"days", typ:"zeitstrahl", icon:"📅", titel:"Days of the Week", art:"Order · days",
+      regel:"Wochentage schreibt man im Englischen immer **groß**: Monday, Tuesday, Wednesday …",
+      anleitung:"Put the days in the right order – **start with Monday**.",
+      anleitungDe:"Bring die Wochentage in die richtige Reihenfolge – **beginne mit Montag**.",
+      tipp:"Nach dem Prüfen siehst du die deutschen Wörter.",
+      items:[ {j:"Montag", t:"Monday"}, {j:"Dienstag", t:"Tuesday"}, {j:"Mittwoch", t:"Wednesday"}, {j:"Donnerstag", t:"Thursday"},
+              {j:"Freitag", t:"Friday"}, {j:"Samstag", t:"Saturday"}, {j:"Sonntag", t:"Sunday"} ]},
+    { id:"months", typ:"zeitstrahl", icon:"🗓️", titel:"Months of the Year", art:"Order · months",
+      regel:"Monate schreibt man im Englischen immer **groß**: January, February, March …",
+      anleitung:"Put the months in the right order – **start with January**.",
+      anleitungDe:"Bring die Monate in die richtige Reihenfolge – **beginne mit Januar**.",
+      tipp:"Nach dem Prüfen siehst du die deutschen Wörter.",
+      items:[ {j:"Januar", t:"January"}, {j:"Februar", t:"February"}, {j:"März", t:"March"}, {j:"April", t:"April"}, {j:"Mai", t:"May"}, {j:"Juni", t:"June"},
+              {j:"Juli", t:"July"}, {j:"August", t:"August"}, {j:"September", t:"September"}, {j:"Oktober", t:"October"}, {j:"November", t:"November"}, {j:"Dezember", t:"December"} ]},
+    { id:"cal", typ:"quiz", icon:"📆", titel:"Calendar Quiz", art:"Days & months · quiz",
+      regel:"Achte auf die Schreibweise: **Wednesday**, **Thursday**, **February**, **March** (nicht März), **October** (mit c).",
+      anleitung:"Choose the right word.",
+      anleitungDe:"Wähle das richtige Wort.",
+      tipp:"Tage und Monate immer groß!",
+      fragen:[
+        {q:"What’s **Mittwoch** in English?", o:["Wednesday","Wensday","Thursday"], c:0, e:"Mittwoch = **Wednesday** – das d spricht man nicht."},
+        {q:"What’s **Donnerstag** in English?", o:["Thursday","Tuesday","Thirsday"], c:0, e:"Donnerstag = **Thursday**, Dienstag = Tuesday."},
+        {q:"What’s **Dienstag** in English?", o:["Tuesday","Thursday","Tusday"], c:0, e:"Dienstag = **Tuesday**."},
+        {q:"Which day comes after **Friday**?", o:["Saturday","Sunday","Thursday"], c:0, e:"Friday → **Saturday** → Sunday."},
+        {q:"Which day comes before **Monday**?", o:["Sunday","Tuesday","Saturday"], c:0, e:"Sunday → **Monday**."},
+        {q:"What’s **März** in English?", o:["March","Mars","Marz"], c:0, e:"März = **March**."},
+        {q:"What’s **Mai** in English?", o:["May","Mai","Mei"], c:0, e:"Mai = **May**."},
+        {q:"What’s **Juli** in English?", o:["July","Juli","June"], c:0, e:"Juli = **July**, Juni = June."},
+        {q:"What’s **Oktober** in English?", o:["October","Oktober","Octobre"], c:0, e:"Oktober = **October** – mit c!"},
+        {q:"What’s **Dezember** in English?", o:["December","Dezember","Desember"], c:0, e:"Dezember = **December** – mit c!"},
+        {q:"Which month comes after **January**?", o:["February","June","December"], c:0, e:"January → **February** → March."},
+        {q:"Which month comes before **September**?", o:["August","October","July"], c:0, e:"July → **August** → September."}
+      ]},
+    { id:"school", typ:"memory", icon:"✏️", titel:"School Things Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Schulsachen aus dem Intro Course.",
+      paare:[ {a:"pencil", b:"Bleistift"}, {a:"pencil case", b:"Federmäppchen", alt:["pencilcase"]}, {a:"rubber / eraser", b:"Radiergummi"}, {a:"ruler", b:"Lineal"},
+              {a:"glue", b:"Kleber"}, {a:"scissors", b:"Schere"}, {a:"sharpener", b:"Spitzer"}, {a:"exercise book", b:"Übungsheft"},
+              {a:"worksheet", b:"Arbeitsblatt"}, {a:"school bag", b:"Schulranzen", alt:["schoolbag"]} ]},
+    { id:"room", typ:"sortieren", icon:"🏫", titel:"Pack Your School Bag", art:"Word groups · sort",
+      anleitung:"Where does it belong? Tap the right box.",
+      anleitungDe:"Wohin gehört das? Tippe auf das richtige Kästchen.",
+      tipp:"Ins Mäppchen, in den Schulranzen oder im Klassenzimmer?",
+      koerbe:[ {t:"in my pencil case", info:"✏️", tipp:"Kleine Dinge zum Schreiben und Basteln: pen, ruler, glue, scissors …"},
+               {t:"in my school bag", info:"🎒", tipp:"Bücher und Blätter: book, folder, worksheet, homework …"},
+               {t:"in the classroom", info:"🏫", tipp:"Große Dinge im Raum: table, chair, door, window, whiteboard."} ],
+      items:[ {t:"pen", k:0}, {t:"pencil", k:0}, {t:"rubber", k:0}, {t:"ruler", k:0}, {t:"glue", k:0}, {t:"scissors", k:0}, {t:"sharpener", k:0},
+              {t:"book", k:1}, {t:"exercise book", k:1}, {t:"worksheet", k:1}, {t:"paper", k:1}, {t:"homework", k:1}, {t:"folder", k:1},
+              {t:"whiteboard", k:2}, {t:"table", k:2}, {t:"chair", k:2}, {t:"window", k:2}, {t:"door", k:2} ]},
+    { id:"body", typ:"memory", icon:"🧍", titel:"Body Parts Memory", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Körperteile aus dem Intro Course.",
+      paare:[ {a:"head", b:"Kopf"}, {a:"shoulder", b:"Schulter"}, {a:"knee", b:"Knie"}, {a:"toe", b:"Zeh"},
+              {a:"leg", b:"Bein"}, {a:"ear", b:"Ohr"}, {a:"eye", b:"Auge"}, {a:"nose", b:"Nase"},
+              {a:"mouth", b:"Mund"}, {a:"tongue", b:"Zunge"}, {a:"cheek", b:"Backe"}, {a:"foot", b:"Fuß"} ]},
+    { id:"bodytxt", typ:"lueckentext", icon:"🐲", titel:"My Body", art:"Text · fill in the gaps",
+      anleitung:"Read the text. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Text. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Mehrzahl: one foot – two **feet**, one tooth – many **teeth**.",
+      ueberschrift:"What can my body do?",
+      text:"I see with my [[eyes|ears|toes]]. I hear with my [[ears|eyes|knees]]. I smell with my [[nose|mouth|knee]].\nI eat with my [[mouth|ear|cheek]] and my [[teeth|tooth|toes]]. I can show my [[tongue|toe|tooth]] – bleh!\nI write with my [[hand|foot|head]]. On my hand I have five [[fingers|toes|teeth]], and on my foot I have five [[toes|fingers|knees]].\nI walk with my [[legs|arms|ears]] and my [[feet|foots|feets]]. I wear a hat on my [[head|knee|nose]].",
+      erklaerung:"**eyes, ears, nose, mouth, teeth, tongue, hand, fingers, toes, legs, feet, head** – one foot, two **feet**; one tooth, many **teeth**."},
+    { id:"easy", typ:"rush", icon:"🎨", titel:"Easy Words & Colours", art:"German → English · 60 seconds",
+      regel:"Viele englische Wörter kennst du schon aus dem Deutschen: computer, sandwich, popcorn … Achte auf **cookie**, **chicken**, **ice-cream**, **sneakers** und die Farben.",
+      anleitung:"What’s the English word? **Goal: 14** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 14** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:14,
+      items:[
+        {q:"Keks",o:["cookie","cooky","cake"],c:0},{q:"Huhn",o:["chicken","kitchen","chiken"],c:0},{q:"Eis (zum Essen)",o:["ice-cream","ice","eis-cream"],c:0},
+        {q:"Schuhe",o:["shoes","shoos","shues"],c:0},{q:"Laufschuhe",o:["sneakers","snakers","sneekers"],c:0},{q:"Kamera",o:["camera","kamera","camra"],c:0},
+        {q:"Fußball",o:["football","footbal","foodball"],c:0},{q:"Couch",o:["couch","coach","cauch"],c:0},{q:"Computer",o:["computer","compjuter","komputer"],c:0},
+        {q:"Farben",o:["colours","colors","collours"],c:0},{q:"bunt",o:["colourful","colourfull","bunt"],c:0},{q:"rot",o:["red","rot","read"],c:0},
+        {q:"gelb",o:["yellow","yelow","jellow"],c:0},{q:"blau",o:["blue","blau","blew"],c:0},{q:"grün",o:["green","gren","grean"],c:0},
+        {q:"violett",o:["purple","purpel","violet"],c:0},{q:"grau",o:["grey / gray","grau","gry"],c:0},{q:"schwarz",o:["black","blak","schwarz"],c:0},
+        {q:"weiß",o:["white","wite","wheit"],c:0},{q:"braun",o:["brown","braun","brawn"],c:0},{q:"orange",o:["orange","oranje","orang"],c:0},
+        {q:"Taxi",o:["taxi","taksi","texi"],c:0},{q:"Baby",o:["baby","beby","babby"],c:0},{q:"Sandwich",o:["sandwich","sandwitch","sandwhich"],c:0}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>
