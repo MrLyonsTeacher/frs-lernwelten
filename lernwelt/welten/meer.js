@@ -355,3 +355,81 @@ export function lavaSerpent(o={}){
   }
   return { parts, noShadow:true };
 }
+
+/* Geflügelter Dämon (schlank, dunkelgrau): langer Schädel mit nach oben geschwungenen Hörnern, rote Augen, offenes Maul mit Reißzähnen,
+   breite Schultern, schmale Taille, lange Arme mit Krallen, gebeugte Beine mit Krallenfüßen, große Fledermausflügel mit dunkelroter Haut.
+   Blickrichtung +x, Füße bei y=0, Höhe ≈ 67, Spannweite ≈ 96. o.fly: fliegt dauernd (Flügelschlag, Beine hängen). */
+export function fiend(o={}){
+  const SK=[0x3A3E48,0x424652,0x363942,0x474B57], HI=[0x555A67,0x5E6370], SH=[0x26282F,0x2C2E35], BONE=[0x2C2E34,0x34363D], HORN=[0x3A3A3E,0x46464A,0x2E2E32], HB=0xB8AE96,
+        EYE=0xFF2A12, EYE2=0xFF6A3A, MOUTH=0x4A0C0A, TONG=0x7A1A1A, TOOTH=0xE6DEC8, CLAW=0x18181C, CT=0xCFC6B2, MEM=[0x5A1A16,0x641E18,0x4E1612,0x6E2419,0x561C14], VEIN=0x3A0E0C, EDGE=0x2A1A18;
+  const pk=(a,x,y,z)=>a[((x*7+y*13+z*5)%a.length+a.length)%a.length];
+  const skin=(x,y,z)=>pk(SK,x,y,z), hi=(x,y,z)=>pk(HI,x,y,z), sh=(x,y,z)=>pk(SH,x,y,z);
+  // ----- Rumpf: Brustkorb, Taille, Becken, Muskeln, Rippen
+  const body=M();
+  body.ell(1,34,0,5,7,7.5,skin).ell(0,27,0,3.6,4.2,5,skin).ell(0,23,0,3.8,2.6,5.2,sh);
+  for(const s of [-1,1]){ body.ell(4.2,35.5,3.4*s,2.2,2.6,3,hi); body.ell(0,39,9*s,3.4,3.2,3.2,skin); body.ell(1.5,40,8.5*s,2,1.6,2.2,hi); }          // Brust, Schultern
+  for(let y=25;y<=31;y+=2) for(const z of [-1.5,1.5]) body.put(4,y,z,hi(4,y,z)).put(4,y+1,z,sh(4,y,z));                                     // Bauchmuskeln
+  for(const y of [30,32,34]) for(const s of [-1,1]) body.line([3,y,5.5*s],[-2,y+1,7.2*s],sh);                                                // Rippen
+  body.box(-6,30,-1,-5,40,1,sh); for(let y=30;y<=40;y+=2) body.put(-6.6,y,0,BONE[0]);                                                     // Wirbelsäule
+  body.seg([1,40,0],[4,44,0],2.4,2.2,skin);                                                                                                // Hals
+  // ----- Kopf (Drehpunkt am Hals)
+  const head=M();
+  head.ell(6,48.5,0,5,4.3,4.2,skin).ell(10.6,46.4,0,3.4,2.5,2.8,skin).ell(5,46.6,0,3.4,3.2,3.9,sh);
+  head.box(8,50,-3.8,10.6,51,3.8,sh);                                                                     // Brauenwulst
+  for(const s of [-1,1]){ head.put(10.6,49,2.2*s,EYE,1).put(11,49,1.6*s,EYE2,1).put(10.2,49,2.8*s,EYE,1).put(10.6,49.6,2.2*s,sh(0,0,0));   // Augen
+    head.put(11,49.4,1.4*s,sh(0,0,0)).line([6,51,2.6*s],[2,52.5,3.4*s],sh);                                   // Furchen
+    head.line([7,45,3.3*s],[3,46,4.2*s],HI[0]).put(3,46.5,4.6*s,sh(0,0,0)); }                                  // Wangenknochen, Ohransatz
+  head.box(10.6,42.6,-1.8,13,45,1.8,MOUTH).box(10.4,43,-1,12,43.4,1,TONG); for(const s of [-1,1]) head.box(10.6,42.6,2.4*s,12.6,45,2.4*s,skin);                            // Maul offen
+  for(const s of [-1,1]) head.put(13.2,45,1.6*s,TOOTH).put(13.2,44.2,1.6*s,TOOTH).put(13.4,45,.5*s,TOOTH);   // obere Zähne, Fangzähne
+  head.seg([7,42.6,0],[12.6,41.2,0],1.8,1.3,skin); for(const s of [-1,1]) head.put(13,42.4,1.3*s,TOOTH).put(13,43.2,1.3*s,TOOTH);   // Unterkiefer
+  head.put(13,46.4,-.6,sh(0,0,0)).put(13,46.4,.6,sh(0,0,0));                                                // Nüstern
+  // Hörner: aus dem Scheitel nach außen, dann hoch und wieder nach innen gebogen, gerillt, heller Ansatzring
+  const hp=[[5,51,3],[4.4,53.5,5.6],[3.6,56.5,7.8],[3.2,60,8.6],[3.4,63.2,7.8],[4.2,65.6,6],[5.2,67,4]];
+  for(const s of [-1,1]) for(let i=0;i+1<hp.length;i++){ const a=hp[i], b=hp[i+1], n=8; for(let k=0;k<=n;k++){ const f=k/n, t=(i+f)/(hp.length-1), r=1.7*(1-t)+.35;
+      const p=[a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, (a[2]+(b[2]-a[2])*f)*s]; head.ell(p[0],p[1],p[2],r,r,r, (x,y,z)=> t<.035 ? HB : ((Math.round(y*1.3)%3===0) ? HORN[2] : pk(HORN,x,y,z))); } }
+  // ----- Arme: lang, sehnig, Ellbogendorn, Hände mit langen Krallen bis zu den Knien
+  const arms=[];
+  for(const s of [-1,1]){ const a=M();
+    a.seg([0,39,10*s],[1,30.5,12*s],2.3,1.8,skin).ell(.8,35,11.6*s,1.9,2.6,1.9,hi);                           // Oberarm mit Bizeps
+    a.line([-1,30,12.5*s],[-3,29,13*s],CLAW);                                                                  // Ellbogendorn
+    a.seg([1,30.5,12*s],[3.5,21,12.4*s],1.7,1.3,skin).ell(2.4,26,12.6*s,1.4,2.4,1.5,hi);                      // Unterarm
+    a.ell(4,19.6,12.4*s,1.6,1.6,1.4,skin);                                                                     // Hand
+    for(const [dz,dx] of [[-1.2,.4],[0,.9],[1.2,.4],[1.6,-.8]]){ const z=12.4*s+dz*s, p0=[4+dx,18.6,z], p1=[5.5+dx,14.5,z+.3*dz*s], p2=[5.8+dx,11.6,z+.5*dz*s];
+      a.seg(p0,p1,.62,.5,skin).seg(p1,p2,.5,.32,CLAW).put(p2[0]+.4,p2[1]-.5,p2[2],CT); }
+    arms.push([a,[0,39,10*s],s]); }
+  // ----- Beine: kräftige Oberschenkel nach vorn, Unterschenkel nach hinten (Tierbeine), Krallenfüße
+  const legs=[];
+  for(const s of [-1,1]){ const l=M();
+    l.seg([0,23.5,4.5*s],[5,15.5,6*s],2.7,2.1,skin).ell(3,20,5.6*s,2.4,2.8,2.2,hi);
+    l.seg([5,15.5,6*s],[-1,7.5,6.2*s],1.9,1.25,skin).ell(3.6,13,6.2*s,1.4,2,1.4,hi);
+    l.seg([-1,7.5,6.2*s],[1,2,6.2*s],1.2,1,skin).line([-2,8,6.2*s],[-3.6,7,6.2*s],CLAW);                       // Sprunggelenk mit Sporn
+    for(const dz of [-1.4,0,1.4]){ const z=6.2*s+dz; l.seg([1,1.6,z],[4.5,.6,z+dz*.5],.75,.55,skin).seg([4.5,.6,z+dz*.5],[6.2,0,z+dz*.7],.5,.3,CLAW).put(6.6,-.2,z+dz*.7,CT); }
+    l.seg([0,1.4,6.2*s],[-1.8,.4,6.2*s],.6,.4,CLAW);
+    legs.push([l,[0,23.5,4.5*s],s]); }
+  // ----- Flügel in der z-y-Ebene: Armknochen bis zum Handgelenk (oben, mit Kralle), Finger zu den Spitzen, Haut mit Bögen dazwischen
+  const wings=[];
+  for(const s of [-1,1]){ const w=M();
+    const R0=[5,40], W0=[18,58], T=[[41,61],[46,47],[40,34],[29,27],[17,29]], RB=[6,31];
+    const xAt=(z,y)=>-4-Math.round(Math.hypot(z-R0[0],y-R0[1])*.07);
+    const tri=(A,B,C,sc)=>{ const minz=Math.floor(Math.min(A[0],B[0],C[0])), maxz=Math.ceil(Math.max(A[0],B[0],C[0])), miny=Math.floor(Math.min(A[1],B[1],C[1])), maxy=Math.ceil(Math.max(A[1],B[1],C[1]));
+      const d=(B[1]-C[1])*(A[0]-C[0])+(C[0]-B[0])*(A[1]-C[1]);
+      for(let z=minz;z<=maxz;z++) for(let y=miny;y<=maxy;y++){ const a=((B[1]-C[1])*(z-C[0])+(C[0]-B[0])*(y-C[1]))/d, b=((C[1]-A[1])*(z-C[0])+(A[0]-C[0])*(y-C[1]))/d, c=1-a-b;
+        if(a<-.02||b<-.02||c<-.02) continue; const t=(b+c)>0 ? c/(b+c) : 0; if(a < sc*Math.sin(Math.PI*t)) continue;
+        const vein = (Math.round(z*.9+y*.5)%7===0) || (a<sc*Math.sin(Math.PI*t)+.05);
+        w.put(xAt(z,y), y, z*s, a<sc*Math.sin(Math.PI*t)+.04 ? EDGE : vein ? VEIN : pk(MEM,z,y,0)); } };
+    for(let i=0;i+1<T.length;i++) tri(W0,T[i],T[i+1],.2);
+    tri(R0,W0,T[T.length-1],0); tri(R0,T[T.length-1],RB,.16);
+    const bone=(A,B,r0,r1)=>{ const n=Math.ceil(Math.hypot(B[0]-A[0],B[1]-A[1])*1.6); for(let k=0;k<=n;k++){ const f=k/n, z=A[0]+(B[0]-A[0])*f, y=A[1]+(B[1]-A[1])*f, r=r0+(r1-r0)*f;
+      w.ell(xAt(z,y), y, z*s, r, r, r, (x,yy,zz)=>pk(BONE,x,yy,zz)); } };
+    bone(R0,W0,1.3,1.05); T.forEach(t=>bone(W0,t,.75,.35));
+    w.line([xAt(18,58),58,18*s],[xAt(17,62),62.5,16.5*s],CLAW).put(xAt(17,62),63,16*s,CT);                     // Daumenkralle
+    for(const t of T) w.put(xAt(t[0],t[1]), t[1]-1, t[0]*s, CLAW);
+    wings.push([w,[-4,39,5*s],s]); }
+  const fly = cr => o.fly ? 1 : cr && (cr._ph==="land"||cr._ph==="up") ? 1-(cr._sit||0) : 0;
+  const parts=[ {cubes:body.list(), pivot:[0,24,0], fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = -.28*fl + .04*Math.sin(tt*.7); g.position.y = 24 + fl*1.3*Math.sin(tt*5.5+1.6); }},
+    {cubes:head.list(), pivot:[4,44,0], parent:0, fn:(g,tt,cr)=>{ g.rotation.z = .22*fly(cr) + .06*Math.sin(tt*.9); g.rotation.y = .22*Math.sin(tt*.31); }} ];
+  arms.forEach(([a,pv,s])=>parts.push({cubes:a.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = .2*fl + .12*Math.sin(tt*1.1+(s>0?0:2)); g.rotation.x = s*(.12+fl*.1*Math.sin(tt*5.5)); }}));
+  legs.forEach(([l,pv,s])=>parts.push({cubes:l.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = -fl*(.35+.08*Math.sin(tt*2.2+s)); }}));
+  wings.forEach(([w,pv,s])=>parts.push({cubes:w.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr), b=Math.sin(tt*5.5); g.rotation.x = s*(-.18 + fl*(.62*b) + (1-fl)*.08*Math.sin(tt*1.2)); g.rotation.y = -s*fl*.18*Math.cos(tt*5.5); }}));
+  return { parts };
+}

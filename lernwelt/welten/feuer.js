@@ -2,7 +2,7 @@
 // vorne der große Kuppelpalast (Grammar), links der Kuppelturm (Vocabulary), rechts der Turm mit Spitztürmchen (Country & people),
 // dahinter die gotische Burg vor dem Vulkan, Brücken zwischen den Säulen, Lavafälle, schwebende Inseln mit Rauch, Drache, Menschen und Orks.
 import { dragon, person } from "./tiere.js";
-import { redDemon, lavaSerpent } from "./meer.js";
+import { fiend, lavaSerpent } from "./meer.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, ball, cone, line, topAt, tex, P, noise, stripes, bricks, rings, planks } = A;
   const T = {
@@ -256,7 +256,7 @@ export function build(A){
     { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:22, clear:10}, perch:{pos:[PR[0]+.5, PTOP+1+7.4, PR[1]+.5], dir:[.55,1], period:120, fly:92, land:11, stay:12, takeoff:5, off:30}}, scale:.55, fire:{part:1, at:[12.6,-1.8,0], dir:[1,-.2,0], n:160, rate:140, speed:30, life:1.1, size:2.4, light:1400} }
   ];
   // Dämonen kreisen über der Stadt (frei fliegend, nie durch Gebäude)
-  [[.12,0,58,.08,-1],[.1,2.3,66,.075,1],[.14,4.4,50,.085,-1],[.09,5.6,74,.07,1]].forEach(([sp,ph,y,sc,dir])=>creatures.push({ ...redDemon({fly:true}),
+  [[.12,0,58,.072,-1],[.1,2.3,66,.068,1],[.14,4.4,50,.076,-1],[.09,5.6,74,.064,1]].forEach(([sp,ph,y,sc,dir])=>creatures.push({ ...fiend({fly:true}),
     orbit:{c:[60,y,34], r:[78,52], speed:sp*dir, ph, bob:2.5, wander:{f:.17+ph*.01, r:.22, y:10, eight:10, dx:14, dz:12, span:22, clear:8}}, scale:sc, noShadow:true }));
   // Magma-Schlangen: suchen sich freie Lavaflächen (Ring ohne Felsen) vor der Stadt
   const freeRing = (cx,cz,R) => { for(let k=0;k<72;k++){ const a=k/72*Math.PI*2; for(const dr of [-5,-2.5,0,2.5,5]){ const x=Math.round(cx+Math.cos(a)*(R+dr)), z=Math.round(cz+Math.sin(a)*(R+dr));
