@@ -719,6 +719,7 @@ export async function start(o){
         for(let i=0;i+1<tips.length;i++) draw(path(tips[i], tips[i+1].clone().sub(tips[i]).normalize(), tips[i].distanceTo(tips[i+1]), 6, 1.4), .7);
         for(;li<c.bLines.length;li++) c.bLines[li].material.opacity=0; for(;di<c.bDots.length;di++) c.bDots[di].material.opacity=0; } }
     for(const k in labels){ const L=labels[k]; if(L.beam) L.beam.material.opacity = (focus && focus!==k) ? .03 : .14 + .05*Math.sin(now/600+k.length); }
+    if(stage>=2 && !renderer.shadowMap.autoUpdate && (++shTick % 4 === 0)) renderer.shadowMap.needsUpdate = true;
     composer ? composer.render() : renderer.render(scene, cam);
     // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander
     const topEl = document.querySelector(".wbar"), dockEl = document.querySelector(".wdock");
@@ -734,11 +735,15 @@ export async function start(o){
     if(o.still && !to && frames > 2) window.__stillDone = (window.__stillDone||0) + 1;
   }
   // Läuft es auf einem älteren iPad zu langsam, schalten wir Schatten und Leuchten automatisch ab
-  let perfN = 0, perfT = 0, degraded = !!o.lite;
-  function perf(dt){ if(degraded || o.still) return; perfN++; if(perfN>20 && perfN<=110) perfT += dt; if(perfN===110 && perfT/90 > 1/24){ degraded = true;
-      renderer.shadowMap.enabled = false; scene.traverse(m=>{ if(m.material){ (Array.isArray(m.material)?m.material:[m.material]).forEach(mt=>mt.needsUpdate=true); } });
-      composer = null; renderer.setPixelRatio(1); renderer.setSize(innerWidth, innerHeight); } }
-  function wake(){ if(!running){ running = true; frames = 0; requestAnimationFrame(frame); } }
+  // Leistungsanpassung bei langsamen Geräten – das Aussehen (Schatten, Leuchten, Kontrast) bleibt gleich:
+  // Stufe 1: geringere Auflösung, Stufe 2: Schatten seltener neu berechnen und kleinere Schattenkarte
+  let perfN = 0, perfT = 0, degraded = !!o.lite, stage = 0, shTick = 0;
+  function perf(dt){ if(degraded || o.still) return; perfN++; if(perfN>20 && perfN<=110) perfT += dt;
+    if(perfN===110){ const slow = perfT/90 > 1/24; perfN = 0; perfT = 0; if(!slow) return;
+      stage++;
+      if(stage===1){ renderer.setPixelRatio(Math.min(1, renderer.getPixelRatio())); renderer.setSize(innerWidth, innerHeight); if(composer){ composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(innerWidth, innerHeight); } }
+      else if(stage===2){ sun.shadow.mapSize.set(1024,1024); if(sun.shadow.map){ sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = true; }
+      else if(stage===3){ renderer.setPixelRatio(.75); renderer.setSize(innerWidth, innerHeight); if(composer){ composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(innerWidth, innerHeight); } degraded = true; } } }
   function resize(){ renderer.setSize(innerWidth, innerHeight); if(composer) composer.setSize(innerWidth, innerHeight); cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
     if(!focus && !to){ curPos.set(...homeFor().pos); curLook.set(...homeFor().look); } wake(); }
   addEventListener("resize", resize); resize();
