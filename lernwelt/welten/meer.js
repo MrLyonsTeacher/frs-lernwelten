@@ -260,7 +260,7 @@ export function magmaDrake(){
 }
 
 /* ---------- Roter Dämon (1:1 nach Vorlage des Nutzers). Maße aus dem Bild abgeleitet (≈ 0,15 Einheiten pro Bildpixel). ---------- */
-export function redDemon(){
+export function redDemon(o={}){
   const R=[0xA8342A,0xB43C30,0x9C2E24,0xB8402F], RD=[0x7A2219,0x84261C,0x6E1E16], IR=[0x9A9A9A,0xA6A6A6,0x8E8E8E], IRD=0x5A5A5A, BK=[0x1E1B1D,0x252123,0x18161A],
         EYE=0xF2C232, EYE2=0xFFE070, TOOTH=0xE6E0D0, MOUTH=0x2A0C08, MEM=[0xC0603E,0xC86A44,0xB45838,0xCA7048], RIB=0x8A2A1E, EDGE=0x9C2E22;
   const pk=(a,x,y,z)=>a[((x*7+y*13+z*5)%a.length+a.length)%a.length];
@@ -313,10 +313,45 @@ export function redDemon(){
       for(let y=yb; y<=yt; y++){ const x=-8-Math.round((z-8)*.08), c = y>=yt-1 ? EDGE : near(z,y) ? RIB : (y<=yb ? EDGE : pk(MEM,x,y,z)); w.put(x,y,z*s,c); } }
     for(const [tz,ty] of tips) w.put(-8-Math.round((tz-8)*.08), Math.round(ty)-1, tz*s, EDGE);
     wings.push([w,[-8,40,8*s],s]); }
-  const fly = cr => cr && (cr._ph==="land"||cr._ph==="up") ? 1-(cr._sit||0) : 0, fire = cr => cr && cr._fire || 0;
+  const fly = cr => o.fly ? 1 : cr && (cr._ph==="land"||cr._ph==="up") ? 1-(cr._sit||0) : 0, fire = cr => cr && cr._fire || 0;
   const parts=[ {cubes:body.list(), pivot:[0,21,0]}, {cubes:head.list(), pivot:[2,41,0], parent:0, fn:(g,tt,cr)=>{ const f=fire(cr); g.rotation.z = .6*f + .03*Math.sin(tt*.8); g.rotation.y = (1-f)*.18*Math.sin(tt*.35); }} ];
   arms.forEach(([a,pv,s])=>parts.push({cubes:a.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr), f=fire(cr); g.rotation.z = (s>0 ? .35 : -.05)*(1-fl) - fl*.5 + .1*Math.sin(tt*.9+(s>0?0:Math.PI)) + f*1.1; g.rotation.x = s*(fl*.25 + f*.35); }}));
   legs.forEach(([l,pv,s])=>parts.push({cubes:l.list(), pivot:pv, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = (s>0 ? .18 : -.1)*(1-fl) - fl*.55 + fl*.12*Math.sin(tt*3+s); }}));
   wings.forEach(([w,pv,s])=>parts.push({cubes:w.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.x = s*(-.36 + fl*.75*Math.sin(tt*5.5) + (1-fl)*.1*Math.sin(tt*1.3)); }}));
   return { parts };
+}
+
+/* Magma-Schlange: langer Leib aus Segmenten, der in Wellen aus dem Lavameer auftaucht und wieder abtaucht.
+   Kopf zeigt nach +x, Lava liegt bei y=0 des Tiers. Die Buckel wandern den Leib entlang nach hinten, alle paar Zyklen taucht sie ganz ab. */
+export function lavaSerpent(o={}){
+  const N=o.n||26, SP=o.sp||2.6, A=o.amp||7, DEPTH=o.depth||2.2, K=o.k||.42, WS=o.speed||1.5, PH=o.phase||0, CYC=o.cycle||34;
+  const PL=[0x1E1716,0x261C1A,0x2E2220,0x1A1414], PL2=[0x3A2A26,0x42302A], GL=0xFF7A1A, GL2=0xFFB040, GL3=0xFFD870, BEL=[0x5A1A0C,0x6A220E], SPK=0x141010, HORN=0x2A2220, EYE=0xFFE24A;
+  const pk=(a,x,y,z)=>a[((x*7+y*13+z*5)%a.length+a.length)%a.length];
+  const sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
+  const parts=[];
+  // Höhe eines Leibpunkts (Index i, auch gebrochen) zur Zeit tt
+  const yAt=(i,tt)=>{ const c=((tt+PH)%CYC+CYC)%CYC, dive = c>CYC-7 ? sm((c-(CYC-7))/3.5)*(1-sm((c-(CYC-2.5))/2.5)) : 0, rise = c<4 ? 1-sm(c/4) : 0;
+    return A*Math.sin(WS*tt - i*K + PH) - DEPTH - (dive+rise)*(A+8); };
+  for(let i=0;i<N;i++){
+    const t=i/(N-1), r = i===0 ? 3.2 : 2.9*(1-Math.pow(t,1.4)*.8)+.35, m=M();
+    // Querschnitt: dunkle Panzerplatten oben, glühende Risse und Bauch unten
+    const R=Math.ceil(r);
+    for(let x=-2;x<=2;x++) for(let y=-R;y<=R;y++) for(let z=-R;z<=R;z++){ const d=Math.hypot(y/(r+.2), z/(r+.2)); if(d>1) continue;
+      const col = y<-r*.45 ? pk(BEL,x,y,z) : (Math.abs(z)<.6 && y>r*.5) ? pk(PL2,x,y,z) : pk(PL,x,y,z), crack = (x===-2 && i%3===0 && y>-r*.2 && Math.abs(z)>.6) || (Math.abs(z)>r*.8 && y<-r*.1 && (x+i*3)%4===0);
+      m.put(x,y,z, crack ? (y<-r*.2 ? GL2 : GL) : col, crack ? 1 : 0); }
+    if(i>0 && i<N-2){ const h=Math.max(1,Math.round(r*.9)); for(let k=0;k<h;k++) m.put(0,R+k,0,SPK).put(-1,R+k-1,0,k===0?SPK:null); if(i%2===0) m.put(0,R+h,0,GL,1); }
+    if(i===0){ // Kopf: lange Schnauze, Kiefer, Hörner, glühende Augen und Maul
+      m.box(2,-1,-2,7,1,2,(x,y,z)=>pk(PL,x,y,z)).box(2,-2,-2,6,-2,2,pk(BEL,1,1,1)).box(3,-1,-1,6,-1,1,GL3,1);
+      m.box(8,-1,-1,8,0,1,pk(PL,2,2,2)).put(8,1,0,SPK);
+      for(const s of [-1,1]){ m.put(1,1,3*s,EYE,1).put(2,1,3*s,EYE,1).put(0,2,2*s,SPK);
+        m.put(-1,3,2*s,HORN).put(-2,4,2*s,HORN).put(-3,5,3*s,HORN).put(-4,5,3*s,HORN).put(-5,6,3*s,HORN);
+        for(let x=3;x<=6;x+=2) m.put(x,-1,2*s,0xF0E6D0); }
+      m.put(-1,4,0,SPK).put(-2,5,0,SPK); }
+    if(i===N-1){ for(let x=-3;x<=-1;x++) m.put(x,0,0,GL,1); m.box(-6,-1,0,-4,1,0,SPK); }
+    parts.push({cubes:m.list(), pivot:[0,0,0], fn:(g,tt)=>{ const x=-i*SP, y=yAt(i,tt), y2=yAt(i+.5,tt), y0=yAt(i-.5,tt);
+      let px=x, pz=Math.sin(tt*.6 - i*.25 + PH)*1.2*t, ry=0;
+      if(o.bend){ const th=i*SP*o.bend, sd=o.side||1; px=-Math.sin(th)/o.bend; pz+=sd*(1-Math.cos(th))/o.bend; ry=sd*th; }
+      g.position.set(px, y, pz); g.rotation.order="YZX"; g.rotation.y=ry; g.rotation.z = Math.atan2(y0-y2, SP); g.visible = y > -r-1.5; }});
+  }
+  return { parts, noShadow:true };
 }

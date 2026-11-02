@@ -2,6 +2,7 @@
 // vorne der große Kuppelpalast (Grammar), links der Kuppelturm (Vocabulary), rechts der Turm mit Spitztürmchen (Country & people),
 // dahinter die gotische Burg vor dem Vulkan, Brücken zwischen den Säulen, Lavafälle, schwebende Inseln mit Rauch, Drache, Menschen und Orks.
 import { dragon, person } from "./tiere.js";
+import { redDemon, lavaSerpent } from "./meer.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, ball, cone, line, topAt, tex, P, noise, stripes, bricks, rings, planks } = A;
   const T = {
@@ -252,8 +253,20 @@ export function build(A){
   const PR=[68,86], PTOP=9;
   for(let y=SEA-2;y<=PTOP;y++){ const t=(y-SEA)/(PTOP-SEA), rr=10-t*2; for(let x=PR[0]-12;x<=PR[0]+12;x++) for(let z=PR[1]-12;z<=PR[1]+12;z++){ const an=Math.atan2(z-PR[1],x-PR[0]), r=rr*(1+.18*Math.sin(an*5+1)); if(Math.hypot(x-PR[0],z-PR[1])<=r) set(x,y,z, y===PTOP ? (rand()<.5?"basalt":"rock2") : (rand()<.06 ? "magma" : (rand()<.4?"rock2":"rock"))); } }
   const creatures = [
-    { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:22, clear:10}, perch:{pos:[PR[0]+.5, PTOP+1+7.4, PR[1]+.5], dir:[.55,1], period:120, fly:92, land:11, stay:12, takeoff:5, off:30}}, scale:.55, fire:{part:1, at:[35,10,0], dir:[1,-.2,0], n:160, rate:140, speed:30, life:1.1, size:2.4, light:1400} }
+    { ...dragon(), orbit:{c:[60,70,20], r:[86,60], speed:.1, ph:1.2, bob:2, wander:{f:.21, r:.2, y:8, eight:8, dx:12, dz:10, span:22, clear:10}, perch:{pos:[PR[0]+.5, PTOP+1+7.4, PR[1]+.5], dir:[.55,1], period:120, fly:92, land:11, stay:12, takeoff:5, off:30}}, scale:.55, fire:{part:1, at:[12.6,-1.8,0], dir:[1,-.2,0], n:160, rate:140, speed:30, life:1.1, size:2.4, light:1400} }
   ];
+  // Dämonen kreisen über der Stadt (frei fliegend, nie durch Gebäude)
+  [[.12,0,58,.08,-1],[.1,2.3,66,.075,1],[.14,4.4,50,.085,-1],[.09,5.6,74,.07,1]].forEach(([sp,ph,y,sc,dir])=>creatures.push({ ...redDemon({fly:true}),
+    orbit:{c:[60,y,34], r:[78,52], speed:sp*dir, ph, bob:2.5, wander:{f:.17+ph*.01, r:.22, y:10, eight:10, dx:14, dz:12, span:22, clear:8}}, scale:sc, noShadow:true }));
+  // Magma-Schlangen: suchen sich freie Lavaflächen (Ring ohne Felsen) vor der Stadt
+  const freeRing = (cx,cz,R) => { for(let k=0;k<72;k++){ const a=k/72*Math.PI*2; for(const dr of [-5,-2.5,0,2.5,5]){ const x=Math.round(cx+Math.cos(a)*(R+dr)), z=Math.round(cz+Math.sin(a)*(R+dr));
+      for(let y=SEA-1;y<=SEA+6;y++) if(get(x,y,z)) return false; } } return true; };
+  const serp = [];
+  { const cand=[]; for(const R of [20,16,13]) for(let cx=-10;cx<=130;cx+=5) for(let cz=60;cz<=150;cz+=5) cand.push([cx,cz,R, Math.abs(cz-108)*1.2+Math.abs(cx-60)*.35-R*.8]);
+    cand.sort((a,b)=>a[3]-b[3]);
+    for(const [cx,cz,R] of cand){ if(serp.length>=2) break; if(serp.some(([x,z,r])=>Math.hypot(cx-x,cz-z)<R+r+10)) continue; if(freeRing(cx,cz,R)) serp.push([cx,cz,R]); } }
+  serp.forEach(([cx,cz,R],k)=>creatures.push({ ...lavaSerpent({bend:1/(R/.7), side:k?-1:1, phase:k*13, cycle:30+k*7, speed:1.3+k*.25}), orbit:{c:[cx,SEA+1,cz], r:[R,R], speed:(k?-1:1)*.045, ph:k*2}, scale:.7, clearR:0 }));
+  if(typeof window!=="undefined") window.__serp = serp;
   const walkLine = (a,b,o) => { const cx=(a[0]+b[0])/2, cz=(a[2]+b[2])/2, len=Math.hypot(b[0]-a[0],b[2]-a[2])/2-1.5;
     creatures.push({ ...person(o.p), orbit:{c:[cx,(a[1]+b[1])/2+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), slope:(b[1]-a[1])/(2*len+3), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };
   walkLine(...BR.r, {p:{walk:true, shirt:0x8A2A1E}, ph:0});
@@ -267,6 +280,27 @@ export function build(A){
                  { ...person({shirt:0x9A6A2A}), at:[S.country.x-7,26,S.country.z+4.6], yaw:-.6, scale:.17 },
                  { ...person({shirt:0x8A2A1E, hair:0xD8A040}), at:[S.vocabulary.x+2.5,26,S.vocabulary.z+6.5], yaw:-1.4, scale:.17 },
                  { ...person({shirt:0x2A2A30}), at:[2,12,93.5], yaw:-.3, scale:.17 });
+  const lavaImg = (() => { const N=256, c=document.createElement("canvas"); c.width=c.height=N; const g=c.getContext("2d"), im=g.createImageData(N,N), G=16, grid=[];
+    for(let i=0;i<G*G;i++) grid.push(rand());
+    const vn=(x,y)=>{ const xi=Math.floor(x), yi=Math.floor(y), fx=x-xi, fy=y-yi, a=(i,j)=>grid[((j%G+G)%G)*G+((i%G+G)%G)], u=fx*fx*(3-2*fx), v=fy*fy*(3-2*fy);
+      return a(xi,yi)*(1-u)*(1-v)+a(xi+1,yi)*u*(1-v)+a(xi,yi+1)*(1-u)*v+a(xi+1,yi+1)*u*v; };
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++){ const X=x/N*G, Y=y/N*G, w=vn(X*.5+3,Y*.5)*2.5, n=vn(X+w,Y*.6+w*.7)*.6+vn(X*2.2+w,Y*1.6)*.3+vn(X*4.5,Y*4)*.1,
+        v = Math.abs(n-.5)*2, hot = 1-Math.min(1,v*1.9), o=(y*N+x)*4;
+      const col = hot>.82 ? [255,236,140] : hot>.6 ? [255,176,48] : hot>.38 ? [244,104,14] : hot>.18 ? [178,46,8] : [92,18,6];
+      im.data[o]=col[0]; im.data[o+1]=col[1]; im.data[o+2]=col[2]; im.data[o+3]=255; }
+    g.putImageData(im,0,0); return c; })();
+  const crustImg = (() => { const N=512, c=document.createElement("canvas"); c.width=c.height=N; const g=c.getContext("2d"), im=g.createImageData(N,N), K=46, pts=[];
+    // Schollen gruppiert: wo die tiefe Welle hoch ist, treiben Krustenfelder, sonst offene Lava; Schollen unterschiedlich groß
+    const field=(x,y)=>Math.sin(x/N*Math.PI*2+1.3)*Math.cos(y/N*Math.PI*2*2-.4)+.6*Math.sin((x+y)/N*Math.PI*2*3+2);
+    for(let i=0;i<K;i++){ const x=rand()*N, y=rand()*N; pts.push([x, y, field(x,y)+rand()*.9-.45 < -.15, .55+rand()*.9]); }
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++){ let d1=1e9, d2=1e9, id=0;
+      for(let i=0;i<K;i++){ let dx=Math.abs(x-pts[i][0]), dy=Math.abs(y-pts[i][1]); if(dx>N/2) dx=N-dx; if(dy>N/2) dy=N-dy; const d=Math.hypot(dx,dy)*pts[i][3]; if(d<d1){ d2=d1; d1=d; id=i; } else if(d<d2) d2=d; }
+      const e=d2-d1, o=(y*N+x)*4, molten=pts[id][2], ns=(Math.sin(x*.31+y*.17)+Math.sin(x*.07-y*.29)+rand()*1.2);
+      const wob=Math.sin(x*.21+y*.13)*1.3+Math.sin(x*.05-y*.09)*1.6; if(molten || e<2.4+wob*.6){ im.data[o+3]=0; continue; }
+      let col; if(e<4.5+wob*.5) col=[255,140,34]; else if(e<7.5+wob) col=[120,34,10]; else { const v = ns>1.2 ? [70,52,48] : ns>.2 ? [48,36,34] : ns>-.8 ? [38,28,27] : [30,22,22]; col = (rand()<.012) ? [210,80,20] : v; }
+      im.data[o]=col[0]; im.data[o+1]=col[1]; im.data[o+2]=col[2]; im.data[o+3]=255; }
+    g.putImageData(im,0,0); return c; })();
+  const bubbles = [[20,120],[100,124],[60,150],[-10,90],[132,96],[40,175],[90,170],[60,108]].map(([x,z])=>({n:7, pos:[x,SEA+1.1,z], dx:0, dy:2.2, dz:0, s0:.6, s1:3.2, color:0xFFB040, opacity:.85, speed:.35, spread:26, add:true}));
   const ft = S.grammar.top;
   return {
     W, D, blocks, spots:S, exposure:1.1, fov:40,
@@ -277,7 +311,7 @@ export function build(A){
             {pos:[S.vocabulary.x,26,S.vocabulary.z+7], color:0xFF9A4A, int:150, dist:22},
             {pos:[S.country.x,28,S.country.z+8], color:0xFF9A4A, int:160, dist:24},
             {pos:[60,4,70], color:0xFF6A1A, int:600, dist:70}],
-    planes:[{y:SEA+.98, tex:T.lavaSea, repeat:500, size:1000, em:1.0, anim:[.03,.02]}],
+    planes:[{y:SEA+.86, img:lavaImg, repeat:42, size:1000, em:1.05, anim:[.012,.007]}, {y:SEA+1.04, img:crustImg, cut:.5, repeat:17, size:1000, em:.9, color:0x9A8A86, anim:[.0025,.0016]}],
     particles:[{n:1200, area:[-40,W+40,SEA,60,-20,D+20], vy:2.2, wob:.7, color:0xFF9A3A, size:.3, add:true},
                {n:500, area:[-160,W+160,10,140,-200,-30], vy:3, wob:1, color:0xFF8A2A, size:1, add:true}],
     puffs:[{n:18, pos:[VX,VH-4,VZ], dx:30, dy:80, dz:-10, s0:20, s1:60, color:0x4A3A36, opacity:.6, speed:.03, spread:8},
@@ -285,8 +319,9 @@ export function build(A){
            ...smokes.map(c=>({n:6, pos:c, dx:8, dy:26, dz:-4, s0:2, s1:10, color:0x3A3030, opacity:.55, speed:.06, spread:1.2})),
            ...flames.map(c=>({n:4, pos:c, dx:0, dy:2.5, dz:0, s0:2.2, s1:1, color:0xFF7A1A, opacity:.7, speed:.6, spread:.3, add:true})),
            ...fallFoot.map(([x,z])=>({n:3, pos:[x,SEA+1,z], dx:2, dy:8, dz:1, s0:3, s1:7, color:0x6A5A54, opacity:.28, speed:.08, spread:2})),
-           {n:14, pos:[-20,3,60], dx:150, dy:2, dz:0, s0:16, s1:20, color:0x6A4A40, opacity:.22, speed:.01, spread:30, sz:.6, flat:.35}],
+           {n:14, pos:[-20,3,60], dx:150, dy:2, dz:0, s0:16, s1:20, color:0x6A4A40, opacity:.22, speed:.01, spread:30, sz:.6, flat:.35}, ...bubbles],
     bombs:{pos:[VX,VH-10,VZ], n:20, period:12, burst:2.4, life:6, speed:[10,26], up:[30,44], g:-18, size:2.2, glowSize:3.4, color:0xFFC060, glow:0xFF6A1A, floor:20, light:[0xFF7A2A, 4000, 220], biasZ:4},
+    erupt:{pos:[VX,VH-12,VZ], period:180, off:150, dur:26, meteors:{n:18, x:[-170,W+170], z:[-250,-130], y:[15,55], from:5, to:19}}, zoomAmt:.62, zoomShift:[0,44,-30],
     creatures,
     home:{pos:[62,84,196], look:[60,46,26]}, homePortrait:{pos:[62,96,236], look:[60,32,30]},
     ui:{bg:"rgba(34,8,4,.9)", border:"#FF9A4A", glow:"rgba(255,110,30,.55)", text:"#FFF1E2", sub:"#E8B48C", accent:"#FFB23A", "accent-ink":"#2A0A04", chip:"rgba(30,8,4,.8)"}
