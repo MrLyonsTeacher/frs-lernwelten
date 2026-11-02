@@ -109,20 +109,20 @@
       .xp{position:relative;display:grid;grid-template-columns:58px 1fr;gap:8px;height:min(540px,calc(100dvh - 190px));min-height:430px;margin:10px 0 4px}
       .xp-col{position:relative}
       .xp-track{position:absolute;left:50%;top:0;bottom:0;width:20px;transform:translateX(-50%);border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.35);overflow:hidden;box-shadow:inset 0 0 10px rgba(0,0,0,.6)}
-      .xp-fill{position:absolute;left:0;right:0;bottom:0;border-radius:10px;background:linear-gradient(to top,#E8430A,#FF8A2A 40%,#FFC24A 75%,#FFF2B0);box-shadow:0 0 16px rgba(255,194,74,.8);transition:height 1.4s cubic-bezier(.2,.8,.2,1)}
+      .xp-fill{position:absolute;left:0;right:0;bottom:0;border-radius:10px;background:linear-gradient(to top,var(--x1),var(--x2) 40%,var(--x3) 75%,var(--x4));box-shadow:0 0 16px var(--xg);transition:height 1.4s cubic-bezier(.2,.8,.2,1)}
       .xp-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,transparent 0,rgba(255,255,255,.35) 50%,transparent 100%);background-size:100% 60px;animation:xp-run 1.6s linear infinite;opacity:.6}
       .xp-tick{position:absolute;left:50%;width:30px;height:4px;margin:0 0 -2px -15px;border-radius:2px;background:rgba(255,255,255,.35)}
-      .xp-tick.on{background:#FFE27A;box-shadow:0 0 8px #FFC24A}
+      .xp-tick.on{background:var(--x4);box-shadow:0 0 8px var(--xa)}
       .xp-knob{position:absolute;left:50%;transform:translate(-50%,50%);transition:bottom 1.4s cubic-bezier(.2,.8,.2,1);z-index:2}
-      .xp-knob span{display:block;min-width:34px;padding:2px 6px;border-radius:999px;background:#FFF2B0;color:#3A1A04;font:700 .85rem Fredoka,system-ui,sans-serif;text-align:center;border:2px solid #FFC24A;box-shadow:0 0 12px rgba(255,194,74,.9)}
+      .xp-knob span{display:block;min-width:34px;padding:2px 6px;border-radius:999px;background:var(--x4);color:var(--xi);font:700 .85rem Fredoka,system-ui,sans-serif;text-align:center;border:2px solid var(--xa);box-shadow:0 0 12px var(--xg)}
       .xp-rows{position:relative}
       .xp-row{position:absolute;left:0;right:0;transform:translateY(50%);display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:8px;padding:3px 8px;border-radius:14px;background:rgba(255,255,255,.07);border:2px solid transparent}
       .xp-row img{width:46px;height:46px;object-fit:contain}
       .xp-row b{display:block;font:700 1.02rem Fredoka,system-ui,sans-serif;line-height:1.1}
       .xp-row small{color:#C8CCD8;font-size:.8rem}
-      .xp-row.cur{border-color:#FFC24A;background:rgba(255,194,74,.2);box-shadow:0 0 14px rgba(255,194,74,.35)}
-      .xp-row.cur .tag{background:#FFC24A;color:#2A1A06;border-radius:999px;padding:2px 9px;font:700 .8rem Fredoka,system-ui,sans-serif}
-      .xp-row.nx{border:2px dashed rgba(255,226,122,.7)} .xp-row.nx small{color:#FFE27A}
+      .xp-row.cur{border-color:var(--xa);background:color-mix(in srgb,var(--xa) 20%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--xa) 35%,transparent)}
+      .xp-row.cur .tag{background:var(--xa);color:var(--xi);border-radius:999px;padding:2px 9px;font:700 .8rem Fredoka,system-ui,sans-serif}
+      .xp-row.nx{border:2px dashed color-mix(in srgb,var(--x4) 70%,transparent)} .xp-row.nx small{color:var(--x4)}
       .xp-row.no{opacity:.45} .xp-row.no img{filter:grayscale(.7) brightness(.8)}
       .xp-row .ck{color:#7CE08A;font-weight:700}
       .xp-zone{position:absolute;left:0;right:0;top:0;background:repeating-linear-gradient(45deg,rgba(180,120,255,.18) 0 6px,transparent 6px 12px);pointer-events:none;mix-blend-mode:screen}
@@ -176,6 +176,15 @@
         setTimeout(()=>{ go(f.dataset.h); xp.classList.remove("xp-pre"); }, 3100); } }
   }
   // Erfahrungsbalken: Ränge in gleichen Abständen, der Balken füllt sich mit den heute gesammelten Flaggen
+  // Farben des Balkens je Welt: Verlauf unten → oben, Leuchten, Akzent (aktueller Rang), dunkle Schrift auf der Anzeige
+  const XPC = {
+    5:  ["#B8300A","#E8601A","#FFA830","#FFE9A0","rgba(255,150,40,.8)","#FFB23A","#3A1A04"],
+    6:  ["#0A3A8A","#1A78C8","#3CC0E8","#C8F6FF","rgba(60,200,240,.8)","#5AD8F5","#04263A"],
+    7:  ["#4A2A7A","#7A48C8","#B88AFF","#EAD8FF","rgba(184,138,255,.8)","#C8A0FF","#24103A"],
+    8:  ["#2E5EC0","#6AA4F0","#CFE4FF","#FFE6A0","rgba(255,214,120,.75)","#FFD27A","#2A1E06"],
+    9:  ["#1E5A1E","#3A8A2E","#7CC44A","#E2F6A8","rgba(124,196,74,.8)","#A8DC5A","#14300A"],
+    10: ["#2A6AA0","#48A8D8","#8AE6FF","#F4FCFF","rgba(138,230,255,.85)","#A8ECFF","#0A2A3A"]
+  };
   function xpBar(R, n, cur, en, flagsTxt, k){
     // unter 250 Flaggen: nur die sechs Ränge; ab 250 kommt oben der geheime Rang „???“ dazu (ab 350 die Gottheit)
     const sec = n >= RANK_AT[RANK_AT.length-1], AT = sec ? RANK_AT.concat(HIDDEN_AT) : RANK_AT.slice(), N = AT.length;
@@ -188,7 +197,8 @@
     let rows = R.map((r,j)=>row(j, rankImg(rFile(r),""), rName(r))).join("");
     if(sec) rows += row(N-1, `<img class="${god?"rk-god":"xp-sil"}" src="${godImg(k)}" alt="" draggable="false">`, god ? godName(k) : "???", " xp-secret");
     const ticks = AT.map((t,j)=>`<i class="xp-tick${j<=cur?" on":""}${j===6?" sec":""}" data-p0="${j<6?p6(j):100}%" data-p1="${pos(j)}%" style="bottom:${pos(j)}%"></i>`).join("");
-    return `<div class="xp"><div class="xp-col"><div class="xp-track"><div class="xp-fill" data-h0="${h0}" data-hm="${sec ? pos(N-2) : 0}%" data-h="${h1}" style="height:0%"></div>${sec?`<div class="xp-zone" data-p0="100%" data-p1="${pos(N-2)}%" style="bottom:${pos(N-2)}%"></div>`:""}</div>${ticks}<div class="xp-knob" style="bottom:0%"><span>${n}</span></div></div><div class="xp-rows">${rows}</div></div>`;
+    const C = XPC[k] || XPC[5], vars = `--x1:${C[0]};--x2:${C[1]};--x3:${C[2]};--x4:${C[3]};--xg:${C[4]};--xa:${C[5]};--xi:${C[6]}`;
+    return `<div class="xp" style="${vars}"><div class="xp-col"><div class="xp-track"><div class="xp-fill" data-h0="${h0}" data-hm="${sec ? pos(N-2) : 0}%" data-h="${h1}" style="height:0%"></div>${sec?`<div class="xp-zone" data-p0="100%" data-p1="${pos(N-2)}%" style="bottom:${pos(N-2)}%"></div>`:""}</div>${ticks}<div class="xp-knob" style="bottom:0%"><span>${n}</span></div></div><div class="xp-rows">${rows}</div></div>`;
   }
 
 
