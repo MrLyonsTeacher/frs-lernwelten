@@ -734,7 +734,6 @@ export async function start(o){
       L.el.style.transform = `translate(${it.x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%,-100%)`; L.el.style.visibility = it.vis?"visible":"hidden"; }
     if(o.still && !to && frames > 2) window.__stillDone = (window.__stillDone||0) + 1;
   }
-  // Läuft es auf einem älteren iPad zu langsam, schalten wir Schatten und Leuchten automatisch ab
   // Leistungsanpassung bei langsamen Geräten – das Aussehen (Schatten, Leuchten, Kontrast) bleibt gleich:
   // Stufe 1: geringere Auflösung, Stufe 2: Schatten seltener neu berechnen und kleinere Schattenkarte
   let perfN = 0, perfT = 0, degraded = !!o.lite, stage = 0, shTick = 0;
@@ -744,6 +743,7 @@ export async function start(o){
       if(stage===1){ renderer.setPixelRatio(Math.min(1, renderer.getPixelRatio())); renderer.setSize(innerWidth, innerHeight); if(composer){ composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(innerWidth, innerHeight); } }
       else if(stage===2){ sun.shadow.mapSize.set(1024,1024); if(sun.shadow.map){ sun.shadow.map.dispose(); sun.shadow.map = null; } renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = true; }
       else if(stage===3){ renderer.setPixelRatio(.75); renderer.setSize(innerWidth, innerHeight); if(composer){ composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(innerWidth, innerHeight); } degraded = true; } } }
+  function wake(){ if(!running){ running = true; frames = 0; requestAnimationFrame(frame); } }
   function resize(){ renderer.setSize(innerWidth, innerHeight); if(composer) composer.setSize(innerWidth, innerHeight); cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix();
     if(!focus && !to){ curPos.set(...homeFor().pos); curLook.set(...homeFor().look); } wake(); }
   addEventListener("resize", resize); resize();
