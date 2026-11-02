@@ -426,10 +426,10 @@ export function fiend(o={}){
     for(const t of T) w.put(xAt(t[0],t[1]), t[1]-1, t[0]*s, CLAW);
     wings.push([w,[-4,39,5*s],s]); }
   const fly = cr => o.fly ? 1 : cr && (cr._ph==="land"||cr._ph==="up") ? 1-(cr._sit||0) : 0;
-  const parts=[ {cubes:body.list(), pivot:[0,24,0], fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = -.28*fl + .04*Math.sin(tt*.7); g.position.y = 24 + fl*1.3*Math.sin(tt*5.5+1.6); }},
-    {cubes:head.list(), pivot:[4,44,0], parent:0, fn:(g,tt,cr)=>{ g.rotation.z = .22*fly(cr) + .06*Math.sin(tt*.9); g.rotation.y = .22*Math.sin(tt*.31); }} ];
+  const parts=[ {cubes:body.list(), pivot:[0,24,0], fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = -.85*fl + .05*Math.sin(tt*.7); g.position.y = 24 + fl*(6 + 1.3*Math.sin(tt*5.5+1.6)); }},
+    {cubes:head.list(), pivot:[4,44,0], parent:0, fn:(g,tt,cr)=>{ g.rotation.z = .55*fly(cr) + .06*Math.sin(tt*.9); g.rotation.y = .18*Math.sin(tt*.31); }} ];
   arms.forEach(([a,pv,s])=>parts.push({cubes:a.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = .2*fl + .12*Math.sin(tt*1.1+(s>0?0:2)); g.rotation.x = s*(.12+fl*.1*Math.sin(tt*5.5)); }}));
-  legs.forEach(([l,pv,s])=>parts.push({cubes:l.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = -fl*(.35+.08*Math.sin(tt*2.2+s)); }}));
-  wings.forEach(([w,pv,s])=>parts.push({cubes:w.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr), b=Math.sin(tt*5.5); g.rotation.x = s*(-.18 + fl*(.62*b) + (1-fl)*.08*Math.sin(tt*1.2)); g.rotation.y = -s*fl*.18*Math.cos(tt*5.5); }}));
+  legs.forEach(([l,pv,s])=>parts.push({cubes:l.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr); g.rotation.z = -fl*(.75+.1*Math.sin(tt*2.2+s)); }}));
+  wings.forEach(([w,pv,s])=>parts.push({cubes:w.list(), pivot:pv, parent:0, fn:(g,tt,cr)=>{ const fl=fly(cr), b=Math.sin(tt*5.5); g.rotation.x = s*(-.18 + fl*(.62*b) + (1-fl)*.08*Math.sin(tt*1.2)); g.rotation.y = -s*fl*.18*Math.cos(tt*5.5); g.rotation.z = fl*.5; }}));
   return { parts };
 }
