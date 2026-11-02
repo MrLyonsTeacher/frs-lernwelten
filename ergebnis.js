@@ -148,6 +148,25 @@
       @media (prefers-reduced-motion:reduce){.xp-row,.xp-tick,.xp-zone{transition:none}.xp-pop .xp-secret{animation:none}}
       @keyframes xp-run{from{background-position:0 100%}to{background-position:0 -60px}}
       @media (prefers-reduced-motion:reduce){.xp-fill,.xp-knob{transition:none}.xp-fill::after{animation:none}}
+      .gc-bg{position:fixed;inset:0;z-index:120;background:radial-gradient(circle at 50% 40%,rgba(80,56,10,.75),rgba(4,6,14,.92));display:grid;place-items:center;padding:14px;animation:rkl-in .3s ease-out;overflow:hidden}
+      .gc{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;width:min(340px,100%)}
+      .gc-rays{position:absolute;left:50%;top:44%;width:900px;height:900px;margin:-450px 0 0 -450px;background:repeating-conic-gradient(rgba(255,215,110,.16) 0 7deg,transparent 7deg 18deg);border-radius:50%;mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%);animation:gc-spin 30s linear infinite;pointer-events:none}
+      .gc-card{position:relative;width:100%;padding:12px 12px 14px;border-radius:22px;overflow:hidden;text-align:center;color:#3A2604;
+        background:linear-gradient(145deg,#FFF4C4 0%,#F4C64C 18%,#C8901C 38%,#FFE58A 55%,#D9A030 75%,#FFF0B0 100%);
+        box-shadow:0 0 0 3px #8A5A10,0 0 0 7px #FFE07A,0 0 40px rgba(255,200,80,.8),0 24px 60px rgba(0,0,0,.6);animation:gc-in 1s cubic-bezier(.2,1.5,.4,1) both}
+      .gc-shine{position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%);animation:gc-sh 3.2s ease-in-out 1s infinite;pointer-events:none;z-index:2}
+      .gc-kick{margin:0 0 8px;font:700 .85rem Fredoka,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#6A4206}
+      .gc-img{border-radius:14px;padding:4px;background:linear-gradient(160deg,#6A4206,#2A1A04);box-shadow:inset 0 0 0 2px #FFE07A}
+      .gc-img img{display:block;width:100%;height:min(52dvh,380px);object-fit:contain;border-radius:11px;background:radial-gradient(circle at 50% 35%,#3A2A40,#120A1A)}
+      .gc-card h2{margin:10px 0 0;font:700 1.9rem Fredoka,system-ui,sans-serif;color:#3A2604;text-shadow:0 1px 0 #FFF4C4}
+      .gc-sub{margin:2px 0 0;font:600 .95rem Lexend,system-ui,sans-serif;color:#5A3A08}
+      .gc-date{margin:2px 0 0;font:500 .8rem Lexend,system-ui,sans-serif;color:#7A5410}
+      .gc-ok{position:relative;min-height:52px;padding:0 34px;border-radius:999px;border:3px solid #FFE07A;background:linear-gradient(#F4C64C,#C8901C);color:#2A1A04;font:700 1.2rem Fredoka,system-ui,sans-serif;cursor:pointer;box-shadow:0 0 18px rgba(255,200,80,.7);animation:rkl-in .4s 1s both}
+      .xp-row.xp-secret.cur{cursor:pointer}
+      @keyframes gc-in{0%{opacity:0;transform:scale(.2) rotateY(180deg)}60%{opacity:1;transform:scale(1.06) rotateY(-8deg)}100%{transform:scale(1) rotateY(0)}}
+      @keyframes gc-sh{0%{transform:translateX(-60%)}55%,100%{transform:translateX(60%)}}
+      @keyframes gc-spin{to{transform:rotate(360deg)}}
+      @media (prefers-reduced-motion:reduce){.gc-card,.gc-shine,.gc-rays{animation:none}}
       @keyframes rkl-in{from{opacity:0}to{opacity:1}}`; document.head.appendChild(st); }
   try{ rkStyle(); }catch(e){}
   // Fenster mit allen Rängen einer Welt (beim Antippen des Rangs)
@@ -160,7 +179,7 @@
       <h2>${en===false?"Alle Ränge":"All ranks"}</h2><p class="sub">${en===false?`Heute gesammelt: ${n} ${flagsTxt}`:`Collected today: ${n} ${flagsTxt}`}</p>
       ${xpBar(R, n, cur, en, flagsTxt, k)}</div>`;
     const close = () => d.remove();
-    d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); });
+    d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); else if(e.target.closest(".xp-secret.cur")) godCard(k, en); });
     document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
     document.body.appendChild(d); d.querySelector(".x").focus({preventScroll:true});
     // Balken von unten hochfüllen; beim ersten Öffnen ab 250 Flaggen (am Tag) erweitert er sich und der geheime Rang ploppt auf
@@ -174,6 +193,19 @@
         setTimeout(()=>{ xp.classList.add("xp-grow"); moving.forEach(e=>e.style.bottom=e.dataset.p1); go(f.dataset.hm); }, 1600);
         setTimeout(()=>{ xp.classList.add("xp-pop"); }, 2300);
         setTimeout(()=>{ go(f.dataset.h); xp.classList.remove("xp-pre"); }, 3100); } }
+  }
+  // Goldkarte des geheimen Rangs: großes Bild im goldenen Rahmen mit Glanz, Name und Datum
+  function godCard(k, en){
+    rkStyle(); const d = document.createElement("div"); d.className = "gc-bg";
+    const date = new Date().toLocaleDateString(en===false?"de-DE":"en-GB", {day:"numeric", month:"long", year:"numeric"});
+    d.innerHTML = `<div class="gc" role="dialog" aria-modal="true" aria-label="${godName(k)}"><div class="gc-rays"></div>
+      <div class="gc-card"><div class="gc-shine"></div><p class="gc-kick">✦ ${en===false?"Geheimer Rang":"Secret rank"} ✦</p>
+        <div class="gc-img"><img src="${godImg(k)}" alt=""></div>
+        <h2>${godName(k)}</h2><p class="gc-sub">${en===false?`${HIDDEN_AT} Flaggen an einem Tag`:`${HIDDEN_AT} flags in one day`}</p><p class="gc-date">${date}</p></div>
+      <button class="gc-ok">${en===false?"Wow!":"Awesome!"}</button></div>`;
+    const close = () => d.remove(); d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".gc-ok")) close(); });
+    document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
+    document.body.appendChild(d); d.querySelector(".gc-ok").focus({preventScroll:true}); return d;
   }
   // Erfahrungsbalken: Ränge in gleichen Abständen, der Balken füllt sich mit den heute gesammelten Flaggen
   // Farben des Balkens je Welt: Verlauf unten → oben, Leuchten, Akzent (aktueller Rang), dunkle Schrift auf der Anzeige
@@ -242,5 +274,5 @@
         d.innerHTML = `<div class="box" role="dialog" aria-modal="true"><h2>Choose your level</h2>${Object.keys(NIV).map(k=>`<button class="o${k===niv()?" cur":""}" data-niv="${k}"><b>${NIV[k][0]} · ${NIV[k][1]}</b><small>${NIV[k][2]}</small></button>`).join("")}</div>`;
         d.addEventListener("click", ev=>{ const b=ev.target.closest("[data-niv]"); if(b){ LSset("frs-niveau", b.dataset.niv); d.remove(); onChange ? onChange("niveau") : location.reload(); return; } if(ev.target===d) d.remove(); });
         document.body.appendChild(d); } }); }
-  window.UH = { make, link, parse, qrImage, rank, rankSheet, prefsHTML, bindPrefs, niv, gender, NIV, rankImg, worldImg, RANK_AT, RANKS, today, addToday, resetClass };
+  window.UH = { make, link, parse, qrImage, rank, rankSheet, godCard, prefsHTML, bindPrefs, niv, gender, NIV, rankImg, worldImg, RANK_AT, RANKS, today, addToday, resetClass };
 })();

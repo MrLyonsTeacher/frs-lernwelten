@@ -177,6 +177,7 @@ document.addEventListener("click", e=>{ if(RANKED && e.target.closest("#ptsChip"
 document.addEventListener("keydown", e=>{ if(RANKED && (e.key==="Enter"||e.key===" ") && e.target.closest && e.target.closest("#ptsChip")){ e.preventDefault(); UH.rankSheet(W.insel.k, todayN(), W.sprache==="en"); } });
 function rankPop(r){
   if(document.querySelector(".medal-pop")) { setTimeout(()=>rankPop(r), 1200); return; }
+  if(r.hidden && UH.godCard){ UH.godCard(W.insel.k, W.sprache==="en"); confetti(200); return; }
   const d=document.createElement("div"); d.className="medal-pop rank-pop"; d.setAttribute("role","dialog"); d.setAttribute("aria-label", T.rankNew);
   d.innerHTML = `<div class="mp-card"><div class="rk-big" aria-hidden="true">${r.icon}</div>
     <p class="rk-kicker">${T.rankNew}</p><h2 class="disp">${esc(r.name)}</h2>
