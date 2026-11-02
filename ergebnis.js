@@ -148,20 +148,39 @@
       @media (prefers-reduced-motion:reduce){.xp-row,.xp-tick,.xp-zone{transition:none}.xp-pop .xp-secret{animation:none}}
       @keyframes xp-run{from{background-position:0 100%}to{background-position:0 -60px}}
       @media (prefers-reduced-motion:reduce){.xp-fill,.xp-knob{transition:none}.xp-fill::after{animation:none}}
-      .gc-bg{position:fixed;inset:0;z-index:120;background:radial-gradient(circle at 50% 40%,rgba(80,56,10,.75),rgba(4,6,14,.92));display:grid;place-items:center;padding:14px;animation:rkl-in .3s ease-out;overflow:hidden}
-      .gc{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;width:min(340px,100%)}
-      .gc-rays{position:absolute;left:50%;top:44%;width:900px;height:900px;margin:-450px 0 0 -450px;background:repeating-conic-gradient(rgba(255,215,110,.16) 0 7deg,transparent 7deg 18deg);border-radius:50%;mask:radial-gradient(circle,#000 20%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 65%);animation:gc-spin 30s linear infinite;pointer-events:none}
-      .gc-card{position:relative;width:100%;padding:12px 12px 14px;border-radius:22px;overflow:hidden;text-align:center;color:#3A2604;
-        background:linear-gradient(145deg,#FFF4C4 0%,#F4C64C 18%,#C8901C 38%,#FFE58A 55%,#D9A030 75%,#FFF0B0 100%);
-        box-shadow:0 0 0 3px #8A5A10,0 0 0 7px #FFE07A,0 0 40px rgba(255,200,80,.8),0 24px 60px rgba(0,0,0,.6);animation:gc-in 1s cubic-bezier(.2,1.5,.4,1) both}
-      .gc-shine{position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%);animation:gc-sh 3.2s ease-in-out 1s infinite;pointer-events:none;z-index:2}
-      .gc-kick{margin:0 0 8px;font:700 .85rem Fredoka,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#6A4206}
-      .gc-img{border-radius:14px;padding:4px;background:linear-gradient(160deg,#6A4206,#2A1A04);box-shadow:inset 0 0 0 2px #FFE07A}
-      .gc-img img{display:block;width:100%;height:min(52dvh,380px);object-fit:contain;border-radius:11px;background:radial-gradient(circle at 50% 35%,#3A2A40,#120A1A)}
-      .gc-card h2{margin:10px 0 0;font:700 1.9rem Fredoka,system-ui,sans-serif;color:#3A2604;text-shadow:0 1px 0 #FFF4C4}
-      .gc-sub{margin:2px 0 0;font:600 .95rem Lexend,system-ui,sans-serif;color:#5A3A08}
-      .gc-date{margin:2px 0 0;font:500 .8rem Lexend,system-ui,sans-serif;color:#7A5410}
-      .gc-ok{position:relative;min-height:52px;padding:0 34px;border-radius:999px;border:3px solid #FFE07A;background:linear-gradient(#F4C64C,#C8901C);color:#2A1A04;font:700 1.2rem Fredoka,system-ui,sans-serif;cursor:pointer;box-shadow:0 0 18px rgba(255,200,80,.7);animation:rkl-in .4s 1s both}
+      .gc-bg{position:fixed;inset:0;z-index:120;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--g1) 45%,#2A1A04),rgba(4,6,14,.94) 70%);display:grid;place-items:center;padding:14px;animation:rkl-in .35s ease-out;overflow:hidden;perspective:1200px}
+      .gc{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px;width:min(340px,100%)}
+      .gc-rays{position:absolute;left:50%;top:44%;width:1000px;height:1000px;margin:-500px 0 0 -500px;background:repeating-conic-gradient(rgba(255,220,120,.14) 0 5deg,transparent 5deg 15deg);border-radius:50%;mask:radial-gradient(circle,#000 18%,transparent 62%);-webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);animation:gc-spin 40s linear infinite;pointer-events:none}
+      .gc-stars{position:absolute;inset:-30px;pointer-events:none}
+      .gc-stars i{position:absolute;width:14px;height:14px;transform:scale(var(--s));background:radial-gradient(circle,#FFF 0 18%,transparent 20%),conic-gradient(from 45deg,transparent 0 22%,#FFF6C8 25%,transparent 28% 47%,#FFF6C8 50%,transparent 53% 72%,#FFF6C8 75%,transparent 78% 97%,#FFF6C8 100%);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:gc-tw 3s ease-in-out infinite}
+      .gc-card{--rx:0deg;--ry:0deg;--hx:50%;position:relative;width:100%;padding:7px;border-radius:24px;transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .25s ease-out;transform-style:preserve-3d;
+        background:linear-gradient(135deg,#FFF6CC 0%,#E8B040 14%,#8A5A10 30%,#F6D26A 46%,#B47818 62%,#FFF0B0 80%,#C8901C 100%);
+        box-shadow:0 0 0 1.5px #5A3806,0 0 50px var(--gg),0 30px 70px rgba(0,0,0,.7);animation:gc-in 1.1s cubic-bezier(.2,1.4,.4,1) both}
+      .gc-in{position:relative;border-radius:18px;padding:16px 14px 14px;text-align:center;overflow:hidden;
+        background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--g1) 55%,#1A1206) 0%,#120C04 75%);box-shadow:inset 0 0 0 2px #FFE07A,inset 0 0 0 5px #5A3806,inset 0 0 0 6px #C8901C,inset 0 0 30px rgba(0,0,0,.8)}
+      .gc-c{position:absolute;width:44px;height:44px;z-index:3;pointer-events:none} .gc-c svg{width:100%;height:100%;display:block}
+      .gc-c.tl{left:8px;top:8px} .gc-c.tr{right:8px;top:8px;transform:scaleX(-1)} .gc-c.bl{left:8px;bottom:8px;transform:scaleY(-1)} .gc-c.br{right:8px;bottom:8px;transform:scale(-1)}
+      .gc-gem{position:absolute;left:50%;top:-1px;width:26px;height:26px;margin-left:-13px;transform:rotate(45deg);z-index:4;border:3px solid #FFE07A;border-radius:4px;
+        background:radial-gradient(circle at 35% 35%,#FFF 0 10%,var(--g2) 30%,var(--g1) 75%);box-shadow:0 0 14px var(--gg),0 0 0 2px #5A3806}
+      .gc-kick{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 10px;font:800 .8rem Cinzel,Georgia,serif;letter-spacing:.32em;text-transform:uppercase;color:#FFE07A;text-shadow:0 0 8px rgba(255,200,80,.6)}
+      .gc-kick span{flex:0 1 46px;height:2px;background:linear-gradient(90deg,transparent,#FFE07A)} .gc-kick span:last-child{transform:scaleX(-1)}
+      .gc-img{position:relative;border-radius:12px;padding:3px;background:linear-gradient(160deg,#FFE07A,#8A5A10 40%,#FFF0B0 60%,#8A5A10);box-shadow:0 8px 24px rgba(0,0,0,.6)}
+      .gc-img img{display:block;width:100%;height:min(46dvh,350px);object-fit:contain;border-radius:10px;background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--g2) 35%,#2A2030) 0%,#0E0A14 80%)}
+      .gc-plate{position:relative;margin:14px auto 0;padding:6px 22px 4px;width:fit-content;max-width:100%;border-radius:8px;background:linear-gradient(#FFF0B0,#D9A030 55%,#A86C10);box-shadow:0 0 0 1.5px #5A3806,inset 0 1px 0 #FFF8E0,0 4px 12px rgba(0,0,0,.5)}
+      .gc-plate h2{margin:0;font:800 1.6rem Cinzel,Georgia,serif;letter-spacing:.04em;color:#3A2404;text-shadow:0 1px 0 rgba(255,248,224,.8)}
+      .gc-sub{margin:10px 0 0;font:600 .9rem Lexend,system-ui,sans-serif;color:#F4DDA0}
+      .gc-date{margin:4px 0 2px;font:600 .78rem Cinzel,Georgia,serif;letter-spacing:.12em;color:#C8A060}
+      .gc-holo{position:absolute;inset:0;border-radius:24px;z-index:5;pointer-events:none;mix-blend-mode:color-dodge;opacity:.35;
+        background:linear-gradient(115deg,transparent 20%,rgba(255,120,200,.5) 35%,rgba(120,220,255,.5) 45%,rgba(180,255,140,.5) 55%,transparent 70%);background-size:250% 100%;background-position:var(--hx) 0;animation:gc-holo 6s ease-in-out infinite alternate}
+      .gc-shine{position:absolute;inset:0;border-radius:24px;overflow:hidden;z-index:6;pointer-events:none}
+      .gc-shine::after{content:"";position:absolute;inset:-50%;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.7) 50%,transparent 58%);animation:gc-sh 3.6s ease-in-out 1.2s infinite}
+      .gc-ok{position:relative;min-height:52px;padding:0 38px;border-radius:999px;border:2px solid #5A3806;background:linear-gradient(#FFF0B0,#E0A830 45%,#A86C10);color:#2A1A04;font:800 1.1rem Cinzel,Georgia,serif;letter-spacing:.08em;cursor:pointer;box-shadow:inset 0 1px 0 #FFF8E0,0 0 0 3px #FFE07A,0 0 22px var(--gg);animation:rkl-in .4s 1.1s both}
+      @keyframes gc-in{0%{opacity:0;transform:scale(.2) rotateY(200deg)}60%{opacity:1;transform:scale(1.05) rotateY(-10deg)}100%{transform:rotateX(var(--rx)) rotateY(var(--ry))}}
+      @keyframes gc-sh{0%{transform:translateX(-70%)}50%,100%{transform:translateX(70%)}}
+      @keyframes gc-holo{from{background-position:0% 0}to{background-position:100% 0}}
+      @keyframes gc-tw{0%,100%{opacity:0;transform:scale(calc(var(--s)*.4)) rotate(0)}50%{opacity:1;transform:scale(var(--s)) rotate(45deg)}}
+      @keyframes gc-spin{to{transform:rotate(360deg)}}
+      @media (prefers-reduced-motion:reduce){.gc-card,.gc-shine::after,.gc-rays,.gc-holo,.gc-stars i{animation:none}.gc-stars i{opacity:.7}}
       .xp-row.xp-secret.cur{cursor:pointer}
       @keyframes gc-in{0%{opacity:0;transform:scale(.2) rotateY(180deg)}60%{opacity:1;transform:scale(1.06) rotateY(-8deg)}100%{transform:scale(1) rotateY(0)}}
       @keyframes gc-sh{0%{transform:translateX(-60%)}55%,100%{transform:translateX(60%)}}
@@ -196,15 +215,31 @@
   }
   // Goldkarte des geheimen Rangs: großes Bild im goldenen Rahmen mit Glanz, Name und Datum
   function godCard(k, en){
-    rkStyle(); const d = document.createElement("div"); d.className = "gc-bg";
+    rkStyle();
+    if(!document.getElementById("gc-font")){ const l=document.createElement("link"); l.id="gc-font"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap"; document.head.appendChild(l); }
+    const C = XPC[k] || XPC[5], d = document.createElement("div"); d.className = "gc-bg"; d.style.cssText = `--g1:${C[1]};--g2:${C[3]};--gg:${C[4]}`;
     const date = new Date().toLocaleDateString(en===false?"de-DE":"en-GB", {day:"numeric", month:"long", year:"numeric"});
-    d.innerHTML = `<div class="gc" role="dialog" aria-modal="true" aria-label="${godName(k)}"><div class="gc-rays"></div>
-      <div class="gc-card"><div class="gc-shine"></div><p class="gc-kick">✦ ${en===false?"Geheimer Rang":"Secret rank"} ✦</p>
-        <div class="gc-img"><img src="${godImg(k)}" alt=""></div>
-        <h2>${godName(k)}</h2><p class="gc-sub">${en===false?`${HIDDEN_AT} Flaggen an einem Tag`:`${HIDDEN_AT} flags in one day`}</p><p class="gc-date">${date}</p></div>
+    const corner = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M4 56 V22 Q4 4 22 4 H56" fill="none" stroke="url(#gcg)" stroke-width="3.2"/><path d="M11 56 V26 Q11 11 26 11 H56" fill="none" stroke="url(#gcg)" stroke-width="1.4"/>
+      <path d="M18 18 q6 -10 14 -4 q-8 2 -6 10 q-6 -6 -8 -6z" fill="url(#gcg)"/><circle cx="16" cy="16" r="3.2" fill="#FFF6D0" stroke="#8A5A10" stroke-width="1"/></svg>`;
+    const stars = Array.from({length:14},(_,i)=>`<i style="left:${(i*37)%100}%;top:${(i*53+11)%100}%;animation-delay:${(i*.37)%3}s;--s:${.5+((i*7)%5)/6}"></i>`).join("");
+    d.innerHTML = `<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF4C4"/><stop offset=".45" stop-color="#E0A830"/><stop offset=".7" stop-color="#8A5A10"/><stop offset="1" stop-color="#FFE07A"/></linearGradient></defs></svg>
+      <div class="gc" role="dialog" aria-modal="true" aria-label="${godName(k)}"><div class="gc-rays"></div><div class="gc-stars">${stars}</div>
+      <div class="gc-card"><div class="gc-holo"></div><div class="gc-shine"></div>
+        <div class="gc-in">
+          ${["tl","tr","bl","br"].map(c=>`<span class="gc-c ${c}">${corner}</span>`).join("")}
+          <div class="gc-gem"></div>
+          <p class="gc-kick"><span></span>${en===false?"Geheimer Rang":"Secret Rank"}<span></span></p>
+          <div class="gc-img"><img src="${godImg(k)}" alt=""></div>
+          <div class="gc-plate"><h2>${godName(k)}</h2></div>
+          <p class="gc-sub">${en===false?`${HIDDEN_AT} Flaggen an einem Tag`:`${HIDDEN_AT} flags in a single day`}</p>
+          <p class="gc-date">✦ ${date} ✦</p>
+        </div></div>
       <button class="gc-ok">${en===false?"Wow!":"Awesome!"}</button></div>`;
     const close = () => d.remove(); d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".gc-ok")) close(); });
     document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
+    // leichtes Kippen mit Finger/Maus
+    const card = d.querySelector(".gc-card"); d.addEventListener("pointermove", e=>{ const r=card.getBoundingClientRect(), x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      card.style.setProperty("--rx", (-y*10).toFixed(2)+"deg"); card.style.setProperty("--ry", (x*12).toFixed(2)+"deg"); card.style.setProperty("--hx", ((x+.5)*100).toFixed(0)+"%"); });
     document.body.appendChild(d); d.querySelector(".gc-ok").focus({preventScroll:true}); return d;
   }
   // Erfahrungsbalken: Ränge in gleichen Abständen, der Balken füllt sich mit den heute gesammelten Flaggen
