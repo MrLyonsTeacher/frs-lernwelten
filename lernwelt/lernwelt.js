@@ -184,7 +184,7 @@ function rankPop(r){
     <p class="rk-next">${r.top ? T.rankTop : T.rankNext(r.toNext, r.nextIcon+" "+esc(r.nextName))}</p>
     <button class="btn big">${T.rankOk}</button></div>`;
   document.body.appendChild(d); confetti(120);
-  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>d.remove();
+  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && W.insel && W.insel.k) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en", {reveal:true}); };
 }
 function fly(fromEl, onLand){
   const to = $("#ptsChip");
@@ -472,7 +472,7 @@ function medalPop(t){
     <h2 class="disp">${T.medalNames[t]}</h2><p>${T.medalWon}</p><p class="mp-pts">${W.sammel||"⭐"} ${total()} / ${MAX}</p>${t===4?`<p class="mp-plat">${T.platHint}</p>`:""}
     <button class="btn big">${T.medalOk}</button></div>`;
   document.body.appendChild(d); confetti(160);
-  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>d.remove();
+  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && W.insel && W.insel.k) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en", {reveal:true}); };
 }
 
 function progressBar(arr, cur){ return `<div class="progress" aria-hidden="true">${arr.map((v,i)=>`<i class="${v===true?"ok":v===false?"no":i===cur?"cur":""}"></i>`).join("")}</div>`; }

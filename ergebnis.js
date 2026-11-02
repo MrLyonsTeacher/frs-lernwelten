@@ -135,12 +135,23 @@
       .xp-row img.xp-sil{filter:brightness(0) drop-shadow(0 0 6px rgba(200,160,255,.9));opacity:.85}
       .xp-row img.rk-god{object-fit:cover}
       .xp-row .lock{font-size:1.1rem}
+      .xp-row,.xp-tick,.xp-zone{transition:bottom 1s cubic-bezier(.3,.7,.2,1)}
+      .xp.xp-pre .xp-row.xp-secret{opacity:0;transform:translateY(50%) scale(.3)}
+      .xp-pre .xp-zone{opacity:0}
+      .xp-pre .xp-tick.sec{opacity:0}
+      .xp.xp-pop .xp-row.xp-secret{opacity:1;animation:xp-pop .9s cubic-bezier(.2,1.6,.4,1) both, xp-glow 1.6s ease-out .5s 2}
+      .xp-pop .xp-zone,.xp-pop .xp-tick.sec{opacity:1;transition:opacity .8s,bottom 1s}
+      .xp-pop .xp-secret b{animation:xp-q 1.2s ease-in-out .3s 3}
+      @keyframes xp-pop{0%{opacity:0;transform:translateY(50%) scale(.3) rotate(-6deg)}60%{opacity:1;transform:translateY(50%) scale(1.12) rotate(2deg)}100%{opacity:1;transform:translateY(50%) scale(1) rotate(0)}}
+      @keyframes xp-glow{0%{box-shadow:0 0 0 0 rgba(200,160,255,.9)}100%{box-shadow:0 0 0 22px rgba(200,160,255,0)}}
+      @keyframes xp-q{0%,100%{text-shadow:none}50%{text-shadow:0 0 12px #E8C8FF,0 0 24px #B478FF}}
+      @media (prefers-reduced-motion:reduce){.xp-row,.xp-tick,.xp-zone{transition:none}.xp-pop .xp-secret{animation:none}}
       @keyframes xp-run{from{background-position:0 100%}to{background-position:0 -60px}}
       @media (prefers-reduced-motion:reduce){.xp-fill,.xp-knob{transition:none}.xp-fill::after{animation:none}}
       @keyframes rkl-in{from{opacity:0}to{opacity:1}}`; document.head.appendChild(st); }
   try{ rkStyle(); }catch(e){}
   // Fenster mit allen Rängen einer Welt (beim Antippen des Rangs)
-  function rankSheet(k, n, en){
+  function rankSheet(k, n, en, opts){
     const R = RANKS[k] || RANKS[5], cur = rank(k, n).i;
     rkStyle();
     const flagsTxt = en===false ? "Flaggen" : "flags";
@@ -152,21 +163,34 @@
     d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); });
     document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
     document.body.appendChild(d); d.querySelector(".x").focus({preventScroll:true});
-    // Balken von unten hochfüllen
-    const f = d.querySelector(".xp-fill"); if(f){ const h=f.dataset.h; requestAnimationFrame(()=>requestAnimationFrame(()=>{ f.style.height=h; d.querySelector(".xp-knob").style.bottom=h; })); }
+    // Balken von unten hochfüllen; beim ersten Öffnen ab 250 Flaggen (am Tag) erweitert er sich und der geheime Rang ploppt auf
+    const f = d.querySelector(".xp-fill"), kb = d.querySelector(".xp-knob"), sec = d.querySelector(".xp-secret");
+    const revKey = "frs-xp-rev-k"+k, reveal = !!sec && n < HIDDEN_AT && ((opts && opts.reveal) || LS(revKey,"") !== dayStr());
+    if(f){ const go = h => { f.style.height=h; kb.style.bottom=h; };
+      if(!reveal) requestAnimationFrame(()=>requestAnimationFrame(()=>go(f.dataset.h)));
+      else { LSset(revKey, dayStr()); const xp = d.querySelector(".xp"), moving = d.querySelectorAll("[data-p0]");
+        xp.classList.add("xp-pre"); moving.forEach(e=>e.style.bottom=e.dataset.p0);
+        requestAnimationFrame(()=>requestAnimationFrame(()=>go(f.dataset.h0)));
+        setTimeout(()=>{ xp.classList.add("xp-grow"); moving.forEach(e=>e.style.bottom=e.dataset.p1); go(f.dataset.hm); }, 1600);
+        setTimeout(()=>{ xp.classList.add("xp-pop"); }, 2300);
+        setTimeout(()=>{ go(f.dataset.h); xp.classList.remove("xp-pre"); }, 3100); } }
   }
   // Erfahrungsbalken: Ränge in gleichen Abständen, der Balken füllt sich mit den heute gesammelten Flaggen
   function xpBar(R, n, cur, en, flagsTxt, k){
-    const AT = RANK_AT.concat(HIDDEN_AT), N = AT.length, pos = j => 4 + j/(N-1)*92;   // Prozent von unten; oberste Stufe = geheimer Rang
-    let f; if(n >= AT[N-1]) f = 1; else { let i=0; AT.forEach((t,j)=>{ if(n>=t) i=j; }); f = (i + (n-AT[i])/(AT[i+1]-AT[i]))/(N-1); }
-    const h = (4 + f*92).toFixed(1)+"%", nx = cur < N-1 ? cur+1 : null, god = n >= HIDDEN_AT;
-    const row = (j, img, name, extra) => { const st = j===cur ? "cur" : j<cur ? "ok" : j===nx ? "nx" : "no";
-      return `<div class="xp-row ${st}${extra||""}" style="bottom:${pos(j)}%">${img}<span><b>${name}</b><small>${AT[j]} ${flagsTxt}${j===nx?` · ${en===false?"noch":"still"} ${AT[j]-n}`:""}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?`<span class="ck">✔</span>`:j===N-1?`<span class="lock">🔒</span>`:""}</div>`; };
-    const rows = R.map((r,j)=>row(j, rankImg(rFile(r),""), rName(r))).join("") +
-      row(N-1, `<img class="${god?"rk-god":"xp-sil"}" src="${godImg(k)}" alt="" draggable="false">`, god ? godName(k) : "???", " xp-secret");
-    const ticks = AT.map((t,j)=>`<i class="xp-tick${j<=cur?" on":""}${j===N-1?" sec":""}" style="bottom:${pos(j)}%"></i>`).join("");
-    return `<div class="xp"><div class="xp-col"><div class="xp-track"><div class="xp-fill" data-h="${h}" style="height:0%"></div><div class="xp-zone" style="bottom:${pos(N-2)}%"></div></div>${ticks}<div class="xp-knob" style="bottom:0%"><span>${n}</span></div></div><div class="xp-rows">${rows}</div></div>`;
+    // unter 250 Flaggen: nur die sechs Ränge; ab 250 kommt oben der geheime Rang „???“ dazu (ab 350 die Gottheit)
+    const sec = n >= RANK_AT[RANK_AT.length-1], AT = sec ? RANK_AT.concat(HIDDEN_AT) : RANK_AT.slice(), N = AT.length;
+    const p6 = j => 5 + j/5*90, p7 = j => 4 + j/6*92, pos = sec ? p7 : p6;
+    const fillAt = (P, M) => { const A = M===7 ? RANK_AT.concat(HIDDEN_AT) : RANK_AT; let f; if(n >= A[A.length-1]) f = 1; else { let i=0; A.forEach((t,j)=>{ if(n>=t) i=j; }); f = (i + (n-A[i])/(A[i+1]-A[i]))/(A.length-1); }
+      return (P(0) + f*(P(A.length-1)-P(0))).toFixed(1)+"%"; };
+    const h1 = fillAt(pos, N), h0 = sec ? fillAt(p6, 6) : h1, nx = cur < N-1 ? cur+1 : null, god = n >= HIDDEN_AT;
+    const row = (j, img, name, extra) => { const st = j===cur ? "cur" : j<cur ? "ok" : j===nx ? "nx" : "no", b0 = j<6 ? p6(j) : 100;
+      return `<div class="xp-row ${st}${extra||""}" data-p0="${b0}%" data-p1="${pos(j)}%" style="bottom:${pos(j)}%">${img}<span><b>${name}</b><small>${AT[j]} ${flagsTxt}${j===nx?` · ${en===false?"noch":"still"} ${AT[j]-n}`:""}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?`<span class="ck">✔</span>`:j===N-1&&sec?`<span class="lock">🔒</span>`:""}</div>`; };
+    let rows = R.map((r,j)=>row(j, rankImg(rFile(r),""), rName(r))).join("");
+    if(sec) rows += row(N-1, `<img class="${god?"rk-god":"xp-sil"}" src="${godImg(k)}" alt="" draggable="false">`, god ? godName(k) : "???", " xp-secret");
+    const ticks = AT.map((t,j)=>`<i class="xp-tick${j<=cur?" on":""}${j===6?" sec":""}" data-p0="${j<6?p6(j):100}%" data-p1="${pos(j)}%" style="bottom:${pos(j)}%"></i>`).join("");
+    return `<div class="xp"><div class="xp-col"><div class="xp-track"><div class="xp-fill" data-h0="${h0}" data-hm="${sec ? pos(N-2) : 0}%" data-h="${h1}" style="height:0%"></div>${sec?`<div class="xp-zone" data-p0="100%" data-p1="${pos(N-2)}%" style="bottom:${pos(N-2)}%"></div>`:""}</div>${ticks}<div class="xp-knob" style="bottom:0%"><span>${n}</span></div></div><div class="xp-rows">${rows}</div></div>`;
   }
+
 
   // "Heute gesammelt": Zähler pro Klasse und Tag
   const dayStr = () => { const d=new Date(), p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
