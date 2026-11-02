@@ -106,6 +106,27 @@
       .rk-hid b{display:block;font:700 1.35rem Fredoka,system-ui,sans-serif;color:#FFE27A}
       .rk-hid small{display:block;color:#E8E0C8}
       .rkl .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:12px;border:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:1.4rem;cursor:pointer}
+      .xp{position:relative;display:grid;grid-template-columns:58px 1fr;gap:8px;height:min(480px,calc(100dvh - 200px));min-height:340px;margin:6px 0 4px}
+      .xp-col{position:relative}
+      .xp-track{position:absolute;left:50%;top:0;bottom:0;width:20px;transform:translateX(-50%);border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.35);overflow:hidden;box-shadow:inset 0 0 10px rgba(0,0,0,.6)}
+      .xp-fill{position:absolute;left:0;right:0;bottom:0;border-radius:10px;background:linear-gradient(to top,#E8430A,#FF8A2A 40%,#FFC24A 75%,#FFF2B0);box-shadow:0 0 16px rgba(255,194,74,.8);transition:height 1.4s cubic-bezier(.2,.8,.2,1)}
+      .xp-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,transparent 0,rgba(255,255,255,.35) 50%,transparent 100%);background-size:100% 60px;animation:xp-run 1.6s linear infinite;opacity:.6}
+      .xp-tick{position:absolute;left:50%;width:30px;height:4px;margin:0 0 -2px -15px;border-radius:2px;background:rgba(255,255,255,.35)}
+      .xp-tick.on{background:#FFE27A;box-shadow:0 0 8px #FFC24A}
+      .xp-knob{position:absolute;left:50%;transform:translate(-50%,50%);transition:bottom 1.4s cubic-bezier(.2,.8,.2,1);z-index:2}
+      .xp-knob span{display:block;min-width:34px;padding:2px 6px;border-radius:999px;background:#FFF2B0;color:#3A1A04;font:700 .85rem Fredoka,system-ui,sans-serif;text-align:center;border:2px solid #FFC24A;box-shadow:0 0 12px rgba(255,194,74,.9)}
+      .xp-rows{position:relative}
+      .xp-row{position:absolute;left:0;right:0;transform:translateY(50%);display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:8px;padding:3px 8px;border-radius:14px;background:rgba(255,255,255,.07);border:2px solid transparent}
+      .xp-row img{width:46px;height:46px;object-fit:contain}
+      .xp-row b{display:block;font:700 1.02rem Fredoka,system-ui,sans-serif;line-height:1.1}
+      .xp-row small{color:#C8CCD8;font-size:.8rem}
+      .xp-row.cur{border-color:#FFC24A;background:rgba(255,194,74,.2);box-shadow:0 0 14px rgba(255,194,74,.35)}
+      .xp-row.cur .tag{background:#FFC24A;color:#2A1A06;border-radius:999px;padding:2px 9px;font:700 .8rem Fredoka,system-ui,sans-serif}
+      .xp-row.nx{border:2px dashed rgba(255,226,122,.7)} .xp-row.nx small{color:#FFE27A}
+      .xp-row.no{opacity:.45} .xp-row.no img{filter:grayscale(.7) brightness(.8)}
+      .xp-row .ck{color:#7CE08A;font-weight:700}
+      @keyframes xp-run{from{background-position:0 100%}to{background-position:0 -60px}}
+      @media (prefers-reduced-motion:reduce){.xp-fill,.xp-knob{transition:none}.xp-fill::after{animation:none}}
       @keyframes rkl-in{from{opacity:0}to{opacity:1}}`; document.head.appendChild(st); }
   try{ rkStyle(); }catch(e){}
   // Fenster mit allen Rängen einer Welt (beim Antippen des Rangs)
@@ -117,11 +138,23 @@
     d.innerHTML = `<div class="rkl" role="dialog" aria-modal="true" aria-label="Ranks"><button class="x" aria-label="Close">×</button>
       <h2>${en===false?"Alle Ränge":"All ranks"}</h2><p class="sub">${en===false?`Heute gesammelt: ${n} ${flagsTxt}`:`Collected today: ${n} ${flagsTxt}`}</p>
       ${n>=HIDDEN_AT?`<div class="rk-hid"><img src="${godImg(k)}" alt=""><div><small>${en===false?"Geheimer Rang freigeschaltet!":"Secret rank unlocked!"}</small><b>${godName(k)}</b><small>${en===false?"ab":"from"} ${HIDDEN_AT} ${flagsTxt}</small></div></div>`:""}
-      <ol>${R.map((r,j)=>`<li class="${j===cur?"cur":j>cur?"no":""}">${rankImg(rFile(r),"")}<span><b>${rName(r)}</b><small>${en===false?"ab":"from"} ${RANK_AT[j]} ${flagsTxt}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?"✔":""}</li>`).join("")}</ol></div>`;
+      ${xpBar(R, n, cur, en, flagsTxt)}</div>`;
     const close = () => d.remove();
     d.addEventListener("click", e=>{ if(e.target===d || e.target.closest(".x")) close(); });
     document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown", esc); } });
     document.body.appendChild(d); d.querySelector(".x").focus({preventScroll:true});
+    // Balken von unten hochfüllen
+    const f = d.querySelector(".xp-fill"); if(f){ const h=f.dataset.h; requestAnimationFrame(()=>requestAnimationFrame(()=>{ f.style.height=h; d.querySelector(".xp-knob").style.bottom=h; })); }
+  }
+  // Erfahrungsbalken: Ränge in gleichen Abständen, der Balken füllt sich mit den heute gesammelten Flaggen
+  function xpBar(R, n, cur, en, flagsTxt){
+    const N = RANK_AT.length, pos = j => 5 + j/(N-1)*90;   // Prozent von unten
+    let f; if(n >= RANK_AT[N-1]) f = 1; else { let i=0; RANK_AT.forEach((t,j)=>{ if(n>=t) i=j; }); f = (i + (n-RANK_AT[i])/(RANK_AT[i+1]-RANK_AT[i]))/(N-1); }
+    const h = (5 + f*90).toFixed(1)+"%", nx = cur < N-1 ? cur+1 : null;
+    const rows = R.map((r,j)=>{ const st = j===cur ? "cur" : j<cur ? "ok" : j===nx ? "nx" : "no";
+      return `<div class="xp-row ${st}" style="bottom:${pos(j)}%">${rankImg(rFile(r),"")}<span><b>${rName(r)}</b><small>${RANK_AT[j]} ${flagsTxt}${j===nx?` · ${en===false?"noch":"still"} ${RANK_AT[j]-n}`:""}</small></span>${j===cur?`<span class="tag">${en===false?"Du":"You"}</span>`:j<cur?`<span class="ck">✔</span>`:""}</div>`; }).join("");
+    const ticks = RANK_AT.map((t,j)=>`<i class="xp-tick${j<=cur?" on":""}" style="bottom:${pos(j)}%"></i>`).join("");
+    return `<div class="xp"><div class="xp-col"><div class="xp-track"><div class="xp-fill" data-h="${h}" style="height:0%"></div></div>${ticks}<div class="xp-knob" style="bottom:0%"><span>${n}</span></div></div><div class="xp-rows">${rows}</div></div>`;
   }
   // "Heute gesammelt": Zähler pro Klasse und Tag
   const dayStr = () => { const d=new Date(), p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
