@@ -421,40 +421,43 @@ export function fairy(col=0x9AF0FF){
 /* ---------- Riesenschlange (Seeschlange): Schuppen in Grün/Türkis/Violett, Rückenstacheln, offenes Maul, Schwanzflosse mit Strahlen.
    Gebaut als Kette einzelner Glieder (Kopf, n Körperglieder, Schwanz); jedes Glied folgt mit Abstand lag (in Würfeln) einer gemeinsamen Route (siehe snake in welt3d.js) ---------- */
 export function serpentChain(o={}){
-  const N=o.n||32, L=4;
+  // feine Bauweise (halbe Würfelgröße, im Spiel mit kleinerem scale): runder Leib, Schuppenreihen, helle Bauchschilde, kleine Schwanzflosse
+  const N=o.n||40, L=7;
   const hs = (x,y,z) => (((x*73856093)^(y*19349663)^(z*83492791))>>>0)%100;
   const pick = (a,h) => a[h%a.length];
-  const skin = (hh,salt) => (x,y,z) => { const h=hs(x+salt*7,y,z+salt*3), r=(y+hh)/(2*hh+.001);
-    if(r<.2) return pick([0xA6F27E,0xB8F890,0x92E870],h);
-    if(r>.66) return h<9 ? 0x2A1E5A : h<22 ? 0x2AB0A0 : h<30 ? 0x1E8A8A : pick([0x5AE04A,0x6EEC5A,0x48C83A,0x7AF266],h);
-    return h<24 ? pick([0x2E2A70,0x1E5A6A,0x34307E],h) : h<58 ? pick([0x239B8E,0x1FA89A,0x2A9A9A],h) : pick([0x3CB84A,0x4AC85A],h); };
-  const SP = [0x2A1E5A,0x3A2E80,0x1E3A7A,0x2E4A9A];
-  // ---- Kopf: breite, flache Schnauze, Augen, Nüstern, Zähne, Kamm aus Stacheln ----
-  const head = M(), hk = skin(3,0);
-  for(let x=-3;x<=12;x++){ const t=(x+3)/15, hw=Math.max(2,Math.round(5-t*3)), top=x>9?1:2; head.box(x,-2,-hw,x,top+1,hw,(a,b,c)=> b===top+1 ? pick([0x5AE04A,0x6EEC5A,0x48C83A,0x7AF266,0x2AB0A0],hs(a,b,c)) : (Math.abs(c)===hw ? pick([0x239B8E,0x1FA89A,0x2E2A70],hs(a,b,c)) : hk(a,b,c))); }
-  head.box(-3,-2,-5,-3,3,5,(a,b,c)=>pick([0x1E8A8A,0x2A1E5A,0x239B8E],hs(a,b,c)));
-  for(const sg of [-1,1]){ head.put(7,3,sg*4,0xFFB820,1).put(8,3,sg*4,0xFFB820,1).put(7,2,sg*4,0x1A1000).put(8,2,sg*4,0xFFD860,1);
-    head.box(6,4,sg*4,9,4,sg*4,0x2A1E5A).put(5,4,sg*5,0x2A1E5A).put(11,3,sg*1,0x10181A).put(11,2,sg*1,0x10181A);
-    for(let k=0;k<4;k++) head.put(-3-k,2+k,sg*5,SP[k%4]).put(-4-k,1+k,sg*6,SP[(k+1)%4]);
-    for(let x=1;x<=11;x+=2) head.put(x,-3,sg*(x>8?2:4),0xF2E8D2); }
-  for(let x=9;x<=11;x+=2) head.put(x,-3,0,0xF2E8D2);
-  for(let k=0;k<6;k++){ head.put(-1-k,4+Math.floor(k*.6),0,SP[k%4]).put(-1-k,3+Math.floor(k*.6),0,SP[(k+1)%4]); }
+  const SP = [0x2A1E5A,0x3A2E80,0x1E3A7A,0x2E4A9A], BELLY=[0xA6F27E,0xB8F890,0x92E870], BELLYD=0x6EB85A;
+  // Haut: Bauch hell mit Querschilden, Flanken türkis mit dunklen Schuppenfugen, Rücken grün mit violetten Flecken
+  const skin = (salt) => (x,y,z,ry,rz) => { const h=hs(x+salt*7,y,z+salt*3), v=y/ry, ang=Math.atan2(z/rz,v), row=Math.round(ang*3), fuge=((x+salt*L+(row&1?2:0))%4+4)%4===0;
+    if(v<-.55) return ((x+salt*L)%3===0) ? BELLYD : pick(BELLY,h);
+    if(fuge) return v>.5 ? 0x2E7A3A : 0x14505A;
+    if(v>.5) return h<12 ? 0x2A1E5A : h<24 ? 0x2AB0A0 : pick([0x5AE04A,0x6EEC5A,0x48C83A,0x7AF266],h);
+    return h<20 ? pick([0x2E2A70,0x1E5A6A],h) : pick([0x239B8E,0x1FA89A,0x2A9A9A,0x30A8A0],h); };
+  const tube = (m, x0, x1, ryA, rzA, ryB, rzB, col) => { for(let x=x0;x<=x1;x++){ const f=(x-x0)/Math.max(1,x1-x0), ry=ryA+(ryB-ryA)*f, rz=rzA+(rzB-rzA)*f;
+      for(let y=-Math.ceil(ry);y<=Math.ceil(ry);y++) for(let z=-Math.ceil(rz);z<=Math.ceil(rz);z++){ const d=(y/(ry+.4))**2+(z/(rz+.4))**2; if(d>1 || d<.45) continue; m.put(x,y,z,col(x,y,z,ry,rz)); } } };
+  // ---- Kopf: runder Schädel, flache Schnauze, Augen mit Pupille, Brauenwulst, Nüstern, Kamm, kleine Hörner ----
+  const head = M(), hk = skin(0);
+  head.ell(4,1,0,8,5.5,7.5,(x,y,z)=>hk(x,y,z,5.5,7.5)).ell(14,0,0,8,3.6,5.2,(x,y,z)=>hk(x,y,z,3.6,5.2)).ell(21,-.5,0,3,2.6,3.4,(x,y,z)=>hk(x,y,z,2.6,3.4));
+  for(const sg of [-1,1]){ head.ell(10,3.5,sg*5.6,1.7,1.4,1,0xFFB820,1).put(11,3.5,sg*6.6,0x1A1000).put(10,4,sg*6.5,0xFFE080,1);
+    head.box(7,5.5,sg*4.6,13,6,sg*6,0x2A1E5A); head.put(23,.5,sg*1.4,0x10181A).put(23,1,sg*1.4,0x10181A);
+    for(let k=0;k<5;k++) head.put(-1-k*1.4,4+k,sg*(6+k*.4),SP[k%4]).put(-2-k*1.4,3.5+k,sg*(6.4+k*.4),SP[(k+1)%4]);      // Hörner
+    for(let x=4;x<=22;x+=2) head.put(x,-3.4,sg*Math.max(1.4,5.2-(x-4)*.2),0xF2E8D2); }                                 // Zähne oben
+  for(let k=0;k<9;k++) head.put(2-k*1.3,6.5+Math.sin(k*.9)*1.2,0,SP[k%4]).put(2-k*1.3,5.8,0,SP[(k+2)%4]);               // Kamm
   const jaw = M();
-  for(let x=0;x<=10;x++){ const hw=Math.max(1,Math.round(4-x*.28)); jaw.box(x,-4,-hw,x,-3,hw,(a,b,c)=> b===-3 ? (Math.abs(c)===hw ? 0xF2E8D2 : pick([0x9A5A3A,0xA8663E,0x8A4E32],hs(a,b,c))) : pick([0xA6F27E,0xB8F890,0x6EEC5A],hs(a,b,c)));
-    if(x%2===1){ jaw.put(x,-2,-hw,0xF2E8D2); jaw.put(x,-2,hw,0xF2E8D2); } }
-  jaw.put(11,-3,0,0xB8F890).put(5,-2,0,0xC45A6A);
-  const out = [{ lag:0, def:{ parts:[ { cubes:head.list(), pivot:[0,0,0], rot:["z",.05,.7,0,.04] }, { cubes:jaw.list(), pivot:[0,-2,0], parent:0, rot:["z",.1,1.1,.6,-.3] } ], noShadow:true } }];
-  // ---- Körperglieder: nach hinten schmaler, mit Rückenstacheln und Brustflossen ----
-  for(let k=0;k<N;k++){ const f=k/N, hw=Math.max(1,Math.round(4.6-3.5*Math.pow(f,1.1))), hh=Math.max(1,Math.round(3.4-2.4*f)), seg=M(), col=skin(hh,k+1);
-    seg.box(1,-hh,-hw,-L+1,hh,hw,col);
-    if(k%2===0) for(let j=1;j<=Math.max(2,4-Math.floor(f*3));j++) seg.put(-1-Math.floor(j/2),hh+j,0,SP[(j+k)%4]);
-    if(k===3 || k===4){ for(const sg of [-1,1]) for(let a=0;a<4;a++) for(let b=0;b<=a;b++) seg.put(-1-a,-1,sg*(hw+1+b), a>1?0x2A1E5A:(b%2?0x1E8A8A:0x239B8E)); }
-    out.push({ lag:4+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
-  // ---- Schwanzflosse: Klinge und fünf lange Strahlen ----
+  jaw.ell(11,-5,0,10,1.8,5.6,(x,y,z)=> y>-4 ? pick([0x9A5A3A,0xA8663E,0x8A4E32],hs(x,y,z)) : pick(BELLY,hs(x,y,z)));
+  for(let x=4;x<=19;x+=2) for(const sg of [-1,1]) jaw.put(x,-3.4,sg*Math.max(1.2,5-(x-4)*.22),0xF2E8D2);
+  jaw.box(8,-4,-1,13,-4,1,0xC45A6A);                                                                                     // Zunge
+  const out = [{ lag:0, def:{ parts:[ { cubes:head.list(), pivot:[0,0,0], rot:["z",.05,.7,0,.04] }, { cubes:jaw.list(), pivot:[0,-3,0], parent:0, rot:["z",.12,1.1,.6,-.25] } ], noShadow:true } }];
+  // ---- Körperglieder: runder Querschnitt, überlappend, nach hinten deutlich dünner ----
+  const R = f => Math.max(1.2, 8.2*Math.pow(1-f,.9)+.3);
+  for(let k=0;k<N;k++){ const f=k/N, f2=(k+1)/N, ry=R(f)*.82, rz=R(f), ry2=R(f2)*.82, rz2=R(f2), seg=M();
+    tube(seg, -L-1, 1, ry2, rz2, ry, rz, skin(k+1));
+    if(k%2===0 && f<.8){ const h=Math.max(1,Math.round(ry*.45)); for(let j=1;j<=h;j++) seg.put(-2-Math.floor(j/2),Math.ceil(ry)+j,0,SP[(j+k)%4]); }
+    if(k===4 || k===5) for(const sg of [-1,1]) for(let a=0;a<6;a++) for(let b=0;b<=a*.7;b++) seg.put(-2-a,-2,sg*(Math.ceil(rz)+1+b), a>3?0x2A1E5A:(b%2?0x1E8A8A:0x239B8E));   // Brustflossen
+    out.push({ lag:10+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
+  // ---- Schwanz: feine Spitze mit kleiner, fächerförmiger Flosse ----
   const tail = M();
-  tail.box(0,-1,-1,-6,0,1,(a,b,c)=>pick([0x239B8E,0x1FA89A,0x2A1E5A,0x2AB0A0],hs(a,b,c)));
-  for(const [dy,len,c] of [[9,17,0x3A2E80],[5,19,0x2A1E5A],[0,20,0x1E3A7A],[-5,19,0x2A1E5A],[-9,17,0x3A2E80]]) for(const z of [-1,0,1]){ if(z!==0 && Math.abs(dy)>6) continue;
-    tail.line([-6,0,z],[-6-len,dy*1.4,z],(z===0?c:0x2E2A70)); }
-  out.push({ lag:4+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
+  tube(tail, -8, 1, .7, .8, 1.1, 1.2, skin(N+1));
+  for(const [dy,len,c] of [[4,6,0x3A2E80],[2,7,0x2A1E5A],[0,7.5,0x1E3A7A],[-2,7,0x2A1E5A],[-4,6,0x3A2E80]]) tail.line([-7,0,0],[-7-len,dy,0],c);
+  out.push({ lag:10+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
   return out;
 }

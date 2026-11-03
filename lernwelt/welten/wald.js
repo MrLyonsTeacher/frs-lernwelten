@@ -239,12 +239,12 @@ export function build(A){
     return { parts:[{cubes:b.list(), pivot:[0,0,0]}, {cubes:w.list(), pivot:[0,0,1], rot:["x",.9,14,0]}, {cubes:wR.list(), pivot:[0,0,-1], rot:["x",-.9,14,0]}], noShadow:true }; };
   [[30,10,56,0xFFB030,0x2A1E14],[60,9,58,0x6AC8FF,0x1A3A6A],[18,15,46,0xFFFFFF,0xFFB0E8],[74,10,62,0xFF8AC8,0xFFE6F2],[40,10,46,0xFFE27A,0x8A5A10],[86,12,60,0x9AF0A0,0x2A6A3A]]
     .forEach(([x,y,z,c1,c2],i)=> creatures.push({ ...butterfly(c1,c2), orbit:{c:[x,y,z], r:[4+i%3,3+i%2], speed:.35+i*.04, ph:i, bob:1.2, bank:.2}, scale:.16 }));
-  // Riesenschlange: kommt alle 2 Minuten (erstmals nach 2 Min) durch die Schlucht von links nach rechts, in einer langgezogenen Sinuskurve:
+  // Riesenschlange: kommt alle 3 Minuten (erstmals nach 3 Min) durch die Schlucht von links nach rechts, in einer langgezogenen Sinuskurve:
   // Wellenberge ragen aus dem Nebel, das Wellental liegt tief unter der Elbenbrücke (kein Kontakt mit Pfeilern/Bögen)
-  { const SZ=1.4, GZ=82.5, pts=[]; const sy=x=> -12 - 25*Math.cos(2*Math.PI*(x-48)/80);
+  { const SZ=.42, GZ=82.5, pts=[]; const sy=x=> -12 - 25*Math.cos(2*Math.PI*(x-48)/80);
     pts.push([-90,-40,GZ,0,0]); for(let x=-48;x<=144;x+=6) pts.push([x,sy(x),GZ,0,1]); pts.push([170,-40,GZ,0,0]); pts.push([220,-60,GZ,0,0]);
-    const SN={ pts, speed:6, amp:0, lat:1.5, wl:60, ws:.2, ramp:60, start:120, period:120, span:250 };
-    for(const c of serpentChain({n:34})) creatures.push({ ...c.def, snake:SN, lag:c.lag*SZ, scale:SZ }); }
+    const SN={ pts, speed:6, amp:0, lat:1.5, wl:60, ws:.2, ramp:60, start:180, period:180, span:250 };
+    for(const c of serpentChain({n:40})) creatures.push({ ...c.def, snake:SN, lag:c.lag*SZ, scale:SZ }); }
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:40, creatures,
