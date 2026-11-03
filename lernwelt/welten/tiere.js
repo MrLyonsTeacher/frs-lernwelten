@@ -461,3 +461,136 @@ export function serpentChain(o={}){
   out.push({ lag:5+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
   return out;
 }
+
+/* ---------- Uralte Weltenschlange (Entwurf): verwitterte steingraue Schuppenplatten, Moos und herabhängende Ranken,
+   wuchtiger Kopf mit Brauenwulst, glühendem Bernsteinauge, großen Fangzähnen; Unterkiefer öffnet und schließt sich langsam.
+   Gleicher Aufbau wie serpentChain (Kette von Gliedern, feine Würfel), gleiche Größe. ---------- */
+export function ancientSerpent(o={}){
+  const N=o.n||40, L=7;
+  const hs = (x,y,z) => (((x*73856093)^(y*19349663)^(z*83492791))>>>0)%100;
+  const pick = (a,h) => a[h%a.length];
+  const ST=[0x22404A,0x2A4C58,0x1E3842,0x325664,0x284652], STD=[0x101E26,0x14262E,0x0C1820], BEL=[0x7AB8A8,0x88C4B2,0x6CA898], BELD=0x4A8478, IRI=[0x5A7EB8,0x6A5AA8,0x4AA0B0,0x7A68C0],
+        RUNE=0x6AF6E8, RUNE2=0xB8FFF4,
+        MOSS=[0x3E6E22,0x4A7E2A,0x34601C,0x56883A,0x42722A], VINE=[0x3A6A22,0x4A7E2A], EYE=0x5AF0FF, EYE2=0xD8FFFF, PUP=0x061018, FANG=0xE6E8F0, FANGD=0xA8B4C8, MOUTH=0x2A0E36, MOUTH2=0x3E1650, TONG=0x7A2A8A;
+  const patch = (x,z) => { const a=Math.sin(x*.21+z*.13)+Math.sin(x*.07-z*.29+1.3)+Math.sin(z*.17+2.1); return a; };
+  const mossy = (x,y,z,top,h) => top && (patch(x,z)>.6 ? hs(x*3,y,z*5)%100<80 : hs(x*3,y,z*5)%100<6);
+  const skin = salt => (x,y,z,ry,rz) => { const h=hs(x+salt*7,y,z+salt*3), v=y/ry, ang=Math.atan2(z/rz,v), row=Math.round(ang*3.2), xx=x+salt*L,
+      fuge=((xx+(row&1?3:0))%5+5)%5===0;
+    if(v>.62 && mossy(xx,y,z,true,h)) return pick(MOSS,h);
+    if(v<-.55) return (xx%3===0) ? BELD : pick(BEL,h);
+    const flank=Math.abs(v)<.35 && Math.abs(z)>rz*.7, band=((xx%14)+14)%14;
+    if(flank && (band===0 || band===1 || (band===7 && Math.abs(v)<.12))) return { c: band===7?RUNE2:RUNE, e:1 };
+    if(fuge) return pick(STD,h);
+    return h<14 ? pick(IRI,h) : pick(ST,h); };
+  const tube = (m, x0, x1, ryA, rzA, ryB, rzB, col) => { for(let x=x0;x<=x1;x++){ const f=(x-x0)/Math.max(1,x1-x0), ry=ryA+(ryB-ryA)*f, rz=rzA+(rzB-rzA)*f;
+      for(let y=-Math.ceil(ry);y<=Math.ceil(ry);y++) for(let z=-Math.ceil(rz);z<=Math.ceil(rz);z++){ const d=(y/(ry+.4))**2+(z/(rz+.4))**2; if(d>1 || d<.45) continue; const c=col(x,y,z,ry,rz); if(c && c.c) m.put(x,y,z,c.c,c.e); else m.put(x,y,z,c); } } };
+  const vines = (m, pts, salt) => { for(const [x,y,z] of pts){ const len=3+hs(x,y+salt,z)%6; for(let k=0;k<len;k++) m.put(x+(k>3?1:0),y-k,z,pick(VINE,hs(x,k,z)),0); m.put(x,y-len,z,pick(MOSS,hs(x,y,z))); } };
+  // ---- Kopf (Oberkiefer): breiter, flacher Schädel, schwere Brauenwülste über den Augen, lange Schnauze ----
+  const head = M(), hcol = (x,y,z) => { const h=hs(x,y,z), top = y>3;
+    if(y<=-1 && x>4) return (h%3) ? MOUTH : MOUTH2;                                                  // Gaumen
+    return ((x+Math.round(z*.7)+(y%2?2:0))%5===0) ? pick(STD,h) : (h<12 ? pick(IRI,h) : pick(ST,h)); };
+  head.ell(6,2.5,0,10,7,9.4,hcol).ell(19,1.6,0,10,4.8,7.2,hcol).ell(29,.6,0,5.5,3.4,4.6,hcol);
+  for(let x=-2;x<=36;x++) for(let z=-10;z<=10;z++) for(let y=-6;y<=-2;y++) head.put(x,y,z,null);   // Unterseite flach (Maulöffnung)
+  for(const s of [-1,1]){
+    head.ell(13,7.5,6*s,6.5,2.2,3,(x,y,z)=> pick(STD,hs(x,y,z)));   // Brauenwulst
+    head.ell(14,4.8,7.8*s,2.6,2,1.2,EYE,1); head.put(15.5,5,8.7*s,EYE2,1).put(12.5,4.4,8.7*s,EYE2,1); head.put(14,3.6,8.8*s,PUP).put(14,4.6,8.9*s,PUP).put(14,5.6,8.9*s,PUP).put(14,6.4,8.7*s,PUP);   // Auge mit Schlitzpupille
+    for(let k=0;k<9;k++) head.put(16+k*2,3-k*.25,(7.6-k*.4)*s,pick(STD,k));                         // Lippenkante
+    head.ell(33,1.6,2*s,1,.8,.8,0x1A1A14);                                                                // Nüstern
+    head.ell(31,3.2,2.6*s,3,1.2,1.4,pick(STD,s+3));                                                  // Nasenwulst
+    // Fangzähne
+    head.seg([28,-1.5,3.2*s],[29,-8.5,3*s],1.3,.45,(x,y,z)=> y<-6 ? FANG : (z*s>3.4 ? FANG : FANGD));
+    for(let x=8;x<=26;x+=2) head.put(x,-2,(6.6-(x-8)*.15)*s,FANG).put(x,-3,(6.6-(x-8)*.15)*s,x%4===0?FANG:null);
+    // Hornplatten am Hinterkopf
+    for(let k=0;k<4;k++) head.ell(-1-k*2.4,6-k*.8,(6.5+k*.4)*s,2,1.2,1.2,pick(STD,k)); }
+  for(let k=0;k<6;k++) head.ell(4-k*2.2,9-k*.5,0,1.6,1.2,1.4,(x,y,z)=> pick(STD,hs(x,y,z))).put(4-k*2.2,10.6-k*.5,0,k%2?RUNE:RUNE2,1);   // Scheitelkamm mit Leuchtspitzen
+  for(const [x,z] of [[17,0],[18,0],[19,0],[16,-1],[16,1],[20,-1],[20,1],[15,0],[21,0],[13,-2],[13,2]]) head.put(x,Math.round(6.4-(x-13)*.18),z,RUNE,1);   // Stirnrune
+  for(const s of [-1,1]) for(let k=0;k<5;k++) head.put(10-k*2,Math.round(7.4-k*.2),(7+k*.4)*s,RUNE,1);
+  // ---- Unterkiefer: öffnet und schließt sich langsam ----
+  const jaw = M();
+  jaw.ell(15,-4.6,0,15,2.4,6.4,(x,y,z)=> y>=-3 ? ((hs(x,y,z)%3)?MOUTH:MOUTH2) : (y<-6 ? pick(BEL,hs(x,y,z)) : pick(ST,hs(x,y,z))));
+  for(let x=-2;x<=32;x++) for(let z=-8;z<=8;z++) for(let y=-2;y<=0;y++) jaw.put(x,y,z,null);
+  for(const s of [-1,1]){ for(let x=9;x<=27;x+=2) jaw.put(x,-2,(5.6-(x-9)*.18)*s,FANG); jaw.seg([26,-3,2.8*s],[26.5,1.5,2.8*s],.9,.35,FANG); }
+  jaw.seg([6,-3.4,0],[18,-3.2,0],1.2,.9,TONG); for(const s of [-1,1]) jaw.seg([18,-3.2,0],[21,-3,1.4*s],.6,.3,TONG);
+  const sm = u => u<=0?0:u>=1?1:u*u*(3-2*u);
+  const jawFn = (g,tt) => { const c=((tt*(o.mouthSpeed||1))%9+9)%9, a = c<2.5 ? sm(c/2.5) : c<5 ? 1 : c<7 ? 1-sm((c-5)/2) : 0; g.rotation.z = -.06 - .42*a; };
+  const out = [{ lag:0, def:{ parts:[ { cubes:head.list(), pivot:[0,0,0], rot:["z",.04,.5,0,.03] }, { cubes:jaw.list(), pivot:[0,-2,0], parent:0, fn:jawFn } ], noShadow:true } }];
+  // ---- Körper: runder Querschnitt, verwitterte Schuppen, Moosrücken, Steinkamm, Ranken ----
+  const R = f => Math.max(1.2, 9*Math.pow(1-f,.9)+.3);
+  for(let k=0;k<N;k++){ const f=k/N, f2=(k+1)/N, ry=R(f)*.84, rz=R(f), ry2=R(f2)*.84, rz2=R(f2), seg=M();
+    tube(seg, -L-1, 1, ry2, rz2, ry, rz, skin(k+1));
+    if(k%2===0 && f<.85){ const h=Math.max(1,Math.round(ry*.35)); for(let j=1;j<=h;j++) seg.put(-3,Math.ceil(ry)+j-1,0,pick(STD,j+k)).put(-4,Math.ceil(ry)+j-1,0,pick(STD,j)); if(k%4===0) seg.put(-3,Math.ceil(ry)+h,0,RUNE2,1); }
+    if(f<.75 && hs(k,1,2)%3===0) vines(seg, [[-3,Math.round(ry*.4),Math.round(rz*.92)*(hs(k,2,3)%2?1:-1)]], k);
+    out.push({ lag:5+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
+  const tail = M();
+  tube(tail, -9, 1, .7, .8, 1.1, 1.2, skin(N+1)); tail.put(-10,0,0,RUNE,1).put(-11,0,0,RUNE2,1);
+  out.push({ lag:5+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
+  return out;
+}
+
+export function emeraldSerpent(o={}){
+  const N=o.n||40, L=7;
+  const hs = (x,y,z) => (((x*73856093)^(y*19349663)^(z*83492791))>>>0)%100;
+  const pick = (a,h) => a[h%a.length];
+  const ST=[0x1E7A3E,0x25904A,0x1A6A36,0x2EA058,0x228246], STD=[0x0C3A1E,0x10442A,0x082E18], BEL=[0xC8A040,0xD8B050,0xB89030], BELD=0x8A6A20, IRI=[0x3EAE6A,0x4ABE76,0x36A07A,0x5AC888],
+        RUNE=0xFFC820, RUNE2=0xFFF2A0,
+        MOSS=[0x3E6E22,0x4A7E2A,0x34601C,0x56883A,0x42722A], VINE=[0x3A6A22,0x4A7E2A], EYE=0xFFD020, EYE2=0xFFF0A0, PUP=0x0A0A04, FANG=0xF0E8C8, FANGD=0xC8B890, MOUTH=0x3A0E0E, MOUTH2=0x521616, TONG=0x2A3440;
+  const BLADE=[0x3AB06A,0x4CC47A,0x2E9A5A], BTIP=[0x9AF0C0,0xB8FFD8,0x7AE0A8];
+  const patch = (x,z) => { const a=Math.sin(x*.21+z*.13)+Math.sin(x*.07-z*.29+1.3)+Math.sin(z*.17+2.1); return a; };
+  const mossy = (x,y,z,top,h) => top && (patch(x,z)>.6 ? hs(x*3,y,z*5)%100<80 : hs(x*3,y,z*5)%100<6);
+  const skin = salt => (x,y,z,ry,rz) => { const h=hs(x+salt*7,y,z+salt*3), v=y/ry, ang=Math.atan2(z/rz,v), row=Math.round(ang*3.2), xx=x+salt*L,
+      fuge=((xx+(row&1?3:0))%5+5)%5===0;
+    if(v<-.55) return (xx%3===0) ? BELD : pick(BEL,h);
+    // leuchtende Linie: windet sich unregelmäßig spiralförmig um den ganzen Körper
+    { const tgt=xx*.085+1.1*Math.sin(xx*.027)+.5*Math.sin(xx*.071+1.7), w=.27+.12*Math.sin(xx*.19)+.07*Math.sin(xx*.53), dd=Math.abs(((ang-tgt)%6.2832+9.4248)%6.2832-3.1416);
+      if(dd<w) return { c: dd<w*.45 ? RUNE2 : RUNE, e:1 };
+      const tgt2=tgt+3.1416+.6*Math.sin(xx*.043), d2=Math.abs(((ang-tgt2)%6.2832+9.4248)%6.2832-3.1416); if(d2<w*.45 && Math.sin(xx*.11)>-.2) return { c:RUNE, e:1 }; }
+    const pl=((xx+(row&1?3:0))%5+5)%5;
+    if(fuge) return pick(STD,h);
+    if(pl===1) return pick(IRI,h);
+    return v>.3 ? pick([0x1A6A36,0x1E7A3E,0x167030],h) : pick(ST,h); };
+  const tube = (m, x0, x1, ryA, rzA, ryB, rzB, col) => { for(let x=x0;x<=x1;x++){ const f=(x-x0)/Math.max(1,x1-x0), ry=ryA+(ryB-ryA)*f, rz=rzA+(rzB-rzA)*f;
+      for(let y=-Math.ceil(ry);y<=Math.ceil(ry);y++) for(let z=-Math.ceil(rz);z<=Math.ceil(rz);z++){ const d=(y/(ry+.4))**2+(z/(rz+.4))**2; if(d>1 || d<.45) continue; const c=col(x,y,z,ry,rz); if(c && c.c) m.put(x,y,z,c.c,c.e); else m.put(x,y,z,c); } } };
+  const vines = (m, pts, salt) => { for(const [x,y,z] of pts){ const len=3+hs(x,y+salt,z)%6; for(let k=0;k<len;k++) m.put(x+(k>3?1:0),y-k,z,pick(VINE,hs(x,k,z)),0); m.put(x,y-len,z,pick(MOSS,hs(x,y,z))); } };
+  // ---- Kopf (Oberkiefer): breiter, flacher Schädel, schwere Brauenwülste über den Augen, lange Schnauze ----
+  const head = M(), hcol = (x,y,z) => { const h=hs(x,y,z), top = y>3;
+    if(y<=-1 && x>4) return (h%3) ? MOUTH : MOUTH2;                                                  // Gaumen
+    return ((x+Math.round(z*.7)+(y%2?2:0))%5===0) ? pick(STD,h) : (h<12 ? pick(IRI,h) : pick(ST,h)); };
+  head.ell(6,2.5,0,10,7,9.4,hcol).ell(19,1.6,0,10,4.8,7.2,hcol).ell(29,.6,0,5.5,3.4,4.6,hcol);
+  for(let x=-2;x<=36;x++) for(let z=-10;z<=10;z++) for(let y=-6;y<=-2;y++) head.put(x,y,z,null);   // Unterseite flach (Maulöffnung)
+  for(const s of [-1,1]){
+    head.ell(13,7.5,6*s,6.5,2.2,3,(x,y,z)=> pick([0x146A34,0x1A7A3E,0x0E5A2A],hs(x,y,z)));   // Brauenwulst
+    head.ell(14,4.8,7.8*s,2.6,2,1.2,EYE,1); head.ell(14,4.8,8.6*s,3.2,2.4,.5,0xE8A010,1); head.put(15.5,5,8.7*s,EYE2,1).put(12.5,4.4,8.7*s,EYE2,1); head.put(14,3.6,8.8*s,PUP).put(14,4.6,8.9*s,PUP).put(14,5.6,8.9*s,PUP).put(14,6.4,8.7*s,PUP);   // Auge mit Schlitzpupille
+    for(let k=0;k<9;k++) head.put(16+k*2,3-k*.25,(7.6-k*.4)*s,pick(STD,k));                         // Lippenkante
+    head.ell(33,1.6,2*s,1,.8,.8,0x1A1A14);                                                                // Nüstern
+    head.ell(31,3.2,2.6*s,3,1.2,1.4,pick(STD,s+3));                                                  // Nasenwulst
+    // Fangzähne
+    head.seg([28,-1.5,3.2*s],[29,-8.5,3*s],1.3,.45,(x,y,z)=> y<-6 ? FANG : (z*s>3.4 ? FANG : FANGD));
+    for(let x=8;x<=26;x+=2) head.put(x,-2,(6.6-(x-8)*.15)*s,FANG).put(x,-3,(6.6-(x-8)*.15)*s,x%4===0?FANG:null);
+    // Hornplatten am Hinterkopf
+    for(let k=0;k<4;k++) head.ell(-1-k*2.4,6-k*.8,(6.5+k*.4)*s,2,1.2,1.2,pick(STD,k)); }
+  for(let k=0;k<6;k++) head.ell(4-k*2.2,9-k*.5,0,1.6,1.2,1.4,(x,y,z)=> pick([0x146A34,0x1A7A3E],hs(x,y,z)));
+  for(const s of [-1,1]) for(let k=0;k<12;k++){ const x=-3+k*1.7; head.put(x, Math.round(1.5+Math.sin(k*.7)*1.3), (8.6-k*.12)*s, k%3?RUNE:RUNE2, 1); }
+  for(const s of [-1,1]){ // lange Hörner nach hinten-oben, Brauen- und Wangenstacheln, fächerartig
+    head.seg([8,8,4.6*s],[-4,15,6*s],1.3,.9,(x,y,z)=>pick(BLADE,hs(x,y,z))).seg([-4,15,6*s],[-12,19,6.4*s],.9,.35,(x,y,z)=>pick(BTIP,hs(x,y,z)));
+    for(const [x0,y0,z0,dx,dy,dz] of [[12,8,6.6,-7,3,2],[6,7,8.4,-8,1,3],[2,5,9.4,-8,-1,3.6],[8,1,9,-7,-3,3],[2,0,9.6,-8,-4,3]]){ const n=Math.ceil(Math.hypot(dx,dy,dz)*1.4); for(let i=0;i<=n;i++){ const f=i/n; head.put(x0+dx*f,y0+dy*f,(z0+dz*f)*s, f>.65?pick(BTIP,i):pick(BLADE,i)); if(f<.5) head.put(x0+dx*f,y0+dy*f-1,(z0+dz*f)*s,pick(BLADE,i+1)); } } }
+  // ---- Unterkiefer: öffnet und schließt sich langsam ----
+  const jaw = M();
+  jaw.ell(15,-4.6,0,15,2.4,6.4,(x,y,z)=> y>=-3 ? ((hs(x,y,z)%3)?MOUTH:MOUTH2) : (y<-6 ? pick(BEL,hs(x,y,z)) : pick(ST,hs(x,y,z))));
+  for(let x=-2;x<=32;x++) for(let z=-8;z<=8;z++) for(let y=-2;y<=0;y++) jaw.put(x,y,z,null);
+  for(const s of [-1,1]){ for(let x=9;x<=27;x+=2) jaw.put(x,-2,(5.6-(x-9)*.18)*s,FANG); jaw.seg([26,-3,2.8*s],[26.5,1.5,2.8*s],.9,.35,FANG); }
+  jaw.seg([6,-3.4,0],[30,-3.6,0],.8,.55,TONG).seg([30,-3.6,0],[38,-6,0],.55,.4,TONG); for(const s of [-1,1]) jaw.seg([38,-6,0],[42,-9,1.6*s],.4,.2,TONG);
+  const sm = u => u<=0?0:u>=1?1:u*u*(3-2*u);
+  const jawFn = (g,tt) => { const c=((tt*(o.mouthSpeed||1))%9+9)%9, a = c<2.5 ? sm(c/2.5) : c<5 ? 1 : c<7 ? 1-sm((c-5)/2) : 0; g.rotation.z = -.06 - .42*a; };
+  const out = [{ lag:0, def:{ parts:[ { cubes:head.list(), pivot:[0,0,0], rot:["z",.04,.5,0,.03] }, { cubes:jaw.list(), pivot:[0,-2,0], parent:0, fn:jawFn } ], noShadow:true } }];
+  // ---- Körper: runder Querschnitt, verwitterte Schuppen, Moosrücken, Steinkamm, Ranken ----
+  const R = f => Math.max(1.2, 9*Math.pow(1-f,.9)+.3);
+  for(let k=0;k<N;k++){ const f=k/N, f2=(k+1)/N, ry=R(f)*.84, rz=R(f), ry2=R(f2)*.84, rz2=R(f2), seg=M();
+    tube(seg, -L-1, 1, ry2, rz2, ry, rz, skin(k+1));
+    { const len=Math.max(2, 9*(1-f*.85)*(.75+.25*Math.sin(k*1.7))); for(const [zs,lean] of [[0,0],[1,.55],[-1,.55]]){ if(zs && f>.8) continue; const L2=zs?len*.75:len, n=Math.ceil(L2*1.4);
+        for(let i=0;i<=n;i++){ const q=i/n, x=-2-q*L2*.75, y=Math.ceil(ry)-1+q*L2*(1-lean*.6), z=zs*(rz*.45+q*L2*lean); seg.put(x,y,z, q>.6?pick(BTIP,i+k):pick(BLADE,i+k)); if(q<.5) seg.put(x-1,y,z,pick(BLADE,i)); } } }
+    out.push({ lag:5+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
+  const tail = M();
+  tube(tail, -9, 1, .7, .8, 1.1, 1.2, skin(N+1)); tail.put(-10,0,0,pick(BLADE,1)).put(-11,0,0,pick(BTIP,2));
+  out.push({ lag:5+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
+  return out;
+}

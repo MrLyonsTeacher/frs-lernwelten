@@ -1,5 +1,5 @@
 // Klasse 9 · Woodlands – Elbenstadt in Riesenbäumen: Baumhäuser auf Plattformen, Hängebrücken, Wasserfälle, Mondbrunnen, Nebel und Glühwürmchen
-import { elf, fairy, stag, bird, serpentChain, M } from "./tiere.js";
+import { elf, fairy, stag, bird, emeraldSerpent, M } from "./tiere.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, terrain, tex, P, noise, stripes, bricks, rings, topEdge, planks, glassT } = A;
   const T = {
@@ -244,7 +244,7 @@ export function build(A){
   { const SZ=.42, GZ=82.5, pts=[]; const sy=x=> -12 - 25*Math.cos(2*Math.PI*(x-48)/80);
     pts.push([-90,-40,GZ,0,0]); for(let x=-48;x<=144;x+=6) pts.push([x,sy(x),GZ,0,1]); pts.push([170,-40,GZ,0,0]); pts.push([220,-60,GZ,0,0]);
     const SN={ pts, speed:6, amp:0, lat:1.5, wl:60, ws:.2, ramp:60, start:180, period:180, span:250 };
-    for(const c of serpentChain({n:40})) creatures.push({ ...c.def, snake:SN, lag:c.lag*SZ, scale:SZ }); }
+    for(const c of emeraldSerpent({n:40})) creatures.push({ ...c.def, snake:SN, lag:c.lag*SZ, scale:SZ }); }
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:40, creatures,
