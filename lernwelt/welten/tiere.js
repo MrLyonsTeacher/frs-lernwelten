@@ -419,45 +419,42 @@ export function fairy(col=0x9AF0FF){
 }
 
 /* ---------- Riesenschlange (Seeschlange): Schuppen in Grün/Türkis/Violett, Rückenstacheln, offenes Maul, Schwanzflosse mit Strahlen.
-   Der Kopf ist die Wurzel (schaut in +x), der Körper hängt als Kette von Gliedern dahinter; jedes Glied schwingt mit Phasenverzug → Wellen laufen vom Kopf zum Schwanz (scale ≈ 2) ---------- */
-export function serpent(o={}){
-  const N=o.n||26, L=4, kk=o.wave||.55, spd=o.speed||1.05, amp=o.amp||.46;
+   Gebaut als Kette einzelner Glieder (Kopf, n Körperglieder, Schwanz); jedes Glied folgt mit Abstand lag (in Würfeln) einer gemeinsamen Route (siehe snake in welt3d.js) ---------- */
+export function serpentChain(o={}){
+  const N=o.n||32, L=4;
   const hs = (x,y,z) => (((x*73856093)^(y*19349663)^(z*83492791))>>>0)%100;
   const pick = (a,h) => a[h%a.length];
-  const skin = (hh,ry) => (x,y,z) => { const h=hs(x,y,z), r=(y+hh)/(2*hh+.001);
-    if(r<.2) return pick([0xA6F27E,0xB8F890,0x92E870],h);                              // heller Bauch
-    if(r>.66) return h<9 ? 0x2A1E5A : h<22 ? 0x2AB0A0 : h<30 ? 0x1E8A8A : pick([0x5AE04A,0x6EEC5A,0x48C83A,0x7AF266],h);   // Rücken: hellgrün mit Türkis/Violett-Sprenkeln
-    return h<24 ? pick([0x2E2A70,0x1E5A6A,0x34307E],h) : h<58 ? pick([0x239B8E,0x1FA89A,0x2A9A9A],h) : pick([0x3CB84A,0x4AC85A],h); };   // Flanken: türkis, dunkel, grün
+  const skin = (hh,salt) => (x,y,z) => { const h=hs(x+salt*7,y,z+salt*3), r=(y+hh)/(2*hh+.001);
+    if(r<.2) return pick([0xA6F27E,0xB8F890,0x92E870],h);
+    if(r>.66) return h<9 ? 0x2A1E5A : h<22 ? 0x2AB0A0 : h<30 ? 0x1E8A8A : pick([0x5AE04A,0x6EEC5A,0x48C83A,0x7AF266],h);
+    return h<24 ? pick([0x2E2A70,0x1E5A6A,0x34307E],h) : h<58 ? pick([0x239B8E,0x1FA89A,0x2A9A9A],h) : pick([0x3CB84A,0x4AC85A],h); };
   const SP = [0x2A1E5A,0x3A2E80,0x1E3A7A,0x2E4A9A];
   // ---- Kopf: breite, flache Schnauze, Augen, Nüstern, Zähne, Kamm aus Stacheln ----
   const head = M(), hk = skin(3,0);
   for(let x=-3;x<=12;x++){ const t=(x+3)/15, hw=Math.max(2,Math.round(5-t*3)), top=x>9?1:2; head.box(x,-2,-hw,x,top+1,hw,(a,b,c)=> b===top+1 ? pick([0x5AE04A,0x6EEC5A,0x48C83A,0x7AF266,0x2AB0A0],hs(a,b,c)) : (Math.abs(c)===hw ? pick([0x239B8E,0x1FA89A,0x2E2A70],hs(a,b,c)) : hk(a,b,c))); }
   head.box(-3,-2,-5,-3,3,5,(a,b,c)=>pick([0x1E8A8A,0x2A1E5A,0x239B8E],hs(a,b,c)));
-  for(const sg of [-1,1]){ head.put(7,3,sg*4,0xFFB820,1).put(8,3,sg*4,0xFFB820,1).put(7,2,sg*4,0x1A1000).put(8,2,sg*4,0xFFD860,1);          // gelbe Schlitzaugen
-    head.box(6,4,sg*4,9,4,sg*4,0x2A1E5A).put(5,4,sg*5,0x2A1E5A).put(11,3,sg*1,0x10181A).put(11,2,sg*1,0x10181A);                                // Brauen, Nüstern
-    for(let k=0;k<4;k++) head.put(-3-k,2+k,sg*5,SP[k%4]).put(-4-k,1+k,sg*6,SP[(k+1)%4]);                                                         // Wangenstacheln nach hinten
+  for(const sg of [-1,1]){ head.put(7,3,sg*4,0xFFB820,1).put(8,3,sg*4,0xFFB820,1).put(7,2,sg*4,0x1A1000).put(8,2,sg*4,0xFFD860,1);
+    head.box(6,4,sg*4,9,4,sg*4,0x2A1E5A).put(5,4,sg*5,0x2A1E5A).put(11,3,sg*1,0x10181A).put(11,2,sg*1,0x10181A);
+    for(let k=0;k<4;k++) head.put(-3-k,2+k,sg*5,SP[k%4]).put(-4-k,1+k,sg*6,SP[(k+1)%4]);
     for(let x=1;x<=11;x+=2) head.put(x,-3,sg*(x>8?2:4),0xF2E8D2); }
   for(let x=9;x<=11;x+=2) head.put(x,-3,0,0xF2E8D2);
-  for(let k=0;k<6;k++){ head.put(-1-k,4+Math.floor(k*.6),0,SP[k%4]).put(-1-k,3+Math.floor(k*.6),0,SP[(k+1)%4]); }                                  // Schädelkamm
-  // ---- Unterkiefer: klappt auf und zu, braunes Maul-Innere mit Zähnen ----
+  for(let k=0;k<6;k++){ head.put(-1-k,4+Math.floor(k*.6),0,SP[k%4]).put(-1-k,3+Math.floor(k*.6),0,SP[(k+1)%4]); }
   const jaw = M();
   for(let x=0;x<=10;x++){ const hw=Math.max(1,Math.round(4-x*.28)); jaw.box(x,-4,-hw,x,-3,hw,(a,b,c)=> b===-3 ? (Math.abs(c)===hw ? 0xF2E8D2 : pick([0x9A5A3A,0xA8663E,0x8A4E32],hs(a,b,c))) : pick([0xA6F27E,0xB8F890,0x6EEC5A],hs(a,b,c)));
     if(x%2===1){ jaw.put(x,-2,-hw,0xF2E8D2); jaw.put(x,-2,hw,0xF2E8D2); } }
-  jaw.put(11,-3,0,0xB8F890).put(5,-2,0,0xC45A6A);                                                                                                   // Zunge
-  const parts = [ { cubes:head.list(), pivot:[0,0,0], rot:["z",.05,.7,0,.04] },
-                  { cubes:jaw.list(), pivot:[0,-2,0], parent:0, rot:["z",.1,1.1,.6,-.3] } ];
-  // ---- Körper: Kette aus Gliedern, nach hinten schmaler, mit Rückenstacheln und Seitenflossen ----
-  for(let k=0;k<N;k++){ const px=-4-k*L, f=k/N, hw=Math.max(1,Math.round(4.6-3.5*Math.pow(f,1.1))), hh=Math.max(1,Math.round(3.4-2.4*f)), seg=M(), col=skin(hh,k);
-    seg.box(px+1,-hh,-hw,px-L+1,hh,hw,col);
-    for(let x=px;x>px-L;x-=1){ if(k%2===0 && x===px-1) for(let j=1;j<=Math.max(2,4-Math.floor(f*3));j++) seg.put(x-Math.floor(j/2),hh+j,0,SP[(j+k)%4]); }              // Rückenstacheln, nach hinten geneigt
-    if(k===3 || k===4){ for(const sg of [-1,1]) for(let a=0;a<4;a++) for(let b=0;b<=a;b++) seg.put(px-1-a,-1,sg*(hw+1+b), a>1?0x2A1E5A:(b%2?0x1E8A8A:0x239B8E)); }       // Brustflossen
-    const base = k<3 ? .1 : (k<6 ? -.1 : 0), a = amp*Math.min(1,(k+1)/4)*(k>N-6 ? 1.25 : 1);
-    parts.push({ cubes:seg.list(), pivot:[px,0,0], parent:k===0?0:parts.length-1, rot:["z",a,spd,-kk*k,base] }); }
+  jaw.put(11,-3,0,0xB8F890).put(5,-2,0,0xC45A6A);
+  const out = [{ lag:0, def:{ parts:[ { cubes:head.list(), pivot:[0,0,0], rot:["z",.05,.7,0,.04] }, { cubes:jaw.list(), pivot:[0,-2,0], parent:0, rot:["z",.1,1.1,.6,-.3] } ], noShadow:true } }];
+  // ---- Körperglieder: nach hinten schmaler, mit Rückenstacheln und Brustflossen ----
+  for(let k=0;k<N;k++){ const f=k/N, hw=Math.max(1,Math.round(4.6-3.5*Math.pow(f,1.1))), hh=Math.max(1,Math.round(3.4-2.4*f)), seg=M(), col=skin(hh,k+1);
+    seg.box(1,-hh,-hw,-L+1,hh,hw,col);
+    if(k%2===0) for(let j=1;j<=Math.max(2,4-Math.floor(f*3));j++) seg.put(-1-Math.floor(j/2),hh+j,0,SP[(j+k)%4]);
+    if(k===3 || k===4){ for(const sg of [-1,1]) for(let a=0;a<4;a++) for(let b=0;b<=a;b++) seg.put(-1-a,-1,sg*(hw+1+b), a>1?0x2A1E5A:(b%2?0x1E8A8A:0x239B8E)); }
+    out.push({ lag:4+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
   // ---- Schwanzflosse: Klinge und fünf lange Strahlen ----
-  const tail = M(), tx=-4-N*L+1;
-  tail.box(tx,-1,-1,tx-6,0,1,(a,b,c)=>pick([0x239B8E,0x1FA89A,0x2A1E5A,0x2AB0A0],hs(a,b,c)));
-  for(const [dy,dz,len,c] of [[9,0,17,0x3A2E80],[5,0,19,0x2A1E5A],[0,0,20,0x1E3A7A],[-5,0,19,0x2A1E5A],[-9,0,17,0x3A2E80]]) for(const z of [-1,0,1]){ if(z!==0 && Math.abs(dy)>6) continue;
-    tail.line([tx-6,0,z],[tx-6-len,dy*1.4,z],(z===0?c:0x2E2A70)); }
-  parts.push({ cubes:tail.list(), pivot:[tx,0,0], parent:parts.length-1, rot:["z",.5,spd,-kk*N,0] });
-  return { parts, noShadow:true };
+  const tail = M();
+  tail.box(0,-1,-1,-6,0,1,(a,b,c)=>pick([0x239B8E,0x1FA89A,0x2A1E5A,0x2AB0A0],hs(a,b,c)));
+  for(const [dy,len,c] of [[9,17,0x3A2E80],[5,19,0x2A1E5A],[0,20,0x1E3A7A],[-5,19,0x2A1E5A],[-9,17,0x3A2E80]]) for(const z of [-1,0,1]){ if(z!==0 && Math.abs(dy)>6) continue;
+    tail.line([-6,0,z],[-6-len,dy*1.4,z],(z===0?c:0x2E2A70)); }
+  out.push({ lag:4+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
+  return out;
 }

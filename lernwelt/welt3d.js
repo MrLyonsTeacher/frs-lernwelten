@@ -659,6 +659,24 @@ export async function start(o){
         outer.position.set(cx+ox*ca-oz*sa, cy+ox*(ob.slope||0)+Math.sin(t*2)*(ob.bob??.6)*move, cz+ox*sa+oz*ca);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;
         else { const v0=-Math.sin(t)*rx*(ob.dir||1), w0=Math.cos(t)*rz*(ob.dir||1), vx=v0*ca-w0*sa, vz=v0*sa+w0*ca; outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } } }
+      else if(cr.snake){ // Schlange: Glieder folgen einer langen Route (Catmull-Rom). Wellen laufen vom Kopf zum Schwanz durch den Körper (wie bei einem Schwimmer), Höhe und Seite getrennt;
+        // Start erst nach start Sekunden, danach Pause rest. Wegpunkte [x,y,z,ky,kz]: ky/kz skalieren die Wellen (0 = gerade, z. B. beim Abtauchen unter der Brücke)
+        const S=cr.snake; move=1;
+        if(!S._tab){ const P=S.pts.map(p=>[p[0],p[1],p[2],p[3]??1,p[4]??1]), n=P.length, pt=[], c3=(p0,p1,p2,p3,t)=>p1.map((_,i)=>.5*((2*p1[i])+(-p0[i]+p2[i])*t+(2*p0[i]-5*p1[i]+4*p2[i]-p3[i])*t*t+(-p0[i]+3*p1[i]-3*p2[i]+p3[i])*t*t*t));
+          for(let i=0;i<n-1;i++){ const p0=P[Math.max(0,i-1)], p1=P[i], p2=P[i+1], p3=P[Math.min(n-1,i+2)]; for(let k=0;k<24;k++) pt.push(c3(p0,p1,p2,p3,k/24)); } pt.push(P[n-1]);
+          const cum=[0]; for(let i=1;i<pt.length;i++) cum.push(cum[i-1]+Math.hypot(pt[i][0]-pt[i-1][0],pt[i][1]-pt[i-1][1],pt[i][2]-pt[i-1][2]));
+          S._tab={pt, cum, len:cum[cum.length-1]}; S._dur=(S._tab.len+(S.span||200))/S.speed; }
+        const T=S._tab, ph=tt-(S.start??180), per=S._dur+(S.rest??180), x=ph<0 ? -1 : ph%per, lag=cr.lag||0,
+          d=(x*S.speed+(S.surge||0)*Math.sin(x*.37))-lag;
+        if(x<0 || x>S._dur || d<0 || d>T.len){ outer.visible=false; }
+        else { outer.visible=true;
+          const wl=S.wl||50, ws=S.ws||.2, env=.45+.55*Math.min(1,lag/(S.ramp||70));
+          const at=dd=>{ dd=Math.max(0,Math.min(T.len,dd)); let lo=0, hi=T.cum.length-1; while(hi-lo>1){ const m=(lo+hi)>>1; if(T.cum[m]<=dd) lo=m; else hi=m; } const f=(dd-T.cum[lo])/Math.max(.001,T.cum[hi]-T.cum[lo]), a=T.pt[lo], b=T.pt[hi];
+            const tx=b[0]-a[0], tz=b[2]-a[2], tl=Math.hypot(tx,tz)||1, ky=Math.max(0,a[3]+(b[3]-a[3])*f), kz=Math.max(0,a[4]+(b[4]-a[4])*f),
+              wy=(S.amp||6)*ky*env*Math.sin(dd*6.2832/wl - tt*ws), wz=(S.lat||3)*kz*env*Math.sin(dd*6.2832/(wl*1.37) - tt*ws*.8 + 1.3);
+            return [a[0]+tx*f - tz/tl*wz, a[1]+(b[1]-a[1])*f + wy, a[2]+tz*f + tx/tl*wz]; };
+          const p=at(d), a=at(d-2.6), b=at(d+2.6), dx=b[0]-a[0], dy=b[1]-a[1], dz=b[2]-a[2];
+          outer.position.set(p[0],p[1],p[2]); outer.rotation.y=Math.atan2(-dz,dx); outer.rotation.x=0; outer.rotation.z=Math.atan2(dy,Math.hypot(dx,dz)); } }
       else if(cr.path){ // Laufen entlang von Wegpunkten (z. B. über eine Brücke), hin und zurück mit kurzen Pausen
         const P = cr.path, pts = P.pts; if(!P._len){ P._seg=[0]; for(let i=1;i<pts.length;i++) P._seg.push(P._seg[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2])); P._len=P._seg[P._seg.length-1]; }
         const L=P._len, sp=P.speed||1.2, pause=P.pause??3, T1=L/sp, per=2*(T1+pause), x=((tt+(P.ph||0)*per)%per+per)%per;
