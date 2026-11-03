@@ -752,7 +752,7 @@ export async function start(o){
     composer ? composer.render() : renderer.render(scene, cam);
     // Beschriftungen: nicht unter Kopfleiste/Dock, nicht übereinander
     const topEl = document.querySelector(".wbar"), dockEl = document.querySelector(".wdock");
-    const minY = (topEl ? topEl.getBoundingClientRect().bottom : 0) + 6, maxY = (dockEl ? dockEl.getBoundingClientRect().top : innerHeight) - 14;
+    const minY = (topEl ? topEl.getBoundingClientRect().bottom : 0) + 6, maxY = (dockEl && dockEl.offsetHeight ? dockEl.getBoundingClientRect().top : (document.querySelector(".wfoot")||{getBoundingClientRect:()=>({top:innerHeight})}).getBoundingClientRect().top || innerHeight) - 14;
     const placed = [], list = [];
     for(const k in labels){ const L=labels[k]; v.copy(L.v).project(cam); L.w = L.el.offsetWidth || L.w || 160; L.h = L.el.offsetHeight || 44;
       list.push({L, vis: v.z < 1, x: Math.min(innerWidth-L.w/2-8, Math.max(L.w/2+8, (v.x+1)/2*innerWidth)), y: (1-v.y)/2*innerHeight}); }
