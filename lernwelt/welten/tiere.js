@@ -558,7 +558,7 @@ export function emeraldSerpent(o={}){
   head.ell(6,2.5,0,10,7,9.4,hcol).ell(19,1.6,0,10,4.8,7.2,hcol).ell(29,.6,0,5.5,3.4,4.6,hcol);
   for(let x=-2;x<=36;x++) for(let z=-10;z<=10;z++) for(let y=-6;y<=-2;y++) head.put(x,y,z,null);   // Unterseite flach (Maulöffnung)
   for(const s of [-1,1]){
-    head.ell(13,7.5,6*s,6.5,2.2,3,(x,y,z)=> pick([0x146A34,0x1A7A3E,0x0E5A2A],hs(x,y,z)));   // Brauenwulst
+    head.ell(13,7.5,6*s,6.5,2.2,3,(x,y,z)=> pick(STD,hs(x,y,z)));   // Brauenwulst
     head.ell(14,4.8,7.8*s,2.6,2,1.2,EYE,1); head.ell(14,4.8,8.6*s,3.2,2.4,.5,0xE8A010,1); head.put(15.5,5,8.7*s,EYE2,1).put(12.5,4.4,8.7*s,EYE2,1); head.put(14,3.6,8.8*s,PUP).put(14,4.6,8.9*s,PUP).put(14,5.6,8.9*s,PUP).put(14,6.4,8.7*s,PUP);   // Auge mit Schlitzpupille
     for(let k=0;k<9;k++) head.put(16+k*2,3-k*.25,(7.6-k*.4)*s,pick(STD,k));                         // Lippenkante
     head.ell(33,1.6,2*s,1,.8,.8,0x1A1A14);                                                                // Nüstern
