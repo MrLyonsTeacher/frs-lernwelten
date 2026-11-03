@@ -390,34 +390,33 @@ export function build(A){
     creatures.push({ parts:[{cubes, pivot:sh}], at:[.25,.25,.25], scale:.5, noShadow:true,
       bolts:{part:0, prongs:ARMP.prongs.map(rel), shaft:ARMP.shaft.map(rel), timing, color:0xFFD028, len:48, light:1300} }); }
   // Fischschwärme: klein und detailliert, ziehen in Schleifen
-  [["clown",[44,15,46],[22,10],.24,0],["tang",[30,20,30],[26,18],.2,1.5],["butter",[60,13,36],[16,10],.3,3],["pink",[44,30,24],[30,20],.16,4.2],
-   ["angel",[12,12,40],[12,9],.26,2],["green",[80,14,40],[16,10],.22,5],["clown",[66,24,14],[18,12],.2,.8],["tang",[22,14,58],[14,8],.3,2.4],
-   ["butter",[44,38,20],[22,16],.14,3.7],["pink",[90,20,56],[14,10],.24,1.1]].forEach(([k,ctr0,rad,sp,ph],si)=>{ const ctr=[sx(ctr0[0]), ctr0[1], sz(ctr0[2])];
-    for(let i=0;i<7;i++) creatures.push({ ...reefFish(k), orbit:{c:[ctr[0]+((i*3)%5)-2, ctr[1]+(i%3)*1.2-1, ctr[2]+((i*7)%5)-2], r:[rad[0]+(i%3), rad[1]+((i*2)%3)], speed:sp, ph:ph+i*.09, bob:.8+(i%2)*.4, dir: si%2 ? -1 : 1, wander:{f:.25, r:.1, y:1.5, eight:2, dx:2, dz:2, span:3, clear:2.5}}, scale:.2, noShadow:true }); });
+  [["clown",[44,15,46],[22,10],.24,0],["tang",[30,20,30],[26,18],.2,1.5],["butter",[60,13,36],[16,10],.3,3],["angel",[12,12,40],[12,9],.26,2],
+   ["green",[80,14,40],[16,10],.22,5],["tang",[22,14,58],[14,8],.3,2.4],["pink",[90,20,56],[14,10],.24,1.1]].forEach(([k,ctr0,rad,sp,ph],si)=>{ const ctr=[sx(ctr0[0]), ctr0[1], sz(ctr0[2])];
+    for(let i=0;i<4;i++) creatures.push({ ...reefFish(k), orbit:{c:[ctr[0]+((i*3)%5)-2, ctr[1]+(i%3)*1.2-1, ctr[2]+((i*7)%5)-2], r:[rad[0]+(i%3), rad[1]+((i*2)%3)], speed:sp, ph:ph+i*.12, bob:.8+(i%2)*.4, dir: si%2 ? -1 : 1, wander:{f:.25, r:.1, y:1.5, eight:2, dx:2, dz:2, span:3, clear:2.5}}, scale:.2, noShadow:true }); });
   // große Quallen, die langsam treiben und pulsieren
   [[PX-34,40,PZ-8,0xF2F6FF,0x3A7AE8,0x6FA8FF],[PX+40,50,PZ-14,0xFFF0F6,0xE85A9A,0xFF9AC8],[PX-20,54,PZ+40,0xF0FFF8,0x2AB89A,0x7FE8D0],[PX-46,44,PZ+18,0xFFF0F6,0xE85A9A,0xFF9AC8]]
     .forEach(([x,y,z,c1,c2,c3],i)=> creatures.push({ ...bigJelly(c1,c2,c3), orbit:{c:[x,y,z], r:[4+i,3+i%2], speed:.05+i*.008, ph:i*1.57, bob:2.4, route:{span:6, clear:11, climb:6}}, scale:.55, noShadow:true }));
   // Krake auf dem Felsen
   creatures.push({ ...octopus(), at:[OCTO[0]+.5, topAt(OCTO[0],OCTO[1],G+8)+.6, OCTO[1]+.5], yaw:-.9, scale:.62 });
   // Mantarochen, Schildkröten, Seepferdchen im Kelp, Delfine und Wal
-  creatures.push({ ...manta(), orbit:{c:[PX,36,PZ], r:[72,48], speed:.06, ph:0, bob:3, bank:.15, route:{span:9, clear:3, climb:6, eight:5}}, scale:.55 });
-  creatures.push({ ...manta(), orbit:{c:[PX+8,28,PZ+10], r:[56,42], speed:.07, ph:3.14, bob:2, bank:.15, dir:-1, route:{span:8, clear:3, climb:6, eight:4}}, scale:.42 });
-  creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:1.57, bob:1.5, bank:.1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.5 });
-  creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:4.7, bob:1.2, bank:.1, dir:-1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.42 });
+  creatures.push({ ...manta(), orbit:{c:[PX,36,PZ], r:[72,48], speed:.06, ph:0, bob:3, bank:.15, route:{span:9, clear:3, climb:6, eight:5}}, scale:.55 , noShadow:true, blob:{y:G+.3, r:6.5, max:0.38, h:70, k:.025} });
+  creatures.push({ ...manta(), orbit:{c:[PX+8,28,PZ+10], r:[56,42], speed:.07, ph:3.14, bob:2, bank:.15, dir:-1, route:{span:8, clear:3, climb:6, eight:4}}, scale:.42 , noShadow:true, blob:{y:G+.3, r:5, max:0.38, h:70, k:.025} });
+  creatures.push({ ...turtle(), orbit:{c:[PX-6,24,PZ+22], r:[48,30], speed:.05, ph:1.57, bob:1.5, bank:.1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.5 , noShadow:true, blob:{y:G+.3, r:4.6, max:0.38, h:70, k:.025} });
+  creatures.push({ ...turtle(), orbit:{c:[PX+22,18,PZ-6], r:[42,34], speed:.045, ph:4.7, bob:1.2, bank:.1, dir:-1, route:{span:5, clear:3, climb:5, eight:3}}, scale:.42 , noShadow:true, blob:{y:G+.3, r:4, max:0.38, h:70, k:.025} });
   for(const [dx,dz,dy,c1,c2] of [[-4,7,6,0xFFB03A,0xFFD27A],[5,6,9,0xFF6FA0,0xFFB0CC],[7,-2,7,0xFFD23F,0xFFF0A0],[-6,-3,10,0xFF8A3A,0xFFC090]])
     creatures.push({ ...seahorse(c1,c2), at:[GARDEN[0]+dx, G+dy, GARDEN[1]+dz], yaw:Math.PI/2*(dx>0?1:-1), hover:[.6,.8+Math.abs(dx)*.05], scale:.3 });
-  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.4, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.2 });
-  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.52, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.18 });
-  creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:5.5, bob:.3, bank:.1, dir:-1, route:{span:12, clear:7, climb:10, slope:.05}}, scale:.6 });
+  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.4, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.2 , noShadow:true, blob:{y:G+.3, r:4.2, max:0.38, h:70, k:.025} });
+  creatures.push({ ...dolphin(), orbit:{c:[PX,26,PZ], r:[118,80], speed:.1, ph:2.52, bob:3.5, bank:.2, route:{span:4, clear:3, climb:5, eight:4}}, scale:.18 , noShadow:true, blob:{y:G+.3, r:3.8, max:0.38, h:70, k:.025} });
+  creatures.push({ ...whale(), orbit:{c:[PX,48,-30], r:[120,36], speed:.04, ph:5.5, bob:.3, bank:.1, dir:-1, route:{span:12, clear:7, climb:10, slope:.05}}, scale:.6 , noShadow:true, blob:{y:G+.3, r:17, max:0.3, h:70, k:.025} });
 
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:42,
-    sky:[[0,"#5FD3F2"],[.3,"#2E9BD0"],[.6,"#0E5C8C"],[1,"#062A46"]], fog:[0x0E5C8C, 105, 340],
-    hemi:[0x9FEFFF, 0x1A4A6A, 1.85], sun:{color:0xDFFBFF, int:1.55, pos:[-30,90,40]}, bloom:[.32,.45,.9],
+    sky:[[0,"#5FD3F2"],[.3,"#2E9BD0"],[.6,"#0E5C8C"],[1,"#062A46"]], fog:[0x0A4673, 55, 290],
+    hemi:[0x8FE4FA, 0x0A2A45, 1.0], sun:{color:0xDFFBFF, int:2.1, pos:[-30,90,40]}, pulse:{sun:.4, hemi:.14}, bloom:[.32,.45,.9],
     lights:[{pos:[PX,G+40,PZ], color:0x7FE3FF, int:420, dist:48}, {pos:[PX,G+12,PZ+16], color:0xBFF8FF, int:120, dist:22}, {pos:[GARDEN[0],G+4,GARDEN[1]], color:0xFFFFFF, int:80, dist:16},
             {pos:[STATUE[0]+6,G+44,STATUE[1]+1], color:0xFFE27A, int:90, dist:16}],
-    planes:[{y:G-3.6, tex:T.sand, repeat:400, size:1000}, {y:G+.05, tex:T.caust, repeat:120, size:300, em:.5, opacity:.2, anim:[.018,.009]}, {y:G+.08, tex:T.caust, repeat:85, size:300, em:.45, opacity:.16, anim:[-.012,.016]}, {y:150, tex:T.surface, repeat:60, size:400, em:.4, opacity:.35, anim:[.02,.01]}],
-    rays:{n:46, color:0xCFF8FF, area:[-60,W+60,-60,D+20], y:G+74, len:150, w:[3,8], drift:12, op:.075, tilt:.16},
+    planes:[{y:G-3.6, tex:T.sand, repeat:400, size:1000}, {y:G+.05, tex:T.caust, repeat:120, size:300, em:.6, opacity:.34, anim:[.022,.011]}, {y:G+.08, tex:T.caust, repeat:85, size:300, em:.55, opacity:.28, anim:[-.015,.02]}, {y:G+.11, tex:T.caust, repeat:42, size:300, em:.5, opacity:.2, anim:[.009,-.013]}, {y:150, tex:T.surface, repeat:60, size:400, em:.4, opacity:.35, anim:[.02,.01]}],
+    rays:{n:64, color:0xD8FAFF, area:[-60,W+60,-60,D+20], y:G+74, len:150, w:[3,11], drift:14, op:.13, tilt:.16, deep:true},
     particles:[{n:720, area:[-20,W+20,2,70,-10,D+40], vy:2.2, wob:.8, color:0xE6FBFF, size:.34, opacity:.8},
                {n:520, area:[0,W,2,34,0,D], vy:0, wob:.3, color:0xA8F0D8, size:.18, opacity:.7, add:true, twinkle:true}],
     creatures,

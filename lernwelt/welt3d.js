@@ -59,8 +59,8 @@ export function makeApi(seedNum){
       for(let y=lo; y<h; y++){ const t = y===h-1 ? o.top(x,z,y,h) : (o.fill ? o.fill(x,z,y,h) : o.top(x,z,y,h)); if(t) far.set(cx,y,cz,t); } } };
 
   // 16×16-Pixeltexturen (eigene, im Klötzchen-Stil)
-  const tex = draw => { const c=document.createElement("canvas"); c.width=c.height=16; const g=c.getContext("2d"); draw(g);
-    const t=new THREE.CanvasTexture(c); t.magFilter=THREE.NearestFilter; t.minFilter=THREE.NearestMipmapLinearFilter; t.generateMipmaps=true; t.anisotropy=4; t.colorSpace=THREE.SRGBColorSpace; t.wrapS=t.wrapT=THREE.RepeatWrapping; return t; };
+  const tex = (draw, size=16, smooth=false) => { const c=document.createElement("canvas"); c.width=c.height=size; const g=c.getContext("2d"); draw(g);
+    const t=new THREE.CanvasTexture(c); t.magFilter=smooth?THREE.LinearFilter:THREE.NearestFilter; t.minFilter=smooth?THREE.LinearMipmapLinearFilter:THREE.NearestMipmapLinearFilter; t.generateMipmaps=true; t.anisotropy=smooth?8:4; t.colorSpace=THREE.SRGBColorSpace; t.wrapS=t.wrapT=THREE.RepeatWrapping; return t; };
   const P = (g,x,y,c) => { g.fillStyle=c; g.fillRect(x,y,1,1); };
   const noise = (cols, dots, dotCols) => tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++) P(g,x,y,pick(cols)); for(let i=0;i<(dots||0);i++) P(g,Math.floor(rand()*16),Math.floor(rand()*16),pick(dotCols)); });
   const stripes = (cols, vertical=true, speck) => tex(g=>{ for(let a=0;a<16;a++){ const c=pick(cols); for(let b=0;b<16;b++) P(g, vertical?a:b, vertical?b:a, speck&&rand()<.15?speck:c); } });
@@ -170,7 +170,7 @@ export async function start(o){
   // Lichtstrahlen (z. B. unter Wasser)
   const rays = [];
   if(world.rays){ const c=document.createElement("canvas"); c.width=32; c.height=128; const g=c.getContext("2d"), gr=g.createLinearGradient(0,0,0,128);
-    gr.addColorStop(0,"rgba(255,255,255,.95)"); gr.addColorStop(.55,"rgba(255,255,255,.4)"); gr.addColorStop(.9,"rgba(255,255,255,.12)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,32,128);
+    const dp=world.rays.deep; gr.addColorStop(0,"rgba(255,255,255,.95)"); gr.addColorStop(.55,dp?"rgba(255,255,255,.7)":"rgba(255,255,255,.4)"); gr.addColorStop(.9,dp?"rgba(255,255,255,.42)":"rgba(255,255,255,.12)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,32,128);
     const sg=g.createLinearGradient(0,0,32,0); sg.addColorStop(0,"rgba(0,0,0,1)"); sg.addColorStop(.5,"rgba(0,0,0,0)"); sg.addColorStop(1,"rgba(0,0,0,1)"); g.globalCompositeOperation="destination-out"; g.fillStyle=sg; g.fillRect(0,0,32,128);
     const rt = new THREE.CanvasTexture(c), ar = world.rays.area || [0,world.W,0,world.D];
     for(let i=0;i<world.rays.n;i++){ const m=new THREE.Mesh(new THREE.PlaneGeometry((world.rays.w||[2,4])[0]+api.rand()*(world.rays.w||[2,4])[1], world.rays.len||70), new THREE.MeshBasicMaterial({map:rt, color:world.rays.color, transparent:true, opacity:.16, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide, fog:false}));
@@ -345,6 +345,13 @@ export async function start(o){
     if(cr.at){ outer.position.set(...cr.at); outer.rotation.y = cr.yaw||0; }
     scene.add(outer); creatures.push({cr, outer, movers});
   }
+
+  // Weicher Blob-Schatten am Boden (bewegt sich ruckelfrei, statt Schattenkarte): cr.blob = {y: Bodenhöhe, r: Radius, max: Deckkraft, k: Aufweitung pro Höhe, h: Höhe, bei der er verschwindet}
+  const blobTex = (()=>{ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), gr=g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,"rgba(0,0,0,1)"); gr.addColorStop(.45,"rgba(0,0,0,.55)"); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })();
+  for(const c of creatures){ const bl=c.cr.blob; if(!bl) continue;
+    c.blob = new THREE.Mesh(new THREE.PlaneGeometry(1,1), new THREE.MeshBasicMaterial({map:blobTex, color:bl.color||0x02101A, transparent:true, opacity:0, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2}));
+    c.blob.rotation.x = -Math.PI/2; c.blob.renderOrder = 1; c.blob.frustumCulled = false; scene.add(c.blob); }
 
   // Feuerstrahl (z. B. Drache): additive Funken, die aus einem Punkt am Kopf in Blickrichtung strömen
   for(const c of creatures){ const fc=c.cr.fire; if(!fc) continue; c.fireP=[];
@@ -683,6 +690,10 @@ export async function start(o){
         if(m.fn){ m.fn(m.g, tt, cr); continue; }
         if(m.pulse){ const [pa,ps,pp=0] = m.pulse, q = Math.sin(tt*ps+pp); m.g.scale.set(1-pa*.55*q, 1+pa*q, 1-pa*.55*q); }   // Pulsieren (z. B. Quallenschirm)
         if(!m.rot) continue; const [ax,amp,spd,ph=0,base=0] = m.rot; m.g.rotation[ax] = base + amp*(m.gait?move:1)*Math.sin(tt*spd+ph); } }
+    for(const c of creatures){ const bl=c.cr.blob; if(!bl || !c.blob) continue; const p=c.outer.position, hh=Math.max(0,p.y-bl.y), u=Math.max(0,1-hh/(bl.h||60)), sc=(bl.r||6)*(1+hh*(bl.k??.02));
+      c.blob.position.set(p.x, bl.y, p.z); c.blob.scale.set(sc*(bl.sx||1.5), sc, 1); c.blob.rotation.z = c.outer.rotation.y; c.blob.material.opacity = (bl.max??.35)*u*u*(c.outer.visible?1:0); }
+    if(world.pulse && !VX){ const pu=world.pulse, tr=now/1000, w=.5*Math.sin(tr*.31)+.3*Math.sin(tr*.77+1.7)+.2*Math.sin(tr*1.63+.4);
+      if(pu.sun) sun.intensity = sd.int*(1+pu.sun*w); if(pu.hemi) hemiL.intensity = h[2]*(1+pu.hemi*(.6*Math.sin(tr*.23+2.1)+.4*Math.sin(tr*.61))); }
     for(const l of pls) if(l.userData.flicker){ const fs = typeof l.userData.flicker==="number" ? l.userData.flicker : 120, fa = fs>300 ? .35 : .15; l.intensity = l.userData.int*(1-fa+fa*Math.sin(now/fs+l.position.x)); }
     EVZ = EVZacc;
     for(const c of creatures){ if(!c.fireP) continue; const fc=c.cr.fire, on=c.cr._fire||0, g=c.movers[fc.part].g; const mouth=new THREE.Vector3(...fc.at), fwd=new THREE.Vector3(...(fc.at.map((v,i)=>v+(fc.dir||[1,0,0])[i])));

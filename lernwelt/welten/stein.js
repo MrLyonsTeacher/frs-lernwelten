@@ -292,13 +292,12 @@ export function build(A){
   // Laternen auf den Erweiterungsterrassen
   for(const [x0,x1] of [[XL0+3,-3],[W+3,XR1-3]]) for(let x=x0;x<=x1;x+=7) for(const z of [45,27]){ const L=z===45?L0:L1; if(!get(x,L,z)){ set(x,L,z,"iron"); set(x,L+1,z,"lamp"); } }
   // ---------- Unterstadt vorne: eine Ebene tiefer, Straße mit Häusern, die Stadt geht weiter ----------
-  const LM = L0-8, Z0 = D, Z1 = D+34;
-  for(let z=Z0; z<=Z1; z++) for(let x=-2; x<=W+2; x++){ const side = Math.max(0, Math.max(4-x, x-(W-5)));
-    const h = side>0 ? LM + 10 + side*3 + Math.round(fbm(x*.2,z*.2)*4) : LM;
-    for(let y=LM-4; y<h; y++) set(x,y,z, y===h-1 && side===0 ? "flag" : (rand()<.25?"deep":"stone")); }
+  const LM = L0-8, Z0 = D, Z1 = D+34, Z2 = D+80;           // Z1: beleuchteter Hauptbereich, bis Z2 geht die Stadt weiter und verliert sich im Dunkeln
+  const LX0 = XL0-14, LX1 = XR1+14;
+  for(let z=Z0; z<=Z2; z++) for(let x=LX0; x<=LX1; x++) for(let y=LM-3; y<LM; y++) set(x,y,z, y===LM-1 ? "flag" : (rand()<.25?"deep":"stone"));
   // Stützmauer mit Bögen und große Treppe hinunter
-  for(let x=0;x<=W;x++) for(let y=LM;y<L0;y++) set(x,y,Z0,(y===L0-1)?"chisel":"sbrick");
-  for(const ax of [8,18,28,60,70,80]) archZ(ax,LM,Z0,3,4);
+  for(let x=LX0;x<=LX1;x++) for(let y=LM;y<L0;y++) set(x,y,Z0,(y===L0-1)?"chisel":(y%6===0?"sbrickD":"sbrick"));
+  for(const ax of [8,18,28,60,70,80,-6,-16,-28,-40,W+6,W+18,W+30,W+42]) archZ(ax,LM,Z0,3,4);
   for(let i=0;i<8;i++) fill(38,L0-1-i,Z0+i,50,L0-1-i,Z0+i,"flag"), fill(38,LM-1,Z0+i,50,L0-2-i,Z0+i,"sbrick");
   for(const xx of [37,51]) for(let i=0;i<8;i++) set(xx,L0-i,Z0+i,"chisel");
   // Häuserzeilen links und rechts der Straße (Vorderseite zur Kamera)
@@ -331,6 +330,23 @@ export function build(A){
     return [cx, base+20, cz]; };
   { const fx=44, fz=Z0+18; ring(fx,LM,fz,3.2,"chisel"); disk(fx,LM,fz,2.2,"lava"); fill(fx,LM,fz,fx,LM+3,fz,"sbrick"); set(fx,LM+4,fz,"lamp"); }
   for(let z=Z0+9; z<=Z1; z+=6) for(const lx of [35,53]){ fill(lx,LM,z,lx,LM+3,z,"log"); set(lx,LM+4,z,"glow"); }
+  // Die Straße geht weiter: Laternen werden nach hinten seltener und verlieren sich im Dunkeln
+  for(let z=Z1+8; z<=Z2; z+=10) for(const lx of [35,53]){ fill(lx,LM,z,lx,LM+3,z,"log"); set(lx,LM+4,z,z<Z1+40 ? "glow" : "lamp"); }
+  // ---------- Stadtviertel links und rechts und weiter nach vorn: Häuser in Reihen, nach außen weniger Licht ----------
+  { const dark = z => z>Z1+30;                                           // ferne Häuser ohne Kamin und Schilder (weniger Rauch, ruhiger)
+    const house = (x,z,i) => { const t=i%7; if(t===0) stepHouse(x,LM,z,7+(i%2)*2); else if(t===1) towerHouse(x,LM,z,2+(i%2),7+(i%3)*2); else if(t===2) tavern(x,LM,z,7,4);
+      else if(t===3) workshop(x,LM,z,9,6); else if(t===4) domeHouse(x,LM,z,3); else if(t===5) towerHouse(x,LM,z,3,10); else stepHouse(x,LM,z,9); };
+    let n=0;
+    const rows=[Z0+14,Z0+30,Z0+46,Z0+62,Z0+76];
+    // links und rechts vom bisherigen Platz: breites Wohnviertel, die Reihen sind leicht versetzt
+    for(const [side,xs] of [[-1,[-56,-45,-34,-23,-12,-3]],[1,[W+3,W+12,W+23,W+34,W+45,W+56]]]) rows.forEach((rz,ri)=> xs.forEach((hx,xi)=>{ const jx=((xi*5+ri*3)%4)-1, jz=((xi+ri*2)%3)*2-2; house(hx+jx, rz+jz+(xi%2?3:0), n++); }));
+    // in der Mitte hinter dem Brunnenplatz: Häuser beidseits der Straße
+    for(const rz of [Z0+46,Z0+62,Z0+76]) for(const hx of [6,18,30,58,70,82]) house(hx+((hx+rz)%5)-2, rz+((hx*3+rz)%3)-1, n++);
+    // Platz mit Brunnen weiter hinten und Laternenpfähle an den Querstraßen
+    { const fx=44, fz=Z0+58; ring(fx,LM,fz,3.2,"chisel"); disk(fx,LM,fz,2.2,"lava"); fill(fx,LM,fz,fx,LM+3,fz,"sbrick"); set(fx,LM+4,fz,"lamp"); }
+    for(let i=0;i<46;i++){ const x=LX0+6+Math.floor(rand()*(LX1-LX0-12)), z=Z0+8+Math.floor(rand()*(Z2-Z0-10)); if(Math.abs(x-44)<12 || get(x,LM,z) || get(x,LM+1,z)) continue; fill(x,LM,z,x,LM+2,z,"log"); set(x,LM+3,z, dark(z) && rand()<.5 ? "lamp" : "glow"); }
+    // Pilze, Fässer und Kisten zwischen den Häusern
+    for(let i=0;i<70;i++){ const x=LX0+4+Math.floor(rand()*(LX1-LX0-8)), z=Z0+4+Math.floor(rand()*(Z2-Z0-6)); if(Math.abs(x-44)<8 || get(x,LM,z) || get(x,LM+1,z)) continue; set(x,LM,z, rand()<.5?"shroom":"planks"); } }
   // Kleinkram: Felsbrocken, Pilze, Kisten, Laternenpfähle auf dem Vorplatz
   const busy = (x,z) => Math.abs(x-44)<9 || (Math.hypot(x-S.country.x,z-S.country.z)<15) || (x<26 && z<44 && z>24) || Math.abs(x-12)<4 || (x>58 && x<65) || (x<30 && z<24);
   for(let i=0;i<22;i++){ const x=7+Math.floor(rand()*(W-14)), z=11+Math.floor(rand()*(D-12)); if(busy(x,z)) continue; const t=topAt(x,z,40)+1; if(t>L2+1 || get(x,t,z)) continue;
@@ -343,17 +359,26 @@ export function build(A){
     if(z>4 && rand()<.035){ const len=2+Math.floor(rand()*6); for(let k=1;k<=len;k++){ set(x,yy-k,z,"stone"); if(k<len-2 && len>4){ set(x+1,yy-k,z,"stone"); } } } }
   // ---------- Weitere Höhlen links und rechts bis in die Ferne: Terrassen, beleuchtete Häuser ----------
   const away = x => Math.max(0,-x, x-W);
-  const fh = (x,z) => { const a=away(x); let h = level(Math.max(z,10)) + Math.floor(a/22)*6 + fbm(x*.05,z*.05)*3; if(a>90) h += (a-90)*1.6; if(z<10) h = 80; return Math.min(h,80); };
-  A.farTerrain({ x0:-170, x1:W+170, z0:-12, z1:D+50, base:0, skip:(x,z)=> x>XL0-1 && x<XR1+1,
+  const inCity = (x,z) => (x>XL0-1 && x<XR1+1 && z<Z0) || (x>LX0-1 && x<LX1+1 && z>=Z0-1 && z<=Z2+2);
+  const fh = (x,z) => { let h;
+    if(z<Z0){ const a=away(x); h = level(Math.max(z,10)) + Math.floor(a/22)*6 + fbm(x*.05,z*.05)*3; if(a>90) h += (a-90)*1.6; if(z<10) h = 80; }
+    else { const o=Math.max(0, LX0-x, x-LX1, z-Z2); h = LM + Math.floor(o/24)*5 + fbm(x*.05,z*.05)*3; if(o>70) h += (o-70)*1.5; }       // vor und neben der Unterstadt geht es erst flach weiter, dann steigen Terrassen an
+    return Math.min(h,80); };
+  A.farTerrain({ x0:-230, x1:W+230, z0:-12, z1:Z2+150, base:0, skip:(x,z)=> inCity(x,z),
     h: fh, top:(x,z,y,hc)=> y*3 > 60 ? "stone" : (rand()<.04 ? "glow" : "flag"),
     fill:(x,z,y,hc)=> (y%2===1 && y*3<26 && rand()<.14) ? "win" : (rand()<.25 ? "deep" : "sbrick") });
+  // ferne Häuser (große Blöcke) mit warmen Fenstern: nur als Silhouetten im Dunkeln erkennbar
+  for(let i=0;i<260;i++){ const x=-220+rand()*(W+440), z=Z0+6+rand()*(Z2+110-Z0); if(inCity(x,z) || (z<Z0)) continue; const hg=fh(x,z); if(hg>30) continue;
+    const cx=Math.floor(x/3), cz=Math.floor(z/3), base=Math.round(hg/3), w=1+Math.floor(rand()*2), d=1+Math.floor(rand()*2), hh=2+Math.floor(rand()*3);
+    for(let a=0;a<=w;a++) for(let b=0;b<=d;b++) for(let k=0;k<hh;k++){ F.set(cx+a,base+k,cz+b, (k===1 && (a+b)%2===0 && rand()<.55) ? "win" : "sbrick"); }
+    for(let a=-0;a<=w;a++) for(let b=0;b<=d;b++) F.set(cx+a,base+hh,cz+b, "roofD"); if(rand()<.35) F.set(cx,base+hh+1,cz,"glow"); }
   // große Höhlendecke über der ganzen erweiterten Halle, mit Tropfsteinen
-  for(let cz=-4; cz<Math.ceil((OPEN+40)/3); cz++) for(let cx=Math.floor(-170/3); cx<Math.ceil((W+170)/3); cx++){ const x=cx*3, z=cz*3; if(x>XL0-3 && x<XR1+3 && z<4) continue;
-    const cy = Math.round((TOP+34+fbm(x*.02,z*.02)*10 + Math.max(0,z-OPEN)*.3)/3); F.set(cx,cy,cz,"stone"); F.set(cx,cy+1,cz,"deep");
+  for(let cz=-4; cz<Math.ceil((Z2+110)/3); cz++) for(let cx=Math.floor(-230/3); cx<Math.ceil((W+230)/3); cx++){ const x=cx*3, z=cz*3; if(x>XL0-3 && x<XR1+3 && z<4) continue;
+    const cy = Math.round((TOP+34+fbm(x*.02,z*.02)*10 + Math.max(0,z-OPEN)*.3)/3); F.set(cx,cy,cz,"stone"); if(z<Z0+30) F.set(cx,cy+1,cz,"deep");
     if(rand()<.05){ const l=1+Math.floor(rand()*4); for(let k=1;k<=l;k++) F.set(cx,cy-k,cz,"deep"); } }
   // Laternen und Lichter in den Seitenhöhlen
-  for(let i=0;i<80;i++){ const x = rand()<.5 ? -10-rand()*140 : W+10+rand()*140, z = 12+rand()*(D+20); const h=fh(x,z); if(h>60) continue; F.set(Math.floor(x/3),Math.ceil(h/3),Math.floor(z/3),"glow"); }
-  for(let i=0;i<40;i++){ const x = rand()<.5 ? -20-rand()*120 : W+20+rand()*120, z = OPEN+rand()*(D-OPEN+40); const cx=Math.floor(x/3), cz=Math.floor(z/3), base=Math.ceil(fh(x,z)/3);
+  for(let i=0;i<150;i++){ const x = -140+rand()*(W+280), z = 12+rand()*(Z2+110); if(inCity(x,z) && z>=Z0) continue; if(x>XL0 && x<XR1 && z<Z0) continue; const h=fh(x,z); if(h>60) continue; F.set(Math.floor(x/3),Math.ceil(h/3),Math.floor(z/3),"glow"); }
+  for(let i=0;i<40;i++){ const x = rand()<.5 ? -20-rand()*160 : W+20+rand()*160, z = OPEN+rand()*(Z2+90-OPEN); if(inCity(x,z)) continue; const cx=Math.floor(x/3), cz=Math.floor(z/3), base=Math.ceil(fh(x,z)/3);
     const hh = 2+Math.floor(rand()*5); for(let k=0;k<hh;k++) F.set(cx,base+k,cz,"stone"); }
 
   // ================= Mehr Details =================
@@ -417,7 +442,7 @@ export function build(A){
 
   return {
     W, D, blocks, spots:S, exposure:1.2, fov:40, creatures,
-    sky:[[0,"#030204"],[.5,"#0E0A0C"],[1,"#22160E"]], fog:[0x1E140E, 70, 260],
+    sky:[[0,"#030204"],[.5,"#0E0A0C"],[1,"#22160E"]], fog:[0x1E140E, 70, 250],
     hemi:[0xC8B8A8, 0x2A1A0E, 1.15], sun:{color:0xFFE0B8, int:1.1, pos:[20,90,60]}, bloom:[.45,.4,.86],
     lights:[{pos:[44,L2+8,16], color:0xFFB84A, int:700, dist:46},
             {pos:[S.country.x,L0+4,S.country.z-2], color:0xFF7A2A, int:340, dist:30, flicker:true},

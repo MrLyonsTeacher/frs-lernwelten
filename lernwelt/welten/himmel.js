@@ -18,8 +18,22 @@ export function build(A){
     gold: noise(["#F5C542","#FFE27A","#E8B030","#FFD95A"]),
     win: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const arch = y<5 && Math.abs(x-7.5) > Math.sqrt(Math.max(0,25-(5-y)**2))+1.5; const fr = x<2||x>13||y>14||x===7||x===8||y===9||arch; P(g,x,y, fr ? "#C8C0A8" : (y<9 ? pick(["#FFE9A0","#FFDC80"]) : pick(["#9AD0F8","#7ABCEC"]))); } }),
     door: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ P(g,x,y, x%5===0 ? "#4A2E14" : (y%6===0 ? "#3A2410" : pick(["#7A4E28","#6E4424"]))); } }),
-    water: tex(g=>{ for(let x=0;x<16;x++){ const ph=rand()*16, sp=.6+rand()*.6; for(let y=0;y<16;y++){ const v=Math.sin((y+ph)*sp*.8)+rand()*.5; P(g,x,y, v>1.05?"#FFFFFF":v>.45?"#CFF2FF":v>-.3?"#8AD4FA":"#5AB8F0"); } } }),
-    pool: tex(g=>{ for(let x=0;x<16;x++) for(let y=0;y<16;y++){ const v=Math.sin(x*.7+y*.4)+rand()*.5; P(g,x,y, v>1.1?"#DFF6FF":v>.2?"#6CC8F0":"#4AA8E0"); } }),
+    // Wasser: nahtlose, weich gefilterte Texturen (64×64) mit Strömungsstreifen, Schaum und Glitzern – wirken beim Scrollen wie fließendes Wasser
+    water: tex(g=>{ const N=64, id=g.createImageData(N,N), d=id.data, TP=Math.PI*2, stops=[[0,[52,140,222]],[.32,[98,186,246]],[.58,[176,228,255]],[.82,[236,250,255]],[1,[255,255,255]]];
+      const ramp = s2 => { for(let k=1;k<stops.length;k++) if(s2<=stops[k][0]){ const a=stops[k-1], b=stops[k], f=(s2-a[0])/(b[0]-a[0]); return a[1].map((v,q)=>v+(b[1][q]-v)*f); } return [255,255,255]; };
+      for(let y=0;y<N;y++) for(let x=0;x<N;x++){ const u=x/N*TP, v=y/N*TP;
+        const a=Math.sin(u*3+1.6*Math.sin(v*2)), b=Math.sin(u*7-2+1.1*Math.sin(v*3+1)), c=Math.sin(u*13+.8*Math.sin(v*5+2)), f=Math.sin(v*4+u*2+Math.sin(u*3)*1.4);
+        let s2=.5+.2*a+.14*b+.08*c+Math.max(0,f-.5)*.9*(.5+.5*b); s2=Math.max(0,Math.min(1,s2)); const col=ramp(s2), o=(y*N+x)*4;
+        d[o]=col[0]; d[o+1]=col[1]; d[o+2]=col[2]; d[o+3]=Math.round(120+135*Math.pow(s2,.8)); }
+      g.putImageData(id,0,0); }, 64, true),
+    pool: tex(g=>{ const N=64, id=g.createImageData(N,N), d=id.data, TP=Math.PI*2;
+      for(let y=0;y<N;y++) for(let x=0;x<N;x++){ const u=x/N*TP, v=y/N*TP;
+        const hgt=.35*Math.sin(2*u+v+1.3*Math.sin(3*v))+.3*Math.sin(3*u-2*v+Math.sin(2*u))+.2*Math.sin(4*u+3*v+2)+.15*Math.sin(5*v-3*u);
+        const l1=1-Math.abs(Math.sin(u*2+v+.9*Math.sin(2*v+u))), l2=1-Math.abs(Math.sin(v*3-u+.7*Math.sin(3*u)));
+        const caus=Math.pow(l1,10)*.8+Math.pow(l2,12)*.55, t=.5+.5*hgt;
+        let r=48+40*t, gg=140+50*t, bb=214+26*t; const gl=Math.max(0,hgt-.62)*3.2+caus; r+=gl*170; gg+=gl*100; bb+=gl*40;
+        const o=(y*N+x)*4; d[o]=Math.min(255,r); d[o+1]=Math.min(255,gg); d[o+2]=Math.min(255,bb); d[o+3]=235; }
+      g.putImageData(id,0,0); }, 64, true),
     cloud: noise(["#FFFFFF","#F4F8FF","#EAF2FF"]), blossom: noise(["#FFB8D8","#FF9AC8","#FFD2E6","#F286B8"], 10, ["#FFFFFF","#FFE6F0"]),
     leaves: noise(["#4FAE3A","#5CBE44","#449E30","#3E9A2E"], 10, ["#78D458"]), hedge: noise(["#3E8A30","#468E36","#367A2A"], 8, ["#5AA848"]),
     log: stripes(["#7A5532","#8A6238","#6A4828"], true), logTop: rings(["#B8894E","#A47840","#8A6236"]),
@@ -41,7 +55,7 @@ export function build(A){
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, rock:{side:T.rock}, rockD:{side:T.rockD}, root:{side:T.root},
     stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.roof}, roofT:{side:T.roofT},
     gold:{side:T.gold, em:.25}, win:{side:T.win, em:.55}, door:{side:T.door},
-    water:{side:T.water, alpha:.8, anim:[0,1.8], em:.3}, pool:{side:T.pool, alpha:.85, anim:[.05,.03], em:.2},
+    water:{side:T.water, alpha:.88, anim:[.012,4.2], em:.34}, pool:{side:T.pool, alpha:.9, anim:[.06,.035], em:.24},
     cloud:{side:T.cloud, alpha:.92, em:.15, soft:true}, cloudS:{side:T.cloud, em:.3, soft:true},
     blossom:{side:T.blossom}, leaves:{side:T.leaves}, hedge:{side:T.hedge}, log:{side:T.log, top:T.logTop}, planks:{side:T.planks}, planksD:{side:T.planksD},
     hull:{side:T.hull}, canvas:{side:T.canvas}, canvasR:{side:T.canvasR}, brass:{side:T.brass, em:.15}, iron:{side:T.iron}, rope:{side:T.rope},
@@ -266,7 +280,8 @@ export function build(A){
       {pos:[150,30,-80], r:20, n:44, sx:1.7, sy:.8, sz:1.2},
       {pos:[-90,36,-70], r:18, n:40, sx:1.6, sy:.8, sz:1.2}
     ],
-    particles:[{n:160, area:[86,102,34,54,8,20], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
+    particles:[...MIST.map(([x,y,z,w])=>({n:36, area:[x-w-1,x+w+1,y-3,y+6,z-w-1,z+w+1], vy:1.7, wob:1.2, color:0xFFFFFF, size:.36, opacity:.7, add:true})),
+               {n:160, area:[86,102,34,54,8,20], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
                {n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
     home:{pos:[W/2,64,D+96], look:[W/2,28,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},

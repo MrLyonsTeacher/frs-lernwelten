@@ -1,5 +1,5 @@
 // Klasse 9 · Woodlands – Elbenstadt in Riesenbäumen: Baumhäuser auf Plattformen, Hängebrücken, Wasserfälle, Mondbrunnen, Nebel und Glühwürmchen
-import { elf, fairy, stag, bird, M } from "./tiere.js";
+import { elf, fairy, stag, bird, serpent, M } from "./tiere.js";
 export function build(A){
   const { rand, fbm, pick, set, get, fill, walls, disk, ring, cyl, tube, ball, ellip, dome, cone, line, topAt, terrain, tex, P, noise, stripes, bricks, rings, topEdge, planks, glassT } = A;
   const T = {
@@ -239,10 +239,12 @@ export function build(A){
     return { parts:[{cubes:b.list(), pivot:[0,0,0]}, {cubes:w.list(), pivot:[0,0,1], rot:["x",.9,14,0]}, {cubes:wR.list(), pivot:[0,0,-1], rot:["x",-.9,14,0]}], noShadow:true }; };
   [[30,10,56,0xFFB030,0x2A1E14],[60,9,58,0x6AC8FF,0x1A3A6A],[18,15,46,0xFFFFFF,0xFFB0E8],[74,10,62,0xFF8AC8,0xFFE6F2],[40,10,46,0xFFE27A,0x8A5A10],[86,12,60,0x9AF0A0,0x2A6A3A]]
     .forEach(([x,y,z,c1,c2],i)=> creatures.push({ ...butterfly(c1,c2), orbit:{c:[x,y,z], r:[4+i%3,3+i%2], speed:.35+i*.04, ph:i, bob:1.2, bank:.2}, scale:.16 }));
+  // Riesenschlange: gleitet wellenförmig durch die nebelige Schlucht, ihre Rücken tauchen aus dem Nebel auf und wieder ab
+  creatures.push({ ...serpent({n:32, amp:.42}), path:{pts:[[-200,-2,CZ0+6],[W/2,-2,CZ0+9],[W+200,-2,CZ0+6]], speed:5, pause:8, ph:.2}, scale:1.15 });
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
     W, D, blocks, spots:S, exposure:1.18, fov:40, creatures,
-    sky:[[0,"#0E2A34"],[.35,"#2A5A5E"],[.7,"#9AB89A"],[1,"#E8D8A0"]], fog:[0x4A6E64, 60, 260],
+    sky:[[0,"#0E2A34"],[.35,"#2A5A5E"],[.7,"#9AB89A"],[1,"#E8D8A0"]], fog:[0x4A6E64, 52, 240],
     hemi:[0xCFE8D8, 0x2A3A22, 1.45], sun:{color:0xFFDCA8, int:1.8, pos:[-60,80,50]}, bloom:[.55,.5,.8],
     lights:[{pos:[TX,24,TZ+14], color:0xFFC870, int:300, dist:36},
             {pos:[S.vocabulary.x,15,S.vocabulary.z], color:0x7FF0FF, int:50, dist:16},
@@ -254,7 +256,15 @@ export function build(A){
                {n:200, area:[10,W-10,14,40,10,D-6], vy:0, wob:.8, color:0xFFE6A0, size:.6, blink:1.1},
                {n:300, area:[-20,W+20,8,60,-10,D], vy:.25, wob:.5, color:0xFFF4D0, size:.18, opacity:.55, add:true}],
     rays:{n:18, color:0xFFE6A8, area:[-30,W+30,-30,D], y:46, len:90},
-    puffs:[{n:26, pos:[-80,CB+6,CZ0+10], dx:240, dy:4, dz:0, s0:22, s1:16, color:0xDDEEE4, opacity:.5, speed:.008, spread:8, flat:.4},
+    puffs:[
+           // dichter Bodennebel in der Schlucht: mehrere Schichten übereinander, vor und hinter dem Baumhirten
+           {n:30, pos:[-80,CB+8,CZ0+3], dx:250, dy:3, dz:0, s0:26, s1:20, color:0xDCEBE2, opacity:.62, speed:.0065, spread:12, flat:.5, sz:1.3},
+           {n:30, pos:[-80,CB+15,CZ0+8], dx:250, dy:3, dz:0, s0:28, s1:22, color:0xE2EFE8, opacity:.58, speed:.0055, spread:12, flat:.5, sz:1.2},
+           {n:28, pos:[-80,CB+22,CZ0+5], dx:250, dy:3, dz:0, s0:30, s1:24, color:0xE6F2EC, opacity:.52, speed:.0075, spread:14, flat:.5, sz:1.3},
+           {n:26, pos:[-80,CB+29,CZ0+10], dx:250, dy:3, dz:0, s0:30, s1:24, color:0xE8F4EE, opacity:.46, speed:.0045, spread:14, flat:.45, sz:1.2},
+           {n:26, pos:[-80,FG-9,CZ0+12], dx:250, dy:2, dz:0, s0:30, s1:26, color:0xE8F4EE, opacity:.5, speed:.0052, spread:8, flat:.4, sz:1},
+           {n:24, pos:[-80,FG-3,CZ1-3], dx:250, dy:2, dz:0, s0:26, s1:22, color:0xEAF4F0, opacity:.4, speed:.0058, spread:6, flat:.4, sz:.8},
+           {n:26, pos:[-80,CB+6,CZ0+10], dx:240, dy:4, dz:0, s0:22, s1:16, color:0xDDEEE4, opacity:.5, speed:.008, spread:8, flat:.4},
            {n:30, pos:[-60,5,-30], dx:220, dy:1, dz:30, s0:22, s1:20, color:0xCFE6DA, opacity:.42, speed:.01, spread:70, flat:.35, sz:1.2},
            {n:18, pos:[-20,8,40], dx:140, dy:2, dz:0, s0:14, s1:14, color:0xDDEEE4, opacity:.25, speed:.014, spread:30, flat:.4},
            {n:22, pos:[-50,FG+3,CZ1+14], dx:200, dy:2, dz:0, s0:20, s1:24, color:0xE4F0EA, opacity:.55, speed:.007, spread:22, flat:.35, sz:1.4},
