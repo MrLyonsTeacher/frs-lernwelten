@@ -666,7 +666,7 @@ export async function start(o){
           for(let i=0;i<n-1;i++){ const p0=P[Math.max(0,i-1)], p1=P[i], p2=P[i+1], p3=P[Math.min(n-1,i+2)]; for(let k=0;k<24;k++) pt.push(c3(p0,p1,p2,p3,k/24)); } pt.push(P[n-1]);
           const cum=[0]; for(let i=1;i<pt.length;i++) cum.push(cum[i-1]+Math.hypot(pt[i][0]-pt[i-1][0],pt[i][1]-pt[i-1][1],pt[i][2]-pt[i-1][2]));
           S._tab={pt, cum, len:cum[cum.length-1]}; S._dur=(S._tab.len+(S.span||200))/S.speed; }
-        const T=S._tab, ph=tt-(S.start??180), per=S._dur+(S.rest??180), x=ph<0 ? -1 : ph%per, lag=cr.lag||0,
+        const T=S._tab, ph=tt-(S.start??180), per=S.period||(S._dur+(S.rest??180)), x=ph<0 ? -1 : ph%per, lag=cr.lag||0,
           d=(x*S.speed+(S.surge||0)*Math.sin(x*.37))-lag;
         if(x<0 || x>S._dur || d<0 || d>T.len){ outer.visible=false; }
         else { outer.visible=true;

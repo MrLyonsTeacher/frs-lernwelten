@@ -239,12 +239,11 @@ export function build(A){
     return { parts:[{cubes:b.list(), pivot:[0,0,0]}, {cubes:w.list(), pivot:[0,0,1], rot:["x",.9,14,0]}, {cubes:wR.list(), pivot:[0,0,-1], rot:["x",-.9,14,0]}], noShadow:true }; };
   [[30,10,56,0xFFB030,0x2A1E14],[60,9,58,0x6AC8FF,0x1A3A6A],[18,15,46,0xFFFFFF,0xFFB0E8],[74,10,62,0xFF8AC8,0xFFE6F2],[40,10,46,0xFFE27A,0x8A5A10],[86,12,60,0x9AF0A0,0x2A6A3A]]
     .forEach(([x,y,z,c1,c2],i)=> creatures.push({ ...butterfly(c1,c2), orbit:{c:[x,y,z], r:[4+i%3,3+i%2], speed:.35+i*.04, ph:i, bob:1.2, bank:.2}, scale:.16 }));
-  // Riesenschlange: erscheint erst 3 Minuten nach dem Laden. Sie schwimmt durch die nebelige Schlucht (nur Rückenbögen und Kopf tauchen aus dem Wasser auf),
-  // taucht unter der Elbenbrücke durch (tief unter den Pfeilern, kein Kontakt), schlängelt sich dann einmal um die ganze Lernwelt und verschwindet wieder im Wasser; danach 3 Minuten Pause
-  { const SZ=1.15, GZ=82.5, SN={ pts:[
-      [-150,7,GZ,1,.4],[-100,7,GZ,1,.4],[-60,7,GZ,1,.4],[-30,7,GZ,1,.4],[2,7,GZ,1,.4],[18,-4,GZ,.8,.3],[27,-30,GZ,.2,.1],[37,-44,GZ,0,0],[48,-47,GZ,0,0],[60,-44,GZ,0,0],[70,-30,GZ,.2,.1],[80,-8,GZ,.8,.3],[96,7,GZ,1,.4],[126,7,GZ,1,.4],[150,7,GZ,1,.4],
-      [172,9,74],[198,10,50,1.2],[204,14,10,1.3],[178,16,-34,1.3],[120,20,-62,1.3],[48,20,-72,1.3],[-20,20,-62,1.3],[-78,16,-30,1.3],[-104,10,15,1.2],[-94,8,58],[-72,7,80,1,.5],[-42,7,GZ,1,.4],[-6,7,GZ,1,.4],[14,-6,GZ,.8,.3],[24,-34,GZ,.2,.1],[32,-60,GZ,0,0],[36,-80,GZ,0,0]],
-      speed:5, surge:2.5, amp:9, lat:3, wl:60, ws:.2, start:180, rest:180, span:210 };
+  // Riesenschlange: kommt alle 2 Minuten (erstmals nach 2 Min) durch die Schlucht von links nach rechts, in einer langgezogenen Sinuskurve:
+  // Wellenberge ragen aus dem Nebel, das Wellental liegt tief unter der Elbenbrücke (kein Kontakt mit Pfeilern/Bögen)
+  { const SZ=1.4, GZ=82.5, pts=[]; const sy=x=> -12 - 25*Math.cos(2*Math.PI*(x-48)/80);
+    pts.push([-90,-40,GZ,0,0]); for(let x=-48;x<=144;x+=6) pts.push([x,sy(x),GZ,0,1]); pts.push([170,-40,GZ,0,0]); pts.push([220,-60,GZ,0,0]);
+    const SN={ pts, speed:6, amp:0, lat:1.5, wl:60, ws:.2, ramp:60, start:120, period:120, span:250 };
     for(const c of serpentChain({n:34})) creatures.push({ ...c.def, snake:SN, lag:c.lag*SZ, scale:SZ }); }
   for(let i=0;i<6;i++) creatures.push({ ...bird(0xF4F0DC), orbit:{c:[48+i*2,52+(i%3)*2,22+(i%2)*4], r:[44,26], speed:.11, ph:i*.15, bob:1}, scale:.5, noShadow:true });
   return {
