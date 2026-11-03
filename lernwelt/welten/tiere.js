@@ -453,11 +453,11 @@ export function serpentChain(o={}){
     tube(seg, -L-1, 1, ry2, rz2, ry, rz, skin(k+1));
     if(k%2===0 && f<.8){ const h=Math.max(1,Math.round(ry*.45)); for(let j=1;j<=h;j++) seg.put(-2-Math.floor(j/2),Math.ceil(ry)+j,0,SP[(j+k)%4]); }
     if(k===4 || k===5) for(const sg of [-1,1]) for(let a=0;a<6;a++) for(let b=0;b<=a*.7;b++) seg.put(-2-a,-2,sg*(Math.ceil(rz)+1+b), a>3?0x2A1E5A:(b%2?0x1E8A8A:0x239B8E));   // Brustflossen
-    out.push({ lag:10+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
+    out.push({ lag:5+k*L, def:{ parts:[{ cubes:seg.list(), pivot:[0,0,0] }], noShadow:true } }); }
   // ---- Schwanz: feine Spitze mit kleiner, fächerförmiger Flosse ----
   const tail = M();
   tube(tail, -8, 1, .7, .8, 1.1, 1.2, skin(N+1));
   for(const [dy,len,c] of [[4,6,0x3A2E80],[2,7,0x2A1E5A],[0,7.5,0x1E3A7A],[-2,7,0x2A1E5A],[-4,6,0x3A2E80]]) tail.line([-7,0,0],[-7-len,dy,0],c);
-  out.push({ lag:10+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
+  out.push({ lag:5+N*L, def:{ parts:[{ cubes:tail.list(), pivot:[0,0,0] }], noShadow:true } });
   return out;
 }
