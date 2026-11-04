@@ -180,9 +180,11 @@ details summary{cursor:pointer;font-weight:700;min-height:40px;display:flex;alig
       </div>
     </div>
     <div class="cfg" id="cfgRow" hidden>
+      <label>Arbeitszeit <input type="number" id="cfgMin" min="1" max="240" inputmode="numeric" placeholder="z. B. 20"> Min</label>
+      <label>je Spiel ca. <input type="number" id="cfgPer" min="1" max="30" step="0.5" inputmode="decimal"> Min</label>
       <label>Stundenziel <input type="number" id="cfgZiel" min="1" max="40" inputmode="numeric"> Spiele</label>
       <label>Gewichtung: <input type="number" id="cfgW" min="0" max="100" step="5" inputmode="numeric"> % Qualität</label>
-      <span class="cfg-i">Gesamt = Qualität (wie gut) × Gewichtung + Umfang (wie viele Spiele, gemessen am Stundenziel) × Rest.</span>
+      <span class="cfg-i">Gesamt = Qualität (wie gut) × Gewichtung + Umfang (wie viele Spiele, gemessen am Stundenziel) × Rest. Gibst du die Arbeitszeit ein, wird das Stundenziel automatisch berechnet (Zeit ÷ Minuten je Spiel).</span>
     </div>
     <div class="tablewrap" id="table"></div>
     <div class="row" style="margin-top:1rem">
@@ -387,7 +389,15 @@ function renderTable(){
 fMat.onchange = renderTable; fGrp.onchange = renderTable;
 const cfgZ = document.getElementById("cfgZiel"), cfgW = document.getElementById("cfgW");
 cfgZ.value = ZIEL; cfgW.value = Math.round(WQ*100);
-cfgZ.oninput = ()=>{ ZIEL = Math.max(1, +cfgZ.value || 1); try{ localStorage.setItem("uh-ziel", ZIEL); }catch(e){} renderTable(); };
+// Arbeitszeit eingeben -> Stundenziel (Soll) wird automatisch berechnet: Zeit ÷ Minuten je Spiel, gerundet
+const cfgM = document.getElementById("cfgMin"), cfgP = document.getElementById("cfgPer");
+let PER = 3, MIN = 0; try{ PER = +localStorage.getItem("uh-per") || 3; MIN = +localStorage.getItem("uh-min") || 0; }catch(e){}
+cfgP.value = PER; cfgM.value = MIN || "";
+const autoZiel = ()=>{ if(!MIN) return; ZIEL = Math.min(40, Math.max(1, Math.round(MIN/PER))); cfgZ.value = ZIEL; try{ localStorage.setItem("uh-ziel", ZIEL); }catch(e){} renderTable(); };
+cfgM.oninput = ()=>{ MIN = Math.max(0, +cfgM.value || 0); try{ localStorage.setItem("uh-min", MIN); }catch(e){} autoZiel(); };
+cfgP.oninput = ()=>{ PER = Math.max(1, +cfgP.value || 3); try{ localStorage.setItem("uh-per", PER); }catch(e){} autoZiel(); };
+if(MIN) autoZiel();
+cfgZ.oninput = ()=>{ MIN = 0; cfgM.value = ""; try{ localStorage.setItem("uh-min", 0); }catch(e){} ZIEL = Math.max(1, +cfgZ.value || 1); try{ localStorage.setItem("uh-ziel", ZIEL); }catch(e){} renderTable(); };
 cfgW.oninput = ()=>{ WQ = Math.min(100, Math.max(0, +cfgW.value || 0))/100; try{ localStorage.setItem("uh-gewicht", Math.round(WQ*100)); }catch(e){} renderTable(); };
 document.addEventListener("click",e=>{
   const d=e.target.closest("[data-del]");

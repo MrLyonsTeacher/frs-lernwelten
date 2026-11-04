@@ -598,10 +598,10 @@ GAMES.sortieren = (l, A, done) => {
   }
   A.onclick = e => {
     const b = e.target.closest("[data-b]"); if(!b || lock) return; lock=true;
-    const j=+b.dataset.b, it=its[i], ok = j===it.k; cnt[it.k]++; res.push(ok);
-    const right = A.querySelector(`[data-b="${it.k}"]`); right.classList.add("hit"); right.querySelector(".cnt").textContent=cnt[it.k];
+    const j=+b.dataset.b, it=its[i], ok = j===it.k || j===it.k2, kk = ok ? j : it.k; cnt[kk]++; res.push(ok);   // k2: zweite richtige Antwort (Grauzone, z. B. Ente = Bauernhof oder wild)
+    const right = A.querySelector(`[data-b="${kk}"]`); right.classList.add("hit"); right.querySelector(".cnt").textContent=cnt[kk];
     if(ok){ pts++; award([["i"+l.items.indexOf(it), 1]], b);
-      sheet("ok", esc(T.right+" +1"), rich(it.e||l.koerbe[it.k].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);
+      sheet("ok", esc((it.k2!==undefined?T.grey:T.right)+" +1"), rich(it.e||l.koerbe[kk].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);
     } else {
       b.classList.add("miss","shake"); $("#si").classList.add("shake"); miss(it.t, l.koerbe[it.k].t, it.e||l.koerbe[it.k].tipp||l.regel);
       sheet("no", esc(`${T.wrong} ${T.correctIs} „${l.koerbe[it.k].t}“`), rich(it.e||l.koerbe[it.k].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);

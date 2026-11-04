@@ -75,6 +75,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .wdock{position:fixed;left:50%;bottom:calc(74px + env(safe-area-inset-bottom,0));transform:translateX(-50%);z-index:5;display:flex;gap:10px;padding:8px;border-radius:20px;background:var(--ui-chip);border:2px solid var(--ui-border);box-shadow:0 0 18px var(--ui-glow);max-width:calc(100vw - 24px)}
 .wdock button{display:flex;align-items:center;gap:8px;min-height:54px;padding:6px 16px;border-radius:14px;border:0;background:rgba(255,255,255,.12);color:var(--ui-text);font:700 17px Fredoka;white-space:nowrap}
 body:not(.area-open):not(.no3d) .wdock{display:none}
+body:not(.area-open):not(.no3d) .wfoot .wfin{display:none}   /* Fertig-Knopf erst in einer Rubrik */
 .wdock button[aria-pressed="true"]{background:var(--ui-accent);color:var(--ui-accent-ink)}
 .wdock .n{min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:rgba(0,0,0,.25);font-size:13px;padding:0 5px}
 @media (max-width:560px){ .wdock button{padding:6px 10px;font-size:15px} .wdock .lbl-long{display:none} }
