@@ -259,13 +259,16 @@ export function build(A){
   [[.12,0,58,.072,-1],[.1,2.3,66,.068,1],[.14,4.4,50,.076,-1],[.09,5.6,74,.064,1]].forEach(([sp,ph,y,sc,dir])=>creatures.push({ ...fiend({fly:true}),
     orbit:{c:[60,y,34], r:[78,52], speed:sp, dir, ph, bob:2.5, wander:{f:.17+ph*.01, r:.22, y:10, eight:10, dx:14, dz:12, span:22, clear:8}}, scale:sc, noShadow:true }));
   // Magma-Schlangen: suchen sich freie Lavaflächen (Ring ohne Felsen) vor der Stadt
-  const freeRing = (cx,cz,R) => { for(let k=0;k<72;k++){ const a=k/72*Math.PI*2; for(const dr of [-5,-2.5,0,2.5,5]){ const x=Math.round(cx+Math.cos(a)*(R+dr)), z=Math.round(cz+Math.sin(a)*(R+dr));
-      for(let y=SEA-1;y<=SEA+6;y++) if(get(x,y,z)) return false; } } return true; };
+  // freie Lavabahnen (Korridor ohne Felsen) für den Weg von A nach B in Sinuskurve
+  const SSC=.7, SN_={n:18, len:34, amp:5, wl:30}, EXTW=(SN_.len+(SN_.n-1)*2.6)*SSC, HALFW=(SN_.amp+5)*SSC+4;
+  const freeLane = (cx,cz,th) => { const dx=Math.cos(th), dz=-Math.sin(th);
+    for(let a=-EXTW/2;a<=EXTW/2;a+=2.5) for(let b=-HALFW;b<=HALFW;b+=2.5){ const x=Math.round(cx+dx*a-dz*b), z=Math.round(cz+dz*a+dx*b);
+      for(let y=SEA-1;y<=SEA+6;y++) if(get(x,y,z)) return false; } return true; };
   const serp = [];
-  { const cand=[]; for(const R of [20,16,13]) for(let cx=-10;cx<=130;cx+=5) for(let cz=60;cz<=150;cz+=5) cand.push([cx,cz,R, Math.abs(cz-108)*1.2+Math.abs(cx-60)*.35-R*.8]);
+  { const cand=[]; for(const th of [0,Math.PI/2,Math.PI/4,-Math.PI/4]) for(let cx=-10;cx<=130;cx+=5) for(let cz=60;cz<=150;cz+=5) cand.push([cx,cz,th, Math.abs(cz-108)*1.2+Math.abs(cx-60)*.35]);
     cand.sort((a,b)=>a[3]-b[3]);
-    for(const [cx,cz,R] of cand){ if(serp.length>=2) break; if(serp.some(([x,z,r])=>Math.hypot(cx-x,cz-z)<R+r+10)) continue; if(freeRing(cx,cz,R)) serp.push([cx,cz,R]); } }
-  serp.forEach(([cx,cz,R],k)=>creatures.push({ ...lavaSerpent({bend:1/(R/.7), side:k?-1:1, phase:k*13, cycle:30+k*7, speed:1.3+k*.25}), orbit:{c:[cx,SEA+1,cz], r:[R,R], speed:(k?-1:1)*.045, ph:k*2}, scale:.7, clearR:0 }));
+    for(const [cx,cz,th] of cand){ if(serp.length>=2) break; if(serp.some(([x,z])=>Math.hypot(cx-x,cz-z)<EXTW*.8)) continue; if(freeLane(cx,cz,th)) serp.push([cx,cz,th]); } }
+  serp.forEach(([cx,cz,th],k)=>creatures.push({ ...lavaSerpent({n:SN_.n, amp:2.6, depth:-1.8, k:.5, sine:{...SN_, ph:k*1.7}, phase:k*13, cycle:36+k*8, speed:1.3+k*.25}), orbit:{c:[cx,SEA+1,cz], r:[.001,.001], speed:0, ph:0, yaw:th}, scale:SSC, clearR:0 }));
   if(typeof window!=="undefined") window.__serp = serp;
   const walkLine = (a,b,o) => { const cx=(a[0]+b[0])/2, cz=(a[2]+b[2])/2, len=Math.hypot(b[0]-a[0],b[2]-a[2])/2-1.5;
     creatures.push({ ...person(o.p), orbit:{c:[cx,(a[1]+b[1])/2+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), slope:(b[1]-a[1])/(2*len+3), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };

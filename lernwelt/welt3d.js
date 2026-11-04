@@ -658,7 +658,8 @@ export async function start(o){
         const ca = Math.cos(ob.rot||0), sa = Math.sin(ob.rot||0), ox = Math.cos(t)*rx, oz = Math.sin(t)*rz;
         outer.position.set(cx+ox*ca-oz*sa, cy+ox*(ob.slope||0)+Math.sin(t*2)*(ob.bob??.6)*move, cz+ox*sa+oz*ca);
         if(ob.legacyFace!==undefined) outer.rotation.y = -t + ob.legacyFace;
-        else { const v0=-Math.sin(t)*rx*(ob.dir||1), w0=Math.cos(t)*rz*(ob.dir||1), vx=v0*ca-w0*sa, vz=v0*sa+w0*ca; outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); } } }
+        else { const v0=-Math.sin(t)*rx*(ob.dir||1), w0=Math.cos(t)*rz*(ob.dir||1), vx=v0*ca-w0*sa, vz=v0*sa+w0*ca; outer.rotation.y = Math.atan2(-vz, vx); outer.rotation.x = (ob.bank||0)*(ob.dir||1)*move; outer.rotation.z = (ob.pitch||0)*Math.cos(t*2); }
+        if(ob.yaw!==undefined) outer.rotation.y = ob.yaw; } }
       else if(cr.snake){ // Schlange: Glieder folgen einer langen Route (Catmull-Rom). Wellen laufen vom Kopf zum Schwanz durch den Körper (wie bei einem Schwimmer), Höhe und Seite getrennt;
         // Start erst nach start Sekunden, danach Pause rest. Wegpunkte [x,y,z,ky,kz]: ky/kz skalieren die Wellen (0 = gerade, z. B. beim Abtauchen unter der Brücke)
         const S=cr.snake; move=1;

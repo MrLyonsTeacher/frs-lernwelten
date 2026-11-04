@@ -350,7 +350,11 @@ export function lavaSerpent(o={}){
     if(i===N-1){ for(let x=-3;x<=-1;x++) m.put(x,0,0,GL,1); m.box(-6,-1,0,-4,1,0,SPK); }
     parts.push({cubes:m.list(), pivot:[0,0,0], fn:(g,tt)=>{ const x=-i*SP, y=yAt(i,tt), y2=yAt(i+.5,tt), y0=yAt(i-.5,tt);
       let px=x, pz=Math.sin(tt*.6 - i*.25 + PH)*1.2*t, ry=0;
-      if(o.bend){ const th=i*SP*o.bend, sd=o.side||1; px=-Math.sin(th)/o.bend; pz+=sd*(1-Math.cos(th))/o.bend; ry=sd*th; }
+      if(o.sine){ // Sinuskurve von A nach B: Kopf gleitet voran, der Leib folgt exakt derselben Kurve (feste Bahn, Glieder schlängeln hindurch)
+        const SN=o.sine, EXT=(N-1)*SP, c=((tt+PH)%CYC+CYC)%CYC, u=Math.min(1,c/(CYC-2)), xh=EXT/2 + SN.len*(u-.5);
+        px = xh - i*SP; const w=Math.PI*2/SN.wl; pz = SN.amp*Math.sin(w*px + (SN.ph||0)); ry = -Math.atan(SN.amp*w*Math.cos(w*px + (SN.ph||0)));
+        px -= EXT/2; }
+      else if(o.bend){ const th=i*SP*o.bend, sd=o.side||1; px=-Math.sin(th)/o.bend; pz+=sd*(1-Math.cos(th))/o.bend; ry=sd*th; }
       g.position.set(px, y, pz); g.rotation.order="YZX"; g.rotation.y=ry; g.rotation.z = Math.atan2(y0-y2, SP); g.visible = y > -r-1.5; }});
   }
   return { parts, noShadow:true };
