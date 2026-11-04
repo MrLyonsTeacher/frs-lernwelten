@@ -329,8 +329,15 @@ export function lavaSerpent(o={}){
   const pk=(a,x,y,z)=>a[((x*7+y*13+z*5)%a.length+a.length)%a.length];
   const sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
   const parts=[];
+  // Routenmodus: Kopf läuft schnell eine lange Zickzack-Route durch die Lava, der Leib folgt exakt (Folge-dem-Anführer), Auf-und-Ab-Wellen über die Strecke
+  let RT=null; if(o.route){ const P=o.route.pts, cum=[0]; for(let q=1;q<P.length;q++) cum.push(cum[q-1]+Math.hypot(P[q][0]-P[q-1][0],P[q][1]-P[q-1][1])); RT={P,cum,L:cum[cum.length-1],sp:o.route.speed||8,off:o.route.off||0,vamp:o.route.vamp||11,vd:o.route.vdepth||3,wv:Math.PI*2/(o.route.vwl||62),vph:o.route.vph||0,ramp:o.route.ramp||16}; RT.per=(RT.L+(N-1)*SP+30)/RT.sp+3; }
+  const headS=tt=>{ const x=((tt+RT.off)%RT.per+RT.per)%RT.per; return x*RT.sp; };
+  const rAt=s=>{ const P=RT.P, cum=RT.cum; s=Math.max(0,Math.min(RT.L,s)); let lo=0, hi=cum.length-1; while(hi-lo>1){ const m=(lo+hi)>>1; if(cum[m]<=s) lo=m; else hi=m; }
+    const f=(s-cum[lo])/Math.max(.0001,cum[hi]-cum[lo]), a=P[lo], b=P[hi]; return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, Math.atan2(-(b[1]-a[1]), b[0]-a[0])]; };
+  const rY=(i,tt)=>{ const s=headS(tt)-i*SP, e=Math.min(1,Math.max(0,s/RT.ramp)), e2=Math.min(1,Math.max(0,(RT.L-s)/RT.ramp)); // an Start und Ende taucht der Leib ganz unter
+    return RT.vamp*Math.sin(RT.wv*s+RT.vph) - RT.vd - ((1-sm(e))+(1-sm(e2)))*(RT.vamp+RT.vd+6); };
   // Höhe eines Leibpunkts (Index i, auch gebrochen) zur Zeit tt
-  const yAt=(i,tt)=>{ const c=((tt+PH)%CYC+CYC)%CYC, dive = c>CYC-7 ? sm((c-(CYC-7))/3.5)*(1-sm((c-(CYC-2.5))/2.5)) : 0, rise = c<4 ? 1-sm(c/4) : 0;
+  const yAt=(i,tt)=>{ if(RT) return rY(i,tt); const c=((tt+PH)%CYC+CYC)%CYC, dive = c>CYC-7 ? sm((c-(CYC-7))/3.5)*(1-sm((c-(CYC-2.5))/2.5)) : 0, rise = c<4 ? 1-sm(c/4) : 0;
     if(o.sine){ const SN=o.sine, c2=((tt+PH)%CYC+CYC)%CYC, u=Math.min(1,c2/(CYC-2)), xx=(N-1)*SP/2 + SN.len*(u-.5) - i*SP, wv=Math.PI*2/(SN.vwl||SN.wl);
       return SN.vamp*Math.sin(wv*xx + (SN.vph||0)) - SN.vdepth - (dive+rise)*(SN.vamp+8); }
     return A*Math.sin(WS*tt - i*K + PH) - DEPTH - (dive+rise)*(A+8); };
@@ -352,7 +359,8 @@ export function lavaSerpent(o={}){
     if(i===N-1){ for(let x=-3;x<=-1;x++) m.put(x,0,0,GL,1); m.box(-6,-1,0,-4,1,0,SPK); }
     parts.push({cubes:m.list(), pivot:[0,0,0], fn:(g,tt)=>{ const x=-i*SP, y=yAt(i,tt), y2=yAt(i+.5,tt), y0=yAt(i-.5,tt);
       let px=x, pz=Math.sin(tt*.6 - i*.25 + PH)*1.2*t, ry=0;
-      if(o.sine){ // Sinuskurve von A nach B: Kopf gleitet voran, der Leib folgt exakt derselben Kurve (feste Bahn, Glieder schlängeln hindurch)
+      if(RT){ const sI=headS(tt)-i*SP, q=rAt(sI); px=q[0]; pz=q[1]; ry=q[2]; }
+      else if(o.sine){ // Sinuskurve von A nach B: Kopf gleitet voran, der Leib folgt exakt derselben Kurve (feste Bahn, Glieder schlängeln hindurch)
         const SN=o.sine, EXT=(N-1)*SP, c=((tt+PH)%CYC+CYC)%CYC, u=Math.min(1,c/(CYC-2)), xh=EXT/2 + SN.len*(u-.5);
         px = xh - i*SP; const w=Math.PI*2/SN.wl; pz = SN.amp*Math.sin(w*px + (SN.ph||0)); ry = -Math.atan(SN.amp*w*Math.cos(w*px + (SN.ph||0)));
         px -= EXT/2; }

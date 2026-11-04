@@ -260,19 +260,34 @@ export function build(A){
     orbit:{c:[60,y,34], r:[78,52], speed:sp, dir, ph, bob:2.5, wander:{f:.17+ph*.01, r:.22, y:10, eight:10, dx:14, dz:12, span:22, clear:8}}, scale:sc, noShadow:true }));
   // Magma-Schlangen: suchen sich freie Lavaflächen (Ring ohne Felsen) vor der Stadt
   // freie Lavabahnen (Korridor ohne Felsen) für den Weg von A nach B in Sinuskurve
-  const SSC=.7, SN0={n:20, amp:1.6, wl:50, vamp:11, vdepth:3, vwl:62};
-  const freeLane = (cx,cz,th,EXTW,HALFW) => { const dx=Math.cos(th), dz=-Math.sin(th);
-    for(let a=-EXTW/2;a<=EXTW/2;a+=2.5) for(let b=-HALFW;b<=HALFW;b+=2.5){ const x=Math.round(cx+dx*a-dz*b), z=Math.round(cz+dz*a+dx*b);
-      for(let y=SEA-1;y<=SEA+6;y++) if(get(x,y,z)) return false; } return true; };
-  const serp = []; let SNc = null;
-  for(const len of [60,50,42,34]){ const SN_={...SN0, len}, EXTW=(len+(SN_.n-1)*2.6)*SSC, HALFW=(SN_.amp+5)*SSC+4; serp.length=0;
-    const cand=[]; for(const th of [0,Math.PI/2,Math.PI/4,-Math.PI/4]) for(let cx=-10;cx<=130;cx+=5) for(let cz=60;cz<=150;cz+=5) cand.push([cx,cz,th, Math.abs(cz-108)*1.2+Math.abs(cx-60)*.35]);
-    cand.sort((a,b)=>a[3]-b[3]);
-    for(const [cx,cz,th] of cand){ if(serp.length>=2) break; if(serp.some(([x,z])=>Math.hypot(cx-x,cz-z)<EXTW*.8)) continue; if(freeLane(cx,cz,th,EXTW,HALFW)) serp.push([cx,cz,th]); }
-    if(serp.length>=2){ SNc=SN_; break; } }
-  if(!SNc) SNc={...SN0, len:34};
-  serp.forEach(([cx,cz,th],k)=>creatures.push({ ...lavaSerpent({n:SNc.n, sine:{...SNc, ph:k*1.7, vph:k*2.1}, phase:k*13, cycle:44+k*8, speed:1.3+k*.25}), orbit:{c:[cx,SEA+1,cz], r:[.001,.001], speed:0, ph:0, yaw:th}, scale:SSC, clearR:0 }));
-  if(typeof window!=="undefined") window.__serp = serp; if(typeof window!=="undefined") window.__serpLen = SNc.len;
+  // Lavaschlangen: 3 Stück, schnell, Zickzack-Routen durch die gesamte freie Lavafläche (Planer meidet Felsen/Türme, bevorzugt noch nicht befahrene Stellen)
+  const SSC=.7, X0=-12, X1=132, Z0=56, Z1=152, GW=X1-X0+1, GH=Z1-Z0+1;
+  const solid = new Uint8Array(GW*GH);
+  for(let x=X0;x<=X1;x++) for(let z=Z0;z<=Z1;z++){ let b=0; for(let y=SEA-1;y<=SEA+6 && !b;y++) if(get(x,y,z)) b=1; solid[(x-X0)*GH+(z-Z0)]=b; }
+  const free = new Uint8Array(GW*GH), RAD=4;
+  for(let x=X0+RAD;x<=X1-RAD;x++) for(let z=Z0+RAD;z<=Z1-RAD;z++){ let ok=1; for(let a=-RAD;a<=RAD&&ok;a+=2) for(let b=-RAD;b<=RAD;b+=2) if(solid[(x+a-X0)*GH+(z+b-Z0)]){ ok=0; break; } free[(x-X0)*GH+(z-Z0)]=ok; }
+  const isFree = (x,z) => { const xi=Math.round(x)-X0, zi=Math.round(z)-Z0; return xi>=0&&xi<GW&&zi>=0&&zi<GH&&free[xi*GH+zi]===1; };
+  const visited = new Uint16Array(GW*GH), vis = (x,z) => { const xi=Math.round(x/3)*3-X0, zi=Math.round(z/3)*3-Z0; return (xi>=0&&xi<GW&&zi>=0&&zi<GH) ? visited[xi*GH+zi] : 99; };
+  const mark = (x,z) => { for(let a=-3;a<=3;a++) for(let b=-3;b<=3;b++){ const xi=Math.round(x/3)*3+a-X0, zi=Math.round(z/3)*3+b-Z0; if(xi>=0&&xi<GW&&zi>=0&&zi<GH) visited[xi*GH+zi]++; } };
+  let rseed=20260; const rnd = () => (rseed = (rseed*1664525+1013904223)>>>0)/4294967296;
+  const freeCells=[]; for(let x=X0;x<=X1;x+=3) for(let z=Z0;z<=Z1;z+=3) if(isFree(x,z)) freeCells.push([x,z]);
+  const planRoute = (start, steps) => { let [x,z]=start, th=rnd()*Math.PI*2, ph=rnd()*6.28, pts=[[x,z]]; mark(x,z);
+    for(let n=0;n<steps;n++){
+      let best=null, bs=-1e9; const kappa=.13*Math.sin(n*.11+ph);           // Grundkurve: S-Schwünge
+      for(let d=-1.2; d<=1.2; d+=.1){ const nt=th+d*.55+kappa*.5; let sc=-Math.abs(d)*.6 + (d*kappa>0?.25:0), blocked=false;
+        for(const L of [4,9,15,22]){ const px=x+Math.cos(nt)*L, pz=z+Math.sin(nt)*L; if(!isFree(px,pz)){ sc-= (L<10?60:12)*(1-L/30); if(L<10){ blocked=true; break; } } else sc -= vis(px,pz)*.22*(L>8?1:.4); }
+        sc += rnd()*.35; if(!blocked && sc>bs){ bs=sc; best=nt; } }
+      if(best===null){ for(let q=0;q<16;q++){ const c2=th+Math.PI*2*q/16+.2; if(isFree(x+Math.cos(c2)*4,z+Math.sin(c2)*4) && isFree(x+Math.cos(c2)*8,z+Math.sin(c2)*8)){ best=c2; break; } } if(best===null) break; }   // eingeklemmt: umdrehen, sonst Route hier beenden (kein Sprung)
+      let dth=best-th; while(dth>Math.PI) dth-=2*Math.PI; while(dth<-Math.PI) dth+=2*Math.PI; th += Math.max(-.32,Math.min(.32,dth));   // weich einlenken
+      const nx=x+Math.cos(th)*3, nz=z+Math.sin(th)*3; if(isFree(nx,nz)){ x=nx; z=nz; } else th+=.5;
+      pts.push([x,z]); mark(x,z); }
+    // glätten (gleitender Mittelwert) und fein abtasten, in Schlangen-Einheiten (Welt / Maßstab)
+    let sm=pts; for(let r=0;r<3;r++) sm=sm.map((p,i)=>{ let sx=0,sz=0,c=0; for(let a=-3;a<=3;a++){ const q=sm[Math.max(0,Math.min(sm.length-1,i+a))]; sx+=q[0]; sz+=q[1]; c++; } return [sx/c,sz/c]; });
+    return sm.map(p=>[p[0]/SSC, p[1]/SSC]); };
+  const serp = [];
+  if(freeCells.length>20) for(let k=0;k<3;k++){ let bestR=null; for(let tries=0;tries<10;tries++){ const st=freeCells[(rnd()*freeCells.length)|0], r=planRoute(st, 380); if(!bestR || r.length>bestR.length) bestR=r; if(r.length>=370) break; } serp.push({ route:bestR, k }); }
+  serp.forEach(({route,k})=>creatures.push({ ...lavaSerpent({n:22, route:{pts:route, speed:[11,9.5,12.5][k], off:k*37, vamp:11, vdepth:3, vwl:[62,70,56][k], vph:k*2.1}, phase:k*13}), orbit:{c:[0,SEA+1,0], r:[.001,.001], speed:0, ph:0, yaw:0}, scale:SSC, clearR:0 }));
+  window.__serp = serp.map(q=>q.route.length);
   const walkLine = (a,b,o) => { const cx=(a[0]+b[0])/2, cz=(a[2]+b[2])/2, len=Math.hypot(b[0]-a[0],b[2]-a[2])/2-1.5;
     creatures.push({ ...person(o.p), orbit:{c:[cx,(a[1]+b[1])/2+1,cz], r:[len,.001], rot:Math.atan2(b[2]-a[2],b[0]-a[0]), slope:(b[1]-a[1])/(2*len+3), speed:o.speed||.16, ph:o.ph||0, bob:.03, cycle:o.cycle||[22,.6,0]}, scale:o.scale||.17, clearR:0 }); };
   walkLine(...BR.r, {p:{walk:true, shirt:0x8A2A1E}, ph:0});

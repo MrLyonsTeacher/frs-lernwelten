@@ -75,8 +75,8 @@ main{max-width:1240px;margin:0 auto;padding:1.2rem 1.2rem 2.5rem}
 .stats i{width:8px;height:8px;border-radius:50%;background:var(--d)}
 .stats b{font-weight:700;color:var(--ink)}
 .stats .off{opacity:.45}
-.cls-act{display:flex;gap:.45rem}
-.cls-act .btn:first-child{flex:1}
+.cls-act{display:flex;gap:.45rem;flex-wrap:wrap} .cls-act .btn[data-frei]{white-space:nowrap}
+.cls-act .btn:first-child{flex:1 1 60%}
 .tog{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .6rem}
 .tog svg{transition:transform .2s}
 .tog[aria-expanded="true"] svg{transform:rotate(180deg)}
@@ -126,6 +126,19 @@ dialog::backdrop{background:#000}
 .qrbar{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
 .toast{min-height:1.4em;color:var(--ok);font-weight:700;margin:0}
 .warn{background:#FFF3D6;color:#5A4300;border-radius:12px;padding:.7rem 1rem;margin:0 0 1rem}
+
+dialog.fd{width:min(560px,94vw);height:auto;max-height:92dvh;margin:auto;border-radius:18px;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+dialog.fd::backdrop{background:rgba(10,20,40,.6)}
+.fd-in{padding:1.2rem 1.3rem 1.3rem;display:grid;gap:.8rem}
+.fd-in h2{margin:0;font-family:"Fredoka",sans-serif;font-size:1.5rem} .fd-in p{margin:0;color:#5A6B82}
+.fd-pw{display:flex;gap:.5rem} .fd-pw input{flex:1;min-width:0;min-height:44px;padding:0 .8rem;border:1px solid var(--line2);border-radius:10px;font-size:1rem}
+.fd-list{display:grid;gap:.5rem} .fd-list label{display:flex;align-items:center;gap:.7rem;padding:.65rem .8rem;border:1px solid var(--line2);border-radius:12px;font-weight:600;cursor:pointer}
+.fd-list input{width:22px;height:22px;accent-color:var(--pri)} .fd-list small{margin-left:auto;color:#5A6B82;font-weight:500}
+.fd-out{display:grid;justify-items:center;gap:.5rem} .fd-out img{width:min(300px,70vw);border-radius:12px;border:1px solid var(--line2)}
+.fd-out textarea{width:100%;height:4.5rem;font-size:.75rem;border:1px solid var(--line2);border-radius:8px;padding:.4rem}
+.fd-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn.lockd{border-color:#C08A1E;color:#7A5300}
+.shake{animation:shk .35s} @keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 </style>
 </head>
 <body>
@@ -157,6 +170,8 @@ dialog::backdrop{background:#000}
   </div>
 </main>
 
+<dialog id="fdlg" class="fd" aria-labelledby="fdT"><div class="fd-in" id="fdBody"></div></dialog>
+
 <dialog id="dlg" aria-labelledby="qrTitle">
   <div class="qrwrap">
     <p class="sub" id="qrSub"></p>
@@ -174,6 +189,7 @@ dialog::backdrop{background:#000}
 
 <script src="qrcode.js"></script>
 <script src="katalog.js"></script>
+<script src="lernwelt/freigabe.js"></script>
 <script>
 "use strict";
 const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -219,6 +235,7 @@ function englisch(){
         <div class="stats">${bereiche.map(b=>{ const n=c.themen.filter(t=>t.kat===b).length; return `<span${n?"":' class="off"'} style="--d:var(--c-${b},#888)"><i></i><b>${n}</b> ${esc(KAT(b))}</span>`; }).join("")}</div>
         <div class="cls-act"><button class="btn" data-qr="englisch/welt.html?k=${c.k}" data-t="Klasse ${c.k} · ${esc(w.name)}" data-s="Englisch">${SVG.qr} QR-Code Klasse ${c.k}</button>
           <a class="btn ghost icon" href="englisch/welt.html?k=${c.k}" target="_blank" rel="noopener" aria-label="Welt öffnen" title="Welt öffnen">${SVG.out}</a>
+          <button class="btn ghost${selLocked(c.k,bereiche).length?" lockd":""}" data-frei="${c.k}" title="Bereiche für Schüler freigeben oder sperren (Passwort)">🔑 Freigabe${selLocked(c.k,bereiche).length?` · ${selLocked(c.k,bereiche).length} gesperrt`:""}</button>
           ${list.length?`<button class="btn ghost tog" data-tog="${c.k}" aria-expanded="${open}" title="Einzelne Lernwelten anzeigen" aria-label="${list.length} einzelne Lernwelten anzeigen">${SVG.list}${list.length}${SVG.down}</button>`:""}</div>
         ${list.length ? `<div class="topics">${used.map(b=>`<p class="tgrp" style="--d:var(--c-${b},#888)"><i></i>${esc(FRS.kategorien[b].name)}</p>${c.themen.filter(t=>t.kat===b).map(t=>row(null, t.titel, t.untertitel, "", t.pfad, `Englisch · Klasse ${c.k}`)).join("")}`).join("")}</div>` : ""}
       </div></article>`; }).join("")}</div>`;
@@ -277,6 +294,41 @@ document.getElementById("copy").onclick = async ()=>{
   try{ await navigator.clipboard.writeText(url); document.getElementById("toast").textContent = "Link kopiert"; }
   catch(err){ document.getElementById("toast").textContent = "Kopieren nicht möglich – Link bitte markieren"; }
 };
+
+/* ---------- Freigabe (Lehrkraft): Bereiche je Klasse offen/gesperrt, Code als QR für die Schüler-iPads ---------- */
+const SELKEY = k => "frs-frei-sel-" + k;
+const selGet = (k, bereiche) => { try{ const v = JSON.parse(localStorage.getItem(SELKEY(k))||"null"); if(Array.isArray(v)) return bereiche.filter(b=>v.includes(b)); }catch(e){} return bereiche.slice(); };
+const selLocked = (k, bereiche) => { const o = selGet(k, bereiche); return bereiche.filter(b=>!o.includes(b)); };
+let TEACHER = false; try{ TEACHER = sessionStorage.getItem("frs-teacher")==="1"; }catch(e){}
+function freiDialog(k){
+  const c = FRS.englisch.klassen.find(x=>x.k===k), w = FRS.welt(k), bereiche = FRS.bereicheFuer(k), box = document.getElementById("fdBody"), dlg = document.getElementById("fdlg");
+  const head = `<h2 id="fdT">🔑 Freigabe · Klasse ${k} · ${esc(w.name)}</h2>`;
+  const closeB = `<button class="btn ghost" data-fclose>Schließen</button>`;
+  if(!TEACHER){
+    box.innerHTML = head + `<p>Passwort eingeben, um Bereiche für die Schüler freizugeben oder zu sperren.</p><div class="fd-pw"><input id="fpw" type="password" autocomplete="off" placeholder="Passwort"><button class="btn" id="fpwGo">OK</button></div><div class="fd-row">${closeB}</div>`;
+    dlg.showModal(); setTimeout(()=>document.getElementById("fpw").focus(),50); return; }
+  const open = selGet(k, bereiche);
+  box.innerHTML = head + `<p>Häkchen = offen für Schüler. Dann „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera und die Auswahl gilt auf ihrem Gerät.</p>
+    <div class="fd-list">${bereiche.map(b=>`<label><input type="checkbox" data-b="${b}" ${open.includes(b)?"checked":""}><span>${FRS.kategorien[b].icon||""} ${esc(FRS.kategorien[b].name)}</span><small>${c.themen.filter(t=>t.kat===b).length} Lernwelten</small></label>`).join("")}</div>
+    <div class="fd-row"><button class="btn" id="fMk">Code erzeugen</button><button class="btn ghost" id="fAll">Alles öffnen</button>${closeB}</div>
+    <div class="fd-out" id="fOut"></div>`;
+  if(!dlg.open) dlg.showModal();
+}
+document.addEventListener("click", async e=>{
+  const fb = e.target.closest("[data-frei]"); if(fb){ freiDialog(+fb.dataset.frei); return; }
+  const dlg = document.getElementById("fdlg"); if(!dlg.open) return;
+  if(e.target.closest("[data-fclose]")){ dlg.close(); return; }
+  const kTxt = document.getElementById("fdT") ? document.getElementById("fdT").textContent.match(/Klasse (\d+)/) : null, k = kTxt ? +kTxt[1] : 0;
+  if(e.target.closest("#fpwGo")){ const i = document.getElementById("fpw");
+    if(await FREI.checkPw(i.value)){ TEACHER = true; try{ sessionStorage.setItem("frs-teacher","1"); }catch(err){} freiDialog(k); }
+    else { i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); i.value=""; } return; }
+  const picked = () => [...dlg.querySelectorAll("[data-b]")].filter(x=>x.checked).map(x=>x.dataset.b);
+  if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b]").forEach(x=>x.checked=true); return; }
+  if(e.target.closest("#fMk")){ const o = picked(); try{ localStorage.setItem(SELKEY(k), JSON.stringify(o)); }catch(err){}
+    const code = await FREI.makeCode(k, o), url = abs(`englisch/welt.html?k=${k}&frei=${code}`), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
+    document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;
+    renderPanel(); }
+});
 renderTabs(); renderPanel();
 </script>
 </body>

@@ -184,7 +184,6 @@ body.area-open .wlbl{opacity:0;pointer-events:none}
 <footer class="wfoot" id="foot"></footer>
 <aside class="wpanel" id="panel" aria-live="polite"></aside>
 <div class="fin" id="fin" hidden></div>
-<div class="fin" id="frei" hidden></div>
 
 <script src="../katalog.js"></script>
 <script src="../qrcode.js"></script>
@@ -233,7 +232,7 @@ async function main(){
 
   $("#bar").innerHTML = `<span class="wid"><span class="wk">Class ${K}</span><span class="wn">${esc(WI.name)}</span></span>
     <span class="wchip" id="rkChip" role="button" tabindex="0" title="${esc(RK().top?"Top rank!":RK().toNext+" more to "+RK().nextName)}"><span class="wfl">${UK} ${UH.today(K)}</span><span class="wri">${RK().icon}</span><span class="wrk"><b>${esc(RK().name)}</b><i><u style="width:${Math.round(RK().pct*100)}%"></u></i></span></span>
-    ${UH.prefsHTML()}<span class="wsp"></span><button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="short">Finished?</span></button><button class="wlock" id="lockBtn" title="Lehrkraft / teacher" aria-label="Teacher">🔑</button>`;
+    ${UH.prefsHTML()}<span class="wsp"></span><button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="short">Finished?</span></button>`;
   $("#foot").innerHTML = `<button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
 `;
   $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" class="${FREI.locked(K,b)?"locked":""}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${FREI.locked(K,b)?"🔒":counts[b]}</span></button>`).join("");
@@ -286,33 +285,6 @@ async function main(){
       if(o) location.reload(); else { const i = $("#fcode"); i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); } } });
   if(freiMsg){ const t = document.createElement("div"); t.className = "toast"; t.textContent = freiMsg; document.body.appendChild(t); setTimeout(()=>t.remove(), 4000); }
 
-  // ---------- Lehrkraft: Passwort, Bereiche wählen, Freigabe-Code / QR ----------
-  const FR = $("#frei");
-  function openTeacher(){
-    FR.innerHTML = `<section class="fin-win" role="dialog" aria-modal="true" style="width:min(520px,100%)"><button class="fin-x" data-close aria-label="Close">×</button>
-      <h2>🔑 Teacher</h2><p class="how">Passwort eingeben, dann Bereiche für Class ${K} freigeben oder sperren.</p>
-      <div class="frei-in"><input id="fpw" type="password" autocomplete="off" placeholder="Passwort"><button id="fpwGo">OK</button></div></section>`;
-    FR.hidden = false; setTimeout(()=>$("#fpw").focus({preventScroll:true}), 50);
-  }
-  function teacherPanel(){
-    FR.querySelector("section").innerHTML = `<button class="fin-x" data-close aria-label="Close">×</button><h2>🔓 Bereiche · Class ${K}</h2>
-      <p class="how">Häkchen = offen für Schüler. Danach „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera.</p>
-      <div class="frei-list">${BER.map(b=>`<label><input type="checkbox" data-b="${b}" ${FREI.locked(K,b)?"":"checked"}> <span>${icons[b]} ${esc(names[b])}</span><small style="margin-left:auto;opacity:.7">${counts[b]} quests</small></label>`).join("")}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="frei-b" id="fMk">Code erzeugen</button><button class="frei-b ghost" id="fMe">Nur auf diesem Gerät</button><button class="frei-b ghost" id="fStd">Standard</button></div>
-      <div class="frei-out" id="fOut"></div>`;
-  }
-  const picked = () => [...FR.querySelectorAll("[data-b]")].filter(c=>c.checked).map(c=>c.dataset.b);
-  FR.addEventListener("click", async e=>{
-    if(e.target===FR || e.target.closest("[data-close]")){ FR.hidden = true; return; }
-    if(e.target.closest("#fpwGo")){ if(await FREI.checkPw($("#fpw").value)) teacherPanel(); else { const i=$("#fpw"); i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); i.value=""; } }
-    if(e.target.closest("#fMk")){ const code = await FREI.makeCode(K, picked()), url = location.origin + location.pathname + "?k=" + K + "&frei=" + code, img = UH.qrImage(url, 6);
-      $("#fOut").innerHTML = `${img?`<img src="${img}" alt="QR code">`:""}<p class="how" style="margin:0">Scan → Bereiche öffnen sich auf dem iPad.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`; }
-    if(e.target.closest("#fMe")){ const o = await FREI.apply(await FREI.makeCode(K, picked())); if(o) location.reload(); }
-    if(e.target.closest("#fStd")){ if(confirm("Auf diesem Gerät zurück zum Standard?")){ FREI.clear(K); location.reload(); } }
-  });
-  FR.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="fpw"){ e.preventDefault(); $("#fpwGo").click(); } });
-  $("#lockBtn").addEventListener("click", openTeacher);
-
   // Ergebnis-Code der Welt
   const F = $("#fin");
   function openFinish(){
@@ -346,7 +318,7 @@ async function main(){
       NAME=v; try{ localStorage.setItem(NAME_KEY,v); }catch(err){} e.target.closest("#mk").textContent="Update"; draw(true); }
   });
   F.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="nm"){ e.preventDefault(); $("#mk").click(); } });
-  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!FR.hidden) FR.hidden=true; else if(!F.hidden) F.hidden=true; else closeArea(); } });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!F.hidden) F.hidden=true; else closeArea(); } });
   UH.bindPrefs();
   $("#finBtn").addEventListener("click", openFinish);
   const rkc = $("#rkChip"); if(rkc){ const op=()=>UH.rankSheet(K, UH.today(K), true); rkc.addEventListener("click", op); rkc.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); op(); } }); }
