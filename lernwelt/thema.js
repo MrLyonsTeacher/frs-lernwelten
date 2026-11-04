@@ -15,6 +15,21 @@
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   window.TH = {
     start(c){
+      // Freigabe: ist der Bereich von der Lehrkraft gesperrt, erscheint nur ein Hinweis (Datei freigabe.js liegt neben thema.js)
+      const go = () => { if(window.FREI && FREI.locked(c.k, c.kat)) return TH.gesperrt(c); TH.los(c); };
+      if(window.FREI) return go();
+      const sc = document.createElement("script"); sc.src = (document.currentScript && document.currentScript.src || "").replace(/thema\.js.*$/, "freigabe.js") || "../../lernwelt/freigabe.js";
+      sc.onload = go; sc.onerror = () => TH.los(c); document.head.appendChild(sc);
+    },
+    gesperrt(c){
+      const th = WELT[c.k] || "wasser"; document.body.classList.add("th-"+th);
+      const app = document.getElementById("app") || document.body;
+      app.innerHTML = `<div style="max-width:560px;margin:12vh auto;padding:28px 24px;text-align:center;font-family:Fredoka,system-ui,sans-serif;border-radius:22px;border:2.5px solid var(--ui-border,#fff);background:var(--ui-bg,rgba(0,0,0,.6));color:var(--ui-text,#fff)">
+        <div style="font-size:64px" aria-hidden="true">🔒</div><h1 style="margin:.2em 0;font-size:30px">Not open yet</h1>
+        <p style="font-size:18px;margin:.4em 0">Your teacher will open <b>${esc(KATNAME[c.kat]||c.kat)}</b> soon.<br><small>Dieser Bereich ist noch gesperrt – deine Lehrkraft schaltet ihn bald frei.</small></p>
+        <p style="margin-top:1.4em"><a href="../welt.html?k=${c.k}" style="display:inline-block;padding:12px 22px;border-radius:14px;background:var(--ui-accent,#FFC24A);color:var(--ui-accent-ink,#111);font-weight:700;text-decoration:none">← Back to the island</a></p></div>`;
+    },
+    los(c){
       const th = WELT[c.k] || "wasser";
       document.body.classList.add("th-"+th);
       document.body.insertAdjacentHTML("afterbegin", FLAGDEFS);

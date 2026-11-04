@@ -288,7 +288,7 @@ function home(){
   const lvls = LV();
   const st = lvls.reduce((a,l)=>a+starsFor(best(l.id),maxOf(l)),0);
   const tier = topicTier(), nextP = TIERS[tier] !== undefined ? Math.ceil(TIERS[tier]*MAX - 1e-9) - total() : 0;
-  return topbar({island:!!W.insel}) + `<header class="hero">${W.hero}</header>
+  return topbar({island:!!W.insel, pill:true}) + `<header class="hero">${W.hero}</header>
   <button class="finish-banner" ${finTarget()}><span class="fb-flag" aria-hidden="true"></span>
     <span class="fb-txt"><b>${T.finishBtn}</b><span>${T.finishSub}</span></span><span class="fb-arrow" aria-hidden="true">🏁</span></button>
   <div class="stats">
@@ -346,7 +346,7 @@ const yearNum = j => { const t = String(j||"").replace(/\b(c\.|AD|BC)\s*/gi,"").
 const plain = t => String(t||"").replace(/\*\*|~~|\*/g, "");
 function learnScreen(l, fromHome){
   const D = deckOf(l), F = D.folien, key = deckKey(l), seen = !!S.seen[key];
-  APP.innerHTML = topbar({back:true, title:D.titel || l.titel, icon:"📖", art:fromHome?T.cardsHead:T.learn}) + howBox(fromHome?T.cardsHow:T.learnFirst, W.sprache==="en"?TXT.de[fromHome?"cardsHow":"learnFirst"]:null) + `<div id="area"></div>`;
+  APP.innerHTML = topbar({back:true, title:D.titel || l.titel, icon:"📖", pill:true, art:fromHome?T.cardsHead:T.learn}) + howBox(fromHome?T.cardsHow:T.learnFirst, W.sprache==="en"?TXT.de[fromHome?"cardsHow":"learnFirst"]:null) + `<div id="area"></div>`;
   document.title = (D.titel || l.titel)+" – "+W.titel; fit();
   const A = $("#area"), hasTTS = "speechSynthesis" in window && window.SpeechSynthesisUtterance, canSpeak = !!(W.audio || hasTTS);
   let player = null;

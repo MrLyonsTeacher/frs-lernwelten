@@ -75,7 +75,10 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .wdock{position:fixed;left:50%;bottom:calc(74px + env(safe-area-inset-bottom,0));transform:translateX(-50%);z-index:5;display:flex;gap:10px;padding:8px;border-radius:20px;background:var(--ui-chip);border:2px solid var(--ui-border);box-shadow:0 0 18px var(--ui-glow);max-width:calc(100vw - 24px)}
 .wdock button{display:flex;align-items:center;gap:8px;min-height:54px;padding:6px 16px;border-radius:14px;border:0;background:rgba(255,255,255,.12);color:var(--ui-text);font:700 17px Fredoka;white-space:nowrap}
 body:not(.area-open):not(.no3d) .wdock{display:none}
-body:not(.area-open):not(.no3d) .wfoot .wfin{display:none}   /* Fertig-Knopf erst in einer Rubrik */
+.wbar .wfin{min-height:42px;font-size:16px;padding:0 12px 0 0;gap:6px}
+.wbar .wfin .long{display:none!important} .wbar .wfin .short{display:inline!important}
+.wbar .wfin .chk{width:20px}
+.fin-reset{margin-top:10px;min-height:46px;padding:0 16px;border-radius:12px;border:2px solid var(--ui-border);background:var(--ui-chip);color:var(--ui-text);font:700 16px Fredoka}
 .wdock button[aria-pressed="true"]{background:var(--ui-accent);color:var(--ui-accent-ink)}
 .wdock .n{min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:rgba(0,0,0,.25);font-size:13px;padding:0 5px}
 @media (max-width:560px){ .wdock button{padding:6px 10px;font-size:15px} .wdock .lbl-long{display:none} }
@@ -120,6 +123,15 @@ body:not(.area-open):not(.no3d) .wfoot .wfin{display:none}   /* Fertig-Knopf ers
 body.area-open .wlbl{opacity:0;pointer-events:none}
 @media (max-aspect-ratio:1/1){ .wpanel{width:min(560px,calc(100vw - 24px));bottom:168px !important} }
 @media (max-width:420px){ .qgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.wdock button.locked{opacity:.7}
+.wlock{flex:0 0 auto;min-height:40px;min-width:40px;border-radius:12px;border:2px solid var(--ui-border);background:var(--ui-chip);color:var(--ui-text);font-size:18px;opacity:.7}
+.frei-in{display:flex;gap:8px;margin-top:12px} .frei-in input{flex:1;min-width:0;min-height:46px;padding:0 12px;border-radius:12px;border:2px solid var(--ui-border);background:rgba(255,255,255,.1);color:var(--ui-text);font:600 16px Lexend,system-ui}
+.frei-in button,.frei-b{min-height:46px;padding:0 16px;border:0;border-radius:12px;background:var(--ui-accent);color:var(--ui-accent-ink);font:700 16px Fredoka}
+.frei-b.ghost{background:rgba(255,255,255,.14);color:var(--ui-text)}
+.frei-list{display:grid;gap:8px;margin:12px 0} .frei-list label{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.1);font:600 17px Lexend,system-ui}
+.frei-list input{width:24px;height:24px;accent-color:var(--ui-accent)}
+.frei-out{display:grid;justify-items:center;gap:8px;margin-top:12px} .frei-out img{width:min(260px,70vw);border-radius:12px;background:#fff;padding:8px} .frei-out textarea{width:100%;min-height:70px;font:12px monospace;border-radius:10px;padding:8px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:9;padding:12px 18px;border-radius:14px;background:var(--ui-accent);color:var(--ui-accent-ink);font:700 17px Fredoka;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 .empty{padding:.8rem;border:1.5px dashed var(--ui-border);border-radius:14px;color:var(--ui-sub);text-align:center}
 .wback{margin-top:14px;min-height:48px;padding:.4rem 1rem;border:0;border-radius:12px;background:var(--ui-accent);color:var(--ui-accent-ink);font:700 16px Fredoka}
 
@@ -172,11 +184,13 @@ body.area-open .wlbl{opacity:0;pointer-events:none}
 <footer class="wfoot" id="foot"></footer>
 <aside class="wpanel" id="panel" aria-live="polite"></aside>
 <div class="fin" id="fin" hidden></div>
+<div class="fin" id="frei" hidden></div>
 
 <script src="../katalog.js"></script>
 <script src="../qrcode.js"></script>
 <script src="../ergebnis.js"></script>
 <script src="../lernwelt/lernwelt.js"></script>
+<script src="../lernwelt/freigabe.js"></script>
 <script type="module">
 const UK = `<svg class="ico-flag" viewBox="0 0 60 30" aria-hidden="true"><use href="#${+new URLSearchParams(location.search).get("k")===8?"usflag":"ukflag"}"/></svg>`;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -205,6 +219,10 @@ function prog(t){
 }
 
 async function main(){
+  let freiMsg = "";
+  { const fp = new URLSearchParams(location.search).get("frei");
+    if(fp){ const o = await FREI.apply(fp); const u = new URL(location.href); u.searchParams.delete("frei"); history.replaceState(null,"",u);
+      freiMsg = o ? (o.k===K ? "🔓 Areas updated – Bereiche freigeschaltet!" : "🔓 Code saved for class "+o.k) : "⚠️ Code not valid / Code ungültig"; } }
   document.title = `Class ${K} · ${WI.name} – FRS Lernwelten`;
   const BER = FRS.bereicheFuer(K), byKat = b => KL.themen.filter(t=>t.kat===b);
   const names = {}, counts = {}, icons = {};
@@ -215,10 +233,10 @@ async function main(){
 
   $("#bar").innerHTML = `<span class="wid"><span class="wk">Class ${K}</span><span class="wn">${esc(WI.name)}</span></span>
     <span class="wchip" id="rkChip" role="button" tabindex="0" title="${esc(RK().top?"Top rank!":RK().toNext+" more to "+RK().nextName)}"><span class="wfl">${UK} ${UH.today(K)}</span><span class="wri">${RK().icon}</span><span class="wrk"><b>${esc(RK().name)}</b><i><u style="width:${Math.round(RK().pct*100)}%"></u></i></span></span>
-    ${UH.prefsHTML()}<span class="wsp"></span>`;
+    ${UH.prefsHTML()}<span class="wsp"></span><button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="short">Finished?</span></button><button class="wlock" id="lockBtn" title="Lehrkraft / teacher" aria-label="Teacher">🔑</button>`;
   $("#foot").innerHTML = `<button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
-    <button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="long">If you’re finished, click here</span><span class="short">Finished?</span></button>`;
-  $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${counts[b]}</span></button>`).join("");
+`;
+  $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" class="${FREI.locked(K,b)?"locked":""}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${FREI.locked(K,b)?"🔒":counts[b]}</span></button>`).join("");
 
   // Welt laden
   let W3 = null, spotsInfo = {};
@@ -239,6 +257,14 @@ async function main(){
   const P = $("#panel");
   function openArea(k){
     const kat = FRS.kategorien[k], list = byKat(k), ort = spotsInfo[k] && spotsInfo[k].ort || kat.ort;
+    if(FREI.locked(K,k)){   // von der Lehrkraft gesperrt: nur Hinweis, keine Aufgaben
+      if(W3) W3.focus(k);
+      document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.kat===k));
+      P.innerHTML = `<h2>🔒 ${esc(kat.name)}</h2><p class="ort">Not open yet · noch gesperrt</p>
+        <div class="empty">Your teacher will open this area soon.<br><small>Deine Lehrkraft schaltet diesen Bereich bald frei.</small></div>
+        <div class="frei-in"><input id="fcode" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Code from your teacher / Freigabe-Code"><button id="fgo">OK</button></div>
+        <button class="wback" id="back">← Back to ${esc(WI.name)}</button>`;
+      P.classList.remove("many"); document.body.classList.add("area-open"); setTimeout(()=>P.classList.add("on"), W3 ? 450 : 0); return; }
     if(W3) W3.focus(k);
     document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.kat===k));
     P.innerHTML = `<h2>${kat.icon} ${esc(kat.name)}</h2><p class="ort">${esc(ort)} · ${list.length} ${list.length===1?"quest":"quests"}</p>
@@ -255,7 +281,37 @@ async function main(){
   }
   function closeArea(){ P.classList.remove("on"); document.body.classList.remove("area-open"); document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed","false")); if(W3) W3.home(); }
   $("#dock").addEventListener("click", e=>{ const b=e.target.closest("[data-kat]"); if(!b) return; if(b.getAttribute("aria-pressed")==="true") closeArea(); else openArea(b.dataset.kat); });
-  P.addEventListener("click", e=>{ if(e.target.closest("#back")) closeArea(); });
+  P.addEventListener("click", async e=>{ if(e.target.closest("#back")) closeArea();
+    if(e.target.closest("#fgo")){ const v = $("#fcode").value.trim(), m = v.match(/frei=([^&\s]+)/), o = await FREI.apply(m ? m[1] : v);
+      if(o) location.reload(); else { const i = $("#fcode"); i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); } } });
+  if(freiMsg){ const t = document.createElement("div"); t.className = "toast"; t.textContent = freiMsg; document.body.appendChild(t); setTimeout(()=>t.remove(), 4000); }
+
+  // ---------- Lehrkraft: Passwort, Bereiche wählen, Freigabe-Code / QR ----------
+  const FR = $("#frei");
+  function openTeacher(){
+    FR.innerHTML = `<section class="fin-win" role="dialog" aria-modal="true" style="width:min(520px,100%)"><button class="fin-x" data-close aria-label="Close">×</button>
+      <h2>🔑 Teacher</h2><p class="how">Passwort eingeben, dann Bereiche für Class ${K} freigeben oder sperren.</p>
+      <div class="frei-in"><input id="fpw" type="password" autocomplete="off" placeholder="Passwort"><button id="fpwGo">OK</button></div></section>`;
+    FR.hidden = false; setTimeout(()=>$("#fpw").focus({preventScroll:true}), 50);
+  }
+  function teacherPanel(){
+    FR.querySelector("section").innerHTML = `<button class="fin-x" data-close aria-label="Close">×</button><h2>🔓 Bereiche · Class ${K}</h2>
+      <p class="how">Häkchen = offen für Schüler. Danach „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera.</p>
+      <div class="frei-list">${BER.map(b=>`<label><input type="checkbox" data-b="${b}" ${FREI.locked(K,b)?"":"checked"}> <span>${icons[b]} ${esc(names[b])}</span><small style="margin-left:auto;opacity:.7">${counts[b]} quests</small></label>`).join("")}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="frei-b" id="fMk">Code erzeugen</button><button class="frei-b ghost" id="fMe">Nur auf diesem Gerät</button><button class="frei-b ghost" id="fStd">Standard</button></div>
+      <div class="frei-out" id="fOut"></div>`;
+  }
+  const picked = () => [...FR.querySelectorAll("[data-b]")].filter(c=>c.checked).map(c=>c.dataset.b);
+  FR.addEventListener("click", async e=>{
+    if(e.target===FR || e.target.closest("[data-close]")){ FR.hidden = true; return; }
+    if(e.target.closest("#fpwGo")){ if(await FREI.checkPw($("#fpw").value)) teacherPanel(); else { const i=$("#fpw"); i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); i.value=""; } }
+    if(e.target.closest("#fMk")){ const code = await FREI.makeCode(K, picked()), url = location.origin + location.pathname + "?k=" + K + "&frei=" + code, img = UH.qrImage(url, 6);
+      $("#fOut").innerHTML = `${img?`<img src="${img}" alt="QR code">`:""}<p class="how" style="margin:0">Scan → Bereiche öffnen sich auf dem iPad.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`; }
+    if(e.target.closest("#fMe")){ const o = await FREI.apply(await FREI.makeCode(K, picked())); if(o) location.reload(); }
+    if(e.target.closest("#fStd")){ if(confirm("Auf diesem Gerät zurück zum Standard?")){ FREI.clear(K); location.reload(); } }
+  });
+  FR.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="fpw"){ e.preventDefault(); $("#fpwGo").click(); } });
+  $("#lockBtn").addEventListener("click", openTeacher);
 
   // Ergebnis-Code der Welt
   const F = $("#fin");
@@ -279,24 +335,30 @@ async function main(){
     const code = UH.make(KL.id, NAME, tot, pmax, played), img = UH.qrImage(UH.link(code), 6);
     $("#out").innerHTML = `<div class="fin-grid"><div class="qr-card">${img?`<img src="${img}" alt="QR code">`:""}<p class="who">${esc(NAME)}</p>
         <p class="rank-l">${rk.icon} ${esc(rk.name)}</p><p class="tot">${UK} ${today} flags today · ${games} ${games===1?"game":"games"}</p></div>
-      <div><table class="fin-tab">${rows.join("") || "<tr><td>No quests yet.</td></tr>"}</table><p class="fin-note">If you play more, come back here – the code updates.<br><b>Before you give back the iPad:</b> show your code, then tap ↺ Reset.</p><code class="fin-code">${esc(code)}</code></div></div>`;
+      <div><table class="fin-tab">${rows.join("") || "<tr><td>No quests yet.</td></tr>"}</table><p class="fin-note">If you play more, come back here – the code updates.<br><b>Before you give back the iPad:</b> show your code, then tap ↺ Reset.</p><code class="fin-code">${esc(code)}</code><button class="fin-reset" id="fReset">↺ Reset &amp; close tab</button></div></div>`;
     if(fx) LW.confetti(120);
   }
   F.addEventListener("click", e=>{
+    if(e.target.closest("#fReset")){ doReset(true); return; }
     if(e.target===F || e.target.closest("[data-close]")){ F.hidden = true; if(location.hash) history.replaceState(null,"",location.pathname+location.search); return; }
     if(e.target.closest("#mk")){ const inp=$("#nm"), v=inp.value.replace(/[|!]/g,"").trim();
       if(!v){ inp.classList.add("shake"); setTimeout(()=>inp.classList.remove("shake"),400); return; }
       NAME=v; try{ localStorage.setItem(NAME_KEY,v); }catch(err){} e.target.closest("#mk").textContent="Update"; draw(true); }
   });
   F.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="nm"){ e.preventDefault(); $("#mk").click(); } });
-  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!F.hidden) F.hidden=true; else closeArea(); } });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!FR.hidden) FR.hidden=true; else if(!F.hidden) F.hidden=true; else closeArea(); } });
   UH.bindPrefs();
   $("#finBtn").addEventListener("click", openFinish);
   const rkc = $("#rkChip"); if(rkc){ const op=()=>UH.rankSheet(K, UH.today(K), true); rkc.addEventListener("click", op); rkc.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); op(); } }); }
-  $("#resetBtn").addEventListener("click", ()=>{
+  function doReset(closeTab){
     if(!confirm("Reset everything? All flags, games and your initials on this iPad will be deleted.\n\nAlles zurücksetzen? Alle Flaggen, Spiele und dein Kürzel auf diesem iPad werden gelöscht.\n\n(Show your result code to your teacher first!)")) return;
-    UH.resetClass(K, KL.themen.map(t=>t.id), KL.id); location.replace(location.pathname + "?k=" + K);
-  });
+    UH.resetClass(K, KL.themen.map(t=>t.id), KL.id);
+    if(!closeTab){ location.replace(location.pathname + "?k=" + K); return; }
+    try{ window.close(); }catch(e){}
+    // Browser erlauben window.close() nur für Fenster, die per Skript geöffnet wurden. Sonst: leere Abschlussseite.
+    setTimeout(()=>{ document.open(); document.write('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#111;color:#fff;font:700 22px/1.4 system-ui;text-align:center;padding:24px"><div>✅ Reset done.<br>Please close this tab now.<br><small style="font-weight:400;opacity:.7">Zurückgesetzt. Bitte schließe diesen Tab.</small></div>'); document.close(); }, 350);
+  }
+  $("#resetBtn").addEventListener("click", ()=>doReset(false));
   window.addEventListener("hashchange", ()=>{ if(location.hash==="#fertig") openFinish(); });
   if(location.hash==="#fertig") openFinish();
   const startA = new URLSearchParams(location.search).get("a");

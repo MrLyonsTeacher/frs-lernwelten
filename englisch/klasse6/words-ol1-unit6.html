@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Orange Line 1 · Unit 6 Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:6, kat:"vocabulary", id:"ov6", icon:"🚜", kartenSymbol:"🐚",
+  titel:"Orange Line 1 · Unit 6 Words", untertitel:"A trip to the country: farm, clothes, weather",
+  text:"Wörter aus Orange Line 1, Unit 6 „A trip to the country“: Bauernhof, Kleidung, Wetter, Nachtwanderung und Gummistiefel.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🐄", titel:"Country Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English word + German word**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **englisches Wort + deutsches Wort**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Wörter vom Bauernhof und aus der Natur.",
+      paare:[ {a:"farm", b:"Bauernhof"}, {a:"tractor", b:"Traktor"}, {a:"collar", b:"Halsband"}, {a:"canoeing", b:"Kanufahren"},
+              {a:"rock climbing", b:"Klettern"}, {a:"picnic", b:"Picknick"}, {a:"wheelchair", b:"Rollstuhl"}, {a:"torch", b:"Taschenlampe"} ]},
+    { id:"sort", typ:"sortieren", icon:"🗂️", titel:"Clothes, Weather or Country?", art:"Word groups · sort",
+      anleitung:"Which group does the word belong to? Tap the right box.",
+      anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
+      tipp:"Kleidung (clothes), Wetter (weather) oder Land (country).",
+      koerbe:[ {t:"clothes", info:"👕", tipp:"Kleidung: coat, trousers, skirt, scarf …"}, {t:"weather", info:"⛅", tipp:"Wetter: sunny, foggy, windy, rainy …"}, {t:"in the country", info:"🚜", tipp:"Auf dem Land: farm, tractor, sheep, mud …"} ],
+      items:[ {t:"coat", k:0}, {t:"trousers", k:0}, {t:"scarf", k:0}, {t:"jeans", k:0}, {t:"skirt", k:0},
+              {t:"sunny", k:1}, {t:"foggy", k:1}, {t:"windy", k:1}, {t:"cloudy", k:1}, {t:"rainy", k:1},
+              {t:"tractor", k:2}, {t:"farmer", k:2}, {t:"mud", k:2}, {t:"chicken", k:2}, {t:"farm", k:2} ]},
+    { id:"act", typ:"quiz", icon:"🛶", titel:"In the Country", art:"Activities · quiz",
+      anleitung:"Which activity is it? Choose the right answer.",
+      anleitungDe:"Welche Aktivität ist das? Wähle die richtige Antwort.",
+      tipp:"Wörter aus dem Word bank „In the country“.",
+      fragen:[
+        {q:"You sit in a boat and use a paddle: you …", o:["go canoeing","go swimming","go walking"], c:0, e:"**go canoeing** = Kanu fahren."},
+        {q:"You climb up a big rock: you …", o:["go rock climbing","go horse riding","go geocaching"], c:0, e:"**go rock climbing** = klettern."},
+        {q:"You find a cache with a GPS: you …", o:["go geocaching","go canoeing","go swimming"], c:0, e:"**go geocaching** = Geocaching machen."},
+        {q:"You sit on a horse: you go …", o:["horse riding","horse driving","horse jumping"], c:0, e:"**go horse riding** = reiten."},
+        {q:"You eat outside on a blanket: you have a …", o:["picnic","night walk","tractor"], c:0, e:"**have a picnic** = ein Picknick machen."},
+        {q:"A big machine on a farm is a …", o:["tractor","torch","collar"], c:0, e:"**tractor** = Traktor."},
+        {q:"A **farmer** works on a …", o:["farm","station","flat"], c:0, e:"**farm** = Bauernhof; farm → farmer."},
+        {q:"You ___ do your homework today. It’s a holiday.", o:["needn’t","need","must"], c:0, alt:["needn't"], e:"**needn’t** = nicht brauchen / nicht müssen."}
+      ]},
+    { id:"past", typ:"quiz", icon:"⏪", titel:"Past Forms", art:"Simple past · quiz",
+      anleitung:"Choose the simple past form.",
+      anleitungDe:"Wähle die Form im simple past.",
+      tipp:"Unregelmäßige Verben musst du auswendig lernen.",
+      fragen:[
+        {q:"Simple past of **come**:", o:["came","comed","come"], c:0, e:"come – **came** (kam)."}, {q:"Simple past of **feed**:", o:["fed","feeded","feld"], c:0, e:"feed – **fed** (fütterte)."},
+        {q:"Simple past of **meet**:", o:["met","meeted","meat"], c:0, e:"meet – **met** (traf)."}, {q:"Simple past of **hear**:", o:["heard","heared","hard"], c:0, e:"hear – **heard** (hörte)."},
+        {q:"Simple past of **get**:", o:["got","getted","gat"], c:0, e:"get – **got**."}, {q:"Simple past of **say**:", o:["said","sayed","sad"], c:0, e:"say – **said** (sagte)."},
+        {q:"Simple past of **think**:", o:["thought","thinked","thaught"], c:0, e:"think – **thought** (dachte)."}, {q:"Simple past of **break**:", o:["broke","breaked","braked"], c:0, e:"break – **broke** (brach)."},
+        {q:"Simple past of **fall**:", o:["fell","falled","fallen"], c:0, e:"fall – **fell** (fiel)."}, {q:"Simple past of **throw**:", o:["threw","throwed","throw"], c:0, e:"throw – **threw** (warf)."}
+      ]},
+    { id:"rush", typ:"rush", regel:"Achte auf die Schreibweise – z. B. **tractor**, **trousers**, **foggy**.", icon:"⚡", titel:"Word Test Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Bauernhof",o:["farm","farme","pharm"],c:0},{q:"Ferien",o:["holiday","holyday","holliday"],c:0},{q:"Klassenfahrt",o:["school trip","school tripp","class trip"],c:0},
+        {q:"Tochter",o:["daughter","dauter","doughter"],c:0},{q:"Traktor",o:["tractor","traktor","tracktor"],c:0},{q:"Jacke",o:["coat","cote","cout"],c:0},
+        {q:"Hose",o:["trousers","trousser","trosers"],c:0},{q:"Rock",o:["skirt","scirt","skert"],c:0},{q:"Mütze",o:["cap","cup","kap"],c:0},
+        {q:"sonnig",o:["sunny","suny","sonny"],c:0},{q:"neblig",o:["foggy","fogy","fogie"],c:0},{q:"regnerisch",o:["rainy","rany","reiny"],c:0},
+        {q:"kühl",o:["cool","cul","kool"],c:0},{q:"Taschenlampe",o:["torch","tourch","touch"],c:0},{q:"dunkel",o:["dark","dork","darck"],c:0},
+        {q:"Schlamm",o:["mud","mood","mudd"],c:0},{q:"Gummistiefel",o:["welly","wely","willy"],c:0},{q:"weil",o:["because","becouse","becaus"],c:0},
+        {q:"Rollstuhl",o:["wheelchair","weelchair","wheelchare"],c:0},{q:"Idee",o:["idea","ideah","idee"],c:0}
+      ]},
+    { id:"walk", typ:"lueckentext", icon:"🔦", titel:"A Night Walk", art:"Postcard · fill in the gaps",
+      anleitung:"Tap a gap and choose the right word.",
+      anleitungDe:"Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Achte auf die Vergangenheit: *went, heard, got, said*.",
+      ueberschrift:"Dear Mum,",
+      text:"We are on a school trip in the [[country|county|counter]]. Last night we [[went|go|goed]] on a night walk. It was [[dark|dock|dack]], so I took my [[torch|touch|tourch]]. We [[heard|hear|hared]] an owl. It [[rained|rain|rains]] and I got [[wet|wed|wat]], but my [[wellies|wallies|willies]] were great! “Don’t [[worry|worri|warry]],” the teacher [[said|say|sayed]]. [[Because|Beacuse|Becouse]] the weather was [[cool|cold|cole]], I wore my coat. Best wishes, Lara",
+      erklaerung:"Words: **country · night walk · torch · dark · wet · wellies · worry · because**. Past forms: **went, heard, said, got**."}
+  ]
+});
+</script>
+</body>
+</html>

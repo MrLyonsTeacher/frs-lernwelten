@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Orange Line 1 · Unit 5 Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:6, kat:"vocabulary", id:"ov5", icon:"🏙️", kartenSymbol:"🐚",
+  titel:"Orange Line 1 · Unit 5 Words", untertitel:"Where I live: town, transport, past forms",
+  text:"Wörter aus Orange Line 1, Unit 5 „Where I live“: Orte in der Stadt, Verkehrsmittel, Ausflug ans Meer und die ersten unregelmäßigen Verben im simple past.",
+  levels: [
+    { id:"town", typ:"memory", icon:"🏘️", titel:"Town Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English word + German word**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **englisches Wort + deutsches Wort**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Orte in der Stadt aus Unit 5.",
+      paare:[ {a:"flat", b:"Wohnung"}, {a:"swimming pool", b:"Schwimmbad"}, {a:"shopping centre", b:"Einkaufszentrum"}, {a:"sports shop", b:"Sportgeschäft"},
+              {a:"post office", b:"Postamt"}, {a:"station", b:"Bahnhof"}, {a:"library", b:"Bücherei"}, {a:"department store", b:"Kaufhaus"} ]},
+    { id:"sort", typ:"sortieren", icon:"🚆", titel:"Town or Transport?", art:"Word groups · sort",
+      anleitung:"Is it a place in town or a way to travel? Tap the right box.",
+      anleitungDe:"Ist es ein Ort in der Stadt oder ein Verkehrsmittel? Tippe auf das richtige Kästchen.",
+      tipp:"Orte: library, museum … Verkehrsmittel: train, bus, tram …",
+      koerbe:[ {t:"in town", info:"🏙️", tipp:"Orte in der Stadt: café, park, museum, supermarket …"}, {t:"transport", info:"🚌", tipp:"Verkehrsmittel: train, bus, plane, boat …"} ],
+      items:[ {t:"library", k:0}, {t:"museum", k:0}, {t:"supermarket", k:0}, {t:"market", k:0}, {t:"café", k:0}, {t:"post office", k:0}, {t:"shop", k:0},
+              {t:"train", k:1}, {t:"bus", k:1}, {t:"tram", k:1}, {t:"plane", k:1}, {t:"boat", k:1}, {t:"underground", k:1}, {t:"motorbike", k:1} ]},
+    { id:"act", typ:"sortieren", icon:"🎯", titel:"Activities in Town", art:"go, play, visit, buy · sort",
+      anleitung:"Which verb goes with it? Tap the right box.",
+      anleitungDe:"Welches Verb passt dazu? Tippe auf das richtige Kästchen.",
+      tipp:"go swimming, play frisbee, visit a museum, buy postcards.",
+      koerbe:[ {t:"go", info:"🚶", tipp:"**go** shopping, go swimming, go to the zoo …"}, {t:"play", info:"⚽", tipp:"**play** frisbee, play football, play games …"}, {t:"visit", info:"🏛️", tipp:"**visit** my friend, visit a museum."}, {t:"buy", info:"🛍️", tipp:"**buy** a sandwich, buy postcards, buy clothes."} ],
+      items:[ {t:"shopping", k:0}, {t:"swimming", k:0}, {t:"to the zoo", k:0}, {t:"to the market", k:0},
+              {t:"frisbee on the beach", k:1}, {t:"football in the playground", k:1}, {t:"games in the park", k:1},
+              {t:"my friend", k:2}, {t:"a museum", k:2},
+              {t:"a sandwich", k:3}, {t:"postcards", k:3}, {t:"clothes at the shopping centre", k:3} ]},
+    { id:"past", typ:"quiz", icon:"⏪", titel:"Past Forms", art:"Simple past · quiz",
+      anleitung:"Choose the simple past form.",
+      anleitungDe:"Wähle die Form im simple past.",
+      tipp:"Unregelmäßige Verben musst du auswendig lernen: go – went, see – saw, buy – bought.",
+      fragen:[
+        {q:"Simple past of **go**:", o:["went","goed","gone"], c:0, e:"go – **went** (ging)."}, {q:"Simple past of **see**:", o:["saw","seed","seen"], c:0, e:"see – **saw** (sah)."},
+        {q:"Simple past of **buy**:", o:["bought","buyed","boughten"], c:0, e:"buy – **bought** (kaufte)."}, {q:"Simple past of **win**:", o:["won","winned","wan"], c:0, e:"win – **won** (gewann)."},
+        {q:"Simple past of **have**:", o:["had","haved","has"], c:0, e:"have – **had** (hatte)."}, {q:"Simple past of **do**:", o:["did","doed","done"], c:0, e:"do – **did** (machte)."},
+        {q:"Simple past of **tell**:", o:["told","telled","tald"], c:0, e:"tell – **told** (erzählte)."}, {q:"Simple past of **make**:", o:["made","maked","mad"], c:0, e:"make – **made** (machte)."},
+        {q:"Simple past of **forget**:", o:["forgot","forgetted","forgat"], c:0, e:"forget – **forgot** (vergaß)."}, {q:"Simple past of **send**:", o:["sent","sended","send"], c:0, e:"send – **sent** (schickte)."},
+        {q:"Simple past of **be** (I / he / she):", o:["was","were","been"], c:0, e:"I/he/she **was**, we/you/they **were**."}, {q:"Simple past of **take**:", o:["took","taked","taken"], c:0, e:"take – **took** (nahm)."}
+      ]},
+    { id:"rush", typ:"rush", regel:"Achte auf die Schreibweise – z. B. **library**, **station**, **department store**.", icon:"⚡", titel:"Word Test Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise – wie in einem Vokabeltest.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Wohnung",o:["flat","flate","fleat"],c:0},{q:"Straße",o:["road","rod","roat"],c:0},{q:"Schwimmbad",o:["swimming pool","swimming pull","swim pool"],c:0},
+        {q:"Bahnhof",o:["station","staition","stasion"],c:0},{q:"Bücherei",o:["library","libary","liberry"],c:0},{q:"Kaufhaus",o:["department store","departement store","depart store"],c:0},
+        {q:"Fluss",o:["river","rifer","rivver"],c:0},{q:"Schiff",o:["ship","sheep","shipp"],c:0},{q:"müde",o:["tired","tyred","tiered"],c:0},
+        {q:"gestern",o:["yesterday","yesterdey","yestaday"],c:0},{q:"spannend",o:["exciting","excitting","exiting"],c:0},{q:"langweilig",o:["boring","bored","boaring"],c:0},
+        {q:"Meer",o:["sea","see","si"],c:0},{q:"Strand",o:["beach","beech","bitch"],c:0},{q:"Postkarte",o:["postcard","postkard","post card"],c:0},
+        {q:"Eis(creme)",o:["ice cream","ice crem","eis cream"],c:0},{q:"Flugzeug",o:["plane","plain","planee"],c:0},{q:"Straßenbahn",o:["tram","tramm","train"],c:0},
+        {q:"U-Bahn",o:["underground","undergrownd","under ground"],c:0},{q:"sich verirren",o:["get lost","get lose","got lose"],c:0}
+      ]},
+    { id:"card", typ:"lueckentext", icon:"✉️", titel:"A Postcard from Margate", art:"Postcard · fill in the gaps",
+      anleitung:"Tap a gap and choose the right word.",
+      anleitungDe:"Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Achte auf die Vergangenheit: *went, saw, bought, sent*.",
+      ueberschrift:"Dear Gran,",
+      text:"Yesterday we [[went|go|goed]] on a trip to the seaside. We took the [[train|tram|plane]] and it was a [[lovely|lonely|lively]] day. We [[saw|see|seen]] the sea and played frisbee on the [[beach|bench|beech]]. I [[bought|buyed|buy]] a postcard and [[sent|send|sended]] it to you. The sea was [[cold|cool|coal]] in April, so we did not go swimming. On the way home we got [[lost|lose|lust]] – that was not [[exciting|excited|exit]]! Best wishes, Tom",
+      erklaerung:"Postcard words: **Dear … · Best wishes · seaside · beach · sea · cold**. Past forms: **went, saw, bought, sent**."}
+  ]
+});
+</script>
+</body>
+</html>
