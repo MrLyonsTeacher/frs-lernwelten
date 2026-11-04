@@ -331,6 +331,8 @@ export function lavaSerpent(o={}){
   const parts=[];
   // Höhe eines Leibpunkts (Index i, auch gebrochen) zur Zeit tt
   const yAt=(i,tt)=>{ const c=((tt+PH)%CYC+CYC)%CYC, dive = c>CYC-7 ? sm((c-(CYC-7))/3.5)*(1-sm((c-(CYC-2.5))/2.5)) : 0, rise = c<4 ? 1-sm(c/4) : 0;
+    if(o.sine){ const SN=o.sine, c2=((tt+PH)%CYC+CYC)%CYC, u=Math.min(1,c2/(CYC-2)), xx=(N-1)*SP/2 + SN.len*(u-.5) - i*SP, wv=Math.PI*2/(SN.vwl||SN.wl);
+      return SN.vamp*Math.sin(wv*xx + (SN.vph||0)) - SN.vdepth - (dive+rise)*(SN.vamp+8); }
     return A*Math.sin(WS*tt - i*K + PH) - DEPTH - (dive+rise)*(A+8); };
   for(let i=0;i<N;i++){
     const t=i/(N-1), r = i===0 ? 3.2 : 2.9*(1-Math.pow(t,1.4)*.8)+.35, m=M();
