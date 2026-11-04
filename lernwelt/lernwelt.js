@@ -289,8 +289,6 @@ function home(){
   const st = lvls.reduce((a,l)=>a+starsFor(best(l.id),maxOf(l)),0);
   const tier = topicTier(), nextP = TIERS[tier] !== undefined ? Math.ceil(TIERS[tier]*MAX - 1e-9) - total() : 0;
   return topbar({island:!!W.insel, pill:true}) + `<header class="hero">${W.hero}</header>
-  <button class="finish-banner" ${finTarget()}><span class="fb-flag" aria-hidden="true"></span>
-    <span class="fb-txt"><b>${T.finishBtn}</b><span>${T.finishSub}</span></span><span class="fb-arrow" aria-hidden="true">🏁</span></button>
   <div class="stats">
     <div class="panel stat"><b>${total()}<small> / ${MAX}</small></b><span>${T.pts}</span><div class="meter"><i style="width:${Math.round(total()/MAX*100)}%"></i></div></div>
     <div class="panel stat"><b>${st}<small> / ${lvls.length*3}</small></b><span>${T.stars}</span><div class="meter"><i style="width:${Math.round(st/(lvls.length*3)*100)}%"></i></div></div>
