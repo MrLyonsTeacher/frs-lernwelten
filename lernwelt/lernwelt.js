@@ -460,7 +460,7 @@ function finish(l, A, pts, info, perfectRun){
     <p class="res-gain${gain?"":" none"}">${gain ? `${W.sammel||"⭐"} ${T.newFlags(gain)}` : T.noNew}</p>
     <p class="res-info">${T.thisRound}: ${pts} / ${m}${info?` · ${esc(info)}`:""}</p>
     ${msg?`<p class="res-msg">${esc(msg)}</p>`:""}
-    <div class="row">${nx?`<button class="btn big" data-go="l=${esc(nx.id)}">${T.nextLvl}: ${esc(nx.titel)}</button>`:`<button class="btn big" ${finTarget()}>🏁 ${T.finishBtn}</button>`}
+    <div class="row">${nx?`<button class="btn big" data-go="l=${esc(nx.id)}">${T.nextLvl}: ${esc(nx.titel)}</button>`:""}
       <button class="btn alt" data-again>${T.again}</button><button class="btn alt" data-go="">${T.toMap}</button></div></div>${rvHtml}</div>`;
   if(plat || perfect || st===3) confetti(plat?200:140); else if(gain && st===2) confetti(45);
   if(tierAfter > TIER0) setTimeout(()=>medalPop(tierAfter), perfect||st===3 ? 1300 : 600);
