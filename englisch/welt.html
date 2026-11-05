@@ -107,6 +107,7 @@ body:not(.area-open):not(.no3d) .wdock{display:none}
 @media (max-aspect-ratio:1/1){ .wpanel.many{max-height:60dvh} }
 /* Themen als Kacheln */
 .qgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:4px}
+.qt.lockd{opacity:.55;filter:grayscale(.6)}
 .qt{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;min-height:140px;padding:12px 8px 10px;border-radius:16px;text-decoration:none;color:inherit;
   background:rgba(255,255,255,.1);border:2px solid var(--ui-border);transition:transform .15s,background .15s}
 .qt:hover,.qt:focus-visible{background:rgba(255,255,255,.2);transform:translateY(-2px)}
@@ -265,13 +266,15 @@ async function main(){
   const P = $("#panel");
   // Flaggen-Spiel als Kachel (Medaille, Fortschritt)
   const tile = t => { const p=prog(t), pct=p?Math.round(p.pts/p.max*100):0, tier=p?(p.plat?4:LW.tierOf(p.pts,p.max)):0;
-    return `<a class="qt${p?" played":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${t.icon||"🎯"}</span>
+    const lk = !!(window.FREI && FREI.lockedThema(K, t.id));
+    return `<a class="qt${p?" played":""}${lk?" lockd":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${lk?"🔒":(t.icon||"🎯")}</span>
       ${tier?`<span class="qt-m">${LW.medal(tier,26)}</span>`:""}
       <b class="qt-t">${esc(t.titel)}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
       <span class="qt-f"><span class="q-bar"><i style="width:${pct}%"></i></span><span class="qt-p">${p?`${p.pts}/${p.max}`:"new"}</span></span></a>`; };
   // Testvorbereitung als Kachel: keine Flaggen, keine Medaille – nur der beste Test in Prozent
   const testTile = t => { let b = null; try{ b = (JSON.parse(localStorage.getItem("vt8-best")||"{}")||{})[t.id] || null; }catch(e){}
-    return `<a class="qt test${b?" played":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${t.icon||"📝"}</span>
+    const lk = !!(window.FREI && FREI.lockedThema(K, t.id));
+    return `<a class="qt test${b?" played":""}${lk?" lockd":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${lk?"🔒":(t.icon||"📝")}</span>
       <b class="qt-t">${esc(t.titel.replace(/^Vocab Trainer: /,""))}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
       <span class="qt-b">${b?`Best test: ${b.pct} %`:"no test yet"}</span></a>`; };
   function sections(list){

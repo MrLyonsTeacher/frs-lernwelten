@@ -99,6 +99,7 @@ input.s{font:16px Lexend;padding:10px 12px;border-radius:12px;border:2px solid v
 <script src="vokabeln8a.js"></script>
 <script src="vokabeln8b.js"></script>
 <script src="fotos8.js"></script>
+<script src="../../lernwelt/freigabe.js"></script>
 <script>
 "use strict";
 const $ = s => document.querySelector(s), V = $("#v");
@@ -193,7 +194,9 @@ const TITLE = () => cur==="irr" ? "Irregular verbs" : "Unit "+cur+" · "+unit().
 function home(){
   const P = pool(), all = cur==="irr" ? IRR : unit().items, known = all.filter(i=>getBox(i)>=2).length;
   const best = store.get("vt8-best", {})[ID()];
-  const tabs = UNITS.map(u=>`<button class="tab" data-u="${u.id}" aria-pressed="${cur===u.id}">Unit ${u.id}</button>`).join("") + `<button class="tab" data-u="irr" aria-pressed="${cur==="irr"}">Irregular verbs</button>`;
+  const lk = id => !!(window.FREI && (FREI.locked(8,"vocabulary") || FREI.lockedThema(8,id)));   // von der Lehrkraft gesperrt?
+  const tabs = UNITS.map(u=>`<button class="tab" data-u="${u.id}" aria-pressed="${cur===u.id}">${lk("vtr"+u.id)?"🔒 ":""}Unit ${u.id}</button>`).join("") + `<button class="tab" data-u="irr" aria-pressed="${cur==="irr"}">${lk("vtri")?"🔒 ":""}Irregular verbs</button>`;
+  if(lk(ID())){ V.innerHTML = `<div class="tabs">${tabs}</div><section class="panel" style="text-align:center"><div style="font-size:56px">🔒</div><h2>Not open yet</h2><p class="sub">Your teacher will open <b>${esc(TITLE())}</b> soon.<br>Dieser Teil ist noch gesperrt – deine Lehrkraft schaltet ihn bald frei.</p></section>`; return; }
   const chips = cur==="irr" ? "" : `<div class="chips"><button class="chip" data-sec="" aria-pressed="${!secs.size}">Alle Abschnitte</button>${unit().secs.map(s=>`<button class="chip" data-sec="${esc(s)}" aria-pressed="${secs.has(s)}">${esc(s)} (${unit().items.filter(i=>i.sec===s).length})</button>`).join("")}</div>`;
   V.innerHTML = `<div class="tabs">${tabs}</div>
   <section class="panel"><h2>${esc(TITLE())}</h2><p class="sub">${all.length} ${cur==="irr"?"Verben":"Vokabeln"} · gewählt: ${P.length}</p>

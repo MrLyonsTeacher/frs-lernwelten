@@ -1,4 +1,4 @@
-/* FRS Lernwelten – Freigabe: Lehrkraft entscheidet, welche Bereiche (Rubriken) pro Klasse offen sind.
+/* FRS Lernwelten – Freigabe: Lehrkraft entscheidet, welche Bereiche (Rubriken) und einzelnen Themen pro Klasse offen sind (x = gesperrte Themen-IDs).
    Ablauf: Lehrkraft gibt in der Weltübersicht (🔑) das Passwort ein, wählt Bereiche und erzeugt einen QR-/Link-Code.
    Schüler scannen ihn mit der iPad-Kamera (oder tippen den Code ein) – die Auswahl wird auf ihrem Gerät gespeichert.
    Ohne Code gilt STANDARD_GESPERRT (Klasse → gesperrte Bereiche). Hinweis: reiner Browser-Schutz ohne Server – hält Schüler fern, ist aber kein Hochsicherheitsschutz.
@@ -12,15 +12,16 @@
   const b64 = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
   const unb64 = s => decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
   function state(k){ try{ const v = JSON.parse(localStorage.getItem(KEY(k)) || "null"); return v && Array.isArray(v.open) ? v : null; }catch(e){ return null; } }
+  function lockedThema(k, id){ const s = state(k); return !!(s && Array.isArray(s.x) && s.x.includes(id)); }
   function locked(k, kat){ const s = state(k); return s ? !s.open.includes(kat) : (STANDARD_GESPERRT[k]||[]).includes(kat); }
   async function checkPw(pw){ try{ return (await sha("frs-lernwelten:" + String(pw).trim())) === PWHASH; }catch(e){ return false; } }
-  async function makeCode(k, open){ const payload = JSON.stringify({ k:+k, o:open, t:Date.now() }); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
+  async function makeCode(k, open, x){ const payload = JSON.stringify(x && x.length ? { k:+k, o:open, x, t:Date.now() } : { k:+k, o:open, t:Date.now() }); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
   async function apply(code){
     try{ const [p, sig] = String(code).trim().split("."); const payload = unb64(p);
       if(!sig || (await sha(PWHASH + payload)).slice(0,14) !== sig) return null;
       const o = JSON.parse(payload); if(!o || !Array.isArray(o.o) || !o.k) return null;
-      localStorage.setItem(KEY(o.k), JSON.stringify({ open:o.o, ts:o.t })); return o;
+      localStorage.setItem(KEY(o.k), JSON.stringify({ open:o.o, x:Array.isArray(o.x)?o.x:[], ts:o.t })); return o;
     }catch(e){ return null; } }
   function clear(k){ try{ localStorage.removeItem(KEY(k)); }catch(e){} }
-  window.FREI = { state, locked, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  window.FREI = { state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();

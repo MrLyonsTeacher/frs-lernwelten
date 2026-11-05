@@ -133,6 +133,7 @@ dialog.fd::backdrop{background:rgba(10,20,40,.6)}
 .fd-in h2{margin:0;font-family:"Fredoka",sans-serif;font-size:1.5rem} .fd-in p{margin:0;color:#5A6B82}
 .fd-pw{display:flex;gap:.5rem} .fd-pw input{flex:1;min-width:0;min-height:44px;padding:0 .8rem;border:1px solid var(--line2);border-radius:10px;font-size:1rem}
 .fd-list{display:grid;gap:.5rem} .fd-list label{display:flex;align-items:center;gap:.7rem;padding:.65rem .8rem;border:1px solid var(--line2);border-radius:12px;font-weight:600;cursor:pointer}
+.fd-area{display:grid;gap:.35rem}.fd-more{justify-self:start;border:0;background:none;color:var(--pri);font:600 .9rem inherit;cursor:pointer;padding:.1rem .8rem}.fd-sub{display:grid;gap:.3rem;margin:0 0 .4rem 1.2rem}.fd-sub label{padding:.4rem .7rem;font-weight:500;font-size:.95rem}.fd-sub em{display:block;font-style:normal;font-size:.8rem;color:#5A6B82}.fd-sub[data-off] label{opacity:.45}
 .fd-list input{width:22px;height:22px;accent-color:var(--pri)} .fd-list small{margin-left:auto;color:#5A6B82;font-weight:500}
 .fd-out{display:grid;justify-items:center;gap:.5rem} .fd-out img{width:min(300px,70vw);border-radius:12px;border:1px solid var(--line2)}
 .fd-out textarea{width:100%;height:4.5rem;font-size:.75rem;border:1px solid var(--line2);border-radius:8px;padding:.4rem}
@@ -297,8 +298,10 @@ document.getElementById("copy").onclick = async ()=>{
 
 /* ---------- Freigabe (Lehrkraft): Bereiche je Klasse offen/gesperrt, Code als QR für die Schüler-iPads ---------- */
 const SELKEY = k => "frs-frei-sel-" + k;
-const selGet = (k, bereiche) => { try{ const v = JSON.parse(localStorage.getItem(SELKEY(k))||"null"); if(Array.isArray(v)) return bereiche.filter(b=>v.includes(b)); }catch(e){} return bereiche.slice(); };
-const selLocked = (k, bereiche) => { const o = selGet(k, bereiche); return bereiche.filter(b=>!o.includes(b)); };
+const selRaw = k => { try{ const v = JSON.parse(localStorage.getItem(SELKEY(k))||"null"); if(Array.isArray(v)) return {o:v, x:[]}; if(v && Array.isArray(v.o)) return {o:v.o, x:Array.isArray(v.x)?v.x:[]}; }catch(e){} return null; };
+const selGet = (k, bereiche) => { const v = selRaw(k); return v ? bereiche.filter(b=>v.o.includes(b)) : bereiche.slice(); };
+const selX = (k, bereiche) => { const v = selRaw(k); return v ? v.x : []; };
+const selLocked = (k, bereiche) => { const o = selGet(k, bereiche); return bereiche.filter(b=>!o.includes(b)).concat(selX(k, bereiche).map(()=>"•")); };
 let TEACHER = false; try{ TEACHER = sessionStorage.getItem("frs-teacher")==="1"; }catch(e){}
 function freiDialog(k){
   const c = FRS.englisch.klassen.find(x=>x.k===k), w = FRS.welt(k), bereiche = FRS.bereicheFuer(k), box = document.getElementById("fdBody"), dlg = document.getElementById("fdlg");
@@ -307,9 +310,11 @@ function freiDialog(k){
   if(!TEACHER){
     box.innerHTML = head + `<p>Passwort eingeben, um Bereiche für die Schüler freizugeben oder zu sperren.</p><div class="fd-pw"><input id="fpw" type="password" autocomplete="off" placeholder="Passwort"><button class="btn" id="fpwGo">OK</button></div><div class="fd-row">${closeB}</div>`;
     dlg.showModal(); setTimeout(()=>document.getElementById("fpw").focus(),50); return; }
-  const open = selGet(k, bereiche);
-  box.innerHTML = head + `<p>Häkchen = offen für Schüler. Dann „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera und die Auswahl gilt auf ihrem Gerät.</p>
-    <div class="fd-list">${bereiche.map(b=>`<label><input type="checkbox" data-b="${b}" ${open.includes(b)?"checked":""}><span>${FRS.kategorien[b].icon||""} ${esc(FRS.kategorien[b].name)}</span><small>${c.themen.filter(t=>t.kat===b).length} Lernwelten</small></label>`).join("")}</div>
+  const open = selGet(k, bereiche), xs = selX(k, bereiche);
+  box.innerHTML = head + `<p>Häkchen = offen für Schüler. Mit „Einzelne Themen“ kannst du auch einzelne Lernwelten sperren, z. B. Grammatik, die noch nicht dran war. Dann „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera und die Auswahl gilt auf ihrem Gerät.</p>
+    <div class="fd-list">${bereiche.map(b=>{ const th = c.themen.filter(t=>t.kat===b); return `<div class="fd-area"><label><input type="checkbox" data-b="${b}" ${open.includes(b)?"checked":""}><span>${FRS.kategorien[b].icon||""} ${esc(FRS.kategorien[b].name)}</span><small>${th.length} Lernwelten</small></label>
+      <button class="fd-more" type="button" data-more="${b}">▾ Einzelne Themen${th.some(t=>xs.includes(t.id))?` (${th.filter(t=>xs.includes(t.id)).length} gesperrt)`:""}</button>
+      <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${xs.includes(t.id)?"":"checked"}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
     <div class="fd-row"><button class="btn" id="fMk">Code erzeugen</button><button class="btn ghost" id="fAll">Alles öffnen</button>${closeB}</div>
     <div class="fd-out" id="fOut"></div>`;
   if(!dlg.open) dlg.showModal();
@@ -323,10 +328,13 @@ document.addEventListener("click", async e=>{
     if(await FREI.checkPw(i.value)){ TEACHER = true; try{ sessionStorage.setItem("frs-teacher","1"); }catch(err){} freiDialog(k); }
     else { i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); i.value=""; } return; }
   const picked = () => [...dlg.querySelectorAll("[data-b]")].filter(x=>x.checked).map(x=>x.dataset.b);
-  if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b]").forEach(x=>x.checked=true); return; }
-  if(e.target.closest("#fMk")){ const o = picked(); try{ localStorage.setItem(SELKEY(k), JSON.stringify(o)); }catch(err){}
-    const code = await FREI.makeCode(k, o), url = abs(`englisch/welt.html?k=${k}&frei=${code}`), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
-    document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;
+  const pickedX = o => [...dlg.querySelectorAll("[data-t]")].filter(x=>!x.checked && o.includes(x.dataset.p)).map(x=>x.dataset.t);   // gesperrte Einzelthemen in offenen Bereichen
+  const mb = e.target.closest("[data-more]"); if(mb){ const s = dlg.querySelector(`[data-sub="${mb.dataset.more}"]`); s.hidden = !s.hidden; mb.textContent = (s.hidden?"▾":"▴")+mb.textContent.slice(1); return; }
+  if(e.target.matches("[data-b]")){ const s = dlg.querySelector(`[data-sub="${e.target.dataset.b}"]`); if(s) e.target.checked ? s.removeAttribute("data-off") : s.setAttribute("data-off",""); return; }
+  if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=true); dlg.querySelectorAll("[data-sub]").forEach(s=>s.removeAttribute("data-off")); return; }
+  if(e.target.closest("#fMk")){ const o = picked(), x = pickedX(o); try{ localStorage.setItem(SELKEY(k), JSON.stringify({o, x})); }catch(err){}
+    const code = await FREI.makeCode(k, o, x), url = abs(`englisch/welt.html?k=${k}&frei=${code}`), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
+    document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt${x.length?` (dazu ${x.length} einzelne Themen gesperrt)`:""}.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;
     renderPanel(); }
 });
 renderTabs(); renderPanel();
