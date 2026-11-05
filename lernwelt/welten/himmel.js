@@ -26,6 +26,15 @@ export function build(A){
         let s2=.5+.2*a+.14*b+.08*c+Math.max(0,f-.5)*.9*(.5+.5*b); s2=Math.max(0,Math.min(1,s2)); const col=ramp(s2), o=(y*N+x)*4;
         d[o]=col[0]; d[o+1]=col[1]; d[o+2]=col[2]; d[o+3]=Math.round(120+135*Math.pow(s2,.8)); }
       g.putImageData(id,0,0); }, 64, true),
+    cascade: tex(g=>{ const N=64, id=g.createImageData(N,N), d=id.data, TP=Math.PI*2, stops=[[0,[22,86,186]],[.35,[44,128,222]],[.65,[96,176,246]],[.88,[168,218,255]],[1,[246,252,255]]];
+      const ramp = s2 => { for(let k=1;k<stops.length;k++) if(s2<=stops[k][0]){ const a=stops[k-1], b=stops[k], f=(s2-a[0])/(b[0]-a[0]); return a[1].map((v,q)=>v+(b[1][q]-v)*f); } return [246,252,255]; };
+      for(let y=0;y<N;y++) for(let x=0;x<N;x++){ const u=x/N*TP, v=y/N*TP;
+        const a=Math.sin(u*5+1.2*Math.sin(v*2)), b=Math.sin(u*11+2*Math.sin(v*3+1)), c=Math.sin(u*23+Math.sin(v*5+2)), r=Math.sin(u*7+v*3+Math.sin(u*2)*1.5);
+        const foam=Math.pow(Math.max(0,Math.sin(u*9+Math.sin(v*4)*1.4)),7)*.9 + Math.pow(Math.max(0,r),9)*.5;
+        let s2=.42+.2*a+.14*b+.07*c+foam*.55; s2=Math.max(0,Math.min(1,s2)); const col=ramp(s2), o=(y*N+x)*4;
+        d[o]=col[0]; d[o+1]=col[1]; d[o+2]=col[2]; d[o+3]=Math.round(165+90*Math.pow(s2,.7)); }
+      g.putImageData(id,0,0); }, 64, true),
+    spray: noise(["#E2F2FF","#CFE7FF","#BEDCFF","#F0F8FF"]),
     pool: tex(g=>{ const N=64, id=g.createImageData(N,N), d=id.data, TP=Math.PI*2;
       for(let y=0;y<N;y++) for(let x=0;x<N;x++){ const u=x/N*TP, v=y/N*TP;
         const hgt=.35*Math.sin(2*u+v+1.3*Math.sin(3*v))+.3*Math.sin(3*u-2*v+Math.sin(2*u))+.2*Math.sin(4*u+3*v+2)+.15*Math.sin(5*v-3*u);
@@ -56,6 +65,7 @@ export function build(A){
     stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.roof}, roofT:{side:T.roofT},
     gold:{side:T.gold, em:.25}, win:{side:T.win, em:.55}, door:{side:T.door},
     water:{side:T.water, alpha:.88, anim:[.012,4.2], em:.34}, pool:{side:T.pool, alpha:.9, anim:[.06,.035], em:.24},
+    cascade:{side:T.cascade, alpha:.9, anim:[.004,3.6], em:.3}, spray:{side:T.spray, alpha:.5, em:.35, soft:true},
     cloud:{side:T.cloud, alpha:.92, em:.15, soft:true}, cloudS:{side:T.cloud, em:.3, soft:true},
     blossom:{side:T.blossom}, leaves:{side:T.leaves}, hedge:{side:T.hedge}, log:{side:T.log, top:T.logTop}, planks:{side:T.planks}, planksD:{side:T.planksD},
     hull:{side:T.hull}, canvas:{side:T.canvas}, canvasR:{side:T.canvasR}, brass:{side:T.brass, em:.15}, iron:{side:T.iron}, rope:{side:T.rope},
@@ -208,7 +218,7 @@ export function build(A){
     const top = topAt(ex,ez,yt+3); if(top<0) return;
     // Fall: dicht an der Wand, wird nach unten breiter und löst sich auf
     for(let k=0;k<len*2;k++){ const y=top-k*.5, f=k/(len*2), ww=w*.5+f*2.2, off=1+f*1.6;
-      for(let j=-ww;j<=ww;j+=.5){ if(f>.65 && rand()<(f-.65)*2.4) continue; const x=ex+.5+dx*off-dz*j, z=ez+.5+dz*off+dx*j; if(get(Math.floor(x),Math.floor(y),Math.floor(z))) continue; fs(x,y,z, f>.8 && rand()<.5 ? "mist" : "water"); } }
+      for(let j=-ww;j<=ww;j+=.5){ if(f>.65 && rand()<(f-.65)*2.4) continue; const x=ex+.5+dx*off-dz*j, z=ez+.5+dz*off+dx*j; if(get(Math.floor(x),Math.floor(y),Math.floor(z))) continue; fs(x,y,z, f>.8 && rand()<.5 ? "spray" : "cascade"); } }
     MIST.push([ex+dx*2.5, top-len*.85, ez+dz*2.5, w]); };
   for(const [isl,ans] of [["grammar",[2.3,.85]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
   // Bogenbrücken aus Stein zwischen den Inseln
@@ -267,7 +277,7 @@ export function build(A){
     // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
     puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
            {n:14, pos:[10,6,D/2], dx:W-20, dy:2, dz:0, s0:14, s1:18, color:0xFFFFFF, opacity:.35, speed:.01, spread:20, flat:.4},
-           ...MIST.map(([x,y,z,w])=>({n:10, pos:[x,y-2,z], dx:0, dy:6, dz:0, s0:8+w*2, s1:14+w*3, color:0xFFFFFF, opacity:.85, speed:.04, spread:3+w}))],
+           ...MIST.map(([x,y,z,w])=>({n:10, pos:[x,y-2,z], dx:0, dy:6, dz:0, s0:8+w*2, s1:14+w*3, color:0xCFE6FF, opacity:.8, speed:.04, spread:3+w}))],
     clouds:[
       // Wolkenmeer weit unten
       ...[[-160,-14,-120],[-40,-16,-140],[90,-14,-150],[220,-16,-120],[-180,-15,0],[260,-14,10],[-120,-12,110],[200,-12,120],[46,-18,150],[-30,-14,-30],[130,-15,-40]].map(p=>({pos:p, r:46, n:28, sx:1.8, sy:.35, sz:1.4, flat:true, lo:0xC8D6EA, opacity:.95})),
@@ -280,7 +290,7 @@ export function build(A){
       {pos:[150,30,-80], r:20, n:44, sx:1.7, sy:.8, sz:1.2},
       {pos:[-90,36,-70], r:18, n:40, sx:1.6, sy:.8, sz:1.2}
     ],
-    particles:[...MIST.map(([x,y,z,w])=>({n:36, area:[x-w-1,x+w+1,y-3,y+6,z-w-1,z+w+1], vy:1.7, wob:1.2, color:0xFFFFFF, size:.36, opacity:.7, add:true})),
+    particles:[...MIST.map(([x,y,z,w])=>({n:36, area:[x-w-1,x+w+1,y-3,y+6,z-w-1,z+w+1], vy:1.7, wob:1.2, color:0xCFE6FF, size:.36, opacity:.7, add:true})),
                {n:160, area:[86,102,34,54,8,20], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
                {n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
