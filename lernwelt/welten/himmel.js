@@ -10,6 +10,11 @@ export function build(A){
     rock: tex(g=>{ for(let y=0;y<16;y++){ const band=["#A4A8B4","#9498A4","#B2B6C0","#8A8E9A","#9CA0AC"][Math.floor(y/3)%5]; for(let x=0;x<16;x++) P(g,x,y, rand()<.15?"#C8CCD4":(rand()<.1?"#7A7E8A":band)); } }),
     rockD: tex(g=>{ for(let y=0;y<16;y++){ const band=["#6E7280","#62666E","#7A7E8A","#585C66"][Math.floor(y/4)%4]; for(let x=0;x<16;x++) P(g,x,y, rand()<.12?"#8A8E9A":band); } }),
     root: stripes(["#6A4A2C","#5A3E24","#7A5634"], true),
+    marble: noise(["#F6F3EC","#EFEBE0","#FAF8F2","#E9E5D9"]),
+    cliff: tex(g=>{ for(let y=0;y<16;y++){ const band=["#C79F78","#B88A62","#D2AE88","#A9794E","#BF9468"][Math.floor(y/3)%5]; for(let x=0;x<16;x++) P(g,x,y, rand()<.14?"#E0C2A0":(rand()<.1?"#8F6644":band)); } }),
+    cliffD: tex(g=>{ for(let y=0;y<16;y++){ const band=["#8C6B55","#7B5D49","#94745E","#6E5442"][Math.floor(y/4)%4]; for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#9A9AA2":(rand()<.08?"#5A4636":band)); } }),
+    slate: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const r=Math.floor(y/4), off=(r%2)*4; P(g,x,y, y%4===3?"#3E4658":(((x+off)%8)<1?"#4A5468":(((x+off)%8)<4?"#6C7894":"#5E6A86"))); } }),
+    slateT: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y,(x+y)%8<4?"#58627C":"#66728E"); }),
     stone: bricks(["#F2EFE6","#E8E4D8","#F8F6F0","#ECE8DE"], "#C8C2B2", 4, 8), stoneB: bricks(["#DCD6C6","#D0CAB8","#E4DED0"], "#A8A08C", 4, 8),
     trim: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, y<2||y>13 ? "#C8C0A8" : (x%4===0 ? "#E8E2D2" : "#FBF9F2")); }),
     pillar: stripes(["#F4F2EC","#E6E4DA","#FAF8F2"], true),
@@ -62,6 +67,7 @@ export function build(A){
   };
   const blocks = {
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, rock:{side:T.rock}, rockD:{side:T.rockD}, root:{side:T.root},
+    marble:{side:T.marble}, cliff:{side:T.cliff}, cliffD:{side:T.cliffD}, slate:{side:T.slate}, slateT:{side:T.slateT},
     stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.roof}, roofT:{side:T.roofT},
     gold:{side:T.gold, em:.25}, win:{side:T.win, em:.55}, door:{side:T.door},
     water:{side:T.water, alpha:.88, anim:[.012,4.2], em:.34}, pool:{side:T.pool, alpha:.9, anim:[.06,.035], em:.24},
@@ -76,13 +82,13 @@ export function build(A){
   const W=92, D=70;
 
   // ---------- Schwebende Insel: Rasen oben, geschichteter Fels darunter, Wurzeln, Felsspitzen ----------
-  const island = (cx,cz,r,yt,o={}) => {
+  const island = (cx,cz,r,yt,o={}) => { const RK=o.rk?o.rk[0]:"rock", RD=o.rk?o.rk[1]:"rockD";
     for(let z=Math.floor(cz-r-4); z<=cz+r+4; z++) for(let x=Math.floor(cx-r-4); x<=cx+r+4; x++){
       const a=Math.atan2(z-cz,x-cx), rr=r*(.86+.24*vn(Math.cos(a)*1.6+cx*.1, Math.sin(a)*1.6+cz*.1)), d=Math.hypot(x-cx,z-cz); if(d>rr) continue;
       const f=1-d/rr, top=yt+(o.flat&&f>.25?0:Math.round(fbm(x*.15+cx,z*.15)*1.2*f)), depth = Math.round(3 + Math.pow(f,1.6)*rr*(o.deep||1.25)*(.7+.6*fbm(x*.25,z*.25)));
-      for(let y=top-depth;y<=top;y++) set(x,y,z, y===top?"grass": y>top-3?"dirt": (y<top-depth+3 && rand()<.3 ? "rockD" : (rand()<.04?"crystal":"rock")));
+      for(let y=top-depth;y<=top;y++) set(x,y,z, y===top?"grass": y>top-3?"dirt": (y<top-depth+3 && rand()<.3 ? RD : (rand()<.04?"crystal":RK)));
       if(f<.25 && rand()<.12){ const l=2+Math.floor(rand()*5); for(let k=1;k<=l;k++) set(x,top-2-k,z,"root"); }   // Wurzeln hängen am Rand
-      if(f>.1 && f<.7 && rand()<.02){ const l=3+Math.floor(rand()*6); for(let k=1;k<=l;k++) set(x,top-depth-k,z, k===l?"crystal":"rockD"); } }
+      if(f>.1 && f<.7 && rand()<.02){ const l=3+Math.floor(rand()*6); for(let k=1;k<=l;k++) set(x,top-depth-k,z, k===l?"crystal":RD); } }
     // Grasbüschel und kleine Blumen (fein)
     if(!o.bare) for(let i=0;i<r*r*.5;i++){ const a=rand()*Math.PI*2, d=rand()*r*.9, x=cx+Math.cos(a)*d, z=cz+Math.sin(a)*d, t=topAt(Math.round(x),Math.round(z),yt+4);
       if(t>=yt-1 && get(Math.round(x),t,Math.round(z))==="grass" && !get(Math.round(x),t+1,Math.round(z))) fs(x,t+1,z, rand()<.25 ? pick(["flowerR","flowerY","flowerB","flowerP"]) : "leaves"); } };
@@ -91,13 +97,14 @@ export function build(A){
     ellip(x,y+h+1,z,r,r*.75,r,leaf); ellip(x-r*.6,y+h,z-r*.3,r*.6,r*.5,r*.6,leaf); ellip(x+r*.6,y+h+.5,z+r*.4,r*.6,r*.5,r*.6,leaf); };
   const lampPost = (x,y,z,h=4) => { fill(x,y,z,x,y+h-1,z,"pillar"); fs(x,y+h,z,"gold"); set(x,y+h,z,"lamp"); };
 
+  const GD = {x:14, z:48, r:12, y:18};   // Floating Gardens: nur noch Kulisse
   const S = {
     grammar:   {x:46, z:26, r:20, y:24, col:0x6AA8FF, ort:"Sky Castle"},
-    vocabulary:{x:14, z:48, r:12, y:18, col:0xFF9AC8, ort:"Floating Gardens"},
+    vocabulary:{col:0xFF9AC8, ort:"Sky Library"},
     country:   {x:78, z:50, r:11, y:16, col:0xFFC24A, ort:"Airship Dock"}
   };
   island(S.grammar.x,S.grammar.z,S.grammar.r,S.grammar.y,{deep:1.4}); level(S.grammar.x,S.grammar.z,S.grammar.r-3,S.grammar.y);
-  island(S.vocabulary.x,S.vocabulary.z,S.vocabulary.r,S.vocabulary.y); level(S.vocabulary.x,S.vocabulary.z,S.vocabulary.r-3,S.vocabulary.y);
+  island(GD.x,GD.z,GD.r,GD.y); level(GD.x,GD.z,GD.r-3,GD.y);
   island(S.country.x,S.country.z,S.country.r,S.country.y); level(S.country.x,S.country.z,S.country.r-3,S.country.y);
 
   // ---------- Grammar: Märchenschloss ----------
@@ -155,7 +162,7 @@ export function build(A){
     S.grammar.top=[x, y+48, z-2]; S.grammar.base=y+16; S.grammar.cam={pos:[x-30,y+34,z+78], look:[x+20,y+20,z]}; }
 
   // ---------- Vocabulary: Schwebende Gärten ----------
-  { const {x,y,z} = S.vocabulary;
+  { const {x,y,z} = GD;
     // großer Kirschbaum
     const tx=x-3, tz=z-3;
     for(let hh=1;hh<=9;hh++) fill(tx,y+hh,tz,tx+1,y+hh,tz+1,"log");
@@ -171,12 +178,12 @@ export function build(A){
     // Wege, Hecken und Beete
     for(let a=-9;a<=9;a++){ set(x+a,y,z+1,"path"); } for(let c=-8;c<=9;c++) set(x-1,y,z+c,"path");
     for(let a=-9;a<=9;a++) for(const c of [-1,3]) if(Math.abs(a+1)>1 && !get(x+a,y+1,z+c)) set(x+a,y+1,z+c,"hedge");
-    for(let i=0;i<70;i++){ const a=rand()*Math.PI*2, d=3+rand()*(S.vocabulary.r-5), px=Math.round(x+Math.cos(a)*d), pz=Math.round(z+Math.sin(a)*d);
+    for(let i=0;i<70;i++){ const a=rand()*Math.PI*2, d=3+rand()*(GD.r-5), px=Math.round(x+Math.cos(a)*d), pz=Math.round(z+Math.sin(a)*d);
       if(get(px,y+1,pz) || get(px,y,pz)==="path" || Math.hypot(px-fx,pz-fz)<4) continue; set(px,y+1,pz,pick(["flowerR","flowerY","flowerB","flowerP"])); }
     // Bänke und Laternen
     for(const [bx,bz] of [[x-6,z+5],[x+8,z]]){ fill(bx,y+1,bz,bx+2,y+1,bz,"planks"); fs(bx+.5,y+.5,bz+.5,"iron"); fs(bx+2.5,y+.5,bz+.5,"iron"); }
     for(const [lx,lz] of [[x-8,z+2],[x+2,z-8],[x+9,z+5],[x-3,z+9]]) lampPost(lx,y+1,lz,4);
-    S.vocabulary.top=[x,y+19,z]; S.vocabulary.base=y+6; S.vocabulary.cam={pos:[x-30,y+30,z+56], look:[x+24,y+4,z-6]}; }
+  }
 
   // ---------- Country & people: Luftschiff-Hafen ----------
   { const {x,y,z} = S.country;
@@ -220,7 +227,7 @@ export function build(A){
     for(let k=0;k<len*2;k++){ const y=top-k*.5, f=k/(len*2), ww=w*.5+f*2.2, off=1+f*1.6;
       for(let j=-ww;j<=ww;j+=.5){ if(f>.65 && rand()<(f-.65)*2.4) continue; const x=ex+.5+dx*off-dz*j, z=ez+.5+dz*off+dx*j; if(get(Math.floor(x),Math.floor(y),Math.floor(z))) continue; fs(x,y,z, f>.8 && rand()<.5 ? "spray" : "cascade"); } }
     MIST.push([ex+dx*2.5, top-len*.85, ez+dz*2.5, w]); };
-  for(const [isl,ans] of [["grammar",[2.3,.85]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
+  for(const [isl,ans] of [["grammar",[2.3,.85]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=isl==="vocabulary"?GD:S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
   // Bogenbrücken aus Stein zwischen den Inseln
   const bridge = (x0,z0,x1,z1,y0,y1) => { const n=Math.ceil(Math.hypot(x1-x0,z1-z0)), nx=-(z1-z0)/n, nz=(x1-x0)/n;
     for(let i=0;i<=n;i++){ const f=i/n, x=x0+(x1-x0)*f, z=z0+(z1-z0)*f, y=Math.round(y0+(y1-y0)*f + Math.sin(f*Math.PI)*1.5);
@@ -228,6 +235,90 @@ export function build(A){
       const under = Math.round(Math.sin(f*Math.PI)*3); for(let k=1;k<=under;k++) set(x,y-k,z,"stoneB");
       if(i%6===3){ fs(x+nx*2+.5,y+1.5,z+nz*2+.5,"pillar"); set(x+nx*2,y+2,z+nz*2,"lamp"); } } };
   bridge(30,36,22,44,24,18); bridge(62,36,70,44,24,16);
+  // ---------- Sky Library: große Palast-Insel (Kuppelpalast, Spitztürme, Torbogen, Terrassen, lange Wasserfälle) ----------
+  { const PX=-8, PZ=-36, PY=34, KR=["cliff","cliffD"], MB="marble";
+    // Inselkörper aus mehreren Teilen: Mitte, linke Baum-Terrasse, rechtes Plateau, abgesetzte Insel rechts, Absätze an der Unterseite
+    island(PX,PZ,21,PY,{deep:1.2, rk:KR, flat:true}); level(PX,PZ,17,PY);
+    island(PX-27,PZ+5,14,PY-3,{deep:1.0, rk:KR});
+    island(PX+27,PZ-2,13,PY-1,{deep:1.05, rk:KR, flat:true}); level(PX+27,PZ-2,9,PY-1);
+    island(PX+53,PZ-12,6,PY+7,{deep:1.2, rk:KR, bare:true}); level(PX+53,PZ-12,4,PY+7);
+    for(const [dx,dz,r,dy] of [[-12,16,7,-6],[12,15,8,-9],[-31,17,6,-9],[34,10,6,-8],[1,20,5,-12],[-22,-14,7,-8]]){ island(PX+dx,PZ+dz,r,PY+dy,{deep:1.2, rk:KR}); const t=topAt(PX+dx,PZ+dz,PY+dy+4); tree(PX+dx,t+1,PZ+dz,4,2.3,rand()<.4?"blossom":"leaves"); }
+
+    // --- Baukasten
+    const gnd = (x,z) => topAt(Math.round(x),Math.round(z),PY+10);
+    const block = (x0,z0,x1,z1,y0,h) => { fill(x0,y0,z0,x1,y0+h,z1,(a,b,c)=> ((b-y0)%5===4 || b===y0+h) ? "trim" : MB);
+      for(let a=x0+2;a<x1-1;a+=3) for(const c of [z0,z1]) for(let k=1;k<=3;k++) set(a,y0+k+(h>7?1:0),c,"win");
+      for(let c=z0+2;c<z1-1;c+=3) for(const a of [x0,x1]) for(let k=1;k<=3;k++) set(a,y0+k+(h>7?1:0),c,"win");
+      for(let a=x0;a<=x1;a++) for(const c of [z0,z1]) set(a,y0+h+1,c,(a-x0)%2?"trim":"pillar");
+      for(let c=z0;c<=z1;c++) for(const a of [x0,x1]) set(a,y0+h+1,c,(c-z0)%2?"trim":"pillar");
+      for(let a=x0+1;a<x1;a+=3) fill(a,y0,z1+1,a,y0+h-1,z1+1,"pillar"); };                 // Pilaster an der Front
+    const finial = (x,y,z,n) => { for(let k=0;k<n;k++) fs(x+.5,y+k*.5,z+.5,"gold"); };
+    const smallDome = (cx,cz,y0,r,h) => { cyl(cx,y0,cz,r,h,(a,b,c)=> (b-y0)%4===3 ? "trim" : MB);
+      for(let i=0;i<6;i++){ const an=i/6*Math.PI*2+.3; for(let k=1;k<=Math.min(3,h-1);k++) set(Math.round(cx+Math.cos(an)*r),y0+k,Math.round(cz+Math.sin(an)*r),"win"); }
+      ring(cx,y0+h,cz,r+.8,"trim"); dome(cx,y0+h+1,cz,r+.3,"slate",true); finial(cx,y0+h+r+1.2,cz,7); };
+    const spire = (tx,tz,y0,r,h,roofH) => { cyl(tx,y0,tz,r,h,(a,b,c)=> (b-y0)%6===5 ? "trim" : MB);
+      for(let hh=3; hh<h-2; hh+=6) for(let i=0;i<4;i++){ const an=i/4*Math.PI*2+.4; set(Math.round(tx+Math.cos(an)*r),y0+hh,Math.round(tz+Math.sin(an)*r),"win"); set(Math.round(tx+Math.cos(an)*r),y0+hh+1,Math.round(tz+Math.sin(an)*r),"win"); }
+      ring(tx,y0+h,tz,r+1,"trim"); for(let i=0;i<4;i++){ const an=i/4*Math.PI*2+.8, ox=Math.round(tx+Math.cos(an)*(r+1.6)), oz=Math.round(tz+Math.sin(an)*(r+1.6)); fill(ox,y0+h-6,oz,ox,y0+h-1,oz,MB); cone(ox,y0+h,oz,1.2,4,"slate"); }
+      cone(tx,y0+h+1,tz,r+.9,roofH,(a,b,c)=> (b-y0-h)%4===0 ? "slateT" : "slate"); finial(tx,y0+h+roofH+1,tz,8); };
+    const gate = (cx,cz,y0,R,thick,planeX) => { const P=4; for(let a=-R-2;a<=R+2;a++) for(let b=0;b<=P+R+2;b++){ let solid;
+        if(b<=P) solid = Math.abs(a)>=R && Math.abs(a)<=R+2; else { const d=Math.hypot(a,b-P); solid = d>=R && d<=R+2; }
+        if(solid) for(let t=0;t<thick;t++) set(planeX?cx+t:cx+a, y0+b, planeX?cz+a:cz+t, b>P+R-1 && Math.abs(a)<2 ? "gold" : (b%5===4?"trim":MB)); }
+      for(let t=0;t<thick;t++) for(let a=-R-2;a<=R+2;a+=2) set(planeX?cx+t:cx+a, y0+P+R+3, planeX?cz+a:cz+t, "pillar"); };
+
+    // --- Hauptpalast
+    const BX=PX+4, BZ=PZ, B=PY+4;
+    for(let s=0;s<3;s++){ disk(BX,PY+1+s,BZ,18-s*1.6,MB); ring(BX,PY+1+s,BZ,18-s*1.6,"trim"); }          // Stufensockel
+    block(BX-15,BZ-10,BX+15,BZ+10,B,8);
+    // Säulenvorbau (Portikus) mit Giebel an der Südseite
+    for(let a=-6;a<=6;a+=3) fill(BX+a,B,BZ+12,BX+a,B+9,BZ+12,"pillar");
+    fill(BX-7,B+10,BZ+11,BX+7,B+10,BZ+13,"trim"); for(let i=0;i<5;i++) fill(BX-6+i,B+11+i,BZ+11,BX+6-i,B+11+i,BZ+13,i%2?MB:"trim");
+    for(let s=0;s<3;s++) fill(BX-6,PY+4-s,BZ+14+s,BX+6,PY+4-s,BZ+14+s,MB);
+    // große Haupttrommel mit Säulenumgang
+    const D0=B+9;
+    cyl(BX,D0,BZ,9,9,(a,b,c)=> (b-D0)%5===4 ? "trim" : MB);
+    for(let i=0;i<12;i++){ const an=i/12*Math.PI*2+.26; for(let kk=2;kk<=6;kk++) set(Math.round(BX+Math.cos(an)*9),D0+kk,Math.round(BZ+Math.sin(an)*9),"win"); }
+    for(let i=0;i<24;i++){ const an=i/24*Math.PI*2, px=Math.round(BX+Math.cos(an)*11), pz=Math.round(BZ+Math.sin(an)*11); fill(px,B+9,pz,px,D0+6,pz,"pillar"); }
+    for(let r=9.4;r<=12;r+=.6) ring(BX,D0+7,BZ,r,MB); ring(BX,D0+8,BZ,12,"trim"); ring(BX,D0+8,BZ,11.2,"pillar");
+    // Obertrommel und große Kuppel mit Rippen, Laterne und goldener Spitze
+    cyl(BX,D0+8,BZ,8,5,(a,b,c)=> (b-D0-8)%5===4 ? "trim" : MB);
+    for(let i=0;i<10;i++){ const an=i/10*Math.PI*2; for(let kk=1;kk<=3;kk++) set(Math.round(BX+Math.cos(an)*8),D0+8+kk,Math.round(BZ+Math.sin(an)*8),"win"); }
+    ring(BX,D0+13,BZ,9,"trim");
+    const DY=D0+14; dome(BX,DY,BZ,8,"slate",true);
+    for(let i=0;i<12;i++){ const an=i/12*Math.PI*2; for(let t=0;t<=1;t+=.04){ const rr=8.6*Math.cos(t*Math.PI/2), py=DY+8.6*Math.sin(t*Math.PI/2); fs(BX+.5+Math.cos(an)*rr,py+.25,BZ+.5+Math.sin(an)*rr,"trim"); } }
+    for(let i=0;i<10;i++){ const an=i/10*Math.PI*2+.3; fs(BX+.5+Math.cos(an)*8.4,DY+3,BZ+.5+Math.sin(an)*8.4,"win"); }   // Dachgauben
+    cyl(BX,DY+8,BZ,1.8,4,(a,b)=> (b-DY-8)%2 ? "pillar" : "trim"); ring(BX,DY+12,BZ,2.4,"trim"); dome(BX,DY+12,BZ,2.2,"slate",true); finial(BX,DY+14.5,BZ,12);
+    for(const [a,c] of [[-12.5,-7.5],[12.5,-7.5],[-12.5,7.5],[12.5,7.5]]) smallDome(BX+a,BZ+c,B+9,3.6,5);
+    for(const [a,c,h] of [[-15,-10,14],[15,-10,14],[-15,10,12],[15,10,12]]) spire(BX+a,BZ+c,B,1.8,h,8);
+    lampPost(BX-3,PY+4,BZ+19,3); lampPost(BX+3,PY+4,BZ+19,3);
+
+    // --- Linke Seite: hoher Spitzturm, Kuppelhalle auf der Baum-Terrasse, Torbogen
+    spire(PX-16,PZ-5,PY+1,2.8,26,15);
+    for(const [dx,dz,h] of [[-12,-12,12],[-20,-12,10]]) spire(PX+dx,PZ+dz,PY+1,1.7,h,8);
+    { const LX=PX-24, LZ=PZ+5, t=gnd(LX,LZ); block(LX-6,LZ-5,LX+6,LZ+5,t+1,5); cyl(LX,t+7,LZ,5,4,(a,b)=> (b-t-7)%4===3?"trim":MB); ring(LX,t+11,LZ,5.8,"trim"); dome(LX,t+12,LZ,5.4,"slate",true); finial(LX,t+18,LZ,8); }
+    gate(PX-17,PZ+14,PY+1,5,3,true);
+    // --- Rechte Seite: Säulenhalle mit kleiner Kuppel und zwei schlanken Spitztürmen
+    { const RX=PX+27, RZ=PZ-2, t=gnd(RX,RZ); block(RX-6,RZ-6,RX+6,RZ+4,t+1,7); for(let a=-4;a<=4;a+=2) fill(RX+a,t+1,RZ+6,RX+a,t+7,RZ+6,"pillar"); fill(RX-5,t+8,RZ+5,RX+5,t+8,RZ+7,"trim"); smallDome(RX,RZ-1,t+9,3.2,4); }
+    spire(PX+22,PZ-11,gnd(PX+22,PZ-11)+1,2,20,11); spire(PX+34,PZ+4,gnd(PX+34,PZ+4)+1,2.2,28,13);
+    // abgesetzte Insel ganz rechts mit Turm
+    { const t=gnd(PX+53,PZ-12); spire(PX+53,PZ-12,t+1,1.9,13,9); tree(PX+56,t+1,PZ-10,4,2.4,"leaves"); }
+
+    // --- Bewuchs: dichte Baumgruppen links und am Rand, überhängende Bäume, Büsche
+    const grove = (cx,cz,rmin,rmax,n,big) => { for(let i=0;i<n;i++){ const a=rand()*Math.PI*2, d=rmin+rand()*(rmax-rmin), x=Math.round(cx+Math.cos(a)*d), z=Math.round(cz+Math.sin(a)*d), t=gnd(x,z);
+        if(get(x,t,z)==="grass" && !get(x,t+1,z)) tree(x,t+1,z,(big?5:4)+Math.floor(rand()*4),(big?3.2:2.4)+rand()*1.4, rand()<.22?"blossom":"leaves"); } };
+    grove(PX-28,PZ+5,2,12,12,true); grove(BX,BZ,18.5,22,18,false); grove(PX+27,PZ-2,9,12,6,false); grove(PX-14,PZ-14,2,5,3,true);
+
+    // --- Unterseite: lange Felszapfen und hängende Spitzen (wie umgedrehte Türmchen)
+    const lowest = (x,z) => { let y=PY+8; while(y>-30 && !get(x,y,z)) y--; while(y>-30 && get(x,y-1,z)) y--; return y; };
+    const stalac = (x,z,len,r0) => { const y=lowest(x,z); for(let k=0;k<len;k++){ const rr=r0*(1-k/len); if(rr<.35) break; for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++) if(Math.hypot(a,c)<=rr+.2 && rand()<.92) set(x+a,y-1-k,z+c,k%7===6?"cliff":"cliffD"); } };
+    const pend = (x,z) => { const y=lowest(x,z); for(let k=0;k<9;k++){ const rr=1.9*(1-k/9.5); if(rr<.4) break; for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++) if(Math.hypot(a,c)<=rr) set(x+a,y-1-k,z+c,k%3===0?"trim":MB); } for(let k=0;k<5;k++) fs(x+.5,y-9.5-k*.5,z+.5,"gold"); };
+    stalac(PX+2,PZ+3,30,2.6); stalac(PX-12,PZ+8,18,2); stalac(PX+16,PZ+6,22,2.2); stalac(PX-28,PZ+8,14,1.8); stalac(PX+30,PZ,16,1.8);
+    for(const [dx,dz] of [[-8,6],[10,4],[-24,12],[30,3],[2,-10],[-18,-2]]) pend(PX+dx,PZ+dz);
+
+    // --- Lange, dünne Wasserfälle von den Terrassen
+    for(const [x,z,y,an,w,len] of [[PX-27,PZ+5,PY-3,Math.PI*.55,2,58],[PX-27,PZ+5,PY-3,Math.PI*.95,1,50],[PX+2,PZ+4,PY,Math.PI*.5,2,60],[PX+12,PZ+15,PY-9,Math.PI*.45,1,50],[PX+27,PZ-2,PY-1,Math.PI*.3,2,56],[PX+27,PZ-2,PY-1,Math.PI*.05,1,52],[PX+53,PZ-12,PY+7,Math.PI*.5,1,46],[PX-31,PZ+17,PY-9,Math.PI*.6,1,46]]) fall(x,z,y,an,w,len);
+
+    Object.assign(S.vocabulary,{x:BX, z:BZ, r:21, y:PY, top:[BX,PY+46,BZ], base:PY+6, cam:{pos:[BX-34,PY+34,BZ+80], look:[BX+10,PY+16,BZ]}});
+  }
   // kleine Inseln nahe am Bild
   for(const [cx,cz,r,y,d] of [[34,62,4,10,"tree"],[60,64,5,8,"tree"],[118,44,3,24,"rock"],[2,30,3,22,"tree"],[26,8,4,36,"tree"],[68,6,4,38,"rock"]]){ island(cx,cz,r,y,{deep:1.1});
     const t=topAt(cx,cz,y+4); if(d==="tree") tree(cx,t+1,cz,4,2.2, rand()<.5?"blossom":"leaves"); else for(let k=1;k<=3;k++) set(cx,t+k,cz,"crystal"); }
@@ -254,7 +345,7 @@ export function build(A){
     if(deco==="tower"){ cyl(cx,t,cz,2,12,(a,b,c)=>(b-t)%5===0?"trim":"stone"); cone(cx,t+12,cz,2.8,8,"roof"); set(cx+2,t+6,cz,"win"); tree(cx+r*.55,t,cz-1,3,2,"leaves"); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
     if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
-  for(const [cx,cz,r,y,d] of [[-22,-12,8,32,"tree"],[150,-34,9,40,"tower"],[96,-46,10,48,"tree"],[-6,-50,7,42,"ruin"],[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[150,-40,8,44,"tree"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
+  for(const [cx,cz,r,y,d] of [[150,-34,9,40,"tower"],[96,-46,10,48,"tree"],[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[150,-40,8,44,"tree"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
   // ---------- Gipfel über dem Wolkenmeer (weit weg, grob) ----------
   const F = A.far; F.cell = 3;
@@ -272,7 +363,7 @@ export function build(A){
     sky:[[0,"#1E62D0"],[.45,"#6AB0FA"],[.72,"#FFD2B4"],[1,"#F4E8E0"]], fog:[0xC8DCF4, 170, 560],
     hemi:[0xDDEBFF, 0x8A9AB0, 1.7], sun:{color:0xFFF4E0, int:2.1, pos:[60,120,90]}, bloom:[.3,.5,.9],
     portalFx:{pos:S.portal.slice(0,3), w:S.portal[3], h:S.portal[4], yaw:0, color:0xD08AFF, period:120, off:20, dur:10, light:1400},
-    lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[94,42,17], color:0xC88AFF, int:260, dist:30, flicker:1400}],
+    lights:[{pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[S.vocabulary.x,S.vocabulary.y+14,S.vocabulary.z+22], color:0xFFE6A8, int:150, dist:40}, {pos:[94,42,17], color:0xC88AFF, int:260, dist:30, flicker:1400}],
     planes:[{y:-30, size:1400, color:0xB8CCE6, em:0}],
     // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
     puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
@@ -284,7 +375,7 @@ export function build(A){
       // Nebelbänke direkt unter den Inseln
       ...[[20,-2,30],[70,-3,26],[46,-4,64],[-6,-6,10],[100,-5,0]].map(p=>({pos:p, r:20, n:16, sx:1.6, sy:.35, sz:1.2, flat:true, lo:0xDCE6F4, opacity:.6})),
       // Haufenwolken mit Detail (in die der Adler hineinfliegen kann)
-      {pos:[-18,44,-8], r:13, n:46, sx:1.5, sy:.8, sz:1.1, drift:.6},
+      {pos:[-70,52,-14], r:13, n:46, sx:1.5, sy:.8, sz:1.1, drift:.6},
       {pos:[150,54,-30], r:14, n:50, sx:1.6, sy:.85, sz:1.1, drift:.5},
       {pos:[30,58,-46], r:11, n:38, sx:1.5, sy:.75, sz:1, drift:.4},
       {pos:[150,30,-80], r:20, n:44, sx:1.7, sy:.8, sz:1.2},
@@ -292,7 +383,7 @@ export function build(A){
     ],
     particles:[...MIST.map(([x,y,z,w])=>({n:36, area:[x-w-1,x+w+1,y-3,y+6,z-w-1,z+w+1], vy:1.7, wob:1.2, color:0xCFE6FF, size:.36, opacity:.7, add:true})),
                {n:160, area:[86,102,34,54,8,20], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
-               {n:90, area:[S.vocabulary.x-8,S.vocabulary.x+8,S.vocabulary.y+2,S.vocabulary.y+16,S.vocabulary.z-8,S.vocabulary.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
+               {n:90, area:[GD.x-8,GD.x+8,GD.y+2,GD.y+16,GD.z-8,GD.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
     home:{pos:[W/2,64,D+96], look:[W/2,28,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},
     ui:{bg:"rgba(255,255,255,.9)", border:"#6AA8FF", glow:"rgba(106,168,255,.45)", text:"#16305A", sub:"#4A6A98", accent:"#FFC24A", "accent-ink":"#2A1E06", chip:"rgba(255,255,255,.85)"}
