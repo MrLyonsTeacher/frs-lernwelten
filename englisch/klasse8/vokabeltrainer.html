@@ -55,6 +55,11 @@ button{font:inherit;color:inherit}
 input.t{font:600 20px Lexend;padding:12px 14px;border-radius:12px;border:2.5px solid var(--line);width:100%;max-width:480px;background:#fff;color:var(--ink)}
 input.t.ok{background:var(--okbg);border-color:var(--ok)}input.t.bad{background:var(--badbg);border-color:var(--bad)}input.t.half{background:#FFF3CC;border-color:#C79200}
 .fb{margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:600}
+.wbank{margin:14px 0 4px;padding:12px 14px;border-radius:14px;background:var(--soft);border:2px dashed var(--line)}
+.wchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.wchip{font:700 16px Lexend;padding:6px 12px;border-radius:999px;border:2px solid var(--line);background:#fff}
+.wchip.used{opacity:.4;text-decoration:line-through}
+select.t{max-width:340px;background:#fff}
 .cap{display:inline-block;margin:6px 0 0;padding:4px 10px;border-radius:10px;background:#FFF3CC;color:#6B4B00;font:600 14px Lexend}
 .fb.ok{background:var(--okbg);color:#0E5A30}.fb.bad{background:var(--badbg);color:#8C2217}.fb.half{background:#FFF3CC;color:#6B4B00}
 .prog{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:6px}
@@ -292,16 +297,20 @@ function mock(){
     const C = take(all.filter(i=>cloze(i)), 8); const need = 8 - C.length; const extra = need>0 ? take(all.filter(i=>i.typeOk),need) : [];
     parts = [{id:"A", titel:"Teil A · Englisch → Deutsch, ein Kreuz setzen (1 Punkt je Frage)", items:A.map(it=>({kind:"mc", it, pts:1, q:`Was heißt „<b>${esc(it.head)}</b>“?`, opts:mcOptions(it,all,"en")}))},
       {id:"B", titel:"Teil B · Deutsch → Englisch schreiben (2 Punkte je Wort)", items:Bp.concat(extra).map(it=>({kind:"type", it, pts:2}))},
-      {id:"C", titel:"Teil C · Lückensätze: ergänze das fehlende Wort (2 Punkte je Satz)", items:C.map(it=>({kind:"gap", it, pts:2, c:cloze(it)}))}]; }
+      {id:"C", titel:"Teil C · Wörterkasten: ordne jedem Satz das passende Wort zu (2 Punkte je Satz)", items:C.map(it=>({kind:"gap", it, pts:2, c:cloze(it)}))}]; }
   const maxPts = parts.reduce((a,p)=>a+p.items.reduce((b,x)=>b+x.pts,0),0); let n = 0;
+  parts.forEach(p=>{ if(p.id==="C") p.bank = shuffle(p.items.map(x=>x.c.ans[0])); });
   const html = parts.map(p=>`<div class="part">${esc(p.titel)}</div>`+p.items.map(x=>{ x.n = ++n; const id = "i"+x.n; let b;
     if(x.kind==="mc") b = `<div>${x.q}</div><div class="mcrow">${x.opts.map((o,k)=>`<label><input type="radio" name="${id}" value="${k}">${esc(o.t)}</label>`).join("")}</div>`;
     else if(x.kind==="type") b = `<div>${esc(x.it.de)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}`;
-    else if(x.kind==="gap") b = `<div class="gap">${esc(x.c.text)}</div><div class="small">Hinweis: ${esc(x.it.deShort)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:6px">${needsCap(x.c.ans[0])?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}`;
+    else if(x.kind==="gap") b = `<div class="gap">${esc(x.c.text)}</div><div class="small">Hinweis: ${esc(x.it.deShort)}</div><select class="t bk-sel" id="${id}" style="margin-top:6px"><option value="">– Wort wählen –</option>${p.bank.map(w=>`<option value="${esc(w)}">${esc(w)}</option>`).join("")}</select>`;
     else b = `<div><b>${esc(x.it.inf)}</b> <span class="small">(${esc(x.it.de)})</span></div><div class="row" style="margin-top:6px"><input class="t" id="${id}a" placeholder="simple past" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"><input class="t" id="${id}b" placeholder="past participle" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"></div>`;
-    return `<div class="it"><span class="n">${x.n}.</span><span class="p">${x.pts} P.</span> ${b}</div>`; }).join("")).join("");
+    return `<div class="it"><span class="n">${x.n}.</span><span class="p">${x.pts} P.</span> ${b}</div>`; }).join("")
+    + (p.id==="C" ? `<div class="wbank"><b>Wörterkasten</b> <span class="small">(jedes Wort passt zu genau einem Satz)</span><div class="wchips">${p.bank.map(w=>`<span class="wchip" data-w="${esc(w)}">${esc(w)}</span>`).join("")}</div></div>` : "")).join("");
   V.innerHTML = `<div class="prog"><span>Mock Test · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>📝 Mock Test</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
   window.scrollTo(0,0);
+  V.onchange = e => { if(!e.target.classList.contains("bk-sel")) return; const used = [...V.querySelectorAll(".bk-sel")].map(x=>x.value);
+    V.querySelectorAll(".wchip").forEach(c=>c.classList.toggle("used", used.includes(c.dataset.w))); };
   V.onclick = e => { const b = e.target.closest("[data-a]"); if(!b) return; if(b.dataset.a==="home"){ if(confirm("Test wirklich abbrechen?")) go(); return; }
     if(b.dataset.a==="submit"){ const items = parts.flatMap(p=>p.items), blank = items.filter(x=> x.kind==="mc" ? !document.querySelector(`input[name=i${x.n}]:checked`) : x.kind==="irr" ? !$("#i"+x.n+"a").value.trim() && !$("#i"+x.n+"b").value.trim() : !$("#i"+x.n).value.trim()).length;
       if(blank && !confirm(blank+" Aufgabe(n) sind noch leer. Trotzdem abgeben?")) return; finish(parts, maxPts); } };
