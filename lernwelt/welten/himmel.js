@@ -56,7 +56,7 @@ export function build(A){
         const o=(y*N+x)*4; d[o]=Math.min(255,r); d[o+1]=Math.min(255,gg); d[o+2]=Math.min(255,bb); d[o+3]=235; }
       g.putImageData(id,0,0); }, 64, true),
     cloud: noise(["#FFFFFF","#F4F8FF","#EAF2FF"]), blossom: noise(["#FFB8D8","#FF9AC8","#FFD2E6","#F286B8"], 10, ["#FFFFFF","#FFE6F0"]),
-    mrb: noise(["#F6EEDA","#F1E7CF","#FAF3E2","#EFE4CB"]), mrbD: noise(["#CBBA94","#BEAC83","#D5C7A4"]),
+    mrb: noise(["#F7F2E6","#F2ECDD","#FBF7EE","#EEE8D8"]), mrbD: noise(["#C7C0AE","#BAB29F","#D2CCBB"]),
     leavesL: noise(["#6CC24E","#7ACF58","#62B848"],10,["#A8F07A"]), leavesD: noise(["#3A8A2C","#348026","#2E7424"],8,["#58B040"]), needle: noise(["#2F6B4A","#285E40","#357A52","#245438"],10,["#5AA878"]),
     birch: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#2C2C2C":(rand()<.5?"#EFEDE6":"#DCD9CF")); }),
     blossomL: noise(["#FFD2E6","#FFE0EE","#FFC4DC"],8,["#FFFFFF"]), blossomD: noise(["#E878AE","#DE6AA4","#F08CBC"]),
@@ -84,7 +84,7 @@ export function build(A){
   const blocks = {
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, rock:{side:T.rock}, rockD:{side:T.rockD}, root:{side:T.root},
     marble:{side:T.marble}, glowB:{side:T.glowB, em:1.1, alpha:.85, anim:[.05,.03]}, pcol:{side:T.pcol}, ptrim:{side:T.ptrim}, pbase:{side:T.pbase}, twood:{side:T.twood}, tstone:{side:T.tstone}, tstoneD:{side:T.tstoneD}, cliff:{side:T.cliff}, cliffD:{side:T.cliffD}, slate:{side:T.slate}, slateT:{side:T.slateT},
-    stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.roof}, roofT:{side:T.roofT},
+    stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.slate}, roofT:{side:T.slateT},
     gold:{side:T.gold, em:.25}, win:{side:T.win, em:.55}, door:{side:T.door},
     water:{side:T.water, alpha:.88, anim:[.012,4.2], em:.34}, pool:{side:T.pool, alpha:.9, anim:[.06,.035], em:.24},
     cascade:{side:T.cascade, alpha:.9, anim:[.004,3.6], em:.3}, spray:{side:T.spray, alpha:.5, em:.35, soft:true},
@@ -157,6 +157,13 @@ export function build(A){
   island(GD.x,GD.z,GD.r,GD.y); level(GD.x,GD.z,GD.r-3,GD.y);
   island(DK.x,DK.z,DK.r,DK.y); level(DK.x,DK.z,DK.r-3,DK.y);
 
+    // Turm im Stil der Bibliothek: heller Marmor, goldene Bänder, Schieferspitze mit Ecktürmchen
+    const libTower = (tx,tz,y0,r,h,roofH) => { cyl(tx,y0-7,tz,r,7,"rock"); cyl(tx,y0,tz,r,h,(a,b)=> (b-y0)%6===5 ? "ptrim" : "marble");
+      for(let hh=3;hh<h-3;hh+=6) for(let i=0;i<6;i++){ const an=i/6*Math.PI*2+.4, px=Math.round(tx+Math.cos(an)*r), pz=Math.round(tz+Math.sin(an)*r); set(px,y0+hh,pz,"win"); set(px,y0+hh+1,pz,"win"); }
+      ring(tx,y0+h-9,tz,r+1.2,"ptrim"); ring(tx,y0+h,tz,r+1,"ptrim"); ring(tx,y0+h+1,tz,r+1,"marble");
+      for(let i=0;i<4;i++){ const an=i/4*Math.PI*2+.8, ox=Math.round(tx+Math.cos(an)*(r+1.6)), oz=Math.round(tz+Math.sin(an)*(r+1.6)); fill(ox,y0+h-6,oz,ox,y0+h-1,oz,"marble"); cone(ox,y0+h,oz,1.3,4,"slate"); fs(ox+.5,y0+h+4.5,oz+.5,"gold"); }
+      cone(tx,y0+h+1,tz,r+.9,roofH,(a,b)=> (b-y0-h)%5===0 ? "ptrim" : "slate"); for(let k=0;k<8;k++) fs(tx+.5,y0+h+roofH+1+k*.5,tz+.5,"gold"); };
+
   // ---------- Grammar: Märchenschloss ----------
   { const {x,y,z} = S.grammar;
     // runder Turm mit Fenstern, Gesims, Spitzhelm und Fahne
@@ -169,12 +176,6 @@ export function build(A){
       for(let i=0;i<8;i++){ const an=i/8*Math.PI*2; fs(tx+.5+Math.cos(an)*(r+.8),y0+h+1.5,tz+.5+Math.sin(an)*(r+.8),"gold"); }
       const ty=y0+h+roofH+1; fs(tx+.5,ty,tz+.5,"gold"); fs(tx+.5,ty+.5,tz+.5,"gold");
       if(false && flag){ for(let k=0;k<6;k++) fs(tx+.5,ty+1+k*.5,tz+.5,"iron"); for(let a=0;a<4;a++) for(let b=0;b<2.5;b+=.5) fs(tx+1+a*.5,ty+3.5-b-(a%2)*.5*0,tz+.5, b<1?flag:"woolY"); } };
-    // Turm im Stil der Bibliothek: heller Marmor, goldene Bänder, Schieferspitze mit Ecktürmchen
-    const libTower = (tx,tz,y0,r,h,roofH) => { cyl(tx,y0-7,tz,r,7,"rock"); cyl(tx,y0,tz,r,h,(a,b)=> (b-y0)%6===5 ? "ptrim" : "marble");
-      for(let hh=3;hh<h-3;hh+=6) for(let i=0;i<6;i++){ const an=i/6*Math.PI*2+.4, px=Math.round(tx+Math.cos(an)*r), pz=Math.round(tz+Math.sin(an)*r); set(px,y0+hh,pz,"win"); set(px,y0+hh+1,pz,"win"); }
-      ring(tx,y0+h-9,tz,r+1.2,"ptrim"); ring(tx,y0+h,tz,r+1,"ptrim"); ring(tx,y0+h+1,tz,r+1,"marble");
-      for(let i=0;i<4;i++){ const an=i/4*Math.PI*2+.8, ox=Math.round(tx+Math.cos(an)*(r+1.6)), oz=Math.round(tz+Math.sin(an)*(r+1.6)); fill(ox,y0+h-6,oz,ox,y0+h-1,oz,"marble"); cone(ox,y0+h,oz,1.3,4,"slate"); fs(ox+.5,y0+h+4.5,oz+.5,"gold"); }
-      cone(tx,y0+h+1,tz,r+.9,roofH,(a,b)=> (b-y0-h)%5===0 ? "ptrim" : "slate"); for(let k=0;k<8;k++) fs(tx+.5,y0+h+roofH+1+k*.5,tz+.5,"gold"); };
     // Gebäude mit Satteldach und Gauben
     const hall = (x0,z0,x1,z1,y0,h,ridgeX=true) => {
       fill(x0,y0,z0,x1,y0+h,z1,(a,b,c)=> (b-y0)%6===0 ? "ptrim" : "stone");
@@ -473,41 +474,50 @@ export function build(A){
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
   const farIsle = (cx,cz,r,y,deco) => { island(cx,cz,r,y,{deep:1.3, bare:true}); const t=topAt(cx,cz,y+4)+1;
     if(deco==="tree"){ tree(cx-r*.35,t,cz,5,2.6,"leaves"); tree(cx+r*.75,t,cz-1,4,2.3,"blossom"); }
-    if(deco==="tower"){ cyl(cx,t,cz,2,12,(a,b,c)=>(b-t)%5===0?"trim":"stone"); cone(cx,t+12,cz,2.8,8,"roof"); set(cx+2,t+6,cz,"win"); tree(cx+r*.55,t,cz-1,3,2,"leaves"); }
+    if(deco==="tower"){ libTower(cx,cz,t,3.8,28,17); bigTree(cx+r*.55,t,cz-r*.4,5,2.6,false); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
     if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
   for(const [cx,cz,r,y,d] of [[-40,24,6,22,"tree"],[-74,-30,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
-  // ---------- Marmorstatue auf eigener Insel (an die Christusstatue von Rio angelehnt, aus Halbblöcken) ----------
-  { const cx=126, cz=30, y=26;
+  // ---------- Engelsstatue (Marmor): Kapuzengestalt im fließenden Gewand, sechs gefiederte Flügel, Heiligenschein mit Zacken ----------
+  { const cx=130, cz=30, y=26, SC=.72;
     island(cx,cz,10,y,{deep:1.5, bare:true}); level(cx,cz,8,y);
-    disk(cx,y,cz,7.6,"pbase"); ring(cx,y,cz,7.6,"ptrim");
-    for(let s=0;s<3;s++) fill(cx-6+s,y+1+s,cz-6+s,cx+6-s,y+1+s,cz+6-s,s%2?"marble":"pbase");
-    for(let s=0;s<3;s++) fill(cx-1,y+1+s,cz+7-s*0,cx+1,y+1+s,cz+7+0,"pbase");
-    fill(cx-3,y+4,cz-3,cx+3,y+11,cz+3,(a,b)=> (b===y+11||b===y+7||b===y+4) ? "ptrim" : "marble");
-    for(const [a,c] of [[-3,-3],[3,-3],[-3,3],[3,3]]) fill(cx+a,y+5,cz+c,cx+a,y+10,cz+c,"pcol");
-    for(let b=5;b<=8;b++) for(const a of [-1,0,1]) set(cx+a,y+b,cz+3,b===8&&a===0?"gold":"win");
-    const by=y+11.75, S=(ix,iy,iz,m)=>fs(cx+ix/2,by+iy/2,cz+iz/2,m);
-    // Gewand: Talar mit Falten, nach oben schlanker, breite Brust
-    for(let iy=0;iy<=30;iy++){ const t=iy/30; let rx=6.6-2.6*t+(iy<4?.9:0)+(iy>20?(iy-20)*.12:0), rz=4.6-1.3*t;
-      for(let ix=-10;ix<=10;ix++) for(let iz=-7;iz<=7;iz++){ if((ix/rx)**2+(iz/rz)**2>1) continue; const ang=Math.atan2(iz,ix), fold=Math.sin(ang*9+iy*.08)>.5 || (iy<5&&Math.sin(ang*14)>.2);
-        S(ix,iy,iz, (iz>rz*.5&&Math.abs(ix)<=1&&iy>8) ? "mrbD" : (fold?"mrbD":"mrb")); } }
-    // Gürtelband und Schärpe
-    for(let ix=-5;ix<=5;ix++) for(let iz=-4;iz<=4;iz++) if(Math.abs((ix/5.3)**2+(iz/3.6)**2-1)<.3) S(ix,14,iz,"mrbD");
-    // Arme waagerecht ausgebreitet, Ärmel weiten sich zur Hand
-    for(const sg of [-1,1]) for(let k=4;k<=23;k++){ const ix=sg*k, f=(k-4)/19, cy=28.5-f*1.2, hh=3.8-f*1.2+(k>16?.5:0), dz=3.3-f*1.2;
-      for(let iy=Math.round(cy-hh);iy<=Math.round(cy+hh);iy++) for(let iz=-Math.round(dz);iz<=Math.round(dz);iz++){ if(Math.hypot(iy-cy,iz)/Math.max(hh,dz)>1.05) continue; S(ix,iy,iz,(k%4===0&&iy<cy)?"mrbD":"mrb"); } }
-    // Hände mit Fingern
-    for(const sg of [-1,1]){ for(let ix=24;ix<=25;ix++) for(let iy=26;iy<=30;iy++) S(sg*ix,iy,0,"mrb"); for(let f=0;f<4;f++) for(let ix=26;ix<=27+(f%2);ix++) S(sg*ix,26+f,0,"mrb"); S(sg*25,31,0,"mrb"); }
-    // Hals, Kopf mit Haar, Bart, Gesicht
-    for(let iy=31;iy<=33;iy++) for(let ix=-1;ix<=1;ix++) for(let iz=-1;iz<=1;iz++) if(Math.abs(ix)+Math.abs(iz)<=1.5) S(ix,iy,iz,"mrb");
-    for(let ix=-4;ix<=4;ix++) for(let iy=32;iy<=42;iy++) for(let iz=-4;iz<=4;iz++){ const q=(ix/2.7)**2+((iy-37)/3.8)**2+(iz/2.9)**2; if(q>1) continue; S(ix,iy,iz,(iz<-0.5||iy>39)?"mrbD":"mrb"); }
-    for(const e of [-1,1]) S(e,37,3,"mrbD"); S(0,36,3,"mrb"); S(0,35,4,"mrb"); for(let ix=-1;ix<=1;ix++) S(ix,34,3,"mrbD");
-    for(let iy=29;iy<=33;iy++) for(let ix=-1;ix<=1;ix++) S(ix,iy,2+(iy>31?0:1),"mrbD");
-    for(let iy=29;iy<=33;iy++) for(const sg of [-1,1]) S(sg*3,iy,-1,"mrbD");   // Haar auf den Schultern
-    // Plaza: Laternen, Bäume, Wasserfälle
-    for(const [a,c] of [[-7,5],[7,5],[-7,-5],[7,-5]]) lampPost(cx+a,y+1,cz+c,3);
-    for(const [a,c] of [[-8,-1],[8,-1],[0,-8]]){ const t=topAt(cx+a,cz+c,y+4); if(t>y-3) tree(cx+a,t+1,cz+c,5,2,"leaves"); }
+    [[8.7,"pbase"],[7.5,"marble"],[6.3,"pbase"]].forEach(([r,m],i)=>{ for(let x=-10;x<=10;x++) for(let z=-10;z<=10;z++){ const d=Math.hypot(x,z), an=Math.atan2(z,x), rr=r*(1+.07*Math.sin(an*5+i)); if(d<=rr) set(cx+x,y+1+i,cz+z,d>rr-1?"ptrim":m); } });
+    const by=y+3.75, Q=(ix,iy,iz,m)=>fs(cx+ix*SC/2,by+iy*SC/2,cz+iz*SC/2,m);
+    const ball=(ix,iy,iz,r,m)=>{ for(let a=Math.floor(ix-r);a<=ix+r;a++) for(let b=Math.floor(iy-r);b<=iy+r;b++) for(let c=Math.floor(iz-r);c<=iz+r;c++) if(Math.hypot(a-ix,b-iy,c-iz)<=r) Q(a,b,c,m); };
+    const cap=(x0,y0,z0,x1,y1,z1,r0,r1,m)=>{ const n=Math.ceil(Math.hypot(x1-x0,y1-y0,z1-z0)*1.5); for(let i=0;i<=n;i++){ const f=i/n; ball(x0+(x1-x0)*f,y0+(y1-y0)*f,z0+(z1-z0)*f,r0+(r1-r0)*f,m); } };
+    // Gewand: schlanke Gestalt, unten weit ausschwingend, mit Faltenwurf
+    for(let iy=0;iy<=47;iy++){ let R = iy<=30 ? 2.9+9.4*Math.exp(-iy/6.5) : (iy<=42 ? 3.0+(iy-30)*.12 : 4.4-(iy-42)*.6);
+      for(let ix=-14;ix<=14;ix++) for(let iz=-11;iz<=11;iz++){ const ang=Math.atan2(iz,ix), w=Math.sin(ang*11+iy*.05), fold=1+(iy<24?.17:.07)*w+(iy<12?.12*Math.sin(ang*17):0), rx=R*fold, rz=R*.72*fold;
+        if((ix/rx)**2+(iz/rz)**2<=1) Q(ix,iy,iz,(w>.45||(iy<10&&Math.sin(ang*17)>.6))?"mrbD":"mrb"); } }
+    // wehende Stoffbahnen seitlich am Saum
+    for(const sg of [-1,1]) for(let k=0;k<=13;k++) for(let iy=0;iy<=Math.round(9-k*.6);iy++) Q(sg*(6+k),iy+(k>9?0:0),Math.round(Math.sin(k*.6)*1.5),(k%3===0)?"mrbD":"mrb");
+    // Schulterpanzer, Brustplatte, Gürtel
+    for(const sg of [-1,1]){ ball(sg*5.2,41,0,2.6,"mrb"); ball(sg*5.6,40,0,2.1,"mrbD"); }
+    for(let ix=-3;ix<=3;ix++) for(let iy=33;iy<=40;iy++) if(Math.abs(ix)+(iy-33)*.15<=3.2) Q(ix,iy,Math.round(3.1*(1-(ix/4.2)**2)+.2),"mrbD");
+    for(let a=0;a<40;a++){ const an=a/40*Math.PI*2; Q(Math.round(Math.cos(an)*3.1),27,Math.round(Math.sin(an)*2.4),"ptrim"); Q(Math.round(Math.cos(an)*3.1),28,Math.round(Math.sin(an)*2.4),"ptrim"); }
+    // Arme: Oberarm, Unterarm mit weitem Ärmel, vor dem Körper zusammengeführte Hände
+    for(const sg of [-1,1]){ cap(sg*5.4,39,0,sg*5.8,32,1,1.6,1.4,"mrb"); cap(sg*5.8,32,1,sg*2.6,25,5,1.4,2.0,"mrb"); ball(sg*1.7,23.5,5.8,1.2,"mrb"); for(let f=0;f<3;f++) Q(sg*(1+f*.6),21.5-f*.2,6.3,"mrb"); }
+    // Hals, Kopf, Kapuze mit schattigem Gesicht
+    for(let iy=46;iy<=48;iy++) for(let ix=-1;ix<=1;ix++) for(let iz=-1;iz<=1;iz++) Q(ix,iy,iz,"mrb");
+    for(let ix=-4;ix<=4;ix++) for(let iy=44;iy<=56;iy++) for(let iz=-4;iz<=5;iz++){ const q=(ix/3.5)**2+((iy-50)/4.6)**2+(iz/3.7)**2; if(q>1) continue;
+      const op=((ix/1.9)**2+((iy-49.5)/3.5)**2)<=1 && iz>1; if(op){ if(iz<=2) Q(ix,iy,iz,"mrbD"); continue; } Q(ix,iy,iz,(q>.8&&iz>1)?"mrbD":"mrb"); }
+    for(let iy=55;iy<=60;iy++){ const r=2.2*(1-(iy-55)/6); for(let ix=-3;ix<=3;ix++) for(let iz=-3;iz<=3;iz++) if(Math.hypot(ix,iz)<=r) Q(ix,iy,iz-1,"mrb"); }
+    for(let ix=-4;ix<=4;ix++) for(let iy=40;iy<=46;iy++) if(Math.abs(ix)>2.2) Q(ix,iy,3-(iy-40)*.2,"mrb");   // Kapuze fällt auf die Schultern
+    // Heiligenschein: Ring mit Zacken, hinter dem Kopf
+    for(let a=0;a<120;a++){ const an=a/120*Math.PI*2; for(const r of [6.4,7.4]){ Q(Math.round(Math.cos(an)*r),Math.round(50+Math.sin(an)*r),-5,"gold"); } }
+    for(let i=0;i<20;i++){ const an=i/20*Math.PI*2, L0=7.6, L1=i%2?10:12; for(let k=0;k<=L1-L0;k+=.5) Q(Math.round(Math.cos(an)*(L0+k)),Math.round(50+Math.sin(an)*(L0+k)),-5,k>1.5?"ptrim":"gold"); }
+    // Flügel: drei Federfächer pro Seite (nach oben, seitlich, nach unten), nach hinten gestaffelt
+    const feather=(sg,phi,L,w,droop,zOff,m)=>{ const ph=phi*Math.PI/180, dx=Math.cos(ph)*sg, dy=Math.sin(ph);
+      for(let k=0;k<=L;k++){ const t=k/L, px=sg*4.6+dx*k, py=42+dy*k-droop*t*t*L, pz=-3-t*5+zOff, wd=w*(1-.5*t);
+        for(let s=-Math.round(wd);s<=Math.round(wd);s++) Q(Math.round(px-dy*s),Math.round(py+dx*s),Math.round(pz),(Math.abs(s)>=wd-.4||k>L-2)?"mrbD":m); } };
+    for(const sg of [-1,1]){
+      for(let i=0;i<7;i++){ const u=i/6; feather(sg,84-u*54,38-u*13,1.2,.2+u*.1,0,"mrb"); }
+      for(let i=0;i<5;i++){ const u=i/4; feather(sg,12-u*38,31-u*3,1.1,.12,-1,"mrb"); }
+      for(let i=0;i<4;i++){ const u=i/3; feather(sg,-52-u*30,27-u*3,1.1,.08,-2,"mrb"); }
+    }
+    // Umgebung: zwei Bäume, Wasserfälle
+    for(const [a,c] of [[-8,-4],[8,-5]]){ const t=topAt(cx+a,cz+c,y+4); if(t>y-3) bigTree(cx+a,t+1,cz+c,6,3.2,rand()<.5); }
     fall(cx,cz,y,Math.PI*.15,2,30); fall(cx,cz,y,Math.PI*.8,1,26); }
 
   // ---------- Gipfel über dem Wolkenmeer (weit weg, grob) ----------
@@ -526,7 +536,7 @@ export function build(A){
     sky:[[0,"#1E62D0"],[.45,"#6AB0FA"],[.72,"#FFD2B4"],[1,"#F4E8E0"]], fog:[0xC8DCF4, 170, 560],
     hemi:[0xDDEBFF, 0x8A9AB0, 1.7], sun:{color:0xFFF4E0, int:2.1, pos:[60,120,90]}, bloom:[.3,.5,.9],
     portalFx:{pos:S.portal.slice(0,3), w:S.portal[3], h:S.portal[4], yaw:0, color:0xD08AFF, period:120, off:20, dur:10, light:1400},
-    lights:[{pos:[126,40,46], color:0xFFF0D0, int:120, dist:34}, {pos:[S.vocabulary.x,S.vocabulary.y+8,S.vocabulary.z+14], color:0x7FB8FF, int:170, dist:26}, {pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[S.vocabulary.x,S.vocabulary.y+14,S.vocabulary.z+22], color:0xFFE6A8, int:150, dist:40}, {pos:[94,42,17], color:0xC88AFF, int:260, dist:30, flicker:1400}],
+    lights:[{pos:[130,40,46], color:0xFFF0D0, int:120, dist:34}, {pos:[S.vocabulary.x,S.vocabulary.y+8,S.vocabulary.z+14], color:0x7FB8FF, int:170, dist:26}, {pos:[S.grammar.x,S.grammar.y+14,S.grammar.z+16], color:0xFFE6A8, int:140, dist:34}, {pos:[S.vocabulary.x,S.vocabulary.y+14,S.vocabulary.z+22], color:0xFFE6A8, int:150, dist:40}, {pos:[94,42,17], color:0xC88AFF, int:260, dist:30, flicker:1400}],
     planes:[{y:-30, size:1400, color:0xB8CCE6, em:0}],
     // unter der Festung: Nebel und ein Wolkenmeer, dazu einige große Haufenwolken mit Detail
     puffs:[{n:16, pos:[0,-2,10], dx:W, dy:1, dz:0, s0:26, s1:30, color:0xF2F6FC, opacity:.45, speed:.006, spread:26, flat:.35},
