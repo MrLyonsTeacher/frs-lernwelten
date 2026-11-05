@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Word Power: Word Families – Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+ "id": "wp6",
+ "icon": "🧬",
+ "kartenSymbol": "🧬",
+ "titel": "Word Power: Word Families",
+ "untertitel": "un-, -ful, -less, -ly · opposites",
+ "text": "Small word parts, big effect: build new words with un-, -ful, -less and -ly and learn the most important opposites.",
+ "levels": [
+  {
+   "id": "opp",
+   "typ": "memory",
+   "icon": "↔️",
+   "titel": "Opposites",
+   "art": "Gegenteile · memory",
+   "anleitung": "Find the pairs. Fewer moves = more flags.",
+   "anleitungDe": "Finde die Paare. Je weniger Züge, desto mehr Flaggen.",
+   "tipp": "Gegenteile findest du in jeder Klassenarbeit – lerne sie als Paare.",
+   "paare": [
+    {
+     "a": "big",
+     "b": "small"
+    },
+    {
+     "a": "hot",
+     "b": "cold"
+    },
+    {
+     "a": "fast",
+     "b": "slow"
+    },
+    {
+     "a": "easy",
+     "b": "difficult"
+    },
+    {
+     "a": "early",
+     "b": "late"
+    },
+    {
+     "a": "open",
+     "b": "closed"
+    },
+    {
+     "a": "full",
+     "b": "empty"
+    },
+    {
+     "a": "cheap",
+     "b": "expensive"
+    },
+    {
+     "a": "loud",
+     "b": "quiet"
+    },
+    {
+     "a": "clean",
+     "b": "dirty"
+    },
+    {
+     "a": "buy",
+     "b": "sell"
+    },
+    {
+     "a": "arrive",
+     "b": "leave"
+    }
+   ]
+  },
+  {
+   "id": "affix",
+   "typ": "sortieren",
+   "icon": "🧩",
+   "titel": "Word Parts",
+   "art": "Vor- und Nachsilben · sort",
+   "anleitung": "Where does the word belong? Tap the right box.",
+   "anleitungDe": "Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
+   "tipp": "Schau auf Anfang und Ende des Wortes.",
+   "koerbe": [
+    {
+     "t": "un-",
+     "info": "🚫",
+     "tipp": "**un-** macht das Gegenteil: happy → **un**happy."
+    },
+    {
+     "t": "-ful / -less",
+     "info": "🧰",
+     "tipp": "**-ful** = voll von (helpful), **-less** = ohne (careless)."
+    },
+    {
+     "t": "-ly",
+     "info": "🏃",
+     "tipp": "**-ly** macht aus einem Adjektiv ein Adverb: quick → quick**ly**."
+    }
+   ],
+   "items": [
+    {
+     "t": "unhappy",
+     "k": 0,
+     "e": "**unhappy** = unglücklich."
+    },
+    {
+     "t": "unkind",
+     "k": 0
+    },
+    {
+     "t": "unfair",
+     "k": 0
+    },
+    {
+     "t": "untidy",
+     "k": 0,
+     "e": "**untidy** = unordentlich."
+    },
+    {
+     "t": "unlucky",
+     "k": 0
+    },
+    {
+     "t": "unfriendly",
+     "k": 0
+    },
+    {
+     "t": "helpful",
+     "k": 1,
+     "e": "**helpful** = hilfsbereit."
+    },
+    {
+     "t": "careful",
+     "k": 1
+    },
+    {
+     "t": "useful",
+     "k": 1
+    },
+    {
+     "t": "colourful",
+     "k": 1,
+     "e": "**colourful** = bunt."
+    },
+    {
+     "t": "careless",
+     "k": 1,
+     "e": "**careless** = unvorsichtig."
+    },
+    {
+     "t": "useless",
+     "k": 1
+    },
+    {
+     "t": "hopeless",
+     "k": 1
+    },
+    {
+     "t": "homeless",
+     "k": 1,
+     "e": "**homeless** = obdachlos."
+    },
+    {
+     "t": "quickly",
+     "k": 2
+    },
+    {
+     "t": "slowly",
+     "k": 2
+    },
+    {
+     "t": "loudly",
+     "k": 2
+    },
+    {
+     "t": "happily",
+     "k": 2,
+     "e": "happy → happ**ily** (y wird zu i)."
+    },
+    {
+     "t": "easily",
+     "k": 2,
+     "e": "easy → eas**ily**."
+    },
+    {
+     "t": "carefully",
+     "k": 2
+    }
+   ]
+  },
+  {
+   "id": "build",
+   "typ": "eingabe",
+   "icon": "🔨",
+   "titel": "Word Builder",
+   "art": "Wörter bilden · type",
+   "anleitung": "Build the word. Type your answer.",
+   "anleitungDe": "Bilde das Wort. Tippe die Antwort.",
+   "tipp": "Tippe nur das neue Wort.",
+   "fragen": [
+    {
+     "q": "teach + **-er** = a person who teaches →",
+     "a": [
+      "teacher"
+     ],
+     "e": null
+    },
+    {
+     "q": "happy → the opposite (**un-**) →",
+     "a": [
+      "unhappy"
+     ],
+     "e": null
+    },
+    {
+     "q": "care + **-ful** →",
+     "a": [
+      "careful"
+     ],
+     "e": "**careful** = vorsichtig."
+    },
+    {
+     "q": "care + **-less** →",
+     "a": [
+      "careless"
+     ],
+     "e": "**careless** = unvorsichtig."
+    },
+    {
+     "q": "quick → adverb (**-ly**) →",
+     "a": [
+      "quickly"
+     ],
+     "e": null
+    },
+    {
+     "q": "easy → adverb (**-ly**) →",
+     "a": [
+      "easily"
+     ],
+     "e": "Bei easy wird y zu i: eas**ily**."
+    },
+    {
+     "q": "help + **-ful** →",
+     "a": [
+      "helpful"
+     ],
+     "e": null
+    },
+    {
+     "q": "play + **-er** = a person who plays →",
+     "a": [
+      "player"
+     ],
+     "e": null
+    },
+    {
+     "q": "friendly → the opposite (**un-**) →",
+     "a": [
+      "unfriendly"
+     ],
+     "e": null
+    },
+    {
+     "q": "like → the opposite (**dis-**) →",
+     "a": [
+      "dislike"
+     ],
+     "e": null
+    },
+    {
+     "q": "agree → the opposite (**dis-**) →",
+     "a": [
+      "disagree"
+     ],
+     "e": null
+    },
+    {
+     "q": "use + **-less** →",
+     "a": [
+      "useless"
+     ],
+     "e": "**useless** = nutzlos."
+    },
+    {
+     "q": "colour + **-ful** →",
+     "a": [
+      "colourful",
+      "colorful"
+     ],
+     "e": "**colourful** (BE) / colorful (AE) = bunt."
+    }
+   ]
+  },
+  {
+   "id": "form",
+   "typ": "quiz",
+   "icon": "✅",
+   "titel": "Right Form",
+   "art": "Wortform im Satz · quiz",
+   "anleitung": "Choose the right word.",
+   "anleitungDe": "Wähle das richtige Wort.",
+   "tipp": "Adjektiv oder Adverb? Nach *be* steht ein Adjektiv, bei Tätigkeiten ein Adverb.",
+   "fragen": [
+    {
+     "q": "My brother is very ___. He always helps me.",
+     "o": [
+      "helpful",
+      "helpless",
+      "helping"
+     ],
+     "c": 0,
+     "e": "**helpful** = hilfsbereit."
+    },
+    {
+     "q": "Be ___ when you cross the road!",
+     "o": [
+      "careful",
+      "carefully",
+      "careless"
+     ],
+     "c": 0,
+     "e": "Nach *be* steht ein Adjektiv: **careful**."
+    },
+    {
+     "q": "The dog ran ___ across the field.",
+     "o": [
+      "quickly",
+      "quick",
+      "quicker"
+     ],
+     "c": 0,
+     "e": "Zu *ran* passt ein Adverb: **quickly**."
+    },
+    {
+     "q": "This pen is ___. It doesn’t write.",
+     "o": [
+      "useless",
+      "useful",
+      "useing"
+     ],
+     "c": 0,
+     "e": "**useless** = nutzlos."
+    },
+    {
+     "q": "I’m ___ because I lost my phone.",
+     "o": [
+      "unhappy",
+      "unhappily",
+      "nonhappy"
+     ],
+     "c": 0,
+     "e": "**unhappy** = unglücklich."
+    },
+    {
+     "q": "He is a good ___. The team loves him.",
+     "o": [
+      "player",
+      "play",
+      "playing"
+     ],
+     "c": 0,
+     "e": "**player** = Spieler(in)."
+    },
+    {
+     "q": "Your room is very ___. Please clean it!",
+     "o": [
+      "untidy",
+      "tidy",
+      "untidily"
+     ],
+     "c": 0,
+     "e": "**untidy** = unordentlich."
+    },
+    {
+     "q": "She sings very ___.",
+     "o": [
+      "beautifully",
+      "beautiful",
+      "beauty"
+     ],
+     "c": 0,
+     "e": "Zu *sings* passt ein Adverb: **beautifully**."
+    },
+    {
+     "q": "It was an ___ day. Nothing went right.",
+     "o": [
+      "unlucky",
+      "lucky",
+      "unluckily"
+     ],
+     "c": 0,
+     "e": "**an unlucky day** = ein Pechtag."
+    },
+    {
+     "q": "I ___ spiders. I don’t want to touch them.",
+     "o": [
+      "dislike",
+      "unlike",
+      "disagree"
+     ],
+     "c": 0,
+     "e": "**to dislike** = nicht mögen."
+    }
+   ]
+  },
+  {
+   "id": "story",
+   "typ": "lueckentext",
+   "icon": "📖",
+   "titel": "A Bad Day",
+   "art": "Text · fill in the gaps",
+   "anleitung": "Read the text. Tap a gap and choose the right word form.",
+   "anleitungDe": "Lies den Text. Tippe auf eine Lücke und wähle die richtige Wortform.",
+   "tipp": "Think about the word forms.",
+   "ueberschrift": "Tom’s bad day",
+   "text": "Tom had an [[unlucky|unluckily|lucky]] day. He got up [[late|lately|latest]] and ran to school [[quickly|quick|quicker]]. On the way he was [[careless|carelessly|carefully]] and fell over. A [[helpful|helpless|helping]] girl helped him up. In class he felt [[unhappy|unhappily|unhappier]] because his bag was [[untidy|untidily|tidyless]]. But after school he played football with his friends and he was [[happy|happily|happiness]] again.",
+   "erklaerung": "Words: **unlucky, late, quickly, careless, helpful, unhappy, untidy, happy**. Nach *was/felt* steht ein Adjektiv, bei einer Tätigkeit ein Adverb auf **-ly**."
+  }
+ ],
+ "k": 6,
+ "kat": "vocabulary"
+});
+</script>
+</body>
+</html>

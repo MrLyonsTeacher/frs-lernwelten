@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Word Power: Word Families – Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+ "id": "wp7",
+ "icon": "🧬",
+ "kartenSymbol": "🧬",
+ "titel": "Word Power: Word Families",
+ "untertitel": "Verb · noun · adjective · opposites",
+ "text": "Decide, decision, decisive: learn how words change their job and master the most important opposites.",
+ "levels": [
+  {
+   "id": "opp",
+   "typ": "memory",
+   "icon": "↔️",
+   "titel": "Opposites",
+   "art": "Gegenteile · memory",
+   "anleitung": "Find the pairs. Fewer moves = more flags.",
+   "anleitungDe": "Finde die Paare. Je weniger Züge, desto mehr Flaggen.",
+   "tipp": "Gegenteile gehören zum Standard-Wortschatz – auch in Texten kommen sie oft vor.",
+   "paare": [
+    {
+     "a": "safe",
+     "b": "dangerous"
+    },
+    {
+     "a": "polite",
+     "b": "rude"
+    },
+    {
+     "a": "generous",
+     "b": "mean"
+    },
+    {
+     "a": "modern",
+     "b": "old-fashioned"
+    },
+    {
+     "a": "healthy",
+     "b": "ill"
+    },
+    {
+     "a": "strong",
+     "b": "weak"
+    },
+    {
+     "a": "tidy",
+     "b": "messy"
+    },
+    {
+     "a": "quiet",
+     "b": "noisy"
+    },
+    {
+     "a": "rich",
+     "b": "poor"
+    },
+    {
+     "a": "borrow",
+     "b": "lend"
+    },
+    {
+     "a": "increase",
+     "b": "decrease"
+    },
+    {
+     "a": "win",
+     "b": "lose"
+    }
+   ]
+  },
+  {
+   "id": "class",
+   "typ": "sortieren",
+   "icon": "🔤",
+   "titel": "Verb, Noun or Adjective?",
+   "art": "Wortarten · sort",
+   "anleitung": "Where does the word belong? Tap the right box.",
+   "anleitungDe": "Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
+   "tipp": "Endungen verraten die Wortart: -ion, -ment, -ness = Nomen; -ous, -ful, -able = Adjektiv.",
+   "koerbe": [
+    {
+     "t": "verb",
+     "info": "🏃",
+     "tipp": "Ein **Verb** sagt, was jemand tut: decide, invent."
+    },
+    {
+     "t": "noun",
+     "info": "📦",
+     "tipp": "Ein **Nomen** ist ein Ding oder eine Idee: decision, happiness."
+    },
+    {
+     "t": "adjective",
+     "info": "🎨",
+     "tipp": "Ein **Adjektiv** beschreibt: dangerous, famous."
+    }
+   ],
+   "items": [
+    {
+     "t": "decide",
+     "k": 0,
+     "e": "**decide** → decision."
+    },
+    {
+     "t": "invent",
+     "k": 0
+    },
+    {
+     "t": "collect",
+     "k": 0
+    },
+    {
+     "t": "move",
+     "k": 0
+    },
+    {
+     "t": "enjoy",
+     "k": 0
+    },
+    {
+     "t": "discover",
+     "k": 0
+    },
+    {
+     "t": "decision",
+     "k": 1,
+     "e": "**-ion** macht Nomen: decide → decision."
+    },
+    {
+     "t": "invention",
+     "k": 1
+    },
+    {
+     "t": "collection",
+     "k": 1
+    },
+    {
+     "t": "movement",
+     "k": 1,
+     "e": "**-ment** macht Nomen: move → movement."
+    },
+    {
+     "t": "happiness",
+     "k": 1,
+     "e": "**-ness** macht Nomen: happy → happiness."
+    },
+    {
+     "t": "illness",
+     "k": 1
+    },
+    {
+     "t": "dangerous",
+     "k": 2,
+     "e": "**-ous** macht Adjektive: danger → dangerous."
+    },
+    {
+     "t": "successful",
+     "k": 2,
+     "e": "**-ful**: success → successful."
+    },
+    {
+     "t": "healthy",
+     "k": 2,
+     "e": "**-y**: health → healthy."
+    },
+    {
+     "t": "beautiful",
+     "k": 2
+    },
+    {
+     "t": "famous",
+     "k": 2,
+     "e": "fame → fam**ous**."
+    },
+    {
+     "t": "comfortable",
+     "k": 2
+    }
+   ]
+  },
+  {
+   "id": "build",
+   "typ": "eingabe",
+   "icon": "🔨",
+   "titel": "Word Builder",
+   "art": "Wörter bilden · type",
+   "anleitung": "Build the word. Type your answer.",
+   "anleitungDe": "Bilde das Wort. Tippe die Antwort.",
+   "tipp": "Manchmal ändert sich die Schreibweise ein wenig.",
+   "fragen": [
+    {
+     "q": "invent → the thing (**-ion**) →",
+     "a": [
+      "invention"
+     ],
+     "e": null
+    },
+    {
+     "q": "collect → the thing (**-ion**) →",
+     "a": [
+      "collection"
+     ],
+     "e": null
+    },
+    {
+     "q": "decide → the thing →",
+     "a": [
+      "decision"
+     ],
+     "e": "**decision** (nicht *decidion*)!"
+    },
+    {
+     "q": "move → the thing (**-ment**) →",
+     "a": [
+      "movement"
+     ],
+     "e": null
+    },
+    {
+     "q": "enjoy → the feeling (**-ment**) →",
+     "a": [
+      "enjoyment"
+     ],
+     "e": null
+    },
+    {
+     "q": "happy → the noun (**-ness**) →",
+     "a": [
+      "happiness"
+     ],
+     "e": "happy → happ**iness**."
+    },
+    {
+     "q": "ill → the noun (**-ness**) →",
+     "a": [
+      "illness"
+     ],
+     "e": null
+    },
+    {
+     "q": "kind → the noun (**-ness**) →",
+     "a": [
+      "kindness"
+     ],
+     "e": null
+    },
+    {
+     "q": "danger → the adjective (**-ous**) →",
+     "a": [
+      "dangerous"
+     ],
+     "e": null
+    },
+    {
+     "q": "success → the adjective (**-ful**) →",
+     "a": [
+      "successful"
+     ],
+     "e": null
+    },
+    {
+     "q": "health → the adjective (**-y**) →",
+     "a": [
+      "healthy"
+     ],
+     "e": null
+    },
+    {
+     "q": "fame → the adjective (**-ous**) →",
+     "a": [
+      "famous"
+     ],
+     "e": "fame → fam**ous** (das e fällt weg)."
+    }
+   ]
+  },
+  {
+   "id": "forms",
+   "typ": "quiz",
+   "icon": "✅",
+   "titel": "Right Form",
+   "art": "Wortform im Satz · quiz",
+   "anleitung": "Choose the right word.",
+   "anleitungDe": "Wähle das richtige Wort.",
+   "tipp": "Nomen, Verb oder Adjektiv? Schau, was im Satz fehlt.",
+   "fragen": [
+    {
+     "q": "The ___ of the telephone changed the world.",
+     "o": [
+      "invention",
+      "invent",
+      "inventing"
+     ],
+     "c": 0,
+     "e": "**invention** = Erfindung."
+    },
+    {
+     "q": "It was a hard ___. I couldn’t sleep.",
+     "o": [
+      "decision",
+      "decide",
+      "decided"
+     ],
+     "c": 0,
+     "e": "**decision** = Entscheidung."
+    },
+    {
+     "q": "Swimming in the river is ___. Don’t do it!",
+     "o": [
+      "dangerous",
+      "danger",
+      "dangerously"
+     ],
+     "c": 0,
+     "e": "**dangerous** = gefährlich."
+    },
+    {
+     "q": "We were very ___ after our match: we won 4:0!",
+     "o": [
+      "successful",
+      "success",
+      "successfully"
+     ],
+     "c": 0,
+     "e": "**successful** = erfolgreich."
+    },
+    {
+     "q": "Thank you for your ___. You are so nice.",
+     "o": [
+      "kindness",
+      "kindly",
+      "kind"
+     ],
+     "c": 0,
+     "e": "**kindness** = Freundlichkeit."
+    },
+    {
+     "q": "My sister has a big ___ of stickers.",
+     "o": [
+      "collection",
+      "collect",
+      "collecting"
+     ],
+     "c": 0,
+     "e": "**collection** = Sammlung."
+    },
+    {
+     "q": "The film star is ___ all over the world.",
+     "o": [
+      "famous",
+      "fame",
+      "famously"
+     ],
+     "c": 0,
+     "e": "**famous** = berühmt."
+    },
+    {
+     "q": "He stayed in bed because of his ___.",
+     "o": [
+      "illness",
+      "ill",
+      "illy"
+     ],
+     "c": 0,
+     "e": "**illness** = Krankheit."
+    },
+    {
+     "q": "Is it ___ to eat fish every day? Yes, if you cook it well.",
+     "o": [
+      "healthy",
+      "health",
+      "healthily"
+     ],
+     "c": 0,
+     "e": "**healthy** = gesund."
+    },
+    {
+     "q": "The ___ in the museum shows old computers.",
+     "o": [
+      "exhibition",
+      "exhibit",
+      "exhibiting"
+     ],
+     "c": 0,
+     "e": "**exhibition** = Ausstellung."
+    }
+   ]
+  },
+  {
+   "id": "story",
+   "typ": "lueckentext",
+   "icon": "📖",
+   "titel": "The Inventor",
+   "art": "Text · fill in the gaps",
+   "anleitung": "Read the text. Tap a gap and choose the right word form.",
+   "anleitungDe": "Lies den Text. Tippe auf eine Lücke und wähle die richtige Wortform.",
+   "tipp": "Think about the word forms.",
+   "ueberschrift": "A famous inventor",
+   "text": "Thomas Edison was a very [[famous|fame|famously]] inventor. His most important [[invention|invent|inventor]] was the light bulb. Before that, life at night was [[dangerous|danger|dangerously]] and dark. Edison’s [[success|successful|succeed]] came with hard work. His [[decision|decide|decided]] to never give up made him a hero. Many people say his [[kindness|kind|kindly]] to his workers was also important.",
+   "erklaerung": "Words: **famous, invention, dangerous, success, decision, kindness**. Nach *a very* steht ein Adjektiv, nach *his/Edison’s* ein Nomen."
+  }
+ ],
+ "k": 7,
+ "kat": "vocabulary"
+});
+</script>
+</body>
+</html>
