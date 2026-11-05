@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Northeast & Thanksgiving – Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:8, kat:"vocabulary", id:"vne8", icon:"🦃", kartenSymbol:"🍂",
+  titel:"Words: Northeast & Thanksgiving", untertitel:"Thanksgiving, Amish life, devices, mystery",
+  text:"Turkey, lobsters and the Amish: the words for the Northeast and for a real American Thanksgiving.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Northeast Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Thanksgiving und the Amish schreibt man im Englischen immer groß.",
+      paare:[ {a:"Thanksgiving", b:"Erntedankfest", gross:true}, {a:"the Amish", b:"die Amischen", gross:true}, {a:"lobster", b:"Hummer"}, {a:"turkey", b:"Truthahn; Pute"},
+              {a:"to pardon", b:"begnadigen"}, {a:"doorbell", b:"Türklingel"}, {a:"freezing", b:"eiskalt"}, {a:"to get stuck", b:"stecken bleiben"},
+              {a:"to get together", b:"zusammenkommen"}, {a:"creepy", b:"gruselig"} ]},
+    { id:"devices", typ:"sortieren", icon:"🔌", titel:"Which Device?", art:"Devices · sort",
+      anleitung:"Where does the device belong? Tap the right box.",
+      anleitungDe:"Wo gehört das Gerät hin? Tippe auf das richtige Kästchen.",
+      tipp:"Haushalt (Küche, Wäsche, Heizung) – oder persönliche Geräte?",
+      koerbe:[ {t:"At home", info:"🏠", tipp:"**At home**: dishwasher, microwave, vacuum cleaner, dryer, radiator, fan."}, {t:"Personal", info:"📱", tipp:"**Personal**: cell phone, tablet, headphones, hair straightener, razor, make-up."} ],
+      items:[
+        {t:"dishwasher", k:0, e:"**dishwasher** = Spülmaschine."}, {t:"cell phone", k:1, e:"AE **cell phone** = BE **mobile phone**."}, {t:"microwave", k:0}, {t:"tablet", k:1},
+        {t:"vacuum cleaner", k:0, e:"**vacuum cleaner** = Staubsauger."}, {t:"headphones", k:1, e:"**headphones** = Kopfhörer (immer Plural)."}, {t:"dryer", k:0, e:"**dryer** = Wäschetrockner."},
+        {t:"hair straightener", k:1, e:"**hair straightener** = Haarglätter."}, {t:"radiator", k:0, e:"**radiator** = Heizkörper."}, {t:"razor", k:1, e:"**razor** = Rasierer."},
+        {t:"fan", k:0, e:"**fan** = hier: Ventilator."}, {t:"make-up", k:1}
+      ]},
+    { id:"quiz", typ:"quiz", icon:"🦃", titel:"Thanksgiving Quiz", art:"Definitions · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"The big family dinner on the 4th Thursday in November.", o:["Thanksgiving","Halloween","Independence Day"], c:0, gross:true, e:"**Thanksgiving** = Erntedankfest. Feste schreibt man im Englischen **groß**."},
+        {q:"The big bird that Americans eat on Thanksgiving.", o:["turkey","lobster","barrel"], c:0, e:"**turkey** = Truthahn."},
+        {q:"A sea animal with big claws – very popular in Maine.", o:["lobster","stuntman","novel"], c:0, e:"**lobster** = Hummer."},
+        {q:"The people in Pennsylvania who live without cars and mobile phones.", o:["the Amish","the Christians","the neighbors"], c:0, gross:true, e:"**the Amish** = die Amischen – Namen von Gruppen schreibt man **groß**."},
+        {q:"Every year the President … a turkey: he lets it live.", o:["pardons","punishes","protects"], c:0, e:"**to pardon** = begnadigen."},
+        {q:"A book or film that makes you feel a little scared.", o:["creepy","glad","bored"], c:0, e:"**creepy** = gruselig."},
+        {q:"You press it when you come to somebody’s door.", o:["doorbell","engine","blanket"], c:0, e:"**doorbell** = Türklingel."},
+        {q:"It is very, very cold outside.", o:["freezing","amazed","glad"], c:0, e:"**freezing** = eiskalt."},
+        {q:"Somebody who is quite old.", o:["elderly","teenage","original"], c:0, e:"**elderly** = älter, betagt."},
+        {q:"You feel this when you have nothing to do.", o:["bored","amazed","thankful"], c:0, e:"**bored** = gelangweilt."},
+        {q:"You feel this when you are happy about everything you have.", o:["thankful","creepy","stuck"], c:0, e:"**thankful** = dankbar."},
+        {q:"What happens to a car that cannot move in the snow?", o:["It gets stuck.","It gets ready.","It gets together."], c:0, e:"**to get stuck** = stecken bleiben."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **thankful**, **neighbor**, **vacuum cleaner**. **Thanksgiving**, **Amish** und **Christian** schreibst du **groß**.", typ:"rush", icon:"⚡", titel:"Turkey Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Truthahn", o:["turkey","turkie","turtle"], c:0}, {q:"Hummer", o:["lobster","lopster","lobby"], c:0}, {q:"Türklingel", o:["doorbell","doorbel","doorball"], c:0},
+        {q:"gruselig", o:["creepy","creapy","crispy"], c:0}, {q:"Ehemann", o:["husband","housband","husbend"], c:0}, {q:"jugendlich", o:["teenage","teanage","teenager"], c:0},
+        {q:"älter (Person)", o:["elderly","elderley","elder-ly"], c:0}, {q:"Nachbar(in) (US)", o:["neighbor","naybor","nieghbor"], c:0}, {q:"eiskalt", o:["freezing","freezeing","frozen"], c:0},
+        {q:"froh", o:["glad","glade","gland"], c:0}, {q:"dankbar", o:["thankful","thankfull","thanksful"], c:0}, {q:"gelangweilt", o:["bored","board","boring"], c:0},
+        {q:"erstaunt", o:["amazed","amased","amazing"], c:0}, {q:"Motor", o:["engine","enjine","engineer"], c:0}, {q:"Gerät", o:["device","devise","divide"], c:0},
+        {q:"Staubsauger", o:["vacuum cleaner","vacum cleaner","dust cleaner"], c:0}, {q:"Mikrowelle", o:["microwave","micro wave","microwafe"], c:0},
+        {q:"Wäschetrockner", o:["dryer","dreyer","dryor"], c:0, alt:["drier"]}, {q:"Spülmaschine", o:["dishwasher","dish washer","dishwasch"], c:0},
+        {q:"Kopfhörer", o:["headphones","headphone","earphones"], c:0}, {q:"Heizkörper", o:["radiator","radiater","radio"], c:0}, {q:"Rasierer", o:["razor","raser","racer"], c:0},
+        {q:"Haarglätter", o:["hair straightener","hair straighter","hair stretcher"], c:0}, {q:"Roman", o:["novel","nowel","noval"], c:0}, {q:"Krimi", o:["mystery story","mistery story","mystery history"], c:0},
+        {q:"Erntedankfest", o:["Thanksgiving","thanksgiving","Thanksgiven"], c:0, gross:true}, {q:"die Amischen", o:["the Amish","the amish","the Armish"], c:0, gross:true},
+        {q:"amisch", o:["Amish","amish","Armish"], c:0, gross:true}, {q:"christlich", o:["Christian","christian","Christion"], c:0, gross:true}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"📝", titel:"Thanksgiving at Grandma’s", art:"Text · fill in the gaps",
+      anleitung:"Read the story. Tap a gap and choose the right word.",
+      anleitungDe:"Lies die Geschichte. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"A Thanksgiving in Maine",
+      text:"It was Thanksgiving at Grandma’s house in Maine. When the [[doorbell|doorknob|doorstep]] rang, the whole family got [[together|stuck|tired]]. It was [[freezing|freezer|friendly]] outside, so everybody was glad to come in.\nMia’s [[elderly|lonely|early]] grandpa sat next to the fire. He was a bit [[bored|border|barred]] after the long drive. Grandma had cooked a huge [[turkey|turtle|monkey]], and there was also [[lobster|lobby|lover]] because they live near the sea.\nBefore dinner everybody said what they were [[thankful|thanking|thanked]] for. On TV the [[President|Precedent|Presidency]] pardoned a turkey. Mia’s little brother found that really [[amazing|amazed|amazer]].",
+      erklaerung:"Words: **doorbell, get together, freezing, elderly, bored, turkey, lobster, thankful, President, amazing**. **Thanksgiving** schreibt man immer groß."}
+  ]
+});
+</script>
+</body>
+</html>

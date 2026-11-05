@@ -55,6 +55,7 @@ button{font:inherit;color:inherit}
 input.t{font:600 20px Lexend;padding:12px 14px;border-radius:12px;border:2.5px solid var(--line);width:100%;max-width:480px;background:#fff;color:var(--ink)}
 input.t.ok{background:var(--okbg);border-color:var(--ok)}input.t.bad{background:var(--badbg);border-color:var(--bad)}input.t.half{background:#FFF3CC;border-color:#C79200}
 .fb{margin:10px 0;padding:10px 14px;border-radius:12px;font-weight:600}
+.cap{display:inline-block;margin:6px 0 0;padding:4px 10px;border-radius:10px;background:#FFF3CC;color:#6B4B00;font:600 14px Lexend}
 .fb.ok{background:var(--okbg);color:#0E5A30}.fb.bad{background:var(--badbg);color:#8C2217}.fb.half{background:#FFF3CC;color:#6B4B00}
 .prog{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:6px}
 .list{width:100%;border-collapse:collapse;font-size:15px}
@@ -115,13 +116,24 @@ const UNITS = parseUnits(window.VOK8 || []);
 const IRR = (window.VOK8_IRR || "").split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{ const p=l.split("|").map(x=>x.trim()); return {inf:p[0], past:p[1], pp:p[2], de:p[3], key:"irr|"+p[0]}; });
 
 /* ---------- Hilfen ---------- */
-function norm(s){
-  return String(s||"").toLowerCase().replace(/[’`]/g,"'").replace(/\s*\([^)]*\)/g," ").replace(/\b(sth|sb|etw|jmdn)\b\.?/g," ")
+function norm(s, keep){
+  return (keep ? String(s||"") : String(s||"").toLowerCase()).replace(/[’`]/g,"'").replace(/\s*\([^)]*\)/g," ").replace(/\b(sth|sb|etw|jmdn)\b\.?/g," ")
     .replace(/^\s*to\s+/,"").replace(/[.,!?;:…"]/g," ").replace(/\s+/g," ").trim();
 }
 function normB(s){ return norm(String(s||"").replace(/[()]/g,"").replace(/=\s*/,"")); }
 function lev(a,b){ const m=a.length,n=b.length; if(!m) return n; if(!n) return m; let p=Array.from({length:n+1},(_,i)=>i);
   for(let i=1;i<=m;i++){ const c=[i]; for(let j=1;j<=n;j++) c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1)); p=c; } return p[n]; }
+/* Groß-/Kleinschreibung: zählt bei Eigennamen, Nationalitäten, Ländern … (alles mit Großbuchstaben, was kein ganzer Satz ist) */
+const needsCap = s => { const t = String(s||"").replace(/\([^)]*\)/g,"").trim(); return /[A-Z]/.test(t) && !/[.?!…]\s*$/.test(t); };
+let capWhy = false;   // letzter Fehler war nur die Großschreibung?
+/* gleich wie grade(), aber: stimmt der Text und nur die Großschreibung nicht, gibt es „fast“ (1) */
+function gradeC(input, answers){
+  capWhy = false; const g = grade(input, answers); if(g!==2) return g;
+  const x = norm(input), xk = norm(input, true);
+  for(const a of answers){ if(!a) continue; const b = String(a).replace(/[()]/g,"").replace(/=\s*/,"");
+    if(norm(a)===x || normB(a)===x){ if(needsCap(a) && norm(a,true)!==xk && norm(b,true)!==xk){ capWhy = true; return 1; } return 2; } }
+  return 2;
+}
 /* 2 = richtig, 1 = fast (ein Tippfehler), 0 = falsch */
 function grade(input, answers){
   const x = norm(input); if(!x) return 0; let best = 0;
@@ -238,16 +250,16 @@ function typing(){
   const ask = () => {
     if(i>=q.length) return end(); const it = q[i];
     const body = cur==="irr" ? `<div class="q">${esc(it.inf)} <span class="small">(${esc(it.de)})</span></div><div class="row"><label>Simple past<br><input class="t" id="a1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></label><label>Past participle<br><input class="t" id="a2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></label></div>`
-      : `<div class="q">${esc(it.de)}</div><p class="small">${esc(it.sec)}${it.ex?"":""}</p><input class="t" id="a1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …"><div class="row" style="margin-top:8px"><button class="chip" data-a="hint">💡 Tipp</button><span id="hint" class="small"></span></div>`;
+      : `<div class="q">${esc(it.de)}</div><p class="small">${esc(it.sec)}${it.ex?"":""}</p><input class="t" id="a1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …">${needsCap(it.head)?`<p class="cap">🔠 Groß-/Kleinschreibung zählt hier!</p>`:""}<div class="row" style="margin-top:8px"><button class="chip" data-a="hint">💡 Tipp</button><span id="hint" class="small"></span></div>`;
     V.innerHTML = `<div class="prog"><span>${i+1} von ${q.length}</span><span>${pts} richtig</span><button class="chip" data-a="home">Beenden</button></div><div class="bar"><i style="width:${i/q.length*100}%"></i></div>
       <div class="panel">${body}<div class="row" style="margin-top:10px"><button class="btn" data-a="check" id="chk">Prüfen</button></div><div id="fb"></div></div>`;
     setTimeout(()=>$("#a1").focus({preventScroll:true}),30);
     let checked = false;
     const check = () => { if(checked){ i++; return ask(); } checked = true; let res, txt;
       if(cur==="irr"){ const g1 = grade($("#a1").value, it.past.split("/")), g2 = grade($("#a2").value, it.pp.split("/")); $("#a1").classList.add(g1?"ok":"bad"); $("#a2").classList.add(g2?"ok":"bad"); res = g1&&g2 ? 2 : 0; txt = `${it.inf} – ${it.past} – ${it.pp}`; }
-      else { const g = grade($("#a1").value, answersOf(it)); res = g; $("#a1").classList.add(g===2?"ok":g===1?"half":"bad"); txt = it.head + (it.forms.length?" ("+it.forms.join(", ")+")":""); }
+      else { const g = gradeC($("#a1").value, answersOf(it)); res = g; $("#a1").classList.add(g===2?"ok":g===1?"half":"bad"); txt = it.head + (it.forms.length?" ("+it.forms.join(", ")+")":""); }
       if(res){ pts++; bump(it,true); } else { bump(it,false); wrong.push(it); }
-      $("#fb").innerHTML = `<div class="fb ${res===2?"ok":res===1?"half":"bad"}">${res===2?"Richtig!":res===1?"Fast – kleiner Tippfehler. ":"Leider falsch. "} <b>${esc(txt)}</b>${it.ex?`<br><i>${esc(it.ex)}</i>`:""}</div>`; $("#chk").textContent = i+1<q.length ? "Weiter" : "Ergebnis"; };
+      $("#fb").innerHTML = `<div class="fb ${res===2?"ok":res===1?"half":"bad"}">${res===2?"Richtig!":res===1?(capWhy?"Fast – Groß-/Kleinschreibung beachten! ":"Fast – kleiner Tippfehler. "):"Leider falsch. "} <b>${esc(txt)}</b>${it.ex?`<br><i>${esc(it.ex)}</i>`:""}</div>`; $("#chk").textContent = i+1<q.length ? "Weiter" : "Ergebnis"; };
     V.onclick = e => { const b = e.target.closest("[data-a]"); if(!b) return; if(b.dataset.a==="home") return go(); if(b.dataset.a==="check") return check();
       if(b.dataset.a==="hint"){ const w = it.head.replace(/^to /,""); $("#hint").textContent = `Beginnt mit „${(it.head.startsWith("to ")?"to ":"")+w.slice(0,2)}…“, ${w.length} Buchstaben`; } };
     V.onkeydown = e => { if(e.key==="Enter"){ e.preventDefault(); check(); } };
@@ -284,11 +296,11 @@ function mock(){
   const maxPts = parts.reduce((a,p)=>a+p.items.reduce((b,x)=>b+x.pts,0),0); let n = 0;
   const html = parts.map(p=>`<div class="part">${esc(p.titel)}</div>`+p.items.map(x=>{ x.n = ++n; const id = "i"+x.n; let b;
     if(x.kind==="mc") b = `<div>${x.q}</div><div class="mcrow">${x.opts.map((o,k)=>`<label><input type="radio" name="${id}" value="${k}">${esc(o.t)}</label>`).join("")}</div>`;
-    else if(x.kind==="type") b = `<div>${esc(x.it.de)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">`;
-    else if(x.kind==="gap") b = `<div class="gap">${esc(x.c.text)}</div><div class="small">Hinweis: ${esc(x.it.deShort)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:6px">`;
+    else if(x.kind==="type") b = `<div>${esc(x.it.de)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}`;
+    else if(x.kind==="gap") b = `<div class="gap">${esc(x.c.text)}</div><div class="small">Hinweis: ${esc(x.it.deShort)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin-top:6px">${needsCap(x.c.ans[0])?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}`;
     else b = `<div><b>${esc(x.it.inf)}</b> <span class="small">(${esc(x.it.de)})</span></div><div class="row" style="margin-top:6px"><input class="t" id="${id}a" placeholder="simple past" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"><input class="t" id="${id}b" placeholder="past participle" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"></div>`;
     return `<div class="it"><span class="n">${x.n}.</span><span class="p">${x.pts} P.</span> ${b}</div>`; }).join("")).join("");
-  V.innerHTML = `<div class="prog"><span>Mock Test · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>📝 Mock Test</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
+  V.innerHTML = `<div class="prog"><span>Mock Test · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>📝 Mock Test</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
   window.scrollTo(0,0);
   V.onclick = e => { const b = e.target.closest("[data-a]"); if(!b) return; if(b.dataset.a==="home"){ if(confirm("Test wirklich abbrechen?")) go(); return; }
     if(b.dataset.a==="submit"){ const items = parts.flatMap(p=>p.items), blank = items.filter(x=> x.kind==="mc" ? !document.querySelector(`input[name=i${x.n}]:checked`) : x.kind==="irr" ? !$("#i"+x.n+"a").value.trim() && !$("#i"+x.n+"b").value.trim() : !$("#i"+x.n).value.trim()).length;
@@ -299,8 +311,8 @@ function finish(parts, maxPts){
   for(const p of parts){ let s = 0, m = 0;
     for(const x of p.items){ m += x.pts; let got = 0, mine = "", sol = "";
       if(x.kind==="mc"){ const r = document.querySelector(`input[name=i${x.n}]:checked`); const o = r ? x.opts[+r.value] : null; mine = o ? o.t : "–"; sol = x.opts.find(o=>o.ok).t; got = o && o.ok ? 1 : 0; }
-      else if(x.kind==="type"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = grade(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
-      else if(x.kind==="gap"){ mine = $("#i"+x.n).value.trim(); sol = x.c.ans[0]; const g = grade(mine, x.c.ans); got = g===2 ? 2 : g===1 ? 1 : 0; }
+      else if(x.kind==="type"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = gradeC(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
+      else if(x.kind==="gap"){ mine = $("#i"+x.n).value.trim(); sol = x.c.ans[0]; const g = gradeC(mine, x.c.ans); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else { const a = $("#i"+x.n+"a").value.trim(), b = $("#i"+x.n+"b").value.trim(); mine = a+" / "+b; sol = x.it.past+" / "+x.it.pp; got = (grade(a,x.it.past.split("/"))?1:0) + (grade(b,x.it.pp.split("/"))?1:0); }
       s += got; if(got<x.pts) errs.push({x, mine, sol, got}); if(x.kind!=="irr" || true) bump(x.it, got===x.pts); }
     tot += s; br.push([p.id, s, m]); }

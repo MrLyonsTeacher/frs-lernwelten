@@ -24,6 +24,8 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manip
 .btn[disabled]{opacity:.4;cursor:not-allowed}
 .row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
 .hint{color:var(--muted);margin:.1rem 0 .6rem;font-size:.95rem}
+.hint.cap{color:inherit;font-weight:600;background:rgba(255,194,74,.2);border-left:4px solid #FFC24A;padding:.35rem .65rem;border-radius:8px}
+.hint.cap[hidden]{display:none}
 
 /* Kopfzeile (kompakt, eine Zeile) */
 .topbar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .6rem;margin-bottom:.6rem;min-height:52px}

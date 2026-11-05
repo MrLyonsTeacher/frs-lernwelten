@@ -119,6 +119,14 @@ body:not(.area-open):not(.no3d) .wdock{display:none}
 .qt-f .q-bar{flex:1;margin:0}
 .qt-p{font-size:12px;font-weight:700;color:var(--ui-sub);white-space:nowrap}
 .qt.played .qt-p{color:var(--ui-text)}
+/* Abschnitte: Flaggen-Spiele oben, Testvorbereitung (ohne Flaggen) darunter */
+.qsec{margin:14px 0 6px;padding-top:12px;border-top:2px dashed var(--ui-border);font:700 16px Fredoka,sans-serif}
+.ort + .qsec{margin-top:4px;padding-top:0;border-top:0}
+.qsec small{display:block;font:400 12px Lexend,sans-serif;color:var(--ui-sub);margin-top:2px}
+.qt.test{border-style:dashed;min-height:112px}
+.qt.test .qt-s{margin-bottom:4px}
+.qt-b{margin-top:auto;font-size:12px;font-weight:700;color:var(--ui-sub);white-space:nowrap}
+.qt.test.played .qt-b{color:var(--ui-text)}
 .wpanel{width:min(480px,calc(100vw - 32px))}
 body.area-open .wlbl{opacity:0;pointer-events:none}
 @media (max-aspect-ratio:1/1){ .wpanel{width:min(560px,calc(100vw - 24px));bottom:168px !important} }
@@ -227,7 +235,8 @@ async function main(){
   const names = {}, counts = {}, icons = {};
   BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).length; icons[b]=FRS.kategorien[b].icon; });
   const RK = () => UH.rank(K, UH.today(K));
-  const allMax = KL.themen.reduce((a,t)=>a+t.max,0), sum = () => KL.themen.reduce((a,t)=>{ const p=prog(t); return a+(p?p.pts:0); },0);
+  const FLAGQ = t => t.grp!=="test";   // grp:"test" = Testvorbereitung: keine Flaggen
+  const allMax = KL.themen.filter(FLAGQ).reduce((a,t)=>a+t.max,0), sum = () => KL.themen.filter(FLAGQ).reduce((a,t)=>{ const p=prog(t); return a+(p?p.pts:0); },0);
   const NAME_KEY = "insel-"+KL.id+"-name"; let NAME = ""; try{ NAME = localStorage.getItem(NAME_KEY) || ""; }catch(e){}
 
   $("#bar").innerHTML = `<span class="wid"><span class="wk">Class ${K}</span><span class="wn">${esc(WI.name)}</span></span>
@@ -254,6 +263,23 @@ async function main(){
   }
 
   const P = $("#panel");
+  // Flaggen-Spiel als Kachel (Medaille, Fortschritt)
+  const tile = t => { const p=prog(t), pct=p?Math.round(p.pts/p.max*100):0, tier=p?(p.plat?4:LW.tierOf(p.pts,p.max)):0;
+    return `<a class="qt${p?" played":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${t.icon||"🎯"}</span>
+      ${tier?`<span class="qt-m">${LW.medal(tier,26)}</span>`:""}
+      <b class="qt-t">${esc(t.titel)}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
+      <span class="qt-f"><span class="q-bar"><i style="width:${pct}%"></i></span><span class="qt-p">${p?`${p.pts}/${p.max}`:"new"}</span></span></a>`; };
+  // Testvorbereitung als Kachel: keine Flaggen, keine Medaille – nur der beste Test in Prozent
+  const testTile = t => { let b = null; try{ b = (JSON.parse(localStorage.getItem("vt8-best")||"{}")||{})[t.id] || null; }catch(e){}
+    return `<a class="qt test${b?" played":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${t.icon||"📝"}</span>
+      <b class="qt-t">${esc(t.titel.replace(/^Vocab Trainer: /,""))}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
+      <span class="qt-b">${b?`Best test: ${b.pct} %`:"no test yet"}</span></a>`; };
+  function sections(list){
+    const fl = list.filter(FLAGQ), tl = list.filter(t=>!FLAGQ(t));
+    if(!tl.length) return `<div class="qgrid">${fl.map(tile).join("")}</div>`;
+    return (fl.length ? `<p class="qsec">🏅 Flag games<small>Play, collect flags and earn medals · Spielen, Flaggen sammeln, Medaillen gewinnen</small></p><div class="qgrid">${fl.map(tile).join("")}</div>` : "")
+      + `<p class="qsec">📝 Test preparation<small>Practise for the vocabulary test – no flags here · Vorbereitung auf den Vokabeltest – hier gibt es keine Flaggen</small></p><div class="qgrid">${tl.map(testTile).join("")}</div>`;
+  }
   function openArea(k){
     const kat = FRS.kategorien[k], list = byKat(k), ort = spotsInfo[k] && spotsInfo[k].ort || kat.ort;
     if(FREI.locked(K,k)){   // von der Lehrkraft gesperrt: nur Hinweis, keine Aufgaben
@@ -267,12 +293,7 @@ async function main(){
     if(W3) W3.focus(k);
     document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.kat===k));
     P.innerHTML = `<h2>${kat.icon} ${esc(kat.name)}</h2><p class="ort">${esc(ort)} · ${list.length} ${list.length===1?"quest":"quests"}</p>
-      ${list.length ? `<div class="qgrid">${list.map(t=>{ const p=prog(t), pct=p?Math.round(p.pts/p.max*100):0, tier=p?(p.plat?4:LW.tierOf(p.pts,p.max)):0;
-        return `<a class="qt${p?" played":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${t.icon||"🎯"}</span>
-          ${tier?`<span class="qt-m">${LW.medal(tier,26)}</span>`:""}
-          <b class="qt-t">${esc(t.titel)}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
-          <span class="qt-f"><span class="q-bar"><i style="width:${pct}%"></i></span><span class="qt-p">${p?`${p.pts}/${p.max}`:"new"}</span></span></a>`; }).join("")}</div>`
-        : `<div class="empty">No quests here yet – coming soon!</div>`}
+      ${list.length ? sections(list) : `<div class="empty">No quests here yet – coming soon!</div>`}
       <button class="wback" id="back">← Back to ${esc(WI.name)}</button>`;
     P.classList.toggle("many", list.length > 4);
     document.body.classList.add("area-open");
@@ -297,7 +318,7 @@ async function main(){
   }
   function draw(fx){
     const played = [], rows = []; let tot = 0, pmax = 0, games = 0;
-    BER.forEach(b=>{ const list = byKat(b); if(!list.length) return;
+    BER.forEach(b=>{ const list = byKat(b).filter(FLAGQ); if(!list.length) return;
       rows.push(`<tr><th colspan="3">${FRS.kategorien[b].icon} ${esc(FRS.kategorien[b].name)}</th></tr>`);
       list.forEach(t=>{ const p=prog(t); if(p){ played.push(`${t.id}-${p.pts}-${p.pmax}-${p.n}`); tot+=p.pts; pmax+=p.pmax; games+=p.n; }
         const tier = p ? (p.plat ? 4 : LW.tierOf(p.pts,p.max)) : 0;

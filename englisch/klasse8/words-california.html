@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: California & Gold Rush – Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:8, kat:"vocabulary", id:"vcal8", icon:"🌴", kartenSymbol:"🌴",
+  titel:"Words: California & Gold Rush", untertitel:"Golden Gate, tourist ads, Gold Rush",
+  text:"Redwoods, cable cars and the search for gold: the words for sunny California and for tourist ads.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"California Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Wörter rund um Kalifornien und den Goldrausch.",
+      paare:[ {a:"redwood", b:"Mammutbaum"}, {a:"cable car", b:"Seilbahn"}, {a:"bay", b:"Bucht"}, {a:"fog", b:"Nebel"}, {a:"lifestyle", b:"Lebensart"},
+              {a:"old-fashioned", b:"altmodisch"}, {a:"gold rush", b:"Goldrausch"}, {a:"ghost town", b:"Geisterstadt"}, {a:"wilderness", b:"Wildnis"}, {a:"to settle", b:"besiedeln"} ]},
+    { id:"ads", typ:"sortieren", icon:"📢", titel:"Tourist Ads", art:"Ad words · sort",
+      anleitung:"Is it a **good** word for an ad, a **bad** one – or a **part of an ad**? Tap the right box.",
+      anleitungDe:"Ist es ein **gutes** Wort für eine Anzeige, ein **schlechtes** – oder ein **Teil einer Anzeige**? Tippe auf das richtige Kästchen.",
+      tipp:"Gut: catchy, fascinating … Schlecht: dull, pointless … Teile: headline, slogan.",
+      koerbe:[ {t:"Good ad", info:"👍", tipp:"**Good**: catchy, informative, clear, appealing, fascinating, creative, fun-filled."}, {t:"Bad ad", info:"👎", tipp:"**Bad**: unappealing, pointless, dull, outdated, old-fashioned."}, {t:"Part of an ad", info:"📰", tipp:"**Parts**: headline, slogan, layout, design."} ],
+      items:[
+        {t:"catchy", k:0, e:"**catchy** = eingängig."}, {t:"dull", k:1, e:"**dull** = langweilig."}, {t:"headline", k:2, e:"**headline** = Überschrift."}, {t:"informative", k:0}, {t:"pointless", k:1, e:"**pointless** = sinnlos."},
+        {t:"slogan", k:2}, {t:"fascinating", k:0}, {t:"unappealing", k:1, e:"**unappealing** = uninteressant."}, {t:"layout", k:2}, {t:"clear", k:0}, {t:"outdated", k:1, e:"**outdated** = veraltet."},
+        {t:"design", k:2}, {t:"appealing", k:0, e:"**appealing** = ansprechend."}, {t:"old-fashioned", k:1}, {t:"creative", k:0}, {t:"fun-filled", k:0}
+      ]},
+    { id:"quiz", typ:"quiz", icon:"🌉", titel:"Golden State Quiz", art:"Definitions · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"A very tall tree that grows on California’s coast.", o:["redwood","bamboo","jungle"], c:0, e:"**redwood** = Mammutbaum."},
+        {q:"A part of the sea that goes into the land.", o:["bay","hill","lane"], c:0, e:"**bay** = Bucht."},
+        {q:"Thick white cloud near the ground – you can hardly see.", o:["fog","rust","ton"], c:0, e:"**fog** = Nebel."},
+        {q:"A person who plans and designs buildings.", o:["architect","pilot","expert"], c:0, e:"**architect** = Architekt(in)."},
+        {q:"To move to a new area and make your home there.", o:["settle","rust","stroll"], c:0, e:"**to settle** = besiedeln."},
+        {q:"To walk slowly and in a relaxed way.", o:["stroll","book","last"], c:0, e:"**to stroll** = schlendern."},
+        {q:"To reserve a hotel room before you arrive.", o:["book","paint","dig"], c:0, e:"**to book** = buchen."},
+        {q:"A short, catchy phrase that a company uses again and again.", o:["slogan","layout","tutorial"], c:0, e:"**slogan** = Slogan."},
+        {q:"A time when thousands of people rushed to a place to look for gold.", o:["gold rush","ghost town","safety net"], c:0, e:"**gold rush** = Goldrausch."},
+        {q:"A town where nobody lives any more.", o:["ghost town","boomtown","suburb"], c:0, e:"**ghost town** = Geisterstadt."},
+        {q:"A town that grows very fast because of a new industry.", o:["boomtown","ghost town","bay"], c:0, e:"**boomtown** = Boomtown."},
+        {q:"A very large amount of money and things you own.", o:["fortune","fever","surface"], c:0, e:"**fortune** = Vermögen."},
+        {q:"To make a hole in the ground.", o:["dig","tear","rust"], c:0, e:"**to dig, dug, dug** = graben."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **redwood**, **fascinating**, **wilderness**. Kontinente und Nationalitäten schreibst du **groß**: **Asia**, **Swiss**, **Japanese**.", typ:"rush", icon:"⚡", titel:"Gold Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Mammutbaum", o:["redwood","red wood","redwoud"], c:0}, {q:"Seilbahn", o:["cable car","cable cart","cabel car"], c:0}, {q:"Bucht", o:["bay","bey","bag"], c:0},
+        {q:"Nebel", o:["fog","frog","fogg"], c:0}, {q:"Berg; Hügel", o:["hill","heel","hell"], c:0}, {q:"entspannt", o:["relaxed","relaxt","relieved"], c:0},
+        {q:"altmodisch", o:["old-fashioned","old-fasioned","old-passion"], c:0}, {q:"Lebensart", o:["lifestyle","lifestile","life style"], c:0}, {q:"besiedeln", o:["settle","sattle","settler"], c:0},
+        {q:"rosten", o:["rust","rost","roast"], c:0}, {q:"Fahrspur", o:["lane","lain","line"], c:0}, {q:"Sicherheitsnetz", o:["safety net","safty net","safe net"], c:0},
+        {q:"Überschrift", o:["headline","headlien","headling"], c:0}, {q:"Experte", o:["expert","expart","experte"], c:0}, {q:"faszinierend", o:["fascinating","fasinating","fascinated"], c:0},
+        {q:"sinnlos", o:["pointless","pointles","pointy"], c:0}, {q:"langweilig", o:["dull","doll","dual"], c:0}, {q:"eingängig", o:["catchy","cathy","catchi"], c:0},
+        {q:"ansprechend", o:["appealing","apealing","appearing"], c:0}, {q:"buchen", o:["book","bock","boot"], c:0}, {q:"schlendern", o:["stroll","strole","stool"], c:0},
+        {q:"Goldrausch", o:["gold rush","gold rash","gold crash"], c:0}, {q:"Geisterstadt", o:["ghost town","guest town","ghost tone"], c:0}, {q:"Wildnis", o:["wilderness","wildness","wilderniss"], c:0},
+        {q:"graben", o:["dig","dug","dip"], c:0, alt:["to dig"]}, {q:"glänzend", o:["shiny","shinny","shine"], c:0}, {q:"Entdeckung", o:["discovery","discovry","discover"], c:0},
+        {q:"Eisenbahn", o:["railway","railwey","railwai"], c:0}, {q:"Landwirtschaft", o:["farming","farmming","farmer"], c:0}, {q:"Dschungel", o:["jungle","jungel","jungule"], c:0},
+        {q:"Asien", o:["Asia","asia","Asian"], c:0, gross:true}, {q:"schweizerisch", o:["Swiss","swiss","Swish"], c:0, gross:true}, {q:"japanisch", o:["Japanese","japanese","Japaneese"], c:0, gross:true}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"⛏️", titel:"The Gold Rush", art:"Text · fill in the gaps",
+      anleitung:"Read the text about the Gold Rush. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Text über den Goldrausch. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"California, 1848",
+      text:"In 1848 workers found [[gold|gild|gulf]] on a farm in California. The news spread quickly and the gold [[rush|rash|rust]] began. Thousands of people [[set off|set in|set at]] for the West and hoped to find a [[fortune|fortress|fortunate]].\nSome came by [[ship|sheep|shop]], others crossed the [[wilderness|wildness|wilderniss]] by wagon. They worked hard and [[dug|dig|digged]] in the ground for the [[shiny|shine|shinny]] metal.\nNew [[boomtowns|boomtown|booms town]] [[sprang up|spring up|springed up]] fast, but when the gold was gone many of them became [[ghost towns|guest towns|ghosts town]].",
+      erklaerung:"Words: **gold, rush, set off, fortune, wilderness, dig – dug, shiny, boomtown, spring up – sprang up, ghost town**."}
+  ]
+});
+</script>
+</body>
+</html>

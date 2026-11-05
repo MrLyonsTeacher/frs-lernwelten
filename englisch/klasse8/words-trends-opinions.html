@@ -28,7 +28,8 @@ TH.start({
       anleitungDe:"Finde die Paare: **Ausdruck + deutsche Bedeutung**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Typische Smalltalk-Sätze aus den USA.",
       paare:[ {a:"What's up?", b:"Was geht?"}, {a:"How's it going?", b:"Wie läuft's?"}, {a:"I see your point.", b:"Ich verstehe, was du meinst."}, {a:"No way!", b:"Auf keinen Fall! / Echt jetzt?"},
-              {a:"That makes sense.", b:"Das ergibt Sinn."}, {a:"I'm not sure about that.", b:"Da bin ich mir nicht sicher."}, {a:"Awesome!", b:"Super!"}, {a:"See you around!", b:"Man sieht sich!"} ]},
+              {a:"That makes sense.", b:"Das ergibt Sinn."}, {a:"I'm not sure about that.", b:"Da bin ich mir nicht sicher."}, {a:"Awesome!", b:"Super!"}, {a:"See you around!", b:"Man sieht sich!"},
+              {a:"What have you been up to?", b:"Was hast du in letzter Zeit gemacht?"}, {a:"As far as I know, …", b:"Soweit ich weiß, …"} ]},
     { id:"op", typ:"sortieren", icon:"🗣️", titel:"Agree or Disagree?", art:"Opinions · sort",
       anleitung:"Does the person **agree** or **disagree**? Tap the right box.",
       anleitungDe:"Stimmt die Person **zu** oder **nicht zu**? Tippe auf das richtige Kästchen.",
@@ -36,7 +37,9 @@ TH.start({
       koerbe:[ {t:"agree", info:"👍", tipp:"**Zustimmen**: I agree, Exactly!, That’s a good point, You’re right."}, {t:"disagree", info:"👎", tipp:"**Widersprechen**: I don’t think so, I disagree, That’s not true, No way!"} ],
       items:[
         {t:"I totally agree with you.", k:0}, {t:"Exactly!", k:0}, {t:"That’s a good point.", k:0}, {t:"You’re absolutely right.", k:0}, {t:"I think so, too.", k:0},
-        {t:"I don’t think so.", k:1}, {t:"I’m afraid I disagree.", k:1}, {t:"That’s not true.", k:1}, {t:"I see it differently.", k:1}, {t:"No way!", k:1, e:"Here **No way!** means: I don’t agree at all."}
+        {t:"I don’t think so.", k:1}, {t:"I’m afraid I disagree.", k:1}, {t:"That’s not true.", k:1}, {t:"I see it differently.", k:1}, {t:"No way!", k:1, e:"Here **No way!** means: I don’t agree at all."},
+        {t:"That’s true.", k:0}, {t:"I think you’re right there.", k:0}, {t:"I agree with you.", k:0}, {t:"Absolutely!", k:0},
+        {t:"I don’t agree with you.", k:1}, {t:"That’s false.", k:1}, {t:"Absolutely not.", k:1}, {t:"You can’t be serious!", k:1}, {t:"I doubt that.", k:1, e:"**I doubt that.** = Ich bezweifle das."}
       ]},
     { id:"trend", typ:"quiz", icon:"📱", titel:"Trend Words", art:"Definitions · quiz",
       anleitung:"Which word fits the explanation?",
@@ -50,7 +53,13 @@ TH.start({
         {q:"A short text that tries to make people buy something.", o:["ad / advertisement","article","adventure"], c:0, e:"Design an **ad** = eine Werbeanzeige gestalten."},
         {q:"A habit or tradition of a group of people.", o:["custom","costume","customer"], c:0, e:"**custom** = Brauch."},
         {q:"Treating people badly because of their skin colour, religion or gender.", o:["discrimination","decoration","destination"], c:0, e:"**discrimination** = Diskriminierung."},
-        {q:"From many different cultures.", o:["multicultural","multiple","multimedia"], c:0, e:"**multicultural** = multikulturell."}
+        {q:"From many different cultures.", o:["multicultural","multiple","multimedia"], c:0, e:"**multicultural** = multikulturell."},
+        {q:"A person who follows your account online.", o:["follower","blogger","pilot"], c:0, e:"A **follower** follows your account."},
+        {q:"A photo that you take of yourself with your phone.", o:["selfie","status","slogan"], c:0, e:"**selfie** = Selfie (Schnappschuss von sich selbst)."},
+        {q:"To click a button so that you get all new videos of a channel.", o:["subscribe","unfriend","update"], c:0, e:"**to subscribe** = abonnieren."},
+        {q:"To remove someone from your list of online friends.", o:["unfriend","dislike","stream"], c:0, e:"**to unfriend** = entfreunden."},
+        {q:"Being mean to someone online again and again.", o:["cyberbullying","gaming","blogging"], c:0, e:"**cyberbullying** = Cyber-Mobbing."},
+        {q:"No longer modern; from the past.", o:["outdated","trendy","catchy"], c:0, e:"**outdated** = veraltet."}
       ]},
     { id:"rush", regel:"Achte auf die Schreibweise – z. B. **opinion**, **agree**, **custom**.", typ:"rush", icon:"⚡", titel:"Opinion Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
@@ -65,15 +74,20 @@ TH.start({
         {q:"überzeugen", o:["convince","convinse","confuse"], c:0}, {q:"Gerechtigkeit", o:["justice","justise","jealousy"], c:0},
         {q:"Gleichberechtigung", o:["equality","equalness","equaliti"], c:0}, {q:"Bewegung (Gruppe)", o:["movement","moving","moviement"], c:0},
         {q:"Vielfalt", o:["diversity","diversion","divercity"], c:0}, {q:"Nachbar", o:["neighbor","naybor","neighbur"], c:0},
-        {q:"Gastfreundschaft", o:["hospitality","hospital","hostility"], c:0}, {q:"stolz", o:["proud","prout","pride"], c:0}
+        {q:"Gastfreundschaft", o:["hospitality","hospital","hostility"], c:0}, {q:"stolz", o:["proud","prout","pride"], c:0},
+        {q:"Konto", o:["account","acount","count"], c:0}, {q:"Kommentar", o:["comment","coment","command"], c:0}, {q:"abonnieren", o:["subscribe","subcribe","describe"], c:0},
+        {q:"veraltet", o:["outdated","outdoored","out of date"], c:0}, {q:"kommunizieren", o:["communicate","comunicate","commit"], c:0},
+        {q:"täglich", o:["daily","dayly","dairy"], c:0}, {q:"sofort", o:["right away","right way","at once"], c:0}, {q:"äußerst", o:["extremely","extrimely","externally"], c:0},
+        {q:"Mode", o:["fashion","fasion","passion"], c:0}, {q:"Klatsch", o:["gossip","gosip","goose"], c:0}, {q:"bedauern", o:["regret","regreat","regard"], c:0},
+        {q:"vermuten", o:["guess","gess","guest"], c:0}, {q:"Gerät", o:["device","devise","divide"], c:0}, {q:"Cyber-Mobbing", o:["cyberbullying","cyberbulling","cyber bully"], c:0}
       ]},
     { id:"story", typ:"lueckentext", icon:"💭", titel:"Online Debate", art:"Text · fill in the gaps",
       anleitung:"Read the online comments. Tap a gap and choose the right word.",
       anleitungDe:"Lies die Online-Kommentare. Tippe auf eine Lücke und wähle das richtige Wort.",
       tipp:"Alle Wörter kommen aus dieser Lernwelt.",
       ueberschrift:"Is TikTok bad for teens?",
-      text:"@sam_tx: In my [[opinion|option|onion]], social media is great. You can learn so much and follow your favorite [[influencers|influences|influenza]].\n@lily.oh: I see your [[point|paint|pint]], but I don’t [[agree|agrea|argue]]. Some videos go [[viral|virus|vital]] because they are mean to people. That’s [[discrimination|decoration|destination]].\n@mike_nyc: [[Exactly|Exactly not|Exacting]]! And many [[ads|adds|ideas]] try to make us buy stuff we don’t need.\n@sam_tx: OK, that makes [[sense|cents|scene]]. But it’s still fun!",
-      erklaerung:"Words: **opinion, influencer, point, agree, go viral, discrimination, ad, make sense**."}
+      text:"@sam_tx: In my [[opinion|option|onion]], social media is great. You can learn so much and follow your favorite [[influencers|influences|influenza]].\n@lily.oh: I see your [[point|paint|pint]], but I don’t [[agree|agrea|argue]]. Some videos go [[viral|virus|vital]] because they are mean to people. That’s [[discrimination|decoration|destination]].\n@mike_nyc: [[Exactly|Exactly not|Exacting]]! And many [[ads|adds|ideas]] try to make us buy stuff we don’t need.\n@tina_fl: I [[guess|guest|gust]] you are both right. But it is [[outdated|outdoors|outside]] to say that all teens are on their phones all day. I have 300 [[followers|followings|follows]] and I post a [[selfie|self|selfy]] every day.\n@sam_tx: OK, that makes [[sense|cents|scene]]. But it’s still fun!",
+      erklaerung:"Words: **opinion, influencer, point, agree, go viral, discrimination, ad, I guess, outdated, follower, selfie, make sense**."}
   ]
 });
 </script>

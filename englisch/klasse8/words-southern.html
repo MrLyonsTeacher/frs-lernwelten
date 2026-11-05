@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Words: Southern Life & Civil Rights – Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:8, kat:"vocabulary", id:"vsouth8", icon:"🎷", kartenSymbol:"🎷",
+  titel:"Words: Southern Life & Civil Rights", untertitel:"Nationalities, fried chicken, civil rights",
+  text:"Jazz, fried chicken and a long fight for equal rights: the words for the American South.",
+  levels: [
+    { id:"pairs", typ:"memory", icon:"🧩", titel:"Southern Pairs", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Nationalitäten schreibt man im Englischen groß – im Deutschen klein: Spanish – spanisch.",
+      paare:[ {a:"Spanish", b:"spanisch", gross:true}, {a:"Vietnamese", b:"vietnamesisch", gross:true}, {a:"Greek", b:"griechisch", gross:true}, {a:"Turkish", b:"türkisch", gross:true},
+              {a:"Chinese", b:"chinesisch", gross:true}, {a:"civil rights", b:"Bürgerrechte"}, {a:"to ban", b:"verbannen"}, {a:"to tolerate", b:"tolerieren"},
+              {a:"segregation", b:"Rassentrennung"}, {a:"to arrest", b:"festnehmen"} ]},
+    { id:"groups", typ:"sortieren", icon:"🗂️", titel:"Three Topics", art:"Word groups · sort",
+      anleitung:"Where does the word belong? Tap the right box.",
+      anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
+      tipp:"Kochen – Nationalitäten – Bürgerrechte.",
+      koerbe:[ {t:"Cooking", info:"🍗", tipp:"**Cooking**: to mix, to dry, to fry, oil, chicken, to cover in flour."}, {t:"Nationalities", info:"🌍", tipp:"**Nationalities** (immer groß!): Spanish, Greek, Turkish, Russian, Vietnamese, Japanese."}, {t:"Civil rights", info:"✊", tipp:"**Civil rights**: segregation, protest, jail, courage, racism, discrimination."} ],
+      items:[
+        {t:"to fry", k:0, e:"**to fry** = braten."}, {t:"Spanish", k:1}, {t:"segregation", k:2, e:"**segregation** = Rassentrennung."}, {t:"oil", k:0}, {t:"Greek", k:1}, {t:"jail", k:2, e:"**jail** = Gefängnis."},
+        {t:"to mix", k:0}, {t:"Turkish", k:1}, {t:"courage", k:2, e:"**courage** = Mut."}, {t:"chicken", k:0}, {t:"Russian", k:1}, {t:"racism", k:2},
+        {t:"to dry", k:0}, {t:"Vietnamese", k:1}, {t:"protest", k:2}, {t:"to cover in flour", k:0, e:"**to cover in flour** = in Mehl wenden."}, {t:"Japanese", k:1}, {t:"discrimination", k:2}
+      ]},
+    { id:"quiz", typ:"quiz", icon:"✊", titel:"Rights & Respect", art:"Definitions · quiz",
+      anleitung:"Which word fits the explanation?",
+      anleitungDe:"Welches Wort passt zur Erklärung?",
+      tipp:"Lies die Erklärung genau.",
+      fragen:[
+        {q:"To accept something that you do not like.", o:["tolerate","resent","confront"], c:0, e:"**to tolerate** = tolerieren."},
+        {q:"To say no to something and not accept it.", o:["reject","appreciate","include"], c:0, e:"**to reject** = zurückweisen."},
+        {q:"To be angry about something that happened to you.", o:["resent","complete","remove"], c:0, e:"**to resent** = übelnehmen."},
+        {q:"To forbid something by law.", o:["ban","add","release"], c:0, e:"**to ban** = verbannen, verbieten."},
+        {q:"Both sides give a little to find a solution.", o:["compromise","debate","protest"], c:0, e:"**to compromise** = sich einigen."},
+        {q:"To value something and be thankful for it.", o:["appreciate","abolish","attract"], c:0, e:"**to appreciate** = schätzen."},
+        {q:"The idea that some people are better because of their skin colour.", o:["racism","identity","pride"], c:0, e:"**racism** = Rassismus."},
+        {q:"Black and white people had to live, learn and travel separately.", o:["segregation","society","transport"], c:0, e:"**segregation** = Rassentrennung."},
+        {q:"A place where people are kept as a punishment.", o:["jail","campus","port"], c:0, e:"**jail** = Gefängnis."},
+        {q:"The police take someone to the police station.", o:["arrest","remove","introduce"], c:0, e:"**to arrest** = festnehmen."},
+        {q:"Being brave in a dangerous situation.", o:["courage","reputation","carnival"], c:0, e:"**courage** = Mut."},
+        {q:"A person who saw a crime and speaks in court.", o:["witness","owner","adventurer"], c:0, e:"**witness** = Zeuge / Zeugin."},
+        {q:"To end a law or a system for good.", o:["abolish","fry","complete"], c:0, e:"**to abolish** = abschaffen."}
+      ]},
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **segregation**, **courage**, **tolerate**. Nationalitäten, Länder und Namen schreibst du **groß**: **Spanish**, **West Africa**, **Southerner**.", typ:"rush", icon:"⚡", titel:"Southern Rush", art:"German → English · 60 seconds",
+      anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
+      tipp:"Achte auf die Schreibweise.",
+      zeit:60, ziel:12,
+      items:[
+        {q:"Bürgerrechte", o:["civil rights","civil rides","city rights"], c:0}, {q:"Rassentrennung", o:["segregation","segragation","segmentation"], c:0}, {q:"Rassismus", o:["racism","racisum","racing"], c:0},
+        {q:"Diskriminierung", o:["discrimination","discrimation","decimation"], c:0}, {q:"Gefängnis", o:["jail","jale","yell"], c:0}, {q:"festnehmen", o:["arrest","arest","rest"], c:0},
+        {q:"Mut", o:["courage","corage","cottage"], c:0}, {q:"Zeuge", o:["witness","witnes","with"], c:0}, {q:"Gerichtsverhandlung", o:["court case","court cace","coat case"], c:0},
+        {q:"abschaffen", o:["abolish","abbolish","abandon"], c:0}, {q:"sich weigern", o:["refuse","refuze","reuse"], c:0}, {q:"ungerecht", o:["unjust","unjusst","injured"], c:0},
+        {q:"tolerieren", o:["tolerate","tollerate","tolerant"], c:0}, {q:"verbannen", o:["ban","bann","band"], c:0}, {q:"zurückweisen", o:["reject","rejekt","reflect"], c:0},
+        {q:"übelnehmen", o:["resent","resend","resist"], c:0}, {q:"schätzen", o:["appreciate","apreciate","appraise"], c:0}, {q:"sich einigen", o:["compromise","compromize","comprise"], c:0},
+        {q:"Hähnchen", o:["chicken","chiken","kitchen"], c:0}, {q:"braten", o:["fry","fri","free"], c:0}, {q:"Öl", o:["oil","oyl","soil"], c:0}, {q:"Karneval", o:["carnival","carneval","caravan"], c:0},
+        {q:"Plantage", o:["plantation","plantasion","planation"], c:0}, {q:"Gesellschaft", o:["society","sociaty","society's"], c:0}, {q:"Wurzel", o:["root","rute","route"], c:0},
+        {q:"spanisch", o:["Spanish","spanish","Spannish"], c:0, gross:true}, {q:"griechisch", o:["Greek","greek","Grek"], c:0, gross:true}, {q:"türkisch", o:["Turkish","turkish","Turkisch"], c:0, gross:true},
+        {q:"russisch", o:["Russian","russian","Rusian"], c:0, gross:true}, {q:"vietnamesisch", o:["Vietnamese","vietnamese","Vietnamise"], c:0, gross:true},
+        {q:"Westafrika", o:["West Africa","west Africa","West Afrika"], c:0, gross:true}, {q:"Südstaatler(in)", o:["Southerner","southerner","Southern"], c:0, gross:true}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🍗", titel:"Southern Fried Chicken", art:"Text · fill in the gaps",
+      anleitung:"Read the text about the South. Tap a gap and choose the right word.",
+      anleitungDe:"Lies den Text über den Süden. Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Alle Wörter kommen aus dieser Lernwelt.",
+      ueberschrift:"A taste of the South",
+      text:"Southern fried chicken is famous all over the USA. It has its [[roots|routes|rots]] in West [[Africa|africa|Afrika]] and in Scotland. First people [[mixed|mixes|mixing]] some spices, then they [[dried|dryed|dry]] the chicken, [[covered|covert|cover]] it in flour and [[fried|frayed|fry]] it in hot [[oil|soil|oils]].\nToday many cultures live in the South, so the region is [[multicultural|multicolor|multimedia]]. But its history is difficult: for a long time there was [[segregation|segmentation|separation]], and many [[African|african|Africa]] Americans fought for their civil [[rights|rides|writes]].",
+      erklaerung:"Words: **roots, West Africa, to mix, to dry, to cover in flour, to fry, oil, multicultural, segregation, African American, civil rights**. Länder und Nationalitäten schreibst du immer groß."}
+  ]
+});
+</script>
+</body>
+</html>

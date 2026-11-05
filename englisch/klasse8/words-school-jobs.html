@@ -28,7 +28,8 @@ TH.start({
       anleitungDe:"Finde die Paare: **Wort + Bedeutung**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Typische Wörter aus einer amerikanischen High School.",
       paare:[ {a:"locker", b:"a small cupboard for your things"}, {a:"elective", b:"a subject you choose"}, {a:"grade", b:"a class level, e.g. 9th grade"}, {a:"freshman", b:"a student in 9th grade"},
-              {a:"cafeteria", b:"where you eat lunch at school"}, {a:"principal", b:"the head of a school"}, {a:"prom", b:"a big dance at the end of the year"}, {a:"graduation", b:"the ceremony when you finish school"} ]},
+              {a:"cafeteria", b:"where you eat lunch at school"}, {a:"principal", b:"the head of a school"}, {a:"prom", b:"a big dance at the end of the year"}, {a:"graduation", b:"the ceremony when you finish school"},
+              {a:"detention", b:"staying at school after lessons as a punishment"}, {a:"dress code", b:"rules about what you may wear"} ]},
     { id:"jobs", typ:"quiz", icon:"💼", titel:"Student Jobs", art:"Jobs · quiz",
       anleitung:"Which job is it?",
       anleitungDe:"Welcher Job ist gemeint?",
@@ -41,19 +42,27 @@ TH.start({
         {q:"You cut the grass in other people’s gardens.", o:["mow lawns","wash cars","deliver papers"], c:0, e:"**mow lawns** = Rasen mähen."},
         {q:"A person who buys something in a shop.", o:["customer","costumer","custom"], c:0, e:"Careful: *costume* = Kostüm!"},
         {q:"What do you do if a customer **complains**?", o:["listen and try to help","laugh","go home"], c:0, e:"**complain** = sich beschweren."},
-        {q:"Money that you earn for your work.", o:["wage / salary","tip only","pocket money"], c:0, e:"A **tip** is extra money from happy customers."}
+        {q:"Money that you earn for your work.", o:["wage / salary","tip only","pocket money"], c:0, e:"A **tip** is extra money from happy customers."},
+        {q:"You bring newspapers to people’s houses every morning.", o:["paperboy","dog walker","sales associate"], c:0, alt:["papergirl"], e:"A **paperboy** (papergirl) = Zeitungsausträger(in)."},
+        {q:"You work in a store and help customers buy things.", o:["sales associate","co-worker","manager"], c:0, e:"**sales associate** (AE) = Verkäufer(in)."},
+        {q:"The lowest pay per hour that an employer is allowed to pay.", o:["minimum wage","bonus","allowance"], c:0, e:"**minimum wage** = Mindestlohn."},
+        {q:"A person you work with.", o:["co-worker","customer","freshman"], c:0, e:"**co-worker** = Arbeitskollege / Arbeitskollegin."},
+        {q:"Money that parents give their children every week.", o:["allowance","wage","bonus"], c:0, e:"**allowance** (AE) = Taschengeld."}
       ]},
     { id:"weather", typ:"sortieren", icon:"🌪️", titel:"Storm Chasers", art:"Word groups · sort",
       anleitung:"Where does the word belong? Tap the right box.",
       anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf das richtige Kästchen.",
       tipp:"Wetter – Schule – Arbeit.",
-      koerbe:[ {t:"Weather", info:"🌪️", tipp:"**Weather**: tornado, thunderstorm, hail, flood."}, {t:"School", info:"🏫", tipp:"**School**: locker, report card, homework, semester."}, {t:"Work", info:"💼", tipp:"**Work**: customer, part-time job, boss, shift."} ],
+      koerbe:[ {t:"Weather", info:"🌪️", tipp:"**Weather**: tornado, thunderstorm, hail, flood, storm, cloud."}, {t:"School", info:"🏫", tipp:"**School**: locker, report card, homework, semester, detention, dress code."}, {t:"Work", info:"💼", tipp:"**Work**: customer, part-time job, boss, shift, wage, co-worker."} ],
       items:[
         {t:"tornado", k:0}, {t:"thunderstorm", k:0}, {t:"hail", k:0, e:"**hail** = Hagel."}, {t:"flood", k:0},
         {t:"locker", k:1}, {t:"report card", k:1}, {t:"homework", k:1}, {t:"semester", k:1},
-        {t:"customer", k:2}, {t:"part-time job", k:2}, {t:"boss", k:2}, {t:"shift", k:2, e:"A **shift** = Schicht (at work)."}
+        {t:"customer", k:2}, {t:"part-time job", k:2}, {t:"boss", k:2}, {t:"shift", k:2, e:"A **shift** = Schicht (at work)."},
+        {t:"storm", k:0}, {t:"cloud", k:0}, {t:"detention", k:1, e:"**detention** = Nachsitzen."}, {t:"dress code", k:1, e:"**dress code** = Kleiderordnung."},
+        {t:"schedule", k:1, e:"AE **schedule** = Stundenplan."}, {t:"recess", k:1, e:"AE **recess** = Pause."},
+        {t:"wage", k:2, e:"**wage** = Lohn."}, {t:"co-worker", k:2}, {t:"interview", k:2, e:"**interview** = Vorstellungsgespräch."}, {t:"manager", k:2}
       ]},
-    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **locker**, **elective**, **principal**.", typ:"rush", icon:"⚡", titel:"Bell Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **locker**, **elective**, **principal**. Das Fach **Math** und das Fest **Homecoming** schreibst du **groß**.", typ:"rush", icon:"⚡", titel:"Bell Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",
@@ -67,15 +76,27 @@ TH.start({
         {q:"furchterregend", o:["terrifying","terrified","terrific"], c:0}, {q:"Nebenjob", o:["part-time job","half job","side work"], c:0},
         {q:"sich bewerben", o:["apply","apple","aply"], c:0}, {q:"Erfahrung", o:["experience","experiment","expierence"], c:0},
         {q:"zuverlässig", o:["reliable","realiable","relyable"], c:0}, {q:"Pflichtfach", o:["required subject","must subject","forced subject"], c:0},
-        {q:"Abschlussfeier", o:["graduation","gradation","graduate"], c:0}
+        {q:"Abschlussfeier", o:["graduation","gradation","graduate"], c:0},
+        {q:"Nachsitzen", o:["detention","detension","attention"], c:0}, {q:"Kleiderordnung", o:["dress code","dress coat","clothes order"], c:0},
+        {q:"Stundenplan (US)", o:["schedule","shedule","scedule"], c:0}, {q:"Pause (US)", o:["recess","recess time","recces"], c:0},
+        {q:"Taschengeld (US)", o:["allowance","alowance","pocket"], c:0}, {q:"Lohn", o:["wage","wedge","wave"], c:0},
+        {q:"Vorstellungsgespräch", o:["interview","intervue","interference"], c:0}, {q:"Arbeitskollege", o:["co-worker","co-walker","coworking"], c:0},
+        {q:"Zeitungsausträger", o:["paperboy","paperboi","paperbag"], c:0}, {q:"Verkäufer(in) (US)", o:["sales associate","sail associate","sales asociate"], c:0},
+        {q:"faul", o:["lazy","lasy","lucky"], c:0}, {q:"fleißig", o:["hard-working","hardly working","hard-walking"], c:0},
+        {q:"schüchtern", o:["shy","shine","sly"], c:0}, {q:"großzügig", o:["generous","generus","general"], c:0},
+        {q:"unhöflich", o:["rude","road","ruth"], c:0}, {q:"streng", o:["strict","strickt","stretch"], c:0},
+        {q:"Stärke", o:["strength","strenght","strange"], c:0}, {q:"Schwäche", o:["weakness","weekness","weeknes"], c:0},
+        {q:"verschwenden", o:["waste","wasted","waist"], c:0}, {q:"stehlen", o:["steal","stell","steel"], c:0},
+        {q:"Treueeid", o:["pledge of allegiance","pledge of alliance","pledge or allegiance"], c:0},
+        {q:"Ehemaligentreffen", o:["Homecoming","homecoming","Home Coming"], c:0, gross:true}, {q:"Mathematik (US)", o:["Math","math","Mathe"], c:0, gross:true}
       ]},
     { id:"story", typ:"lueckentext", icon:"📋", titel:"Job Application", art:"Text · fill in the gaps",
       anleitung:"Read Jake’s application. Tap a gap and choose the right word.",
       anleitungDe:"Lies Jakes Bewerbung. Tippe auf eine Lücke und wähle das richtige Wort.",
       tipp:"Alle Wörter kommen aus dieser Lernwelt.",
       ueberschrift:"Application for a summer job",
-      text:"Dear Ms Miller,\nI would like to [[apply|apple|explain]] for the summer job at your ice cream shop. I am 15 and a [[freshman|freshmen|fresh man]] at Kansas City High. I am friendly and [[reliable|reliably|relying]]. Last summer I worked as a [[babysitter|babyseater|lifeguard]] for my neighbors, so I have some [[experience|experiment|expedition]] with kids.\nI am good with [[customers|costumers|costumes]] and I stay calm when somebody [[complains|complanes|explains]]. I can work every afternoon after school, but I don’t have a [[driver's license|driving lesson|license plate]] yet. My [[principal|principle|prince]] can write a reference for me.\nYours sincerely,\nJake Peterson",
-      erklaerung:"Words: **apply, freshman, reliable, experience, customer, complain, driver’s license, principal**."}
+      text:"Dear Ms Miller,\nI would like to [[apply|apple|explain]] for the summer job at your ice cream shop. I am 15 and a [[freshman|freshmen|fresh man]] at Kansas City High. I am friendly, [[reliable|reliably|relying]] and [[hard-working|hardly working|hard-walking]]. Last summer I worked as a [[babysitter|babyseater|lifeguard]] for my neighbors, so I have some [[experience|experiment|expedition]] with kids.\nI am good with [[customers|costumers|costumes]] and I stay calm when somebody [[complains|complanes|explains]]. I am not [[shy|shine|sly]] with people and I know my [[strengths|strenghts|strongs]]. I can work every afternoon after school, but I don’t have a [[driver's license|driving lesson|license plate]] yet. I would work for the [[minimum wage|minimum wedge|minimal wage]] and I would love to come to an [[interview|intervention|inter view]]. My [[principal|principle|prince]] can write a reference for me.\nYours sincerely,\nJake Peterson",
+      erklaerung:"Words: **apply, freshman, reliable, hard-working, experience, customer, complain, shy, strengths, driver’s license, minimum wage, interview, principal**."}
   ]
 });
 </script>

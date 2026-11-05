@@ -28,7 +28,8 @@ TH.start({
       anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
       tipp:"Sprich die Wörter leise mit.",
       paare:[ {a:"skyscraper", b:"Wolkenkratzer"}, {a:"subway", b:"U-Bahn (US)"}, {a:"sidewalk", b:"Gehweg (US)"}, {a:"neighborhood", b:"Stadtviertel"},
-              {a:"landmark", b:"Wahrzeichen"}, {a:"crowded", b:"überfüllt"}, {a:"apartment", b:"Wohnung (US)"}, {a:"block", b:"Häuserblock"} ]},
+              {a:"landmark", b:"Wahrzeichen"}, {a:"crowded", b:"überfüllt"}, {a:"apartment", b:"Wohnung (US)"}, {a:"block", b:"Häuserblock"},
+              {a:"traffic jam", b:"Stau"}, {a:"borough", b:"Stadtteil; Bezirk"} ]},
     { id:"ae", typ:"sortieren", icon:"🇬🇧", titel:"British or American?", art:"BE vs AE · sort",
       anleitung:"Is the word **British English** or **American English**? Tap the right box.",
       anleitungDe:"Ist das Wort **britisches** oder **amerikanisches Englisch**? Tippe auf das richtige Kästchen.",
@@ -37,7 +38,9 @@ TH.start({
       items:[
         {t:"flat", k:0}, {t:"apartment", k:1}, {t:"underground", k:0}, {t:"subway", k:1}, {t:"pavement", k:0}, {t:"sidewalk", k:1},
         {t:"lift", k:0}, {t:"elevator", k:1}, {t:"holiday", k:0}, {t:"vacation", k:1}, {t:"queue", k:0}, {t:"line", k:1},
-        {t:"chips", k:0, e:"BE **chips** = AE **French fries**."}, {t:"French fries", k:1}, {t:"autumn", k:0}, {t:"fall", k:1}
+        {t:"chips", k:0, e:"BE **chips** = AE **French fries**."}, {t:"French fries", k:1}, {t:"autumn", k:0}, {t:"fall", k:1},
+        {t:"centre", k:0, e:"BE **centre** = AE **center**."}, {t:"center", k:1}, {t:"theatre", k:0, e:"BE **theatre** = AE **theater**."}, {t:"theater", k:1},
+        {t:"harbour", k:0, e:"BE **harbour** = AE **harbor**."}, {t:"harbor", k:1}, {t:"car park", k:0, e:"BE **car park** = AE **parking lot**."}, {t:"parking lot", k:1}
       ]},
     { id:"new", typ:"quiz", icon:"🧳", titel:"Starting a New Life", art:"Immigration words · quiz",
       anleitung:"Which word fits the explanation?",
@@ -51,9 +54,15 @@ TH.start({
         {q:"The official document you need to travel to another country.", o:["passport","ticket","license"], c:0, e:"You travel with a **passport** (Reisepass)."},
         {q:"To leave your country and live in another one.", o:["emigrate","immigrate","celebrate"], c:0, e:"**emigrate** = auswandern (from), **immigrate** = einwandern (to)."},
         {q:"To get **used to** something means …", o:["sich an etwas gewöhnen","etwas benutzen","etwas vermissen"], c:0, e:"*I slowly got used to it.*"},
-        {q:"A feeling of being sad because you are far away from home.", o:["homesick","excited","jealous"], c:0, e:"**homesick** = Heimweh haben."}
+        {q:"A feeling of being sad because you are far away from home.", o:["homesick","excited","jealous"], c:0, e:"**homesick** = Heimweh haben."},
+        {q:"Without a job, but looking for one.", o:["unemployed","ambitious","motivated"], c:0, e:"**unemployed** = arbeitslos."},
+        {q:"Somebody who works hard because they want to be very successful.", o:["ambitious","foreign","unemployed"], c:0, e:"**ambitious** = ehrgeizig."},
+        {q:"To change a little so that you fit into a new place.", o:["adapt to","escape","succeed"], c:0, alt:["adapt"], e:"**to adapt to** = sich anpassen an."},
+        {q:"The state of being very poor.", o:["poverty","majority","freedom"], c:0, e:"**poverty** = Armut."},
+        {q:"To get away from a dangerous place.", o:["escape","return","dock"], c:0, e:"**to escape** = entkommen."},
+        {q:"The long trip by ship across the ocean.", o:["crossing","harbor","deck"], c:0, e:"**crossing** = Überfahrt."}
       ]},
-    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **skyscraper**, **immigrant**, **sight**.", typ:"rush", icon:"⚡", titel:"Subway Rush", art:"German → English · 60 seconds",
+    { id:"rush", regel:"Achte auf die Schreibweise – z. B. **skyscraper**, **immigrant**, **sight**. Länder und Namen schreibst du **groß**: **Mexico**, **Native American**.", typ:"rush", icon:"⚡", titel:"Subway Rush", art:"German → English · 60 seconds",
       anleitung:"What’s the English word? **Goal: 12** in 60 seconds.",
       anleitungDe:"Wie heißt das Wort auf Englisch? **Ziel: 12** in 60 Sekunden.",
       tipp:"Achte auf die Schreibweise.",
@@ -67,15 +76,24 @@ TH.start({
         {q:"Heimweh haben", o:["be homesick","be homeless","be housesick"], c:0}, {q:"Gelegenheit", o:["opportunity","oportunity","opportunety"], c:0},
         {q:"Brücke", o:["bridge","brigde","bridget"], c:0}, {q:"Hafen", o:["harbor","harbar","habour"], c:0},
         {q:"ankommen", o:["arrive","arrived","arive"], c:0}, {q:"vermissen", o:["miss","mist","mess"], c:0},
-        {q:"Straßenkunst", o:["street art","road art","street arts"], c:0}, {q:"vielfältig", o:["diverse","divers","diversed"], c:0}
+        {q:"Straßenkunst", o:["street art","road art","street arts"], c:0}, {q:"vielfältig", o:["diverse","divers","diversed"], c:0},
+        {q:"Stau", o:["traffic jam","traffic jelly","car jam"], c:0}, {q:"Hauptverkehrszeit", o:["rush hour","rush house","rash hour"], c:0},
+        {q:"Kreuzung (US)", o:["intersection","intersaction","intersektion"], c:0}, {q:"Pendler(in)", o:["commuter","commuther","computer"], c:0},
+        {q:"Vorort", o:["suburb","suburp","subway"], c:0}, {q:"Baustelle", o:["construction site","construction sight","construction side"], c:0},
+        {q:"ehrgeizig", o:["ambitious","ambicious","ambulance"], c:0}, {q:"arbeitslos", o:["unemployed","unemployd","unemployment"], c:0},
+        {q:"auswandern", o:["emigrate","emmigrate","immigrate"], c:0}, {q:"sich anpassen an", o:["adapt to","adopt to","adept to"], c:0},
+        {q:"Armut", o:["poverty","poorty","poorness"], c:0}, {q:"entkommen", o:["escape","excape","escalate"], c:0}, {q:"Überfahrt", o:["crossing","crosing","crossroad"], c:0},
+        {q:"Mexiko", o:["Mexico","mexico","Mexiko"], c:0, gross:true}, {q:"Kuba", o:["Cuba","cuba","Kuba"], c:0, gross:true},
+        {q:"Griechenland", o:["Greece","greece","Grease"], c:0, gross:true}, {q:"Osteuropa", o:["Eastern Europe","eastern Europe","Easter Europe"], c:0, gross:true},
+        {q:"Lateinamerika", o:["Latin America","Latin america","Latin Amerika"], c:0, gross:true}, {q:"Ureinwohner(in) Amerikas", o:["Native American","native American","Nativ American"], c:0, gross:true}
       ]},
     { id:"story", typ:"lueckentext", icon:"📝", titel:"Amir’s First Weeks", art:"Text · fill in the gaps",
       anleitung:"Read the article about Amir. Tap a gap and choose the right word.",
       anleitungDe:"Lies den Artikel über Amir. Tippe auf eine Lücke und wähle das richtige Wort.",
       tipp:"Alle Wörter kommen aus dieser Lernwelt.",
       ueberschrift:"Going to a new country",
-      text:"When Amir, 14, came to New York from Syria, everything was new. His family lived in a small [[apartment|apartmant|department]] in Queens. Every morning he took the [[subway|subwave|sideway]] to school. The trains were always [[crowded|crowned|crowed]].\nAt first he was very [[homesick|homeless|houseless]] and missed his friends. But after he had stopped counting the weeks, he slowly got [[used to|use to|using to]] it. He loved walking on the [[sidewalks|sideways|seasides]] and looking up at the [[skyscrapers|skyscrapes|scrapers]]. One day he wants to become a US [[citizen|city|citation]].",
-      erklaerung:"City & new life words: **apartment, subway, crowded, homesick, get used to, sidewalk, skyscraper, citizen**."}
+      text:"When Amir, 14, came to New York from Syria, everything was new. His family lived in a small [[apartment|apartmant|department]] in Queens. Every morning he took the [[subway|subwave|sideway]] to school. The trains were always [[crowded|crowned|crowed]] at [[rush hour|rush house|rash hour]].\nAt first he was very [[homesick|homeless|houseless]] and missed his friends. His father was [[unemployed|unemployd|employed]] for months, but he was [[motivated|motivation|motivate]] and did not give up. Step by step the family learned to [[adapt|adopt|adept]] to the new life. After he had stopped counting the weeks, he slowly got [[used to|use to|using to]] it. He loved walking on the [[sidewalks|sideways|seasides]] and looking up at the [[skyscrapers|skyscrapes|scrapers]]. One day he wants to become a US [[citizen|city|citation]].",
+      erklaerung:"City & new life words: **apartment, subway, crowded, rush hour, homesick, unemployed, motivated, adapt to, get used to, sidewalk, skyscraper, citizen**."}
   ]
 });
 </script>

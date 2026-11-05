@@ -3,6 +3,7 @@
 // Neues Thema: Eintrag bei der passenden Klasse unter "themen" ergänzen (Claude übernimmt das normalerweise).
 //
 // Thema:  id (kurz, ohne Bindestrich/Punkt), kat (Bereich), titel, untertitel, pfad (ab Hauptordner), icon, max (Höchstpunktzahl)
+//   grp:"test" = Testvorbereitung: eigener Abschnitt unter den Flaggen-Spielen, KEINE Flaggen, nicht im Ergebnis-Code (siehe englisch/welt.html)
 // Material (Sport/Sonstiges): id, titel, info, pfad, stationen, stationenMax
 
 const FRS = {
@@ -97,15 +98,18 @@ const FRS = {
         { id:"pass8", kat:"grammar", titel:"Made in the USA", untertitel:"Passive voice", pfad:"englisch/klasse8/made-in-the-usa.html", icon:"🏭", max:48 },
         { id:"rep8", kat:"grammar", titel:"The Southern Reporter", untertitel:"Reported speech", pfad:"englisch/klasse8/southern-reporter.html", icon:"📰", max:40 },
         { id:"adj8", kat:"grammar", titel:"Mall of America", untertitel:"Adjectives & adverbs · one/ones", pfad:"englisch/klasse8/mall-of-america.html", icon:"🛍️", max:45 },
-        { id:"vcity8", kat:"vocabulary", titel:"Words: Big City & New Life", untertitel:"City, immigration, travel", pfad:"englisch/klasse8/words-big-city.html", icon:"🏙️", max:52 },
-        { id:"vschool8", kat:"vocabulary", titel:"Words: School, Jobs & Weather", untertitel:"High school, jobs, storms", pfad:"englisch/klasse8/words-school-jobs.html", icon:"🎒", max:49 },
-        { id:"vtrend8", kat:"vocabulary", titel:"Words: Trends & Opinions", untertitel:"Small talk, opinions, culture", pfad:"englisch/klasse8/words-trends-opinions.html", icon:"💬", max:47 },
-        { id:"vtr1", kat:"vocabulary", titel:"Vocab Trainer: Unit 1", untertitel:"New York & immigration · Mock Test", pfad:"englisch/klasse8/vokabeltrainer.html?u=1", icon:"🗽", max:50 },
-        { id:"vtr2", kat:"vocabulary", titel:"Vocab Trainer: Unit 2", untertitel:"Teens in the Midwest · Mock Test", pfad:"englisch/klasse8/vokabeltrainer.html?u=2", icon:"🌽", max:50 },
-        { id:"vtr3", kat:"vocabulary", titel:"Vocab Trainer: Unit 3", untertitel:"In the Northeast · Mock Test", pfad:"englisch/klasse8/vokabeltrainer.html?u=3", icon:"🦃", max:50 },
-        { id:"vtr4", kat:"vocabulary", titel:"Vocab Trainer: Unit 4", untertitel:"California dreams · Mock Test", pfad:"englisch/klasse8/vokabeltrainer.html?u=4", icon:"🌴", max:50 },
-        { id:"vtr5", kat:"vocabulary", titel:"Vocab Trainer: Unit 5", untertitel:"Southern Life · Mock Test", pfad:"englisch/klasse8/vokabeltrainer.html?u=5", icon:"🎷", max:50 },
-        { id:"vtri", kat:"vocabulary", titel:"Irregular Verbs", untertitel:"Past forms · Mock Test", pfad:"englisch/klasse8/vokabeltrainer.html?u=irr", icon:"🔀", max:50 },
+        { id:"vcity8", kat:"vocabulary", titel:"Words: Big City & New Life", untertitel:"City, immigration, travel", pfad:"englisch/klasse8/words-big-city.html", icon:"🏙️", max:72 },
+        { id:"vschool8", kat:"vocabulary", titel:"Words: School, Jobs & Weather", untertitel:"High school, jobs, storms", pfad:"englisch/klasse8/words-school-jobs.html", icon:"🎒", max:71 },
+        { id:"vtrend8", kat:"vocabulary", titel:"Words: Trends & Opinions", untertitel:"Small talk, opinions, culture", pfad:"englisch/klasse8/words-trends-opinions.html", icon:"💬", max:68 },
+        { id:"vne8", kat:"vocabulary", titel:"Words: Northeast & Thanksgiving", untertitel:"Thanksgiving, Amish life, devices, mystery", pfad:"englisch/klasse8/words-northeast.html", icon:"🦃", max:56 },
+        { id:"vcal8", kat:"vocabulary", titel:"Words: California & Gold Rush", untertitel:"Golden Gate, tourist ads, Gold Rush", pfad:"englisch/klasse8/words-california.html", icon:"🌴", max:62 },
+        { id:"vsouth8", kat:"vocabulary", titel:"Words: Southern Life & Civil Rights", untertitel:"Nationalities, fried chicken, civil rights", pfad:"englisch/klasse8/words-southern.html", icon:"🎷", max:64 },
+        { id:"vtr1", kat:"vocabulary", titel:"Vocab Trainer: Unit 1", untertitel:"New York & immigration · Mock Test", grp:"test", pfad:"englisch/klasse8/vokabeltrainer.html?u=1", icon:"🗽", max:50 },
+        { id:"vtr2", kat:"vocabulary", titel:"Vocab Trainer: Unit 2", untertitel:"Teens in the Midwest · Mock Test", grp:"test", pfad:"englisch/klasse8/vokabeltrainer.html?u=2", icon:"🌽", max:50 },
+        { id:"vtr3", kat:"vocabulary", titel:"Vocab Trainer: Unit 3", untertitel:"In the Northeast · Mock Test", grp:"test", pfad:"englisch/klasse8/vokabeltrainer.html?u=3", icon:"🦃", max:50 },
+        { id:"vtr4", kat:"vocabulary", titel:"Vocab Trainer: Unit 4", untertitel:"California dreams · Mock Test", grp:"test", pfad:"englisch/klasse8/vokabeltrainer.html?u=4", icon:"🌴", max:50 },
+        { id:"vtr5", kat:"vocabulary", titel:"Vocab Trainer: Unit 5", untertitel:"Southern Life · Mock Test", grp:"test", pfad:"englisch/klasse8/vokabeltrainer.html?u=5", icon:"🎷", max:50 },
+        { id:"vtri", kat:"vocabulary", titel:"Irregular Verbs", untertitel:"Past forms · Mock Test", grp:"test", pfad:"englisch/klasse8/vokabeltrainer.html?u=irr", icon:"🔀", max:50 },
         { id:"states8", kat:"country", titel:"50 States Challenge", untertitel:"States, capitals, regions", pfad:"englisch/klasse8/fifty-states.html", icon:"🇺🇸", max:48 },
         { id:"nyc8", kat:"country", titel:"Gateway NYC", untertitel:"Sights & immigration", pfad:"englisch/klasse8/gateway-nyc.html", icon:"🗽", max:39 },
         { id:"mid8", kat:"country", titel:"Teens in the Midwest", untertitel:"High school & tornado alley", pfad:"englisch/klasse8/teens-midwest.html", icon:"🌽", max:40 },
@@ -169,7 +173,7 @@ FRS.find = id => {
   for(const c of FRS.englisch.klassen){
     if(c.id === id){
       const bereiche = FRS.bereicheFuer(c.k);
-      const themen = bereiche.flatMap(b => c.themen.filter(t => t.kat === b));
+      const themen = bereiche.flatMap(b => c.themen.filter(t => t.kat === b && t.grp !== "test"));   // Testvorbereitung (grp:"test") hat keine Flaggen und steht nicht im Ergebnis-Code
       return { typ:"insel", id, k:c.k, titel:`Englisch · Klasse ${c.k}`, themen, bereiche };
     }
   }
