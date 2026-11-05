@@ -272,7 +272,7 @@ export function build(A){
       if(i%6===3){ fs(x+nx*2+.5,y+1.5,z+nz*2+.5,"pillar"); set(x+nx*2,y+2,z+nz*2,"lamp"); } } };
   bridge(30,36,22,44,24,18); bridge(62,36,70,44,24,16);
   // ---------- Sky Library: große Palast-Insel (Kuppelpalast, Spitztürme, Torbogen, Terrassen, lange Wasserfälle) ----------
-  { const PX=-8, PZ=-36, PY=34, KR=["cliff","cliffD"], MB="marble";
+  { const PX=-8, PZ=-54, PY=34, KR=["cliff","cliffD"], MB="marble";
     // Inselkörper aus mehreren Teilen: Mitte, linke Baum-Terrasse, rechtes Plateau, abgesetzte Insel rechts, Absätze an der Unterseite
     island(PX,PZ,21,PY,{deep:1.2, rk:KR, flat:true}); level(PX,PZ,17,PY);
     island(PX-27,PZ+5,14,PY-3,{deep:1.0, rk:KR});
@@ -450,7 +450,7 @@ export function build(A){
     if(deco==="tower"){ cyl(cx,t,cz,2,12,(a,b,c)=>(b-t)%5===0?"trim":"stone"); cone(cx,t+12,cz,2.8,8,"roof"); set(cx+2,t+6,cz,"win"); tree(cx+r*.55,t,cz-1,3,2,"leaves"); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
     if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
-  for(const [cx,cz,r,y,d] of [[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
+  for(const [cx,cz,r,y,d] of [[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[-74,-30,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
   // ---------- Gipfel über dem Wolkenmeer (weit weg, grob) ----------
   const F = A.far; F.cell = 3;
