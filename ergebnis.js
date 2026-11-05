@@ -68,12 +68,12 @@
   const rName = r => (gender()==="f" && r[2]) ? r[2] : r[1], rFile = r => (gender()==="f" && r[3]) ? r[3] : r[0];
   const godImg = k => BASE + "lernwelt/raenge/god-" + (GODS[k]||GODS[5])[0] + "-" + gender() + ".webp", godName = k => { const g=GODS[k]||GODS[5]; return gender()==="f" ? g[2] : g[1]; };
   const RANKS = {
-    5:  [["spark","Spark"],["ashmaster","Ash Master","Ash Mistress"],["flamekeeper","Flame Keeper"],["fireknight","Fire Knight"],["dragonrider","Dragon Rider"],["firelord","Fire Lord","Fire Queen"]],
+    5:  [["spark","Spark"],["ashmaster","Ash Master","Ash Mistress"],["flamekeeper","Flame Keeper"],["fireknight","Fire Knight","Fire Knight","fireknight-f"],["dragonrider","Dragon Rider"],["firelord","Fire Lord","Fire Queen"]],
     6:  [["droplet","Droplet"],["shellseeker","Shell Seeker"],["reefdiver","Reef Diver"],["seacaptain","Sea Captain","Sea Captain","seacaptain-f"],["tidelord","Tide Lord","Tide Lady"],["oceanruler","Ocean Ruler"]],
     7:  [["pebble","Pebble Picker"],["miner","Miner"],["blacksmith","Blacksmith"],["gemmaster","Gem Master","Gem Mistress"],["dwarfchampion","Dwarf Champion"],["mountainking","Mountain King","Mountain Queen","mountainking-f"]],
     8:  [["leafrider","Leaf Rider"],["kiteflyer","Kite Flyer"],["windwalker","Wind Walker"],["cloudsage","Cloud Sage"],["skyguardian","Sky Guardian"],["airmonk","Air Monk","Air Priestess"]],
     9:  [["acorn","Acorn"],["mushroom","Mushroom"],["pathfinder","Pathfinder"],["ranger","Ranger"],["woodelf-m","Wood Elf","Wood Elf","woodelf"],["forestmaster","Forestmaster","Forest Queen","forestmaster-f"]],
-    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem"],["frostwizard","Frost Wizard","Frost Witch","frostwizard-f"]]
+    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem","Frost Maiden","frostgolem-f"],["frostwizard","Frost Wizard","Frost Witch","frostwizard-f"]]
   };
   const rankImgUrl = f => BASE + "lernwelt/raenge/" + f + ".webp";
   const rankImg = (f, cls) => `<img class="${cls||"rk-img"}" src="${rankImgUrl(f)}" alt="" draggable="false">`;
