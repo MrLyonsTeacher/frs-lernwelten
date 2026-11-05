@@ -307,7 +307,7 @@ export function build(A){
       if(i%6===3){ fs(x+nx*2+.5,y+1.5,z+nz*2+.5,"pillar"); set(x+nx*2,y+2,z+nz*2,"lamp"); } } };
   bridge(30,36,22,44,24,16); bridge(62,36,70,44,24,18);
   // ---------- Sky Library: große Palast-Insel (Kuppelpalast, Spitztürme, Torbogen, Terrassen, lange Wasserfälle) ----------
-  { const PX=-8, PZ=-54, PY=34, KR=["cliff","cliffD"], MB="marble";
+  { const PX=-22, PZ=-54, PY=34, KR=["cliff","cliffD"], MB="marble";
     // Inselkörper aus mehreren Teilen: Mitte, linke Baum-Terrasse, rechtes Plateau, abgesetzte Insel rechts, Absätze an der Unterseite
     island(PX,PZ,21,PY,{deep:1.2, rk:KR, flat:true}); level(PX,PZ,17,PY);
     island(PX-27,PZ+5,14,PY-3,{deep:1.0, rk:KR});
