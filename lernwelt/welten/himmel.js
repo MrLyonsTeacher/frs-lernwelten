@@ -150,7 +150,7 @@ export function build(A){
     for(let i=0;i<10;i++){ const a=rand()*6.283; set(Math.round(cx+Math.cos(a)*r*.9),Math.round(top+r*.4-rand()*2),Math.round(cz+Math.sin(a)*r*.9),null); } };
   const lampPost = (x,y,z,h=4) => { fill(x,y,z,x,y+h-1,z,"pillar"); fs(x,y+h,z,"gold"); set(x,y+h,z,"lamp"); };
 
-  const GD = {x:14, z:48, r:12, y:18}, DK = {x:78, z:50, r:11, y:16};   // Floating Gardens: nur noch Kulisse
+  const GD = {x:78, z:50, r:12, y:18}, DK = {x:14, z:48, r:11, y:16}, DKB = {x:900, z:50, r:11, y:16};   // GD: Floating Gardens (Kulisse, jetzt rechts); DK: Hafeninsel (jetzt links, gespiegelt); DKB: Bauplatz der Hafeninsel vor dem Spiegeln   // Floating Gardens: nur noch Kulisse
   const S = {
     grammar:   {x:46, z:26, r:20, y:24, col:0x6AA8FF, ort:"Sky Castle"},
     vocabulary:{col:0xFF9AC8, ort:"Sky Library"},
@@ -158,7 +158,7 @@ export function build(A){
   };
   island(S.grammar.x,S.grammar.z,S.grammar.r,S.grammar.y,{deep:1.4}); level(S.grammar.x,S.grammar.z,S.grammar.r-3,S.grammar.y);
   island(GD.x,GD.z,GD.r,GD.y); level(GD.x,GD.z,GD.r-3,GD.y);
-  island(DK.x,DK.z,DK.r,DK.y); level(DK.x,DK.z,DK.r-3,DK.y);
+  island(DKB.x,DKB.z,DKB.r,DKB.y); level(DKB.x,DKB.z,DKB.r-3,DKB.y);
 
     // Turm im Stil der Bibliothek: heller Marmor, goldene Bänder, Schieferspitze mit Ecktürmchen
     const libTower = (tx,tz,y0,r,h,roofH) => { cyl(tx,y0-7,tz,r,7,"rock"); cyl(tx,y0,tz,r,h,(a,b)=> (b-y0)%6===5 ? "ptrim" : "marble");
@@ -251,7 +251,7 @@ export function build(A){
   }
 
   // ---------- Country & people: Luftschiff-Hafen ----------
-  { const {x,y,z} = DK;
+  { const {x,y,z} = DKB;
     // Steg mit Geländer
     for(let a=0;a<18;a++){ fill(x+3+a,y,z-1,x+3+a,y,z+1,"planksD"); if(a%3===0){ fill(x+3+a,y-3,z,x+3+a,y-1,z,"log"); } fs(x+3.5+a,y+1,z-1.25,"rope"); fs(x+3.5+a,y+1,z+1.75,"rope"); if(a%3===0){ fs(x+3.5+a,y+.5,z-1.25,"log"); fs(x+3.5+a,y+.5,z+1.75,"log"); } }
     // Hafenmeisterhaus mit Fachwerk und Uhr
@@ -281,6 +281,12 @@ export function build(A){
       fill(ax-6,ay+1,az+4*s,ax-6,ay+3,az+4*s,"iron"); for(const [p,q] of [[0,1],[0,-1],[1,0],[-1,0]]) fs(ax-6.5+p*1.5,ay+2.5+q*1.5,az+4*s+(s>0?.75:.25),"brass"); }  // Propeller
   }
 
+  // Hafeninsel samt Luftschiff an den endgültigen Platz links vorne verschieben und dabei spiegeln
+  { const mv=[...A.near.V.values()].filter(v=>v[0]>500), mf=[...A.fine.V.values()].filter(v=>v[0]>1000), dz=DK.z-DKB.z;
+    for(const v of mv) A.near.set(v[0],v[1],v[2],null); for(const v of mf) FN.set(v[0],v[1],v[2],null);
+    for(const v of mv) A.near.set(DK.x+DKB.x-v[0],v[1],v[2]+dz,v[3]);
+    for(const v of mf) FN.set(2*DK.x+2*DKB.x-v[0],v[1],v[2]+2*dz,v[3]); }
+
   // ---------- Wasserfälle: Quelle auf der Insel, Bach zum Rand, Fall an der Felswand entlang, unten Gischt ----------
   const MIST = [];
   const fall = (cx,cz,yt,an,w,len) => { const dx=Math.cos(an), dz=Math.sin(an); let px=cx+.5, pz=cz+.5, d=0;
@@ -292,14 +298,14 @@ export function build(A){
     for(let k=0;k<len*2;k++){ const y=top-k*.5, f=k/(len*2), ww=w*.5+f*2.2, off=1+f*1.6;
       for(let j=-ww;j<=ww;j+=.5){ if(f>.65 && rand()<(f-.65)*2.4) continue; const x=ex+.5+dx*off-dz*j, z=ez+.5+dz*off+dx*j; if(get(Math.floor(x),Math.floor(y),Math.floor(z))) continue; fs(x,y,z, f>.8 && rand()<.5 ? "spray" : "cascade"); } }
     MIST.push([ex+dx*2.5, top-len*.85, ez+dz*2.5, w]); };
-  for(const [isl,ans] of [["grammar",[2.3,.85]],["vocabulary",[3.0,1.9]],["country",[.3,1.3]]]){ const s0=isl==="vocabulary"?GD:isl==="country"?DK:S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
+  for(const [isl,ans] of [["grammar",[2.3,.85]],["vocabulary",[3.0,1.9]],["country",[Math.PI-.3,Math.PI-1.3]]]){ const s0=isl==="vocabulary"?GD:isl==="country"?DK:S[isl]; for(const an of ans) fall(s0.x,s0.z,s0.y,an,isl==="grammar"?3:2,isl==="grammar"?34:26); }
   // Bogenbrücken aus Stein zwischen den Inseln
   const bridge = (x0,z0,x1,z1,y0,y1) => { const n=Math.ceil(Math.hypot(x1-x0,z1-z0)), nx=-(z1-z0)/n, nz=(x1-x0)/n;
     for(let i=0;i<=n;i++){ const f=i/n, x=x0+(x1-x0)*f, z=z0+(z1-z0)*f, y=Math.round(y0+(y1-y0)*f + Math.sin(f*Math.PI)*1.5);
       for(const w of [-1,0,1]) set(x+nx*w,y,z+nz*w,"stone"); for(const w of [-2,2]){ set(x+nx*w,y,z+nz*w,"trim"); if(i%2===0) fs(x+nx*w+.5,y+1,z+nz*w+.5,"pillar"); }
       const under = Math.round(Math.sin(f*Math.PI)*3); for(let k=1;k<=under;k++) set(x,y-k,z,"stoneB");
       if(i%6===3){ fs(x+nx*2+.5,y+1.5,z+nz*2+.5,"pillar"); set(x+nx*2,y+2,z+nz*2,"lamp"); } } };
-  bridge(30,36,22,44,24,18); bridge(62,36,70,44,24,16);
+  bridge(30,36,22,44,24,16); bridge(62,36,70,44,24,18);
   // ---------- Sky Library: große Palast-Insel (Kuppelpalast, Spitztürme, Torbogen, Terrassen, lange Wasserfälle) ----------
   { const PX=-8, PZ=-54, PY=34, KR=["cliff","cliffD"], MB="marble";
     // Inselkörper aus mehreren Teilen: Mitte, linke Baum-Terrasse, rechtes Plateau, abgesetzte Insel rechts, Absätze an der Unterseite
