@@ -474,7 +474,7 @@ export function build(A){
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
   const farIsle = (cx,cz,r,y,deco) => { island(cx,cz,r,y,{deep:1.3, bare:true}); const t=topAt(cx,cz,y+4)+1;
     if(deco==="tree"){ tree(cx-r*.35,t,cz,5,2.6,"leaves"); tree(cx+r*.75,t,cz-1,4,2.3,"blossom"); }
-    if(deco==="tower"){ libTower(cx,cz,t,3.8,28,17); bigTree(cx+r*.55,t,cz-r*.4,5,2.6,false); }
+    if(deco==="tower"){ libTower(cx,cz,t,2.6,15,10); bigTree(cx+r*.55,t,cz-r*.4,5,2.6,false); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
     if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
   for(const [cx,cz,r,y,d] of [[-40,24,6,22,"tree"],[-74,-30,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
