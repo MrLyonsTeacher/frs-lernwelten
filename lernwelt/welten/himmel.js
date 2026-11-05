@@ -66,7 +66,7 @@ export function build(A){
     moss: noise(["#4E7F30","#5A8C36","#46722B","#62973C"],10,["#7FB04A"]), mossSide: topEdge(["#6B5238","#5E4630","#74583C"],["#4E7F30","#5A8C36","#46722B"],5), mossD: noise(["#6B5238","#5E4630","#74583C","#56402B"]),
     wRock: tex(g=>{ for(let y=0;y<16;y++){ const band=["#8C8A84","#7C7A74","#9A988F"][Math.floor(y/3)%3]; for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#5E7A3E":(rand()<.12?"#AEACA2":band)); } }),
     wRockD: tex(g=>{ for(let y=0;y<16;y++){ const band=["#6A5A4A","#5A4C3E","#76664F","#645444"][Math.floor(y/3)%4]; for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#4E6A34":band); } }),
-    wBark: stripes(["#5A3E2A","#4A3222","#68482F","#523826"],true), wLeaf: noise(["#3F7A32","#376E2C","#468536","#2F6226"],10,["#6AA84A"]), wLeafL: noise(["#5E9A3E","#6AA845","#52903A"],10,["#9AD070"]),
+    wBark: stripes(["#5A3E2A","#4A3222","#68482F","#523826"],true), wBarkD: stripes(["#3A281A","#2E1F14","#44301F","#33231A"],true), wBarkL: stripes(["#7A5A3C","#6E5036","#86643F","#74563A"],true), wLeaf: noise(["#3F7A32","#376E2C","#468536","#2F6226"],10,["#6AA84A"]), wLeafL: noise(["#5E9A3E","#6AA845","#52903A"],10,["#9AD070"]),
     wVine: noise(["#3E7A30","#2F6226","#4A8A38"]), sandP: noise(["#E8CC82","#DDBF73","#F0D894","#D2B468"]), pinkP: noise(["#E060B8","#F078CC","#CC48A4"]), yellowP: noise(["#F0C838","#FFD84A","#E0B020"]), wPond: noise(["#2A4A5A","#243F4E","#31566A"]),
     leaves: noise(["#4FAE3A","#5CBE44","#449E30","#3E9A2E"], 10, ["#78D458"]), hedge: noise(["#3E8A30","#468E36","#367A2A"], 8, ["#5AA848"]),
     log: stripes(["#7A5532","#8A6238","#6A4828"], true), logTop: rings(["#B8894E","#A47840","#8A6236"]),
@@ -95,7 +95,7 @@ export function build(A){
     stA:{side:T.stA}, stB:{side:T.stB}, stC:{side:T.stC}, sunG:{side:T.sunG, em:.5}, flame:{side:T.flame, em:1.2}, halo:{side:T.halo, em:.9},
     mrb:{side:T.mrb, em:.1}, mrbD:{side:T.mrbD},
     leavesL:{side:T.leavesL}, leavesD:{side:T.leavesD}, needle:{side:T.needle}, birch:{side:T.birch}, blossomL:{side:T.blossomL}, blossomD:{side:T.blossomD},
-    moss:{side:T.mossSide, top:T.moss, bottom:T.mossD}, mossD:{side:T.mossD}, wRock:{side:T.wRock}, wRockD:{side:T.wRockD}, wBark:{side:T.wBark, top:T.wBark}, wLeaf:{side:T.wLeaf}, wLeafY:{side:T.wLeafY}, wLeafL:{side:T.wLeafL}, wVine:{side:T.wVine},
+    moss:{side:T.mossSide, top:T.moss, bottom:T.mossD}, mossD:{side:T.mossD}, wRock:{side:T.wRock}, wRockD:{side:T.wRockD}, wBark:{side:T.wBark, top:T.wBark}, wBarkD:{side:T.wBarkD, top:T.wBarkD}, wBarkL:{side:T.wBarkL, top:T.wBarkL}, wLeaf:{side:T.wLeaf}, wLeafY:{side:T.wLeafY}, wLeafL:{side:T.wLeafL}, wVine:{side:T.wVine},
     sandP:{side:T.sandP}, pinkP:{side:T.pinkP, em:.7}, yellowP:{side:T.yellowP, em:.6}, wPond:{side:T.wPond, alpha:.9, anim:[.02,.01], em:.1},
     blossom:{side:T.blossom}, leaves:{side:T.leaves}, hedge:{side:T.hedge}, log:{side:T.log, top:T.logTop}, planks:{side:T.planks}, planksD:{side:T.planksD},
     hull:{side:T.hull}, canvas:{side:T.canvas}, canvasR:{side:T.canvasR}, brass:{side:T.brass, em:.15}, iron:{side:T.iron}, rope:{side:T.rope},
@@ -482,7 +482,7 @@ export function build(A){
     const shell=(cx,cy,cz,rx,ry,rz)=>{ for(let x=Math.floor(cx-rx-1);x<=cx+rx+1;x++) for(let y=Math.floor(cy-ry-1);y<=cy+ry+1;y++) for(let z=Math.floor(cz-rz-1);z<=cz+rz+1;z++){ const q=((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2;
       if(q<=1+(rand()-.5)*.4 && q>=.58){ set(x,y,z,lf());
         if(y<cy-ry*.35){ if(rand()<.03){ const l=3+Math.floor(rand()*11); for(let k=1;k<=l;k++){ if(get(x,y-k,z)) break; set(x,y-k,z,"wVine"); } }
-          else if(rand()<.007){ const l=2+Math.floor(rand()*4); let ok=true; for(let k=1;k<=l+1;k++) if(get(x,y-k,z)) ok=false; if(ok){ for(let k=1;k<=l;k++) set(x,y-k,z,"rope"); set(x,y-l-1,z,"lamp"); } } } } } };
+          else if(rand()<.012){ const l=2+Math.floor(rand()*4); let ok=true; for(let k=1;k<=l+1;k++) if(get(x,y-k,z)) ok=false; if(ok){ for(let k=1;k<=l;k++) set(x,y-k,z,"rope"); set(x,y-l-1,z,"lamp"); } } } } } };
     Object.assign(S.country,{x:CX, z:CZ, r:34, y:YT, top:[CX+10,YT-4,CZ+16], base:YT+6, cam:{pos:[CX-24,YT+50,CZ+116], look:[CX,YT+22,CZ]}});
     // Hauptäste: [Wegpunkte relativ zur Gabelung], Radius am Anfang/Ende, Kronen (rx, ry) am Ende und in der Mitte
     const limbs=[
@@ -495,6 +495,29 @@ export function build(A){
       const e=pts[pts.length-1], m=pts[pts.length-2];
       shell(e[0],e[1]+2,e[2],L.tip[0],L.tip[1],L.tip[0]*.92); shell(e[0]+L.tip[0]*.55,e[1]-1,e[2]-L.tip[0]*.4,L.tip[0]*.62,L.tip[1]*.7,L.tip[0]*.6); shell(e[0]-L.tip[0]*.5,e[1]-.5,e[2]+L.tip[0]*.5,L.tip[0]*.62,L.tip[1]*.7,L.tip[0]*.6);
       shell(m[0],m[1]+2,m[2],L.mid[0],L.mid[1],L.mid[0]*.9); }
+
+    // ---- Feinarbeit am Weltenbaum: Rindenrelief, Astknollen, Seitenzweige mit Blättertuffs, ausgefranste Kronen, Blüten, Moos ----
+    { const trunkR=k=>3.8-(k/TH)*1.4+3.6*Math.exp(-k/3.5), LEAVES=["wLeaf","wLeafY","wLeafL"];
+      // Knollen und Wülste am Stamm
+      for(let i=0;i<16;i++){ const k=3+Math.floor(rand()*(TH-5)), a=rand()*6.283, t=k/TH, rr=trunkR(k)+.4; sph(tx(t)+Math.cos(a)*rr, TB+k, tz(t)+Math.sin(a)*rr, 1.1+rand()*1.1, rand()<.5?"wBark":"wBarkL"); }
+      // Seitenzweige an jedem Hauptast mit kleinen Blättertuffs
+      for(const L of limbs){ const pts=L.p.map(([dx,dy,dz])=>[F[0]+dx,F[1]+dy,F[2]+dz]);
+        for(const f of [.4,.62,.82]){ const seg=Math.min(pts.length-2,Math.floor(f*(pts.length-1))), g=f*(pts.length-1)-seg, A=pts[seg], B=pts[seg+1], bx=A[0]+(B[0]-A[0])*g, by=A[1]+(B[1]-A[1])*g, bz=A[2]+(B[2]-A[2])*g;
+          for(const sgn of [1,-1]){ const a=rand()*6.283, ln=5+rand()*4, ex=bx+Math.cos(a)*ln, ey=by+2+rand()*3, ez=bz+Math.sin(a)*ln;
+            limb([[bx,by,bz],[(bx+ex)/2,by+1,(bz+ez)/2],[ex,ey,ez]],1.3,.5);
+            for(let x=Math.floor(ex-3);x<=ex+3;x++) for(let y=Math.floor(ey-2);y<=ey+3;y++) for(let z=Math.floor(ez-3);z<=ez+3;z++) if(Math.hypot((x-ex)/3,(y-ey-.5)/2.3,(z-ez)/3)<=1+(rand()-.5)*.35 && !get(x,y,z)) set(x,y,z,lf()); } } }
+      // Rindenrelief: dunkle Furchen und helle Grate, Moos auf den oberen Flächen der Wurzeln
+      for(let x=CX-16;x<=CX+16;x++) for(let z=CZ-16;z<=CZ+16;z++) for(let y=TB-3;y<=TB+TH+3;y++){ if(get(x,y,z)!=="wBark") continue;
+        if(get(x+1,y,z)&&get(x-1,y,z)&&get(x,y,z+1)&&get(x,y,z-1)&&get(x,y+1,z)) continue;
+        const a=Math.atan2(z-CZ,x-CX), q=Math.sin(a*11+y*.22);
+        if(q>.55||rand()<.04) set(x,y,z,"wBarkD"); else if(Math.sin(a*7-y*.31)>.8) set(x,y,z,"wBarkL");
+        if(!get(x,y+1,z) && y<TB+8 && rand()<.3) set(x,y+1,z,"moss"); }
+      // ausgefranste Kronenränder, vereinzelte Blüten und kleine Blattbüschel nach unten
+      for(let x=CX-46;x<=CX+46;x++) for(let z=CZ-40;z<=CZ+40;z++) for(let y=F[1]-12;y<=F[1]+28;y++){ const b=get(x,y,z); if(!b||!LEAVES.includes(b)) continue;
+        const r=rand(); if(r<.05){ const d=[[1,0,0],[-1,0,0],[0,0,1],[0,0,-1],[0,1,0]][Math.floor(rand()*5)]; if(!get(x+d[0],y+d[1],z+d[2])) set(x+d[0],y+d[1],z+d[2],lf()); }
+        else if(r<.075 && !get(x,y-1,z)) set(x,y-1,z, rand()<.6?"pinkP":"yellowP");
+        else if(r<.095 && !get(x,y-1,z) && !get(x,y-2,z)){ set(x,y-1,z,lf()); set(x,y-2,z,rand()<.5?"wVine":lf()); } }
+    }
   }
 
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
@@ -556,6 +579,7 @@ export function build(A){
       {pos:[-90,36,-70], r:18, n:40, sx:1.6, sy:.8, sz:1.2}
     ],
     particles:[...MIST.map(([x,y,z,w])=>({n:36, area:[x-w-1,x+w+1,y-3,y+6,z-w-1,z+w+1], vy:1.7, wob:1.2, color:0xCFE6FF, size:.36, opacity:.7, add:true})),
+               {n:110, area:[116-34,116+34,36,76,-70-28,-70+28], vy:.5, wob:1.8, color:0xFFE680, size:.38, blink:2, add:true},
                {n:160, area:[86,102,28,48,18,30], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
                {n:90, area:[GD.x-8,GD.x+8,GD.y+2,GD.y+16,GD.z-8,GD.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
