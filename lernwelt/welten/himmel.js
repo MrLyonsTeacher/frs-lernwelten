@@ -56,6 +56,14 @@ export function build(A){
         const o=(y*N+x)*4; d[o]=Math.min(255,r); d[o+1]=Math.min(255,gg); d[o+2]=Math.min(255,bb); d[o+3]=235; }
       g.putImageData(id,0,0); }, 64, true),
     cloud: noise(["#FFFFFF","#F4F8FF","#EAF2FF"]), blossom: noise(["#FFB8D8","#FF9AC8","#FFD2E6","#F286B8"], 10, ["#FFFFFF","#FFE6F0"]),
+    leavesL: noise(["#6CC24E","#7ACF58","#62B848"],10,["#A8F07A"]), leavesD: noise(["#3A8A2C","#348026","#2E7424"],8,["#58B040"]), needle: noise(["#2F6B4A","#285E40","#357A52","#245438"],10,["#5AA878"]),
+    birch: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#2C2C2C":(rand()<.5?"#EFEDE6":"#DCD9CF")); }),
+    blossomL: noise(["#FFD2E6","#FFE0EE","#FFC4DC"],8,["#FFFFFF"]), blossomD: noise(["#E878AE","#DE6AA4","#F08CBC"]),
+    moss: noise(["#4E7F30","#5A8C36","#46722B","#62973C"],10,["#7FB04A"]), mossSide: topEdge(["#6B5238","#5E4630","#74583C"],["#4E7F30","#5A8C36","#46722B"],5), mossD: noise(["#6B5238","#5E4630","#74583C","#56402B"]),
+    wRock: tex(g=>{ for(let y=0;y<16;y++){ const band=["#8C8A84","#7C7A74","#9A988F"][Math.floor(y/3)%3]; for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#5E7A3E":(rand()<.12?"#AEACA2":band)); } }),
+    wRockD: tex(g=>{ for(let y=0;y<16;y++){ const band=["#6A5A4A","#5A4C3E","#76664F","#645444"][Math.floor(y/3)%4]; for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#4E6A34":band); } }),
+    wBark: stripes(["#5A3E2A","#4A3222","#68482F","#523826"],true), wLeaf: noise(["#3F7A32","#376E2C","#468536","#2F6226"],10,["#6AA84A"]), wLeafL: noise(["#5E9A3E","#6AA845","#52903A"],10,["#9AD070"]),
+    wVine: noise(["#3E7A30","#2F6226","#4A8A38"]), sandP: noise(["#E8CC82","#DDBF73","#F0D894","#D2B468"]), pinkP: noise(["#E060B8","#F078CC","#CC48A4"]), yellowP: noise(["#F0C838","#FFD84A","#E0B020"]), wPond: noise(["#2A4A5A","#243F4E","#31566A"]),
     leaves: noise(["#4FAE3A","#5CBE44","#449E30","#3E9A2E"], 10, ["#78D458"]), hedge: noise(["#3E8A30","#468E36","#367A2A"], 8, ["#5AA848"]),
     log: stripes(["#7A5532","#8A6238","#6A4828"], true), logTop: rings(["#B8894E","#A47840","#8A6236"]),
     planks: planks(["#C08A50","#CC965C","#B07C44"], "#7A5530"), planksD: planks(["#8A5A30","#7A4E28","#946436"], "#4A3018"),
@@ -80,6 +88,9 @@ export function build(A){
     water:{side:T.water, alpha:.88, anim:[.012,4.2], em:.34}, pool:{side:T.pool, alpha:.9, anim:[.06,.035], em:.24},
     cascade:{side:T.cascade, alpha:.9, anim:[.004,3.6], em:.3}, spray:{side:T.spray, alpha:.5, em:.35, soft:true},
     cloud:{side:T.cloud, alpha:.92, em:.15, soft:true}, cloudS:{side:T.cloud, em:.3, soft:true},
+    leavesL:{side:T.leavesL}, leavesD:{side:T.leavesD}, needle:{side:T.needle}, birch:{side:T.birch}, blossomL:{side:T.blossomL}, blossomD:{side:T.blossomD},
+    moss:{side:T.mossSide, top:T.moss, bottom:T.mossD}, mossD:{side:T.mossD}, wRock:{side:T.wRock}, wRockD:{side:T.wRockD}, wBark:{side:T.wBark, top:T.wBark}, wLeaf:{side:T.wLeaf}, wLeafL:{side:T.wLeafL}, wVine:{side:T.wVine},
+    sandP:{side:T.sandP}, pinkP:{side:T.pinkP, em:.7}, yellowP:{side:T.yellowP, em:.6}, wPond:{side:T.wPond, alpha:.9, anim:[.02,.01], em:.1},
     blossom:{side:T.blossom}, leaves:{side:T.leaves}, hedge:{side:T.hedge}, log:{side:T.log, top:T.logTop}, planks:{side:T.planks}, planksD:{side:T.planksD},
     hull:{side:T.hull}, canvas:{side:T.canvas}, canvasR:{side:T.canvasR}, brass:{side:T.brass, em:.15}, iron:{side:T.iron}, rope:{side:T.rope},
     woolR:{side:T.woolR}, woolB:{side:T.woolB}, woolY:{side:T.woolY},
@@ -100,8 +111,26 @@ export function build(A){
     if(!o.bare) for(let i=0;i<r*r*.5;i++){ const a=rand()*Math.PI*2, d=rand()*r*.9, x=cx+Math.cos(a)*d, z=cz+Math.sin(a)*d, t=topAt(Math.round(x),Math.round(z),yt+4);
       if(t>=yt-1 && get(Math.round(x),t,Math.round(z))==="grass" && !get(Math.round(x),t+1,Math.round(z))) fs(x,t+1,z, rand()<.25 ? pick(["flowerR","flowerY","flowerB","flowerP"]) : "leaves"); } };
   const level = (cx,cz,r,y) => { for(let z=Math.floor(cz-r); z<=cz+r; z++) for(let x=Math.floor(cx-r); x<=cx+r; x++) if(Math.hypot(x-cx,z-cz)<=r){ for(let yy=y+1;yy<y+6;yy++) set(x,yy,z,null); set(x,y,z,"grass"); set(x,y-1,z,"dirt"); } };
-  const tree = (x,y,z,h,r,leaf="leaves") => { fill(x,y,z,x,y+h,z,"log"); line(x,y+h-2,z,x-2,y+h,z-1,"log"); line(x,y+h-2,z,x+2,y+h+1,z+1,"log");
-    ellip(x,y+h+1,z,r,r*.75,r,leaf); ellip(x-r*.6,y+h,z-r*.3,r*.6,r*.5,r*.6,leaf); ellip(x+r*.6,y+h+.5,z+r*.4,r*.6,r*.5,r*.6,leaf); };
+  const tree = (x,y,z,h,r,leaf="leaves") => { const bl = leaf==="blossom";
+    const L = () => bl ? (rand()<.22?"blossomL":rand()<.14?"blossomD":"blossom") : (rand()<.24?"leavesL":rand()<.18?"leavesD":"leaves");
+    const blob = (cx,cy,cz,rx,ry,rz) => ellip(cx,cy,cz,rx,ry,rz,()=>L());
+    const hang = (cx,cy,cz,rad,n,len,m) => { for(let i=0;i<n;i++){ const a=rand()*6.283, d=rad*(.5+.5*rand()), vx=Math.round(cx+Math.cos(a)*d), vz=Math.round(cz+Math.sin(a)*d), l=2+Math.floor(rand()*len); for(let k=0;k<l;k++){ if(get(vx,cy-k,vz)) continue; set(vx,cy-k,vz,m); } } };
+    const kind = bl ? pick(["cherry","cherry","weep"]) : pick(["oak","oak","birch","pine","willow","acacia","round"]);
+    for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]) if(rand()<.55 && !get(x+dx,y,z+dz)) set(x+dx,y,z+dz,"log");
+    if(kind==="oak"){ fill(x,y,z,x,y+h,z,"log");
+      for(let i=0;i<3;i++){ const a=i*2.1+rand(), ex=x+Math.cos(a)*r*.9, ez=z+Math.sin(a)*r*.9, ey=y+h-1+rand()*2; line(x,y+h-3,z,ex,ey,ez,"log"); blob(ex,ey+1,ez,r*.65,r*.5,r*.65); }
+      blob(x,y+h+1,z,r,r*.75,r); }
+    else if(kind==="birch"){ fill(x,y,z,x,y+h+2,z,"birch"); set(x+1,y+h-2,z,"birch");
+      blob(x,y+h+1,z,r*.7,r*.7,r*.7); blob(x,y+h+3.2,z,r*.5,r*.6,r*.5); blob(x+r*.4,y+h-1,z-r*.3,r*.5,r*.4,r*.5); }
+    else if(kind==="pine"){ fill(x,y,z,x,y+h+3,z,"log"); const top=y+h+4, b0=y+2;
+      for(let yy=b0;yy<=top;yy++){ const f=(yy-b0)/(top-b0), rad=(1-f)*r*1.25+(yy%2?0:.9); if(rad>.4) disk(x,yy,z,rad,()=>rand()<.2?"leavesD":"needle"); } set(x,top+1,z,"needle"); }
+    else if(kind==="willow"){ fill(x,y,z,x,y+h,z,"log"); blob(x,y+h+1,z,r*1.1,r*.6,r*1.1); hang(x,y+h,z,r*1.1,Math.round(r*7),6,"leavesD"); }
+    else if(kind==="acacia"){ line(x,y,z,x+1.5,y+h,z+1,"log"); blob(x+2,y+h+1,z+1,r*1.5,r*.35,r*1.5); blob(x+2,y+h+1.7,z+1,r*1.1,r*.3,r*1.1); }
+    else if(kind==="round"){ fill(x,y,z,x,y+h-1,z,"log"); blob(x,y+h+r*.5,z,r*1.1,r,r*1.1); }
+    else { line(x,y,z,x+1,y+h-1,z,"log"); fill(x+1,y+h-1,z,x+1,y+h,z,"log");
+      for(let i=0;i<2;i++){ const a=i*3.14+rand(); line(x+1,y+h-2,z,x+1+Math.cos(a)*3,y+h+1,z+Math.sin(a)*3,"log"); }
+      blob(x+1,y+h+1.5,z,r*1.3,r*.6,r*1.3); blob(x+1+r*.9,y+h+.8,z+r*.4,r*.7,r*.45,r*.7); blob(x+1-r*.9,y+h+.8,z-r*.4,r*.7,r*.45,r*.7);
+      if(kind==="weep") hang(x+1,y+h,z,r*1.3,Math.round(r*6),5,"blossomL"); } };
   const lampPost = (x,y,z,h=4) => { fill(x,y,z,x,y+h-1,z,"pillar"); fs(x,y+h,z,"gold"); set(x,y+h,z,"lamp"); };
 
   const GD = {x:14, z:48, r:12, y:18};   // Floating Gardens: nur noch Kulisse
@@ -346,7 +375,7 @@ export function build(A){
     const t=topAt(cx,cz,y+4); if(d==="tree") tree(cx,t+1,cz,4,2.2, rand()<.5?"blossom":"leaves"); else for(let k=1;k<=3;k++) set(cx,t+k,cz,"crystal"); }
   for(const [cx,cz,y] of [[34,62,10],[60,64,8],[2,30,22],[26,8,36]]) fall(cx,cz,y,Math.PI/2,1,14);
   // ---------- Portal-Insel: uralter Torbogen mit wirbelndem Portal, Steintreppe, Felsbrocken, Palmen ----------
-  { const cx=94, cz=14, y=34, r=9; island(cx,cz,r,y,{deep:1.5}); level(cx,cz,r-2,y);
+  { const cx=94, cz=14, y=28, r=9; island(cx,cz,r,y,{deep:1.5}); level(cx,cz,r-2,y);
     const px=cx, pz=cz-1, H=15, half=4;
     for(const sg of [-1,1]){ const x=px+sg*half; fill(x-1,y+1,pz-1,x+1,y+2,pz+1,"ancient"); fill(x,y+3,pz,x,y+H,pz,(a,b)=> (b-y)%4===0 ? "rune" : "ancient"); for(const dz of [-1,1]) fill(x,y+3,pz+dz,x,y+H-2,pz+dz,(a,b)=> (b-y)%3===1 ? "rune" : "ancient"); set(x+sg,y+H-3,pz,"ancient"); }
     for(let i=0;i<=24;i++){ const th=i/24*Math.PI, ax=px+.5+Math.cos(th)*(half+.6), ay=y+H+Math.sin(th)*4; for(let dz=-1;dz<=1;dz+=.5) fs(ax,ay,pz+.5+dz, i%4===0 ? "rune" : "ancient"); fs(px+.5+Math.cos(th)*(half+1.3), y+H+Math.sin(th)*4.7, pz+.5, "ancient"); }
@@ -361,13 +390,67 @@ export function build(A){
     for(const [ox,oy,oz,rr] of [[-14,8,-4,1.6],[14,-2,-8,2],[-10,-6,8,1.2],[12,12,6,1.1]]) ellip(cx+ox,y+oy,cz+oz,rr,rr*.8,rr,(a,b,c)=> b>y+oy+rr*.4 ? "grass" : "rock");
     S.portal=[px+.5,y+1+(H+4)/2,pz+.5,half*2-.6,H+3.6]; }
 
+  // ---------- Weltenbaum-Insel (hinter dem Portal): riesiger Baum, Moosterrassen, Teich, Felshöhle, Pfade, Korallenpflanzen ----------
+  { const CX=116, CZ=-50, YT=30, WR=["wRock","wRockD"];
+    const lobes=[[-12,23,5,-5,1],[-2,27,5,-6,1],[9,24,5,-6,1],[17,17,5,-5,1],[-14,-16,7,-1,.9],[12,-18,7,-2,.9],[-14,7,5,-2,.9],[17,3,6,-2,.9],[-21,12,9,-4,1],[24,6,10,-3,.9],[0,0,15,0,.95]];
+    for(const [dx,dz,r,dy,dp] of lobes) island(CX+dx,CZ+dz,r,YT+dy,{deep:dp, rk:WR, bare:true, flat:true});
+    island(CX-42,CZ-6,3.8,YT+6,{deep:1.2, rk:WR, bare:true});
+    for(const [dx,dz,r,dy] of [[2,13,2,-15],[-30,22,2.5,-10],[34,16,3,-11],[8,-30,3,-5],[-8,-4,2,-20]]) island(CX+dx,CZ+dz,r,YT+dy,{deep:1.4, rk:WR, bare:true});
+    for(let z=CZ-45;z<=CZ+42;z++) for(let x=CX-55;x<=CX+48;x++) for(let y=YT-46;y<=YT+8;y++){ const t=get(x,y,z); if(t==="grass") set(x,y,z,"moss"); else if(t==="dirt") set(x,y,z,"mossD"); }
+    const mossify=(x0,x1,y0,y1,z0,z1)=>{ for(let x=x0;x<=x1;x++) for(let z=z0;z<=z1;z++) for(let y=y0;y<=y1;y++) if(get(x,y,z)==="wRock" && !get(x,y+1,z) && rand()<.75) set(x,y,z,"moss"); };
+    // Mooshügel mit Steinmauer (zwei Stufen) um den Baum
+    for(let z=CZ-13;z<=CZ+13;z++) for(let x=CX-13;x<=CX+13;x++){ const d=Math.hypot(x-CX,z-CZ), an=Math.atan2(z-CZ,x-CX), gap=a0=>Math.abs(Math.atan2(Math.sin(an-a0),Math.cos(an-a0)))<.2;
+      if(d<=9.6) fill(x,YT+1,z,x,YT+3,z,(a,b)=>b===YT+3?"moss":"mossD");
+      else if(d<=11.6){ const g=gap(2.7)||gap(.35), h=g?Math.max(0,Math.round(3-(d-9.6)*1.5)):2+Math.floor(rand()*3); for(let y=YT+1;y<=YT+h;y++) set(x,y,z,g?(y===YT+h?"sandP":"mossD"):"wRock"); }
+      if(d<=6) set(x,YT+4,z,"moss"); else if(d<=7.4 && rand()<.85) set(x,YT+4,z,"wRock"); }
+    mossify(CX-13,CX+13,YT,YT+5,CZ-13,CZ+13);
+    // Teich links vorne mit Steinrand
+    { const px=CX-21, pz=CZ+13; for(let z=pz-6;z<=pz+6;z++) for(let x=px-6;x<=px+6;x++){ const d=Math.hypot(x-px,z-pz); if(d<=3.3){ set(x,YT-4,z,"wPond"); set(x,YT-5,z,"wPond"); } else if(d<=4.7 && rand()<.85 && get(x,YT-4,z)) set(x,YT-3,z,"wRock"); } mossify(px-6,px+6,YT-4,YT-3,pz-6,pz+6); }
+    // Felsformation mit Höhle rechts
+    { const rx=CX+30, rz=CZ+4, b=YT-3;
+      ellip(rx,b+4,rz,7,5,6,"wRock"); ellip(rx+4,b+7,rz+2,4,4,4,"wRock"); ellip(rx-3,b+3,rz-4,4,3,3,"wRock"); ellip(rx+1,b+10,rz-1,2.6,2.6,2.6,"wRock");
+      ellip(rx-2,b+3,rz+5,2.4,2.8,2.6,null); ellip(rx-2,b+3,rz+3,2.2,2.4,1.6,"wRockD"); ellip(rx-2,b+2.5,rz+3.4,1.6,1.8,1,null);
+      mossify(rx-8,rx+9,b,b+14,rz-8,rz+8); }
+    // Ruinen: Säulenpaare links und hinten
+    const ruin=(x,z,hs)=>{ hs.forEach((h,i)=>{ const t=topAt(x+i*3,z,YT+8); if(t<-50) return; fill(x+i*3,t+1,z,x+i*3,t+h,z,"wRock"); }); const t=topAt(x,z,YT+8); if(t>-50) fill(x,t+hs[0]+1,z,x+3*(hs.length-1),t+hs[0]+1,z,"wRock"); };
+    ruin(CX-31,CZ+8,[5,4]); ruin(CX-25,CZ-15,[6,6]); ruin(CX+14,CZ-20,[4,5]);
+    // Moosvorhänge: Ranken an den Inselkanten
+    for(let z=CZ-45;z<=CZ+42;z++) for(let x=CX-48;x<=CX+48;x++){ const t=topAt(x,z,YT+8); if(t<-50||t>YT||get(x,t,z)!=="moss") continue;
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]) if(!get(x+dx,t,z+dz) && !get(x+dx,t-1,z+dz) && rand()<.16){ const len=3+Math.floor(rand()*9); for(let k=0;k<len;k++){ if(get(x+dx,t-k,z+dz)) break; set(x+dx,t-k,z+dz,"wVine"); } } }
+    // Wege (goldener Sand), über die Treppen durch die Mauer
+    const route=[[[-27,14],[-21,10],[-15,7],[-11,5],[-7,3],[-3,1]],[[3,0],[8,1],[11,3],[17,5],[23,6],[28,4]],[[-20,13],[-13,22],[-3,27],[8,25],[16,18],[21,9]]];
+    for(const pts of route) for(let i=0;i<pts.length-1;i++){ const [x0,z0]=pts[i],[x1,z1]=pts[i+1], n=Math.ceil(Math.hypot(x1-x0,z1-z0)*2); for(let k=0;k<=n;k++){ const f=k/n, x=Math.round(CX+x0+(x1-x0)*f+Math.sin(k*.5)*.4), z=Math.round(CZ+z0+(z1-z0)*f);
+      for(const [ox,oz] of [[0,0],[1,0],[0,1]]){ const t=topAt(x+ox,z+oz,YT+9), g=get(x+ox,t,z+oz); if(t>-50 && (g==="moss"||g==="sandP")) set(x+ox,t,z+oz,"sandP"); } } }
+    // Korallenpflanzen (pink/gelb), Büsche, Felsbrocken, kleine Bäume
+    const spots=[]; for(const [dx,dz,r] of lobes) spots.push([CX+dx,CZ+dz,r]);
+    const onMoss=(x,z)=>{ const t=topAt(x,z,YT+9); return t>-50 && get(x,t,z)==="moss" ? t : null; };
+    const plant=(x,z,col)=>{ const t=onMoss(x,z); if(t===null) return; const h=3+Math.floor(rand()*4); let ox=x+.5; const oz=z+.5, lean=(rand()-.5)*.4;
+      for(let k=0;k<h*2;k++){ fs(ox,t+1+k*.5,oz,col); ox+=lean*.4; }
+      for(let br=0;br<3;br++){ const a=rand()*6.283, hy=t+1+h*(.5+br*.17); for(let k=1;k<=4;k++) fs(ox+Math.cos(a)*k*.45, hy+k*.4, oz+Math.sin(a)*k*.45, col); fs(ox+Math.cos(a)*2.4, hy+2.1, oz+Math.sin(a)*2.4, col); } };
+    for(let i=0;i<22;i++){ const [sx,sz,r]=spots[Math.floor(rand()*spots.length)], a=rand()*6.283, d=r*(.3+.6*rand()); plant(Math.round(sx+Math.cos(a)*d),Math.round(sz+Math.sin(a)*d), i%2?"pinkP":"yellowP"); }
+    for(let i=0;i<26;i++){ const [sx,sz,r]=spots[Math.floor(rand()*spots.length)], a=rand()*6.283, d=r*(.3+.65*rand()), x=Math.round(sx+Math.cos(a)*d), z=Math.round(sz+Math.sin(a)*d), t=onMoss(x,z); if(t===null) continue;
+      if(rand()<.55) ellip(x,t+1.3,z,1.2+rand()*1.2,1+rand()*.6,1.2+rand()*1.2,()=>rand()<.3?"leavesL":"hedge"); else { ellip(x,t+1,z,1.6+rand(),1.2,1.6+rand(),"wRock"); mossify(x-3,x+3,t,t+3,z-3,z+3); } }
+    for(let i=0;i<20;i++){ const [sx,sz,r]=spots[Math.floor(rand()*spots.length)], a=rand()*6.283, d=r*(.35+.55*rand()), x=Math.round(sx+Math.cos(a)*d), z=Math.round(sz+Math.sin(a)*d), t=onMoss(x,z); if(t===null||Math.hypot(x-CX,z-CZ)<12.5) continue; tree(x,t+1,z,4+Math.floor(rand()*4),2.2+rand()*1.2, rand()<.2?"blossom":"leaves"); }
+    { const t=topAt(CX-42,CZ-6,YT+12); tree(CX-42,t+1,CZ-6,5,2.6,"leaves"); }
+    // Der Weltenbaum: gewundener Stamm, Wurzeln, fünf Hauptäste mit mächtigen Kronen und Ranken
+    const TB=YT+5, TH=18, tx=t=>CX+Math.sin(t*5)*1.3*t, tz=t=>CZ+Math.cos(t*5)*1.3*t;
+    for(let k=0;k<=TH;k++){ const t=k/TH, r=k<5?4.6-k*.25:3.4-t*1.2; disk(tx(t),TB+k,tz(t),Math.max(1.9,r),"wBark"); }
+    for(let i=0;i<8;i++){ const a=i/8*6.283+.3, len=8+rand()*5; line(CX+Math.cos(a)*3,TB+1,CZ+Math.sin(a)*3,CX+Math.cos(a)*len,YT+3,CZ+Math.sin(a)*len,"wBark",1); }
+    const F=[tx(1),TB+TH,tz(1)];
+    const shell=(cx,cy,cz,rx,ry,rz)=>{ for(let x=Math.floor(cx-rx-1);x<=cx+rx+1;x++) for(let y=Math.floor(cy-ry-1);y<=cy+ry+1;y++) for(let z=Math.floor(cz-rz-1);z<=cz+rz+1;z++){ const q=((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2; if(q<=1+(rand()-.5)*.35 && q>=.45){ set(x,y,z,rand()<.3?"wLeafL":"wLeaf"); if(y<cy-ry*.45 && rand()<.03){ const l=3+Math.floor(rand()*10); for(let k=1;k<=l;k++){ if(get(x,y-k,z)) break; set(x,y-k,z,"wVine"); } } } } };
+    for(const [dx,dy,dz,rr] of [[-17,8,-5,9.5],[18,7,4,9.5],[-4,12,13,9],[6,13,-13,9],[-1,18,1,8]]){
+      const P1=[F[0]+dx*.4,F[1]+dy*.55,F[2]+dz*.4], P2=[F[0]+dx,F[1]+dy,F[2]+dz];
+      line(F[0],F[1],F[2],P1[0],P1[1],P1[2],"wBark",1); line(P1[0],P1[1],P1[2],P2[0],P2[1],P2[2],"wBark",0);
+      shell(P2[0],P2[1]+2,P2[2],rr,rr*.5,rr); shell(P2[0]+rr*.6,P2[1]+.5,P2[2]-rr*.5,rr*.6,rr*.38,rr*.6); shell(P2[0]-rr*.55,P2[1]+.5,P2[2]+rr*.55,rr*.6,rr*.38,rr*.6); }
+  }
+
   // ---------- Hintergrund: echte schwebende Inseln (normale Blöcke) mit Bäumen, Türmen, Wasserfällen ----------
   const farIsle = (cx,cz,r,y,deco) => { island(cx,cz,r,y,{deep:1.3, bare:true}); const t=topAt(cx,cz,y+4)+1;
     if(deco==="tree"){ tree(cx-1,t,cz,5,3,"leaves"); tree(cx+r*.5,t,cz+1,4,2.4,"blossom"); }
     if(deco==="tower"){ cyl(cx,t,cz,2,12,(a,b,c)=>(b-t)%5===0?"trim":"stone"); cone(cx,t+12,cz,2.8,8,"roof"); set(cx+2,t+6,cz,"win"); tree(cx+r*.55,t,cz-1,3,2,"leaves"); }
     if(deco==="ruin"){ for(const a of [-3,0,3]) fill(cx+a,t,cz-1,cx+a,t+3+Math.floor(rand()*6),cz-1,"pillar"); fill(cx-3,t+6,cz-1,cx+3,t+6,cz-1,"stone"); }
     if(deco!=="ruin") fall(cx,cz,y,Math.PI*.15,2,30); };
-  for(const [cx,cz,r,y,d] of [[150,-34,9,40,"tower"],[96,-46,10,48,"tree"],[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[150,-40,8,44,"tree"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
+  for(const [cx,cz,r,y,d] of [[46,-70,11,56,"tower"],[-40,24,6,22,"tree"],[132,30,7,26,"ruin"],[-56,-34,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
   // ---------- Gipfel über dem Wolkenmeer (weit weg, grob) ----------
   const F = A.far; F.cell = 3;
@@ -407,7 +490,7 @@ export function build(A){
                {n:160, area:[86,102,34,54,8,20], vy:.8, wob:1.4, color:0xE6A8FF, size:.4, blink:2, add:true},
                {n:90, area:[GD.x-8,GD.x+8,GD.y+2,GD.y+16,GD.z-8,GD.z+8], vy:-1, wob:1.2, color:0xFFB8D8, size:.35, opacity:.9}],
     creatures,
-    home:{pos:[W/2,64,D+96], look:[W/2,28,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},
+    home:{pos:[W/2,66,D+96], look:[W/2,36,D/2-6]}, homePortrait:{pos:[W/2,84,D+150], look:[W/2,30,D/2-6]},
     ui:{bg:"rgba(255,255,255,.9)", border:"#6AA8FF", glow:"rgba(106,168,255,.45)", text:"#16305A", sub:"#4A6A98", accent:"#FFC24A", "accent-ink":"#2A1E06", chip:"rgba(255,255,255,.85)"}
   };
 }
