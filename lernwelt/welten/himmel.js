@@ -483,7 +483,7 @@ export function build(A){
       if(q<=1+(rand()-.5)*.4 && q>=.58){ set(x,y,z,lf());
         if(y<cy-ry*.35){ if(rand()<.03){ const l=3+Math.floor(rand()*11); for(let k=1;k<=l;k++){ if(get(x,y-k,z)) break; set(x,y-k,z,"wVine"); } }
           else if(rand()<.012){ const l=2+Math.floor(rand()*4); let ok=true; for(let k=1;k<=l+1;k++) if(get(x,y-k,z)) ok=false; if(ok){ for(let k=1;k<=l;k++) set(x,y-k,z,"rope"); set(x,y-l-1,z,"lamp"); } } } } } };
-    Object.assign(S.country,{x:CX, z:CZ, r:34, y:YT, top:[CX+10,YT-4,CZ+16], base:YT+6, cam:{pos:[CX-24,YT+50,CZ+116], look:[CX,YT+22,CZ]}});
+    Object.assign(S.country,{x:CX, z:CZ, r:34, y:YT, top:[CX+8,YT+14,CZ+6], base:YT+6, cam:{pos:[CX-24,YT+50,CZ+116], look:[CX,YT+22,CZ]}});
     // Hauptäste: [Wegpunkte relativ zur Gabelung], Radius am Anfang/Ende, Kronen (rx, ry) am Ende und in der Mitte
     const limbs=[
       {p:[[0,-5,0],[-8,1,-1],[-16,6,-3],[-25,5,-4]], r:[3,1], tip:[11,5], mid:[8,3.6]},
