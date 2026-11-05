@@ -88,7 +88,8 @@ const FRS = {
         { id:"life7", kat:"country", titel:"Travel Smart: UK & Ireland", untertitel:"Money, miles, meals & more", pfad:"englisch/klasse7/travel-smart.html", icon:"🧳", max:41 }
       ] },
       { k:8,  id:"e8",  themen:[
-        { id:"past8", kat:"grammar", titel:"Ellis Island Archive", untertitel:"Simple past & past perfect", pfad:"englisch/klasse8/ellis-island-archive.html", icon:"🗽", max:47 },
+        { id:"sp8", kat:"grammar", titel:"Yesterday in New York", untertitel:"Simple past: statements, negatives, questions", pfad:"englisch/klasse8/simple-past8.html", icon:"🕰️", max:166 },
+        { id:"past8", kat:"grammar", titel:"Ellis Island Archive", untertitel:"Past perfect", pfad:"englisch/klasse8/ellis-island-archive.html", icon:"🗽", max:47 },
         { id:"mod8", kat:"grammar", titel:"High School Rules", untertitel:"Modals & substitutes", pfad:"englisch/klasse8/high-school-rules.html", icon:"🏫", max:47 },
         { id:"if8", kat:"grammar", titel:"Road Trip: What If …?", untertitel:"If-clauses I & II", pfad:"englisch/klasse8/what-if.html", icon:"🛣️", max:42 },
         { id:"who8", kat:"grammar", titel:"Who’s Who in New York?", untertitel:"Questions · who", pfad:"englisch/klasse8/whos-who.html", icon:"❓", max:49 },

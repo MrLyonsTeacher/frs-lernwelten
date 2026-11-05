@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Yesterday in New York – Simple past</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:8, kat:"grammar", id:"sp8", icon:"🕰️", kartenSymbol:"🗽",
+  titel:"Yesterday in New York", untertitel:"Simple past: statements, negatives, questions",
+  text:"Tell what happened yesterday! Practise the simple past: positive statements, negative statements and questions with question words – and the right answers.",
+  lernen: {
+    sp: { titel:"Simple past – statements", folien:[
+      {"bild":"🕰️","titel":"Finished in the past","bsp":["Yesterday I **played** football.","Last year we **went** to Italy.","In 1892 Ellis Island **opened**."],"de":"Simple past: Handlungen, die **abgeschlossen** sind. Signalwörter: yesterday, last week, two days **ago**, in 1990."},
+      {"bild":"✍️","titel":"Regular verbs: + ed","formel":["Grundform | + | -ed"],"bsp":["play → play**ed**","live → live**d**","study → stud**ied**","stop → sto**pped**"],"de":"Regelmäßige Verben bekommen **-ed**. Achte auf die Schreibung: live**d**, stud**ied**, sto**pped**."},
+      {"bild":"⭐","titel":"Irregular verbs","bsp":["go → **went**","see → **saw**","buy → **bought**","be → **was / were**"],"de":"Unregelmäßige Verben haben eine **eigene 2. Form**. Die musst du lernen (Liste im Buch ab Seite 226)."}
+    ]},
+    neg: { titel:"Simple past – negative statements", folien:[
+      {"bild":"🚫","titel":"didn’t + base form","formel":["did not (didn’t) | + | Grundform"],"bsp":["I **didn’t play** football.","She **didn’t go** home.","We **didn’t see** the film."],"de":"Verneinung: **didn’t + Grundform**. Das Verb bekommt **kein -ed** und bleibt in der Grundform."},
+      {"bild":"🅱️","titel":"was / were","bsp":["I **wasn’t** at home.","They **weren’t** happy."],"de":"Bei **was / were** gibt es kein did: **wasn’t / weren’t**."}
+    ]},
+    qu: { titel:"Simple past – questions and answers", folien:[
+      {"bild":"❓","titel":"Yes/no questions","formel":["Did | + | Subjekt | + | Grundform"],"bsp":["**Did** you **watch** TV?","**Did** she **go** home?","**Were** they at school?"],"de":"Frage: **Did + Subjekt + Grundform**. Kurzantworten: Yes, I **did**. / No, I **didn’t**. Bei was/were: Yes, I **was**."},
+      {"bild":"🔤","titel":"Question words","formel":["Fragewort | + | did | + | Subjekt | + | Grundform"],"bsp":["**Where did** you **go**?","**When did** the film **start**?","**Why did** she **leave**?","**How long did** they **stay**?"],"de":"who, what, where, when, why, how, which, how long, how many, how much – dann **did + Subjekt + Grundform**."},
+      {"bild":"💬","titel":"The right answer","bsp":["Where? – **To** the zoo. / We **went** to the zoo.","When? – **At** eight o’clock. / **Last** night.","Why? – **Because** I was ill.","How long? – **For** two weeks."],"de":"Zum Fragewort passt die Antwort: **where** = Ort, **when** = Zeit, **why** = because …, **how long** = for …, **who** = Person."},
+      {"bild":"👤","titel":"Who / What as subject","bsp":["**Who opened** the window? (Someone opened it.)","**Who did** you **call**? (You called someone.)"],"de":"Fragt man nach dem **Subjekt**, gibt es **kein did**: Who opened …? Fragt man nach dem **Objekt**, schon: Who **did** you call?"}
+    ]}
+  },
+  levels: [
+    { id:"form", lernen:"sp", regel:"Regelmäßig: **+ ed** (play → played). Unregelmäßig: eigene Form (go → **went**).", typ:"rush", icon:"⚡", titel:"Past Form Rush", art:"Simple past forms · 60 seconds",
+      anleitung:"Choose the right **simple past** form – fast! **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle schnell die richtige **2. Form**. **Ziel: 12 richtige** in 60 Sekunden.",
+      tipp:"Simple past = 2. Form. Nicht die 3. Form (gone, seen, eaten)!",
+      zeit:60, ziel:12,
+      items:[
+        {q:"go", o:["went","goed","gone"], c:0}, {q:"see", o:["saw","seed","seen"], c:0}, {q:"buy", o:["bought","buyed","boughted"], c:0},
+        {q:"play", o:["played","plaied","plaid"], c:0}, {q:"study", o:["studied","studyed","studid"], c:0}, {q:"stop", o:["stopped","stoped","stopt"], c:0},
+        {q:"live", o:["lived","livd","lifed"], c:0}, {q:"have", o:["had","haved","has"], c:0}, {q:"take", o:["took","taked","taken"], c:0},
+        {q:"eat", o:["ate","eated","eaten"], c:0}, {q:"come", o:["came","comed","come"], c:0}, {q:"write", o:["wrote","writed","written"], c:0},
+        {q:"meet", o:["met","meeted","meat"], c:0}, {q:"run", o:["ran","runned","run"], c:0}, {q:"make", o:["made","maked","maden"], c:0},
+        {q:"say", o:["said","sayed","sad"], c:0}, {q:"get", o:["got","getted","gotten"], c:0}, {q:"give", o:["gave","gived","given"], c:0},
+        {q:"drink", o:["drank","drinked","drunk"], c:0}, {q:"swim", o:["swam","swimmed","swum"], c:0}, {q:"visit", o:["visited","visitted","visit"], c:0},
+        {q:"try", o:["tried","tryed","trid"], c:0}, {q:"plan", o:["planned","planed","plannd"], c:0}, {q:"win", o:["won","winned","win"], c:0}
+      ]},
+    { id:"spell", lernen:"sp", typ:"sortieren", icon:"🔠", titel:"Spelling Sorter", art:"Regular & irregular · sort",
+      anleitung:"Which rule fits the verb? Tap the right box.",
+      anleitungDe:"Welche Regel passt zum Verb? Tippe auf das richtige Kästchen.",
+      tipp:"Endet das Verb auf -e, kommt nur -d. Endet es auf Konsonant + y, wird y → ied.",
+      koerbe:[
+        {t:"+ ed", info:"✏️", tipp:"**+ ed**: play → played, watch → watched, visit → visited."},
+        {t:"+ d", info:"➕", tipp:"**+ d** (Verb endet auf -e): live → lived, like → liked, arrive → arrived."},
+        {t:"y → ied", info:"🔁", tipp:"**y → ied** (Konsonant + y): study → studied, try → tried, carry → carried."},
+        {t:"double letter", info:"✌️", tipp:"**Doppelter Konsonant** nach kurzem Vokal: stop → stopped, plan → planned."},
+        {t:"irregular", info:"⭐", tipp:"**Unregelmäßig**: go → went, buy → bought, see → saw."}
+      ],
+      items:[
+        {t:"play",k:0},{t:"watch",k:0},{t:"visit",k:0},{t:"want",k:0},{t:"help",k:0},
+        {t:"live",k:1},{t:"like",k:1},{t:"arrive",k:1},{t:"move",k:1},{t:"dance",k:1},
+        {t:"study",k:2},{t:"try",k:2},{t:"carry",k:2},{t:"worry",k:2},
+        {t:"stop",k:3},{t:"plan",k:3},{t:"drop",k:3},{t:"shop",k:3},
+        {t:"go",k:4},{t:"buy",k:4},{t:"see",k:4},{t:"eat",k:4},{t:"take",k:4},{t:"have",k:4}
+      ]},
+    { id:"pos", lernen:"sp", typ:"quiz", icon:"✅", titel:"Yesterday, we …", art:"Positive statements · quiz",
+      anleitung:"Choose the right form for the sentence.",
+      anleitungDe:"Wähle die richtige Form für den Satz.",
+      tipp:"yesterday, last week, ago, in 1892 → simple past (2. Form).",
+      fragen:[
+        {q:"Yesterday we **___** the Statue of Liberty.", o:["visited","visit","visiting"], c:0, e:"*yesterday* → simple past: visit**ed**."},
+        {q:"Last summer my family **___** to Boston.", o:["went","goed","go"], c:0, e:"go → **went** (unregelmäßig)."},
+        {q:"I **___** a hot dog and a bagel for lunch.", o:["ate","eated","eat"], c:0, e:"eat → **ate** (unregelmäßig)."},
+        {q:"The train **___** two hours ago.", o:["left","leaved","leave"], c:0, e:"leave → **left**. *ago* → simple past."},
+        {q:"She **___** a postcard to her grandma last week.", o:["wrote","writed","written"], c:0, e:"write → **wrote** (2. Form)."},
+        {q:"In 1892 Ellis Island **___** its doors.", o:["opened","open","opens"], c:0, e:"Jahreszahl in der Vergangenheit → simple past: open**ed**."},
+        {q:"We **___** tired after the long walk.", o:["were","was","are"], c:0, e:"we → **were**."},
+        {q:"He **___** his bike to school yesterday.", o:["rode","rided","ridden"], c:0, e:"ride → **rode**."}
+      ]},
+    { id:"buildpos", lernen:"sp", regel:"Positive statement: **Subjekt + 2. Form** + Rest. Zeitangabe vorne oder hinten.", typ:"satzbau", icon:"🧱", titel:"Build a Statement", art:"Sentence builder · positive",
+      anleitung:"Build the sentence by tapping the words in the right order.",
+      anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst.",
+      tipp:"Subjekt – 2. Form des Verbs – Rest. Die Zeitangabe kann vorne oder hinten stehen.",
+      punkte:2,
+      saetze:[
+        {w:["We","visited","the","museum","yesterday"], alt:[["Yesterday","we","visited","the","museum"]], hint:"🇩🇪 Wir haben gestern das Museum besucht."},
+        {w:["She","bought","a","new","jacket","last","week"], alt:[["Last","week","she","bought","a","new","jacket"]], hint:"🇩🇪 Sie kaufte letzte Woche eine neue Jacke."},
+        {w:["They","took","the","subway","to","Brooklyn"], hint:"🇩🇪 Sie nahmen die U-Bahn nach Brooklyn."},
+        {w:["My","brother","studied","English","in","London","in","2019"], alt:[["In","2019","my","brother","studied","English","in","London"]], hint:"🇩🇪 Mein Bruder studierte 2019 in London Englisch."},
+        {w:["I","was","at","the","zoo","two","days","ago"], alt:[["Two","days","ago","I","was","at","the","zoo"]], hint:"🇩🇪 Ich war vor zwei Tagen im Zoo."},
+        {w:["The","tourists","saw","a","big","parade","on","Sunday"], alt:[["On","Sunday","the","tourists","saw","a","big","parade"]], hint:"🇩🇪 Die Touristen sahen am Sonntag eine große Parade."}
+      ]},
+    { id:"neg", lernen:"neg", typ:"quiz", icon:"🚫", titel:"No Way!", art:"Negative statements · quiz",
+      anleitung:"Choose the right negative form.",
+      anleitungDe:"Wähle die richtige verneinte Form.",
+      tipp:"didn’t + Grundform (ohne -ed!). Bei was/were: wasn’t / weren’t.",
+      fragen:[
+        {q:"I **___** the answer.", o:["didn’t know","didn’t knew","not know"], c:0, e:"**didn’t + Grundform**: didn’t know."},
+        {q:"She **___** her homework last night.", o:["didn’t do","didn’t did","doesn’t do"], c:0, e:"**didn’t do** – nach didn’t steht die Grundform."},
+        {q:"We **___** the bus – we walked.", o:["didn’t take","didn’t took","not take"], c:0, e:"**didn’t take**."},
+        {q:"They **___** at home on Sunday.", o:["weren’t","didn’t be","wasn’t"], c:0, e:"be → **weren’t** (kein did)."},
+        {q:"He **___** any money in his pocket.", o:["didn’t have","didn’t had","not have"], c:0, e:"**didn’t have**."},
+        {q:"I **___** at the party because I was ill.", o:["wasn’t","didn’t was","weren’t"], c:0, e:"I → **wasn’t**."},
+        {q:"Tom **___** the film because he fell asleep.", o:["didn’t see","didn’t saw","not saw"], c:0, e:"**didn’t see**."}
+      ]},
+    { id:"negtype", lernen:"neg", regel:"Verneinung: **didn’t + Grundform**. Bei was/were: **wasn’t / weren’t**.", typ:"eingabe", icon:"✍️", titel:"Make it Negative", art:"Write the negative sentence",
+      anleitung:"Write the **negative** sentence. Use **didn’t** or **wasn’t / weren’t**.",
+      anleitungDe:"Schreibe den Satz **verneint**. Nimm **didn’t** oder **wasn’t / weren’t**.",
+      tipp:"didn’t + Grundform: She played → She didn’t **play**.",
+      fragen:[
+        {szene:"🔁 Make it negative:", q:"She played football yesterday.", a:["She didn't play football yesterday."], e:"**didn’t play** – ohne -ed."},
+        {szene:"🔁 Make it negative:", q:"We watched TV last night.", a:["We didn't watch TV last night."], e:"**didn’t watch**."},
+        {szene:"🔁 Make it negative:", q:"Tom went to school by bus.", a:["Tom didn't go to school by bus."], e:"went → **didn’t go** (Grundform!)."},
+        {szene:"🔁 Make it negative:", q:"I bought a new phone.", a:["I didn't buy a new phone."], e:"bought → **didn’t buy**."},
+        {szene:"🔁 Make it negative:", q:"They were late.", a:["They weren't late."], e:"were → **weren’t** (kein did)."},
+        {szene:"🔁 Make it negative:", q:"My mum cooked dinner.", a:["My mum didn't cook dinner."], e:"**didn’t cook**."},
+        {szene:"🔁 Make it negative:", q:"He ate all the pizza.", a:["He didn't eat all the pizza."], e:"ate → **didn’t eat**."},
+        {szene:"🔁 Make it negative:", q:"It was cold on Saturday.", a:["It wasn't cold on Saturday."], e:"was → **wasn’t**."}
+      ]},
+    { id:"right", lernen:"neg", typ:"swipe", icon:"🔍", titel:"Right or Wrong?", art:"Find the mistakes · swipe",
+      anleitung:"Is the sentence correct? Swipe **right for Right** and **left for Wrong**.",
+      anleitungDe:"Ist der Satz richtig? Wische nach **rechts für Right** und nach **links für Wrong**.",
+      tipp:"Nach did / didn’t steht immer die Grundform: didn’t go, Did you go?",
+      links:{t:"Wrong", icon:"✘"}, rechts:{t:"Right", icon:"✔"},
+      karten:[
+        {t:"She didn’t went to school.", r:"l", e:"Wrong – **didn’t go** (Grundform)."},
+        {t:"He bought a bike last week.", r:"r", e:"Right – buy → bought."},
+        {t:"We didn’t see the film.", r:"r", e:"Right – didn’t + Grundform."},
+        {t:"I didn’t played football.", r:"l", e:"Wrong – **didn’t play**."},
+        {t:"They was late.", r:"l", e:"Wrong – they **were** late."},
+        {t:"Did you like the show?", r:"r", e:"Right – Did + Subjekt + Grundform."},
+        {t:"Did she went home?", r:"l", e:"Wrong – Did she **go** home?"},
+        {t:"My brother didn’t eat breakfast.", r:"r", e:"Right."},
+        {t:"He didn’t knew the answer.", r:"l", e:"Wrong – didn’t **know**."},
+        {t:"Where did you buy it?", r:"r", e:"Right – Fragewort + did + Subjekt + Grundform."},
+        {t:"What time did the film started?", r:"l", e:"Wrong – What time did the film **start**?"},
+        {t:"We watched TV yesterday evening.", r:"r", e:"Right."}
+      ]},
+    { id:"buildq", lernen:"qu", regel:"Ja/Nein-Frage: **Did + Subjekt + Grundform**. Mit be: **Was/Were + Subjekt**.", typ:"satzbau", icon:"❓", titel:"Build a Question", art:"Sentence builder · yes/no questions",
+      anleitung:"Build the question by tapping the words in the right order.",
+      anleitungDe:"Bau die Frage, indem du die Wörter in der richtigen Reihenfolge antippst.",
+      tipp:"Did – Subjekt – Grundform – Rest. Das Fragezeichen kommt als letztes.",
+      punkte:2,
+      saetze:[
+        {w:["Did","you","watch","TV","yesterday","?"], hint:"🇩🇪 Hast du gestern fern gesehen?"},
+        {w:["Did","she","buy","a","ticket","?"], hint:"🇩🇪 Hat sie eine Fahrkarte gekauft?"},
+        {w:["Were","they","at","the","museum","?"], hint:"🇩🇪 Waren sie im Museum?"},
+        {w:["Did","your","brother","play","football","on","Saturday","?"], hint:"🇩🇪 Hat dein Bruder am Samstag Fußball gespielt?"},
+        {w:["Did","we","miss","the","bus","?"], hint:"🇩🇪 Haben wir den Bus verpasst?"},
+        {w:["Was","the","film","good","?"], hint:"🇩🇪 War der Film gut?"}
+      ]},
+    { id:"match", lernen:"qu", typ:"memory", icon:"🧩", titel:"Question & Answer", art:"Find the matching answer · memory",
+      anleitung:"Find the pairs: **question + the right answer**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Frage + passende Antwort**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Where = Ort · When = Zeit · Why = because · How = by … · How long = for …",
+      paare:[
+        {a:"Where did you go?", b:"To Spain."}, {a:"When did the film start?", b:"At eight o’clock."}, {a:"Who did you meet?", b:"My cousin."},
+        {a:"Why did you stay at home?", b:"Because I was ill."}, {a:"How did you get there?", b:"By bus."}, {a:"What did you eat?", b:"Pizza."},
+        {a:"How long did you stay?", b:"For two weeks."}, {a:"How much did it cost?", b:"Ten dollars."}
+      ]},
+    { id:"qword", lernen:"qu", typ:"quiz", icon:"🔤", titel:"Which Question Word?", art:"Question words · quiz",
+      anleitung:"Read the answer. Which question word fits?",
+      anleitungDe:"Lies die Antwort. Welches Fragewort passt?",
+      tipp:"Frage dich: Geht es um Ort, Zeit, Grund, Person oder Menge?",
+      fragen:[
+        {q:"**___** did you arrive? – Last night.", o:["When","Where","Who"], c:0, e:"Zeit → **When**."},
+        {q:"**___** did they go? – To the beach.", o:["Where","When","Why"], c:0, e:"Ort → **Where**."},
+        {q:"**___** did she call? – Her grandmother.", o:["Who","What","Which"], c:0, e:"Person → **Who**."},
+        {q:"**___** did he leave early? – Because he was tired.", o:["Why","How","When"], c:0, e:"Grund → **Why**."},
+        {q:"**___** did you travel? – By plane.", o:["How","What","Why"], c:0, e:"Art und Weise → **How**."},
+        {q:"**___** did you do? – I played chess.", o:["What","Which","Who"], c:0, e:"Sache/Tätigkeit → **What**."},
+        {q:"**___** did the trip last? – Two days.", o:["How long","How much","How many"], c:0, e:"Dauer → **How long**."},
+        {q:"**___** tickets did you buy? – Four.", o:["How many","How much","How long"], c:0, e:"zählbar → **How many**."},
+        {q:"**___** did the ticket cost? – Ten euros.", o:["How much","How many","How long"], c:0, e:"Preis → **How much**."}
+      ]},
+    { id:"buildw", lernen:"qu", regel:"Frage mit Fragewort: **Fragewort + did + Subjekt + Grundform**.", typ:"satzbau", icon:"🔠", titel:"Question Words Builder", art:"Sentence builder · question words",
+      anleitung:"Build the question with the question word.",
+      anleitungDe:"Bau die Frage mit dem Fragewort in der richtigen Reihenfolge.",
+      tipp:"Fragewort – did – Subjekt – Grundform – Rest.",
+      punkte:2,
+      saetze:[
+        {w:["Where","did","you","buy","this","jacket","?"], hint:"🇩🇪 Wo hast du diese Jacke gekauft?"},
+        {w:["When","did","the","film","start","?"], hint:"🇩🇪 Wann hat der Film angefangen?"},
+        {w:["Why","did","she","leave","early","?"], hint:"🇩🇪 Warum ist sie früher gegangen?"},
+        {w:["What","did","they","eat","for","dinner","?"], hint:"🇩🇪 Was haben sie zum Abendessen gegessen?"},
+        {w:["How","did","you","get","to","school","?"], hint:"🇩🇪 Wie bist du zur Schule gekommen?"},
+        {w:["How","long","did","he","stay","in","Chicago","?"], hint:"🇩🇪 Wie lange ist er in Chicago geblieben?"},
+        {w:["Who","did","you","meet","at","the","party","?"], hint:"🇩🇪 Wen hast du auf der Party getroffen?"}
+      ]},
+    { id:"short", lernen:"qu", typ:"quiz", icon:"💬", titel:"Short Answers", art:"Yes, I did. · quiz",
+      anleitung:"Choose the right short answer.",
+      anleitungDe:"Wähle die richtige Kurzantwort.",
+      tipp:"Did-Frage → did / didn’t. Was/Were-Frage → was / were / wasn’t / weren’t.",
+      fragen:[
+        {q:"Did you see the film? – Yes, **___**", o:["I did.","I saw.","I do."], c:0, e:"Did-Frage → **I did**."},
+        {q:"Did he like the pizza? – No, **___**", o:["he didn’t.","he doesn’t.","he wasn’t."], c:0, e:"**he didn’t**."},
+        {q:"Were they at school? – Yes, **___**", o:["they were.","they did.","they was."], c:0, e:"Were-Frage → **they were**."},
+        {q:"Did she call you? – No, **___**", o:["she didn’t.","she wasn’t.","she don’t."], c:0, e:"**she didn’t**."},
+        {q:"Was it cold? – Yes, **___**", o:["it was.","it did.","it were."], c:0, e:"Was-Frage → **it was**."},
+        {q:"Did you and your friends play football? – Yes, **___**", o:["we did.","we were.","we do."], c:0, e:"**we did**."},
+        {q:"Were you ill? – No, **___**", o:["I wasn’t.","I didn’t.","I weren’t."], c:0, e:"Were-Frage, I → **I wasn’t**."},
+        {q:"Did your parents buy a car? – Yes, **___**", o:["they did.","they bought.","they were."], c:0, e:"**they did**."}
+      ]},
+    { id:"ask", lernen:"qu", regel:"**Fragewort + did + Subjekt + Grundform + Rest?** – Bei be: Fragewort + was/were + Subjekt.", typ:"eingabe", icon:"🎤", titel:"Ask the Question", art:"Write the question",
+      anleitung:"Write the **question**. Use the words in the box.",
+      anleitungDe:"Schreibe die **Frage** mit den vorgegebenen Wörtern.",
+      tipp:"did + Grundform: *Where did you go?* – nicht *Where did you went?*",
+      fragen:[
+        {szene:"🎤 Ask the question:", q:"**where / you / go / on holiday**", a:["Where did you go on holiday?"], e:"**Where did you go …?**"},
+        {szene:"🎤 Ask the question:", q:"**when / the film / start**", a:["When did the film start?"], e:"**When did the film start?**"},
+        {szene:"🎤 Ask the question:", q:"**why / she / leave / early**", a:["Why did she leave early?"], e:"**Why did she leave …?**"},
+        {szene:"🎤 Ask the question:", q:"**what / they / eat / for lunch**", a:["What did they eat for lunch?"], e:"**What did they eat …?**"},
+        {szene:"🎤 Ask the question:", q:"**how / you / get / to the station**", a:["How did you get to the station?"], e:"**How did you get …?**"},
+        {szene:"🎤 Ask the question:", q:"**who / he / meet / in the park**", a:["Who did he meet in the park?"], e:"**Who did he meet …?**"},
+        {szene:"🎤 Ask the question:", q:"**how long / you / stay / in Boston**", a:["How long did you stay in Boston?"], e:"**How long did you stay …?**"},
+        {szene:"🎤 Yes/no question:", q:"**you / see / the parade**", a:["Did you see the parade?"], e:"**Did you see …?**"},
+        {szene:"🎤 Ask the question:", q:"**where / you / yesterday**", a:["Where were you yesterday?"], e:"Mit be: **Where were you …?** (kein did)"}
+      ]},
+    { id:"reply", lernen:"qu", regel:"Antworte passend: **Yes, he did. / No, they weren’t.** oder mit einem Satz: **They went to the cinema.**", typ:"eingabe", icon:"📖", titel:"Answer the Question", art:"Read and answer",
+      anleitung:"Read the short story. Then **answer the question** in English.",
+      anleitungDe:"Lies die kurze Geschichte. Beantworte dann die Frage auf Englisch.",
+      tipp:"Kurzantwort: Yes, he did. / No, he didn’t. Oder ein ganzer Satz.",
+      mischen:false,
+      fragen:[
+        {szene:"📖 Tom played football on Saturday. He didn’t play tennis.", q:"Did Tom play football?", a:["Yes, he did."], e:"**Yes, he did.**"},
+        {szene:"📖 Tom played football on Saturday. He didn’t play tennis.", q:"Did Tom play tennis?", a:["No, he didn't."], e:"**No, he didn’t.**"},
+        {szene:"📖 Mia and Lena went to the cinema. They watched a comedy. They were very happy.", q:"Where did Mia and Lena go?", a:["They went to the cinema.","To the cinema.","The cinema."], e:"**They went to the cinema.** / To the cinema."},
+        {szene:"📖 Mia and Lena went to the cinema. They watched a comedy. They were very happy.", q:"What did they watch?", a:["They watched a comedy.","A comedy.","Comedy."], e:"**They watched a comedy.**"},
+        {szene:"📖 Mia and Lena went to the cinema. They watched a comedy. They were very happy.", q:"Were they sad?", a:["No, they weren't."], e:"**No, they weren’t.**"},
+        {szene:"📖 Mia and Lena went to the cinema. They watched a comedy. They were very happy.", q:"Did they go to the zoo?", a:["No, they didn't."], e:"**No, they didn’t.**"}
+      ]},
+    { id:"subj", lernen:"qu", typ:"quiz", icon:"👤", titel:"Who did it?", art:"Who / What questions · quiz",
+      anleitung:"Choose the correct question.",
+      anleitungDe:"Wähle die richtige Frage.",
+      tipp:"Nach dem **Subjekt** fragen = **kein did** (Who opened …?). Nach dem **Objekt** = mit did (Who did you call?).",
+      fragen:[
+        {q:"Somebody opened the window. Ask for the person:", o:["Who opened the window?","Who did open the window?","Did who open the window?"], c:0, e:"Subjekt → **kein did**."},
+        {q:"Anna called Tom. Ask for Anna:", o:["Who called Tom?","Who did call Tom?","Who Tom called?"], c:0, e:"Subjekt → **Who called Tom?**"},
+        {q:"Anna called Tom. Ask for Tom:", o:["Who did Anna call?","Who called Anna Tom?","Who Anna called?"], c:0, e:"Objekt → **Who did Anna call?**"},
+        {q:"Something fell on the floor. Ask for the thing:", o:["What fell on the floor?","What did fall on the floor?","What did fell on the floor?"], c:0, e:"Subjekt → **What fell …?**"},
+        {q:"Lea ate pizza. Ask for the food:", o:["What did Lea eat?","What ate Lea?","What did Lea ate?"], c:0, e:"Objekt → **What did Lea eat?**"}
+      ]},
+    { id:"story", lernen:"qu", typ:"lueckentext", icon:"🗽", titel:"A Day in New York", art:"Story · fill in the gaps",
+      anleitung:"Read Mia’s story. Tap a gap and choose the right form.",
+      anleitungDe:"Lies Mias Geschichte. Tippe auf eine Lücke und wähle die richtige Form.",
+      tipp:"Positive: 2. Form · negative: didn’t + Grundform · Frage: did + Grundform.",
+      ueberschrift:"Mia’s trip to New York",
+      text:"Last Saturday Mia [[visited|visit|visiting]] New York with her class. They [[took|taked|take]] the subway to Times Square. Mia [[didn’t buy|didn’t bought|not bought]] anything because the shops [[were|was|did]] very expensive.\nOn the phone her friend asked: “[[Where did you go|Where you went|Where did you went]] yesterday?” – “I [[saw|seen|did saw]] the Empire State Building,” said Mia. “[[Did you like|Did you liked|Do you liked]] it?” – “Yes, I [[did|was|liked]]! But we [[didn’t see|didn’t saw|not see]] the Statue of Liberty. The boat [[left|leaved|did left]] too early.” – “[[Why did you miss|Why you missed|Why did you missed]] it?” – “Because we [[were|was|did]] late!”",
+      erklaerung:"Positive: **2. Form** · Negative: **didn’t + Grundform** · Questions: **(Fragewort) + did + Subjekt + Grundform**."}
+  ]
+});
+</script>
+</body>
+</html>
