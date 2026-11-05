@@ -165,7 +165,7 @@ export async function start(o){
     if(tx){ tx.repeat.set(s.repeat||100, s.repeat||100); tx.needsUpdate = true; if(s.anim) anim.push([tx, s.anim]); }
     const m = new THREE.Mesh(new THREE.PlaneGeometry(s.size||400, s.size||400), new THREE.MeshLambertMaterial({ color:s.color||0xffffff, map:tx, ...(s.cut ? {alphaTest:s.cut} : {}),
       ...(s.em ? {emissive:0xffffff, emissiveMap:tx, emissiveIntensity:s.em} : {}), ...(s.opacity ? {transparent:true, opacity:s.opacity, depthWrite:false} : {}) }));
-    m.rotation.x = -Math.PI/2; m.position.set(world.W/2 + (s.dx||0), s.y, world.D/2 + (s.dz||0)); m.receiveShadow = !s.opacity; scene.add(m);
+    m.rotation.x = -Math.PI/2; m.position.set(world.W/2 + (s.dx||0), s.y, world.D/2 + (s.dz||0)); m.receiveShadow = !s.opacity && !s.noShadow; scene.add(m);
   }
   // Lichtstrahlen (z. B. unter Wasser)
   const rays = [];
