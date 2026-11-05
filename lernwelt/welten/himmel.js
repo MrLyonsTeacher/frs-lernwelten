@@ -14,6 +14,9 @@ export function build(A){
     marble: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const r=Math.floor(y/4), off=(r%2)*4, seam=(y%4===3)||(((x+off)%8)===7); P(g,x,y, seam?"#B9C0CC":(rand()<.15?"#F3F6FA":"#E4E9F0")); } }),
     pcol: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const c=x%8; P(g,x,y, c<2?"#FFF8E6":(c<6?"#EBD9B0":"#B99B66")); } }),
     ptrim: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y, y<2?"#F6E3B0":(y>12?"#8E6F42":"#C9A765")); }),
+    twood: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const c=x%5; P(g,x,y, c===4?"#8A6A3E":(rand()<.12?"#E0BC86":(y%8===7?"#A27C48":["#C9A068","#D2AB74","#BE9760","#C9A068"][c]))); } }),
+    tstone: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const r=Math.floor(y/4), off=(r%2)*4, seam=(y%4===3)||(((x+off)%8)===7); P(g,x,y, seam?"#5F6C86":(rand()<.2?"#A9B5CC":(rand()<.5?"#8C9AB8":"#7D8CA8"))); } }),
+    tstoneD: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++){ const band=Math.floor((x+y*.6)/5)%3; P(g,x,y, rand()<.1?"#4E5869":["#6F7C92","#8A96AB","#5F6B80"][band]); } }),
     pbase: tex(g=>{ for(let y=0;y<16;y++) for(let x=0;x<16;x++) P(g,x,y,(Math.floor(y/4)+Math.floor(x/8))%2?"#9AA3B5":"#AEB7C8"); }),
     cliff: tex(g=>{ for(let y=0;y<16;y++){ const band=["#C79F78","#B88A62","#D2AE88","#A9794E","#BF9468"][Math.floor(y/3)%5]; for(let x=0;x<16;x++) P(g,x,y, rand()<.14?"#E0C2A0":(rand()<.1?"#8F6644":band)); } }),
     cliffD: tex(g=>{ for(let y=0;y<16;y++){ const band=["#8C6B55","#7B5D49","#94745E","#6E5442"][Math.floor(y/4)%4]; for(let x=0;x<16;x++) P(g,x,y, rand()<.1?"#9A9AA2":(rand()<.08?"#5A4636":band)); } }),
@@ -71,7 +74,7 @@ export function build(A){
   };
   const blocks = {
     grass:{side:T.grassSide, top:T.grass, bottom:T.dirt}, dirt:{side:T.dirt}, rock:{side:T.rock}, rockD:{side:T.rockD}, root:{side:T.root},
-    marble:{side:T.marble}, glowB:{side:T.glowB, em:1.1, alpha:.85, anim:[.05,.03]}, pcol:{side:T.pcol}, ptrim:{side:T.ptrim}, pbase:{side:T.pbase}, cliff:{side:T.cliff}, cliffD:{side:T.cliffD}, slate:{side:T.slate}, slateT:{side:T.slateT},
+    marble:{side:T.marble}, glowB:{side:T.glowB, em:1.1, alpha:.85, anim:[.05,.03]}, pcol:{side:T.pcol}, ptrim:{side:T.ptrim}, pbase:{side:T.pbase}, twood:{side:T.twood}, tstone:{side:T.tstone}, tstoneD:{side:T.tstoneD}, cliff:{side:T.cliff}, cliffD:{side:T.cliffD}, slate:{side:T.slate}, slateT:{side:T.slateT},
     stone:{side:T.stone}, stoneB:{side:T.stoneB}, trim:{side:T.trim, top:T.stone}, pillar:{side:T.pillar, top:T.stone}, roof:{side:T.roof}, roofT:{side:T.roofT},
     gold:{side:T.gold, em:.25}, win:{side:T.win, em:.55}, door:{side:T.door},
     water:{side:T.water, alpha:.88, anim:[.012,4.2], em:.34}, pool:{side:T.pool, alpha:.9, anim:[.06,.035], em:.24},
@@ -264,6 +267,18 @@ export function build(A){
       for(let hh=3; hh<h-2; hh+=6) for(let i=0;i<4;i++){ const an=i/4*Math.PI*2+.4; set(Math.round(tx+Math.cos(an)*r),y0+hh,Math.round(tz+Math.sin(an)*r),"win"); set(Math.round(tx+Math.cos(an)*r),y0+hh+1,Math.round(tz+Math.sin(an)*r),"win"); }
       ring(tx,y0+h,tz,r+1,"ptrim"); for(let i=0;i<4;i++){ const an=i/4*Math.PI*2+.8, ox=Math.round(tx+Math.cos(an)*(r+1.6)), oz=Math.round(tz+Math.sin(an)*(r+1.6)); fill(ox,y0+h-6,oz,ox,y0+h-1,oz,MB); cone(ox,y0+h,oz,1.2,4,"slate"); }
       cone(tx,y0+h+1,tz,r+.9,roofH,(a,b,c)=> (b-y0-h)%4===0 ? "slateT" : "slate"); finial(tx,y0+h+roofH+1,tz,8); };
+    // Holz-Stein-Turm (Glockenturm) nach Vorlage: Fachwerk, offene Glockenstube, steiles Holzdach
+    const bellTower = (tx,tz,y0) => { const W=3, sq=(h,w,m)=>fill(tx-w,h,tz-w,tx+w,h,tz+w,m);
+      for(let y=y0;y<y0+13;y++) for(let a=-W;a<=W;a++) for(let c=-W;c<=W;c++){ if(Math.abs(a)<W && Math.abs(c)<W) continue; const corner=Math.abs(a)===W&&Math.abs(c)===W;
+        set(tx+a,y,tz+c, corner?"tstone": ((y-y0)%6===5?"tstone": ((Math.abs(a)===W?c:a)%3===0 && (y-y0)%6>=2 && (y-y0)%6<=4)?"win":"twood")); }
+      sq(y0+13,W+1,"ptrim");
+      for(const [a,c] of [[-W,-W],[W,-W],[-W,W],[W,W]]) for(let y=y0+14;y<y0+21;y++){ set(tx+a,y,tz+c,"tstone"); set(tx+a+Math.sign(a)*0,y,tz+c,"tstone"); }
+      for(const a of [-W,W]) for(const c of [-1,0,1]){ set(tx+a,y0+16,tz+c,"twood"); set(tx+c,y0+16,tz+a,"twood"); }
+      for(let y=y0+14;y<y0+20;y++) fill(tx,y,tz,tx,y,tz,"pcol"); fs(tx+.5,y0+17.5,tz+.5,"gold"); fs(tx+.5,y0+17,tz+.5,"gold");
+      sq(y0+21,W+1,"ptrim");
+      for(const [a,c] of [[-W-1,-W-1],[W+1,-W-1],[-W-1,W+1],[W+1,W+1]]){ fill(tx+a,y0+21,tz+c,tx+a,y0+23,tz+c,"tstone"); fs(tx+a+.5,y0+24,tz+c+.5,"gold"); }
+      for(let i=0;i<9;i++){ const h=Math.round(4-i*.5); if(h<0) break; sq(y0+22+i,h,i%3===2?"ptrim":"twood"); }
+      for(let y=y0+31;y<y0+36;y++) set(tx,y,tz,"twood"); finial(tx,y0+36,tz,8); };
     const gate = (cx,cz,y0,R,thick,planeX) => { const P=4; for(let a=-R-2;a<=R+2;a++) for(let b=0;b<=P+R+2;b++){ let solid;
         if(b<=P) solid = Math.abs(a)>=R && Math.abs(a)<=R+2; else { const d=Math.hypot(a,b-P); solid = d>=R && d<=R+2; }
         if(solid) for(let t=0;t<thick;t++) set(planeX?cx+t:cx+a, y0+b, planeX?cz+a:cz+t, b>P+R-1 && Math.abs(a)<2 ? "gold" : (b%5===4?"ptrim":MB)); }
@@ -299,7 +314,7 @@ export function build(A){
     lampPost(BX-3,PY+4,BZ+19,3); lampPost(BX+3,PY+4,BZ+19,3);
 
     // --- Linke Seite: hoher Spitzturm, Kuppelhalle auf der Baum-Terrasse, Torbogen
-    spire(PX-16,PZ-5,PY+1,2.8,26,15);
+    bellTower(PX-16,PZ-5,PY+1);
     for(const [dx,dz,h] of [[-12,-12,12],[-20,-12,10]]) spire(PX+dx,PZ+dz,PY+1,1.7,h,8);
     { const LX=PX-24, LZ=PZ+5, t=gnd(LX,LZ); block(LX-6,LZ-5,LX+6,LZ+5,t+1,5); cyl(LX,t+7,LZ,5,4,(a,b)=> (b-t-7)%4===3?"ptrim":MB); ring(LX,t+11,LZ,5.8,"ptrim"); dome(LX,t+12,LZ,5.4,"slate",true); finial(LX,t+18,LZ,8); }
     gate(PX-17,PZ+14,PY+1,5,3,true);
@@ -316,9 +331,9 @@ export function build(A){
 
     // --- Unterseite: lange Felszapfen und hängende Spitzen (wie umgedrehte Türmchen)
     const lowest = (x,z) => { let y=PY+8; while(y>-30 && !get(x,y,z)) y--; while(y>-30 && get(x,y-1,z)) y--; return y; };
-    const stalac = (x,z,len,r0) => { const y=lowest(x,z); for(let k=0;k<len;k++){ const rr=r0*(1-k/len); if(rr<.35) break; for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++) if(Math.hypot(a,c)<=rr+.2 && rand()<.92) set(x+a,y-1-k,z+c,k%7===6?"cliff":"cliffD"); } };
+    const stalac = (x,z,len,r0,m1="cliffD",m2="cliff") => { const y=lowest(x,z), R=Math.ceil(r0)+1; for(let k=0;k<len;k++){ const rr=r0*(1-k/len); if(rr<.35) break; for(let a=-R;a<=R;a++) for(let c=-R;c<=R;c++) if(Math.hypot(a,c)<=rr+.2 && rand()<.92) set(x+a,y-1-k,z+c,k%7===6?m2:m1); } };
     const pend = (x,z) => { const y=lowest(x,z); for(let k=0;k<9;k++){ const rr=1.9*(1-k/9.5); if(rr<.4) break; for(let a=-2;a<=2;a++) for(let c=-2;c<=2;c++) if(Math.hypot(a,c)<=rr) set(x+a,y-1-k,z+c,k%3===0?"ptrim":MB); } for(let k=0;k<5;k++) fs(x+.5,y-9.5-k*.5,z+.5,"gold"); };
-    stalac(PX+2,PZ+3,30,2.6); stalac(PX-12,PZ+8,18,2); stalac(PX+16,PZ+6,22,2.2); stalac(PX-28,PZ+8,14,1.8); stalac(PX+30,PZ,16,1.8);
+    stalac(PX-16,PZ-5,40,5.2,"tstoneD","tstone"); stalac(PX+2,PZ+3,30,2.6); stalac(PX-12,PZ+8,18,2); stalac(PX+16,PZ+6,22,2.2); stalac(PX-28,PZ+8,14,1.8); stalac(PX+30,PZ,16,1.8);
     for(const [dx,dz] of [[-8,6],[10,4],[-24,12],[30,3],[2,-10],[-18,-2]]) pend(PX+dx,PZ+dz);
 
     // --- Lange, dünne Wasserfälle von den Terrassen
