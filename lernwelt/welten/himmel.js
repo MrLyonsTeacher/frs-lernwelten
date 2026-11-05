@@ -483,7 +483,7 @@ export function build(A){
       if(q<=1+(rand()-.5)*.4 && q>=.58){ set(x,y,z,lf());
         if(y<cy-ry*.35){ if(rand()<.03){ const l=3+Math.floor(rand()*11); for(let k=1;k<=l;k++){ if(get(x,y-k,z)) break; set(x,y-k,z,"wVine"); } }
           else if(rand()<.007){ const l=2+Math.floor(rand()*4); let ok=true; for(let k=1;k<=l+1;k++) if(get(x,y-k,z)) ok=false; if(ok){ for(let k=1;k<=l;k++) set(x,y-k,z,"rope"); set(x,y-l-1,z,"lamp"); } } } } } };
-    Object.assign(S.country,{x:CX, z:CZ, r:34, y:YT, top:[CX+26,YT-12,CZ+28], base:YT+6, cam:{pos:[CX-24,YT+50,CZ+116], look:[CX,YT+22,CZ]}});
+    Object.assign(S.country,{x:CX, z:CZ, r:34, y:YT, top:[CX+10,YT-4,CZ+16], base:YT+6, cam:{pos:[CX-24,YT+50,CZ+116], look:[CX,YT+22,CZ]}});
     // Hauptäste: [Wegpunkte relativ zur Gabelung], Radius am Anfang/Ende, Kronen (rx, ry) am Ende und in der Mitte
     const limbs=[
       {p:[[0,-5,0],[-8,1,-1],[-16,6,-3],[-25,5,-4]], r:[3,1], tip:[11,5], mid:[8,3.6]},
@@ -506,47 +506,18 @@ export function build(A){
   for(const [cx,cz,r,y,d] of [[-40,24,6,22,"tree"],[-74,-30,9,40,"tower"]]) farIsle(cx,cz,r,y,d);
 
   // ---------- Engelsstatue (Marmor): Kapuzengestalt im fließenden Gewand, sechs gefiederte Flügel, Heiligenschein mit Zacken ----------
-  { const cx=130, cz=30, y=26, SC=1.3;
+  { const cx=130, cz=30, y=26, SC=1;
     island(cx,cz,10,y,{deep:1.5, bare:true}); level(cx,cz,8,y);
     [[8.7,"stoneB"],[7.5,"stone"],[6.3,"stoneB"]].forEach(([r,m],i)=>{ for(let x=-10;x<=10;x++) for(let z=-10;z<=10;z++){ const d=Math.hypot(x,z), an=Math.atan2(z,x), rr=r*(1+.07*Math.sin(an*5+i)); if(d<=rr) set(cx+x,y+1+i,cz+z,d>rr-1?"ptrim":m); } });
-    const by=y+3.75, Q=(ix,iy,iz,m)=>{ const r=(v)=>[Math.floor(v*SC), Math.ceil((v+1)*SC)-1]; const [x0,x1]=r(ix), [y0,y1]=r(iy), [z0,z1]=r(iz); for(let a=x0;a<=x1;a++) for(let b=y0;b<=y1;b++) for(let c=z0;c<=z1;c++) fs(cx+a/2,by+b/2,cz+c/2,m); };
+    const by=y+3.75, Q=(ix,iy,iz,m)=>fs(cx+ix*SC/2,by+iy*SC/2,cz+iz*SC/2,m);
     const ball=(ix,iy,iz,r,m)=>{ for(let a=Math.floor(ix-r);a<=ix+r;a++) for(let b=Math.floor(iy-r);b<=iy+r;b++) for(let c=Math.floor(iz-r);c<=iz+r;c++) if(Math.hypot(a-ix,b-iy,c-iz)<=r) Q(a,b,c,m); };
     const cap=(x0,y0,z0,x1,y1,z1,r0,r1,m)=>{ const n=Math.ceil(Math.hypot(x1-x0,y1-y0,z1-z0)*1.5); for(let i=0;i<=n;i++){ const f=i/n; ball(x0+(x1-x0)*f,y0+(y1-y0)*f,z0+(z1-z0)*f,r0+(r1-r0)*f,m); } };
     const AD=["00000000000000000000000000000000000001100000", "00000000000000000000000000000000000001110000", "00000000000000000000000000000000000001110000", "00000000000000000000000000000000000001111000", "00000000000000000000000000000000000001111000", "00000000000000000000011101100000000001111000", "00000000000000000000011111000000000011111000", "00000000000000000001111111110000000001111100", "00000000000000000101111222111100000022222100", "00000000000000000111122333211101000022221100", "00000000022220000111233343321111000022222200", "00000000022332000112334454321110000222222200", "00002200000232000112345554332110020222222200", "00022000000233200112345555432110020222222200", "11122000000023200012334554332110020222222200", "00233200222233200111234543321100232322232200", "11233322333333200111234543211100233333333200", "11234333344443200001234543211000234444443200", "12334444455543200011234543211002334555543200", "12345555555543320002334543320023345555543320", "23345555555554332223345554332233455555554320", "02345555555555433333455555433334555555554320", "02345556665555544444555555544445555555554332", "02345556666555555555555555555555555555554320", "02345556666655555555555555555555554445554320", "02345556666666555555566555544445543334543320", "02345555666666666666665555433334433233443200", "02334555666666666666665554332233332023443200", "00234555666666666666665554320023320023433200", "00234555666666666666665554332002320023432000", "00234555666666666666665555432000232023432000", "00234555666666666666666555433200220023432000", "00234555566666666666666555543200220023332000", "00233455566666666666666655543200220002333200", "00023455566666666666666655543320000002343200", "00233455566555556666666655554332000002333200", "22334555555555555556666665555432000002332000", "33345555555555555555566665555432000002332000", "44444455555544455555556666555432000002332000", "33333345555433344455555665555432000002332000", "22222334554332333345555665555432000002332000", "00000234554320222334555555554332000002320000", "00000233443320000233455555543320000002320000", "00000023433200000023455555543200000002320000", "00000023432000000023455555543200000223320000", "00000023432000000233455555543200000233320000", "00000023432000000234555555543200000023320000", "00000023432000000234555655543320000023320000", "00000023332000000234555655543320000002320000", "00000023320000000234555655543200000000220000", "00000023320000002334555655543200000000220000", "00000002200000002345555655543200000000020000", "00000002200000023345556655543320000000000000", "00000000000000023455555555554320000000000000", "00000000000000233455555555554320000000000000", "00000000000002233455555555554332000000000000", "00000000000000023444444544444432000000000000", "00000000000000023333333433333332200000000000", "00000000000000233222223332323320000000000000", "00000000000000022000002320202200000000000000", "00000000000000000000002320000000000000000000", "00000000000000000000002332000000000000000000"], AS=[".....................................hh.....", ".....................................hhh....", ".....................................hhh....", ".....................................hhhh...", ".....................................hhhh...", ".....................hhh.hh..........hhhh...", ".....................hhhhh..........hhhhh...", "...................hhhhhhhhh.........hhhhh..", ".................h.hhhhccchhhh......fffffh..", ".................hhhhcccccchhh.h....ffffhh..", ".........cccc....hhhcccccccchhhh....ffffff..", ".........bbbcc...hhccccccccchhh....fffffff..", "....cb.....aac...hhcccbcbcccchh..b.cffffff..", "...cb......aaab..hhccbbbabccchh..b.fffffff..", "hhhba.......aaa...hccbaabbccchh..b.afffbfc..", "..cbaa..aaaaaba..hhhcbacbccchh..ababababbc..", "hhbaaaaaaaaaabb..hhhcaabccchhh..bbaaaaabcc..", "hhbaaaaaaaaaabc....hccbaaachh...baaaaaaaaa..", "hcaaabaaaabbabc...hhccaaaabhh..bcaaaaaaaaa..", "hbaaaaaaaaaabbbc...abaabcabc..bccaaaaaaaaab.", "caaaababbaaaabcccccbccbbcbbccccccbaaaaaaaab.", ".baabaaaaaaababccccbabccccccccccbbaaabcbaaa.", ".baabbaaaaaaaabbbbbcbbccccccccccbbaaaaabbacc", ".babbaabbbbaaacbabcbbbcccccccbcccaaaaaabbac.", ".baababbbbbbabbcbbbaabccccccbabbbaabaabbbac.", ".baabaabbbbbaabbbbaaaabccccaabccbabbaaaaaab.", ".baabaaaaabbbbaaaacabbbccccbaabccbaaaaaaaa..", ".cbbaabaabbbbaaaaccabbbbbcbbaaabbaa.aabaab..", "..cbaaaaaaaaaabbbcbaabbbcccc..aaaa..aaaaba..", "..cbbaaaaaaaabbccbaccbbbccbcb..aaa..aaabb...", "..ccaaabbbaabbcccbacbbcbccccb...baa.aaaab...", "..cbababbbbbabbccbabccbccccccc..aa..aaaab...", "..cbababbabbbccccccacbcbcccccc..aa..aaaab...", "..cbaaabbaaabbcccccbbbcbcccbcc..aa...aaabc..", "...cbaabbbabbbcccccccbabcbbbccc......aaabc..", "..ccbababbabbccccccbbbaabbbacccc.....aaacc..", "ccccbabbbbabbccccccbbcabcbbbbccc.....aaac...", "cccccbbabbbabcccccbbbcbbbbbccccc.....aabc...", "ccccccbabbbabcccccabccbbbbbcbbbc.....aacc...", "ccccccbbbbbbcccbccbcbccbbbccbbbc.....abcc...", "ccccccabbbbbccccbbbcbccbbbccbbcc.....bbcc...", ".....cbabbbbc.ccccbcbccbbbcccccc.....abb....", ".....cbbbbbbc....cabccbbbbccbcc......abb....", "......bbbbbb......abccbbacccbb.......bbb....", "......bbbbb.......aaccbbacccbb.....bbbcb....", "......bbbcb......caaccbabcccbb.....cbbbb....", "......bbbcb......baacbbabccbab......bbbb....", "......bbbcb......caacbbabccbabc.....bbbb....", "......cbbbb......babcbbabccbabc......bbb....", "......cbbb.......babbabbbccbab........bb....", "......ccba......cbaccabbbccbab........bb....", ".......bb.......baacbbbbcccbbb.........b....", ".......cc......cbaacbbabcccbbbc.............", "...............cbaacabacccbabab.............", "..............cbbbbbaabcccaacbb.............", ".............bbbbbbbaacccbaacbbc............", "...............bbbbaaabbcaaacbbc............", "...............bcbbaababcaaacbbbc...........", "..............cccbbaaaabbaaacbc.............", "...............cc.....bba.a.cb..............", "......................bbb...................", "......................ccbb.................."], NC=44, NR=62;
     // Gestalt aus der zweiten Vorlage: Silhouette, Tiefe (Abstand zum Rand) und Schattierung des Bildes; Flügel nach hinten gestaffelt, Heiligenschein dahinter, goldene Fackel
     { const BM={a:"stA",b:"stB",c:"stC",f:"flame",h:"halo"}, has=(r,c)=> r>=0&&r<NR&&c>=0&&c<NC&&AD[r][c]!=="0";
       for(let r=0;r<NR;r++) for(let c=0;c<NC;c++){ const d=+AD[r][c]; if(!d) continue; let ch=AS[r][c]; if(ch==="h"&&c>=34) ch="f";
-        if((ch==="h"&&c<34) || (r<=14&&c>=17&&c<=31)) continue;   // alter Halo und Kopf: werden unten neu gebaut
         const ix=c-NC/2, iy=NR-1-r, zs = ch==="h" ? -5 : -Math.round(Math.max(0,Math.abs(ix)-8)*.35), edge=!(has(r-1,c)&&has(r+1,c)&&has(r,c-1)&&has(r,c+1)), back=Math.round(d*.7);
         for(let iz=-back;iz<=d;iz++) if(edge||iz===d||iz===-back) Q(ix,iy,iz+zs,BM[ch]); } }
-    // Kopf nach der Vorlage: kantiger Helm, Visier-Schlitz in T-Form, Kinn, Hals und eine Krone aus hohen, dünnen Spitzen
-    { const HX=2, iyB=46;                                    // Mitte des Kopfes, Unterkante des Kinns
-      const box=(x0,y0,z0,x1,y1,z1,m)=>{ for(let a=x0;a<=x1;a++) for(let b=y0;b<=y1;b++) for(let c=z0;c<=z1;c++) Q(HX+a,b,c,m); };
-      box(-1,43,-2,1,iyB,3,"stB");                           // Hals
-      box(-2,iyB,-3,2,iyB+1,4,"stB");                        // Kinn / Unterkiefer
-      box(-3,iyB+2,-3,3,iyB+6,4,"stB");                      // Helm
-      box(-3,iyB+2,3,3,iyB+6,4,"stB");
-      for(let b=iyB+2;b<=iyB+6;b++){ Q(HX-3,b,4,"stA"); Q(HX+3,b,4,"stA"); Q(HX-3,b,-3,"stA"); Q(HX+3,b,-3,"stA"); }  // dunkle Kanten
-      for(let a=-2;a<=2;a++) Q(HX+a,iyB+7,0,"stC");          // Stirnband der Krone
-      box(-3,iyB+7,-3,3,iyB+7,3,"stC");
-      // Visier: waagrechter Schlitz und senkrechter Steg (T), Gesicht leicht vertieft
-      for(let a=-2;a<=2;a++) { Q(HX+a,iyB+5,4,"stA"); Q(HX+a,iyB+5,3,"stA"); }
-      for(let b=iyB+1;b<=iyB+4;b++){ Q(HX,b,4,"stA"); Q(HX,b,3,"stA"); }
-      for(let a=-2;a<=2;a++) Q(HX+a,iyB+6,4,"stC");          // Brauenwulst
-      Q(HX-1,iyB+2,4,"stC"); Q(HX+1,iyB+2,4,"stC");          // Wangenknochen
-      // Krone: Spitzen unterschiedlich hoch, höchste leicht rechts der Mitte, jede mit zwei Lagen Tiefe
-      const sp=[[-3,3],[-2,5],[-1,4],[0,6],[1,9],[2,6],[3,4],[0,3]];
-      sp.forEach(([a,h],i)=>{ const z0 = i<7 ? (i%2?-1:0) : 2;
-        for(let k=0;k<h;k++){ const m = k>h-3 ? "stC" : (k<2 ? "stB" : "stC"); Q(HX+a,iyB+8+k,z0,m); if(k<h-2) Q(HX+a,iyB+8+k,z0+1,"stB"); } });
-      Q(HX+1,iyB+8+9,0,"stC");
-    }
-    // Sonnen-Halo: schwebt über dem Kopf, dünn und filigran in Gelb – Ring, innerer Perlenkranz und lange/kurze Strahlen im Wechsel
-    { const HX=2, CY=46+8+9+8, R=7, HZ=1, done=new Set(), P=(a,b)=>{ const k=a+","+b; if(!done.has(k)){ done.add(k); Q(HX+a,CY+b,HZ,"sunG"); } };
-      for(let a=-R-1;a<=R+1;a++) for(let b=-R-1;b<=R+1;b++){ const d=Math.hypot(a,b); if(Math.abs(d-R)<.62) P(a,b); else if(Math.abs(d-(R-2))<.5 && ((a+b)&1)===0) P(a,b); }
-      const N=20; for(let i=0;i<N;i++){ const t=i/N*Math.PI*2, len = i%2 ? 2 : 4;
-        for(let s=R+1;s<=R+len;s++) P(Math.round(s*Math.cos(t)),Math.round(s*Math.sin(t)));
-        if(i%2===0) P(Math.round((R+len+1)*Math.cos(t)),Math.round((R+len+1)*Math.sin(t))); }
-    }
     // Umgebung: zwei Bäume, Wasserfälle
     fall(cx,cz,y,Math.PI*.15,2,30); fall(cx,cz,y,Math.PI*.8,1,26); }
 
