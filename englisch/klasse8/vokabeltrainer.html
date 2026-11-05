@@ -99,6 +99,7 @@ input.s{font:16px Lexend;padding:10px 12px;border-radius:12px;border:2px solid v
 <script src="vokabeln8a.js"></script>
 <script src="vokabeln8b.js"></script>
 <script src="fotos8.js"></script>
+<script src="gruppen8.js"></script>
 <script src="../../lernwelt/freigabe.js"></script>
 <script>
 "use strict";
@@ -207,6 +208,7 @@ function home(){
       <button class="mode" data-m="quiz"><b>❓ Quiz</b><span>Antwort aus vier Möglichkeiten wählen</span></button>
       <button class="mode" data-m="type"><b>⌨️ Eintippen</b><span>${cur==="irr"?"Past und Participle schreiben":"Deutsch → Englisch schreiben"}</span></button>
       <button class="mode" data-m="list"><b>📋 Liste</b><span>Alle Wörter ansehen und suchen</span></button>
+      ${cur==="irr"?"":`<button class="mode" data-m="mix"><b>🎲 Aufgabenmix</b><span>Zuordnen · Das passt nicht · Fehler finden · Diktat (28 Punkte)</span></button>`}
       <button class="mode mock" data-m="mock"><b>📝 Mock Test · ${esc(TITLE())}</b><span>50 Punkte · Prozent und vorläufige Note${best?` · Dein Bestwert: ${best.pct} % (Note ${best.note})`:""}</span></button>
     </div></section>`;
 }
@@ -294,13 +296,44 @@ function list(){
   V.onclick = e => { if(e.target.closest("[data-a=home]")) go(); }; draw();
 }
 
+/* G-Niveau: Anfangsbuchstabe und Länge als Hilfe */
+const gHint = it => { let n = ""; try{ n = localStorage.getItem("frs-niveau")||""; }catch(e){} if(n!=="G") return ""; return `<div class="small ghint">Tipp: ${esc(norm(it.head,true).split(" ").map(w=>w[0]+" _".repeat(Math.max(0,w.length-1))).join("   "))}</div>`; };
 const fotoUrl = f => "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(f.replace(/ /g,"_"))+"?width=480";
 /* ---------- Mock Test ---------- */
-function mock(){
+/* ---------- Aufgabenmix: Zuordnen · Das passt nicht · Fehler finden · Diktat ---------- */
+let MODE = "test";
+function typoOf(w){ const L = w.split(""), n = L.length, t = [];
+  for(let i=Math.floor(n/2); i<n-1; i++) if(L[i]!==L[i+1] && /[a-z]{2}/i.test(L[i]+L[i+1])){ const a = L.slice(); [a[i],a[i+1]] = [a[i+1],a[i]]; t.push(a.join("")); }
+  for(let i=1; i<n-1; i++) if(L[i]===L[i+1]) t.push(L.slice(0,i).concat(L.slice(i+1)).join(""));
+  for(let i=2; i<n-1; i++) if(/[bcdfglmnprst]/.test(L[i]) && L[i]!==L[i-1] && L[i]!==L[i+1]) t.push(L.slice(0,i+1).concat(L[i], L.slice(i+1)).join(""));
+  const ok = t.filter(x=>x.toLowerCase()!==w.toLowerCase()); return ok.length ? rnd(ok) : null; }
+function mixParts(all){
+  const used = new Set(), take = (arr,n) => { const out=[]; for(const it of shuffle(arr)){ if(out.length>=n) break; const k=norm(it.head); if(used.has(k)) continue; used.add(k); out.push(it); } return out; };
+  // 1) Zuordnen: Englisch → Deutsch (verschiedene Bedeutungen, kurze Übersetzungen)
+  const M = []; for(const it of shuffle(all.filter(i=>i.typeOk && !i.phrase && i.deShort.length<=26))){ if(M.length>=6) break; if(M.some(o=>overlap(o,it)||o.deShort===it.deShort)) continue; M.push(it); }
+  M.forEach(it=>used.add(norm(it.head)));
+  // 2) Das passt nicht: drei Wörter aus einer Gruppe, eines aus einer anderen (Wortschatz der ganzen Klasse 8)
+  const G = window.GRUPPEN8 || {}, every = UNITS.flatMap(u=>u.items), byKey = {}; every.forEach(i=>{ const k = norm(i.head); if(!byKey[k]) byKey[k] = i; });
+  const members = g => G[g].map(w=>byKey[norm(w)]).filter(Boolean), names = Object.keys(G).filter(g=>members(g).length>=4), O = [];
+  for(const g of shuffle(names).slice(0,4)){ const others = shuffle(names.filter(n=>n!==g)), og = others[0]; if(!og) continue;
+    const three = shuffle(members(g)).slice(0,3), odd = rnd(members(og)); if(three.length<3||!odd) continue;
+    O.push({kind:"mc", it:odd, pts:1, q:"Welches Wort passt <b>nicht</b> zu den anderen?", opts:shuffle(three.concat(odd)).map(o=>({t:o.head.replace(/\s*\(.*?\)/g,""), ok:o===odd}))}); }
+  // 3) Fehler finden: ein Wort im Satz ist falsch geschrieben
+  const F = []; for(const it of take(all.filter(i=>cloze(i)), 20)){ if(F.length>=4) break; const c = cloze(it), w = c.ans[0]; if(/[^A-Za-z]/.test(w) || w.length<5) continue; const bad = typoOf(w); if(!bad) continue;
+    F.push({kind:"fix", it, pts:2, ans:w, wrong:bad, html:esc(c.text).replace("_____", `<mark>${esc(bad)}</mark>`), plain:c.text.replace("_____", bad)}); }
+  // 4) Diktat
+  const D = take(all.filter(i=>i.typeOk && !i.phrase && norm(i.head).length>=4), 5).map(it=>({kind:"dict", it, pts:2}));
+  return [{id:"1", titel:"Teil 1 · Zuordnen: Welche deutsche Bedeutung gehört zum englischen Wort? (1 Punkt je Wort)", items:M.map(it=>({kind:"match", it, pts:1}))},
+    {id:"2", titel:"Teil 2 · Das passt nicht (1 Punkt je Aufgabe)", items:O},
+    {id:"3", titel:"Teil 3 · Fehler finden: Das markierte Wort ist falsch geschrieben – schreibe es richtig (2 Punkte je Satz)", items:F},
+    {id:"4", titel:"Teil 4 · Diktat: Hör zu und schreibe das Wort (2 Punkte je Wort)", items:D}]; }
+function mock(mode){
+  MODE = mode || "test";
   const all = cur==="irr" ? IRR : unit().items; let parts;
   if(cur==="irr"){ const v = shuffle(IRR);
     parts = [{id:"A", titel:"Teil A · Deutsch → Infinitiv (1 Punkt je Frage)", items:v.slice(0,10).map(it=>({kind:"mc", it, pts:1, q:`<b>${esc(it.de)}</b> – wie heißt der Infinitiv?`, opts:shuffle([it].concat(shuffle(IRR.filter(o=>o!==it&&o.inf!==it.inf&&!overlap(o,it))).slice(0,3))).map(o=>({t:o.inf, ok:o===it}))}))},
       {id:"B", titel:"Teil B · Formen schreiben (je 1 Punkt für Past und Participle)", items:v.slice(10,30).map(it=>({kind:"irr", it, pts:2}))}]; }
+  else if(MODE==="mix"){ parts = mixParts(all); }
   else { const used = new Set(), take = (arr,n) => { const out=[]; for(const it of shuffle(arr)){ if(out.length>=n) break; const k=norm(it.head); if(used.has(k)) continue; used.add(k); out.push(it); } return out; };
     const FOTO = window.FOTO8 || {}, fotoOf = it => FOTO[norm(it.head)];
     const PIC = take(all.filter(i=>i.typeOk && fotoOf(i)), 7);     // Bildaufgaben: nur Wörter, zu denen es ein Foto gibt
@@ -311,21 +344,24 @@ function mock(){
       {id:"B", titel:"Teil B · Deutsch → Englisch schreiben (2 Punkte je Wort)", items:Bp.concat(extra).map(it=>({kind:"type", it, pts:2}))},
       {id:"C", titel:"Teil C · Wörterkasten: ordne jedem Satz das passende Wort zu (2 Punkte je Satz)", items:C.map(it=>({kind:"gap", it, pts:2, c:cloze(it)}))}]; }
   const maxPts = parts.reduce((a,p)=>a+p.items.reduce((b,x)=>b+x.pts,0),0); let n = 0;
-  parts.forEach(p=>{ if(p.id==="C") p.bank = shuffle(p.items.map(x=>x.c.ans[0])); });
+  parts.forEach(p=>{ if(MODE!=="mix" && p.id==="C") p.bank = shuffle(p.items.map(x=>x.c.ans[0])); if(p.items[0] && p.items[0].kind==="match") p.dbank = shuffle(p.items.map(x=>x.it.deShort)); });
   const html = parts.map(p=>`<div class="part">${esc(p.titel)}</div>`+p.items.map(x=>{ x.n = ++n; const id = "i"+x.n; let b;
     if(x.kind==="mc") b = `<div>${x.q}</div><div class="mcrow">${x.opts.map((o,k)=>`<label><input type="radio" name="${id}" value="${k}">${esc(o.t)}</label>`).join("")}</div>`;
-    else if(x.kind==="pic") b = `<div class="pic"><img src="${esc(fotoUrl(x.foto.f))}" alt="" loading="lazy" onerror="this.outerHTML='<div class=picfail>🖼️ Bild nicht ladbar – Hinweis: ${esc(x.it.deShort).replace(/'/g,"&#39;")}</div>'"><div><div class="small">Wie heißt das auf Englisch?</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}</div></div>`;
+    else if(x.kind==="pic") b = `<div class="pic"><img src="${esc(fotoUrl(x.foto.f))}" alt="" loading="lazy" onerror="this.outerHTML='<div class=picfail>🖼️ Bild nicht ladbar – Hinweis: ${esc(x.it.deShort).replace(/'/g,"&#39;")}</div>'"><div><div class="small">Wie heißt das auf Englisch?</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}${gHint(x.it)}</div></div>`;
+    else if(x.kind==="match") b = `<div><b>${esc(x.it.head)}</b></div><select class="t bk-sel" id="${id}" style="margin-top:6px"><option value="">– Deutsch wählen –</option>${p.dbank.map(w=>`<option value="${esc(w)}">${esc(w)}</option>`).join("")}</select>`;
+    else if(x.kind==="fix") b = `<div class="gap">${x.html}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="richtig geschrieben …" style="margin-top:6px">`;
+    else if(x.kind==="dict") b = `<div class="row"><button class="btn alt" type="button" data-a="say" data-w="${esc(x.it.head.replace(/\s*\(.*?\)/g,""))}">🔊 Anhören</button><span class="small">Du kannst es so oft anhören, wie du willst.</span></div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">`;
     else if(x.kind==="type") b = `<div>${esc(x.it.de)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}`;
     else if(x.kind==="gap") b = `<div class="gap">${esc(x.c.text)}</div><div class="small">Hinweis: ${esc(x.it.deShort)}</div><select class="t bk-sel" id="${id}" style="margin-top:6px"><option value="">– Wort wählen –</option>${p.bank.map(w=>`<option value="${esc(w)}">${esc(w)}</option>`).join("")}</select>`;
     else b = `<div><b>${esc(x.it.inf)}</b> <span class="small">(${esc(x.it.de)})</span></div><div class="row" style="margin-top:6px"><input class="t" id="${id}a" placeholder="simple past" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"><input class="t" id="${id}b" placeholder="past participle" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"></div>`;
     return `<div class="it"><span class="n">${x.n}.</span><span class="p">${x.pts} P.</span> ${b}</div>`; }).join("")
     + (p.id==="A" && p.items.some(x=>x.kind==="pic") ? `<details class="credits"><summary>Bildnachweis (Wikimedia Commons)</summary><ul>${p.items.filter(x=>x.kind==="pic").map(x=>`<li>${x.n}. ${esc(x.foto.f.replace(/_/g," "))} – ${esc(x.foto.by||"")} ${esc(x.foto.lic||"")}</li>`).join("")}</ul></details>` : "")
     + (p.id==="C" ? `<div class="wbank"><b>Wörterkasten</b> <span class="small">(jedes Wort passt zu genau einem Satz)</span><div class="wchips">${p.bank.map(w=>`<span class="wchip" data-w="${esc(w)}">${esc(w)}</span>`).join("")}</div></div>` : "")).join("");
-  V.innerHTML = `<div class="prog"><span>Mock Test · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>📝 Mock Test</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
+  V.innerHTML = `<div class="prog"><span>${MODE==="mix"?"Aufgabenmix":"Mock Test"} · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>${MODE==="mix"?"🎲 Aufgabenmix":"📝 Mock Test"}</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
   window.scrollTo(0,0);
   V.onchange = e => { if(!e.target.classList.contains("bk-sel")) return; const used = [...V.querySelectorAll(".bk-sel")].map(x=>x.value);
     V.querySelectorAll(".wchip").forEach(c=>c.classList.toggle("used", used.includes(c.dataset.w))); };
-  V.onclick = e => { const b = e.target.closest("[data-a]"); if(!b) return; if(b.dataset.a==="home"){ if(confirm("Test wirklich abbrechen?")) go(); return; }
+  V.onclick = e => { const b = e.target.closest("[data-a]"); if(!b) return; if(b.dataset.a==="say"){ speak(b.dataset.w); return; } if(b.dataset.a==="home"){ if(confirm("Test wirklich abbrechen?")) go(); return; }
     if(b.dataset.a==="submit"){ const items = parts.flatMap(p=>p.items), blank = items.filter(x=> x.kind==="mc" ? !document.querySelector(`input[name=i${x.n}]:checked`) : x.kind==="irr" ? !$("#i"+x.n+"a").value.trim() && !$("#i"+x.n+"b").value.trim() : !$("#i"+x.n).value.trim()).length;
       if(blank && !confirm(blank+" Aufgabe(n) sind noch leer. Trotzdem abgeben?")) return; finish(parts, maxPts); } };
 }
@@ -335,6 +371,9 @@ function finish(parts, maxPts){
     for(const x of p.items){ m += x.pts; let got = 0, mine = "", sol = "";
       if(x.kind==="mc"){ const r = document.querySelector(`input[name=i${x.n}]:checked`); const o = r ? x.opts[+r.value] : null; mine = o ? o.t : "–"; sol = x.opts.find(o=>o.ok).t; got = o && o.ok ? 1 : 0; }
       else if(x.kind==="pic"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = gradeC(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
+      else if(x.kind==="match"){ mine = $("#i"+x.n).value; sol = x.it.deShort; got = mine===sol ? 1 : 0; }
+      else if(x.kind==="fix"){ mine = $("#i"+x.n).value.trim(); sol = x.ans; const g = norm(mine,true)===norm(x.wrong,true) ? 0 : gradeC(mine,[x.ans]); got = g===2 ? 2 : g===1 ? 1 : 0; }
+      else if(x.kind==="dict"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = gradeC(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else if(x.kind==="type"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = gradeC(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else if(x.kind==="gap"){ mine = $("#i"+x.n).value.trim(); sol = x.c.ans[0]; const g = gradeC(mine, x.c.ans); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else { const a = $("#i"+x.n+"a").value.trim(), b = $("#i"+x.n+"b").value.trim(); mine = a+" / "+b; sol = x.it.past+" / "+x.it.pp; got = (grade(a,x.it.past.split("/"))?1:0) + (grade(b,x.it.pp.split("/"))?1:0); }
@@ -342,24 +381,25 @@ function finish(parts, maxPts){
     tot += s; br.push([p.id, s, m]); }
   const pct = Math.round(tot/maxPts*100), [lo, note, txt] = noteOf(pct);
   // Bestwert speichern – im Format der Klassenwelt, damit die Inselübersicht und der Ergebnis-Code ihn mitzählen
-  const bests = store.get("vt8-best", {}), old = bests[ID()]; if(!old || pct>old.pct) bests[ID()] = {pct, note, pts:tot}; store.set("vt8-best", bests);
-  try{ const key = "lw-"+ID()+"-v1", r = store.get(key, {lv:{}, name:"", done:false, seen:{}}); const lv = r.lv.mock || (r.lv.mock = {best:0, runs:0, it:{}}); lv.runs = (lv.runs||0)+1; lv.best = Math.max(lv.best||0, tot); lv.it = lv.it||{}; if(tot>=maxPts) lv.pf = true; store.set(key, r);
+  const save = MODE!=="mix";   // der Aufgabenmix ist reine Übung: kein Bestwert, kein Ergebnis-Code
+  if(save){ const bests = store.get("vt8-best", {}), old = bests[ID()]; if(!old || pct>old.pct) bests[ID()] = {pct, note, pts:tot}; store.set("vt8-best", bests); }
+  if(save) try{ const key = "lw-"+ID()+"-v1", r = store.get(key, {lv:{}, name:"", done:false, seen:{}}); const lv = r.lv.mock || (r.lv.mock = {best:0, runs:0, it:{}}); lv.runs = (lv.runs||0)+1; lv.best = Math.max(lv.best||0, tot); lv.it = lv.it||{}; if(tot>=maxPts) lv.pf = true; store.set(key, r);
     store.set("lw-meta-"+ID(), {max:maxPts, titel:"Vokabeltest "+TITLE(), ids:["mock"], maxima:[maxPts]}); }catch(e){}
   V.innerHTML = `<section class="panel res"><h2>Dein Ergebnis</h2><div class="ring" style="border-color:${pct>=50?"var(--ok)":"var(--bad)"}"><div>${pct} %<small>${tot} von ${maxPts} Punkten</small></div></div>
     <div class="note">Vorläufige Note: ${note} · ${txt}</div>
     <div class="bk">${br.map(([id,s,m])=>`<div><b>Teil ${id}</b><br>${s} / ${m} Punkte</div>`).join("")}</div>
     <p class="small">Notenschlüssel: ab 92 % = 1 · ab 81 % = 2 · ab 67 % = 3 · ab 50 % = 4 · ab 30 % = 5 · darunter 6. Die echte Note legt deine Lehrkraft fest.</p>
-    ${errs.length?`<h3>Das solltest du noch üben (${errs.length})</h3><table class="err"><tbody>${errs.map(e=>`<tr><td>${e.x.n}.</td><td>${esc(e.x.kind==="irr"?e.x.it.inf+" – "+e.x.it.de:e.x.kind==="gap"?e.x.c.text:e.x.kind==="mc"?e.x.q.replace(/<[^>]+>/g,""):e.x.it.de)}</td><td>Du: ${esc(e.mine||"–")}</td><td><b>${esc(e.sol)}</b></td></tr>`).join("")}</tbody></table>`:"<p>Fehlerfrei – 🌟 Wow!</p>"}
+    ${errs.length?`<h3>Das solltest du noch üben (${errs.length})</h3><table class="err"><tbody>${errs.map(e=>`<tr><td>${e.x.n}.</td><td>${esc(e.x.kind==="irr"?e.x.it.inf+" – "+e.x.it.de:e.x.kind==="gap"?e.x.c.text:e.x.kind==="mc"?e.x.q.replace(/<[^>]+>/g,""):e.x.kind==="match"?e.x.it.head:e.x.kind==="fix"?e.x.plain:e.x.kind==="dict"?"🔊 Diktat":e.x.it.de)}</td><td>Du: ${esc(e.mine||"–")}</td><td><b>${esc(e.sol)}</b></td></tr>`).join("")}</tbody></table>`:"<p>Fehlerfrei – 🌟 Wow!</p>"}
     <div class="row" style="justify-content:center;margin-top:14px"><button class="btn" data-a="again">Neuer Test</button>${errs.length?`<button class="btn gold" data-a="fix">Fehler als Karten üben</button>`:""}<button class="btn alt" data-a="home">Übersicht</button></div></section>`;
   window.scrollTo(0,0);
-  V.onclick = e => { const a = e.target.closest("[data-a]"); if(!a) return; if(a.dataset.a==="again") return mock(); if(a.dataset.a==="fix") return cards(errs.map(e=>e.x.it)); go(); };
+  V.onclick = e => { const a = e.target.closest("[data-a]"); if(!a) return; if(a.dataset.a==="again") return mock(MODE); if(a.dataset.a==="fix") return cards(errs.map(e=>e.x.it)); go(); };
 }
 
 /* ---------- Steuerung ---------- */
 function go(){ V.onkeydown = null; home(); V.onclick = e => {
   const t = e.target.closest("[data-u]"); if(t){ cur = t.dataset.u==="irr" ? "irr" : +t.dataset.u; secs = new Set(); try{ history.replaceState(null,"","?u="+cur); }catch(_){} return home(); }
   const c = e.target.closest("[data-sec]"); if(c){ const s = c.dataset.sec; if(!s) secs.clear(); else secs.has(s) ? secs.delete(s) : secs.add(s); return home(); }
-  const m = e.target.closest("[data-m]"); if(m){ ({cards, quiz, type:typing, list, mock})[m.dataset.m](); window.scrollTo(0,0); } }; }
+  const m = e.target.closest("[data-m]"); if(m){ ({cards, quiz, type:typing, list, mock:()=>mock("test"), mix:()=>mock("mix")})[m.dataset.m](); window.scrollTo(0,0); } }; }
 go();
 </script>
 </body>
