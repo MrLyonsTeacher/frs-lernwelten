@@ -74,6 +74,10 @@ input.s{font:16px Lexend;padding:10px 12px;border-radius:12px;border:2px solid v
 .it .n{display:inline-block;min-width:30px;font-weight:700;color:var(--muted)}
 .it .p{font-size:12px;color:var(--muted);margin-left:6px}
 .it .gap{font-size:17px;margin:4px 0 8px}
+.pic{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-top:4px}
+.pic img{width:240px;max-width:100%;height:160px;object-fit:contain;border-radius:12px;border:2px solid var(--line);background:#eef}
+.picfail{width:240px;max-width:100%;padding:14px;border-radius:12px;border:2px dashed var(--line);background:#f6f6fb;font-size:15px}
+.credits{margin:8px 0 0;font-size:12px;color:#667}.credits li{margin:2px 0}
 .mcrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .mcrow label{display:flex;gap:8px;align-items:center;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:#fff;cursor:pointer;font-size:16px}
 .mcrow input{width:20px;height:20px}
@@ -94,6 +98,7 @@ input.s{font:16px Lexend;padding:10px 12px;border-radius:12px;border:2px solid v
 <main class="wrap" id="v"></main>
 <script src="vokabeln8a.js"></script>
 <script src="vokabeln8b.js"></script>
+<script src="fotos8.js"></script>
 <script>
 "use strict";
 const $ = s => document.querySelector(s), V = $("#v");
@@ -286,6 +291,7 @@ function list(){
   V.onclick = e => { if(e.target.closest("[data-a=home]")) go(); }; draw();
 }
 
+const fotoUrl = f => "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(f.replace(/ /g,"_"))+"?width=480";
 /* ---------- Mock Test ---------- */
 function mock(){
   const all = cur==="irr" ? IRR : unit().items; let parts;
@@ -293,19 +299,24 @@ function mock(){
     parts = [{id:"A", titel:"Teil A · Deutsch → Infinitiv (1 Punkt je Frage)", items:v.slice(0,10).map(it=>({kind:"mc", it, pts:1, q:`<b>${esc(it.de)}</b> – wie heißt der Infinitiv?`, opts:shuffle([it].concat(shuffle(IRR.filter(o=>o!==it&&o.inf!==it.inf&&!overlap(o,it))).slice(0,3))).map(o=>({t:o.inf, ok:o===it}))}))},
       {id:"B", titel:"Teil B · Formen schreiben (je 1 Punkt für Past und Participle)", items:v.slice(10,30).map(it=>({kind:"irr", it, pts:2}))}]; }
   else { const used = new Set(), take = (arr,n) => { const out=[]; for(const it of shuffle(arr)){ if(out.length>=n) break; const k=norm(it.head); if(used.has(k)) continue; used.add(k); out.push(it); } return out; };
-    const A = take(all.filter(i=>!i.phrase||Math.random()<.3),14), Bp = take(all.filter(i=>i.typeOk && cloze(i)===null),10);
+    const FOTO = window.FOTO8 || {}, fotoOf = it => FOTO[norm(it.head)];
+    const PIC = take(all.filter(i=>i.typeOk && fotoOf(i)), 7);     // Bildaufgaben: nur Wörter, zu denen es ein Foto gibt
+    const A = take(all.filter(i=>!i.phrase||Math.random()<.3), 14-2*PIC.length), Bp = take(all.filter(i=>i.typeOk && cloze(i)===null),10);
     const C = take(all.filter(i=>cloze(i)), 8); const need = 8 - C.length; const extra = need>0 ? take(all.filter(i=>i.typeOk),need) : [];
-    parts = [{id:"A", titel:"Teil A · Englisch → Deutsch, ein Kreuz setzen (1 Punkt je Frage)", items:A.map(it=>({kind:"mc", it, pts:1, q:`Was heißt „<b>${esc(it.head)}</b>“?`, opts:mcOptions(it,all,"en")}))},
+    parts = [{id:"A", titel: PIC.length ? "Teil A · Bilder: Schreibe das englische Wort daneben (2 Punkte je Bild)"+(A.length?" und Englisch → Deutsch, ein Kreuz setzen (1 Punkt)":"") : "Teil A · Englisch → Deutsch, ein Kreuz setzen (1 Punkt je Frage)",
+        items: PIC.map(it=>({kind:"pic", it, pts:2, foto:fotoOf(it)})).concat(A.map(it=>({kind:"mc", it, pts:1, q:`Was heißt „<b>${esc(it.head)}</b>“?`, opts:mcOptions(it,all,"en")})))},
       {id:"B", titel:"Teil B · Deutsch → Englisch schreiben (2 Punkte je Wort)", items:Bp.concat(extra).map(it=>({kind:"type", it, pts:2}))},
       {id:"C", titel:"Teil C · Wörterkasten: ordne jedem Satz das passende Wort zu (2 Punkte je Satz)", items:C.map(it=>({kind:"gap", it, pts:2, c:cloze(it)}))}]; }
   const maxPts = parts.reduce((a,p)=>a+p.items.reduce((b,x)=>b+x.pts,0),0); let n = 0;
   parts.forEach(p=>{ if(p.id==="C") p.bank = shuffle(p.items.map(x=>x.c.ans[0])); });
   const html = parts.map(p=>`<div class="part">${esc(p.titel)}</div>`+p.items.map(x=>{ x.n = ++n; const id = "i"+x.n; let b;
     if(x.kind==="mc") b = `<div>${x.q}</div><div class="mcrow">${x.opts.map((o,k)=>`<label><input type="radio" name="${id}" value="${k}">${esc(o.t)}</label>`).join("")}</div>`;
+    else if(x.kind==="pic") b = `<div class="pic"><img src="${esc(fotoUrl(x.foto.f))}" alt="" loading="lazy" onerror="this.outerHTML='<div class=picfail>🖼️ Bild nicht ladbar – Hinweis: ${esc(x.it.deShort).replace(/'/g,"&#39;")}</div>'"><div><div class="small">Wie heißt das auf Englisch?</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}</div></div>`;
     else if(x.kind==="type") b = `<div>${esc(x.it.de)}</div><input class="t" id="${id}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="auf Englisch …" style="margin-top:6px">${needsCap(x.it.head)?` <span class="cap">🔠 Groß-/Kleinschreibung zählt</span>`:""}`;
     else if(x.kind==="gap") b = `<div class="gap">${esc(x.c.text)}</div><div class="small">Hinweis: ${esc(x.it.deShort)}</div><select class="t bk-sel" id="${id}" style="margin-top:6px"><option value="">– Wort wählen –</option>${p.bank.map(w=>`<option value="${esc(w)}">${esc(w)}</option>`).join("")}</select>`;
     else b = `<div><b>${esc(x.it.inf)}</b> <span class="small">(${esc(x.it.de)})</span></div><div class="row" style="margin-top:6px"><input class="t" id="${id}a" placeholder="simple past" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"><input class="t" id="${id}b" placeholder="past participle" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="max-width:220px"></div>`;
     return `<div class="it"><span class="n">${x.n}.</span><span class="p">${x.pts} P.</span> ${b}</div>`; }).join("")
+    + (p.id==="A" && p.items.some(x=>x.kind==="pic") ? `<details class="credits"><summary>Bildnachweis (Wikimedia Commons)</summary><ul>${p.items.filter(x=>x.kind==="pic").map(x=>`<li>${x.n}. ${esc(x.foto.f.replace(/_/g," "))} – ${esc(x.foto.by||"")} ${esc(x.foto.lic||"")}</li>`).join("")}</ul></details>` : "")
     + (p.id==="C" ? `<div class="wbank"><b>Wörterkasten</b> <span class="small">(jedes Wort passt zu genau einem Satz)</span><div class="wchips">${p.bank.map(w=>`<span class="wchip" data-w="${esc(w)}">${esc(w)}</span>`).join("")}</div></div>` : "")).join("");
   V.innerHTML = `<div class="prog"><span>Mock Test · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>📝 Mock Test</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
   window.scrollTo(0,0);
@@ -320,6 +331,7 @@ function finish(parts, maxPts){
   for(const p of parts){ let s = 0, m = 0;
     for(const x of p.items){ m += x.pts; let got = 0, mine = "", sol = "";
       if(x.kind==="mc"){ const r = document.querySelector(`input[name=i${x.n}]:checked`); const o = r ? x.opts[+r.value] : null; mine = o ? o.t : "–"; sol = x.opts.find(o=>o.ok).t; got = o && o.ok ? 1 : 0; }
+      else if(x.kind==="pic"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = gradeC(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else if(x.kind==="type"){ mine = $("#i"+x.n).value.trim(); sol = x.it.head; const g = gradeC(mine, answersOf(x.it)); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else if(x.kind==="gap"){ mine = $("#i"+x.n).value.trim(); sol = x.c.ans[0]; const g = gradeC(mine, x.c.ans); got = g===2 ? 2 : g===1 ? 1 : 0; }
       else { const a = $("#i"+x.n+"a").value.trim(), b = $("#i"+x.n+"b").value.trim(); mine = a+" / "+b; sol = x.it.past+" / "+x.it.pp; got = (grade(a,x.it.past.split("/"))?1:0) + (grade(b,x.it.pp.split("/"))?1:0); }
