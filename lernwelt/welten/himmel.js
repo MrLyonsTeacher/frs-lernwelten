@@ -477,7 +477,7 @@ export function build(A){
     // Wurzeln, die über den Hügel greifen
     for(let i=0;i<9;i++){ const a=i/9*6.283+.3, len=9+rand()*5; limb([[CX+Math.cos(a)*4,TB+2,CZ+Math.sin(a)*4],[CX+Math.cos(a)*(len*.6),TB-1,CZ+Math.sin(a)*(len*.6)],[CX+Math.cos(a)*len,YT+3,CZ+Math.sin(a)*len]],2.2,.9); }
     // Eingang im Stamm mit warmem Fenster
-    { let iz=CZ+14; while(iz>CZ && get(CX,TB+2,iz)!=="wBark") iz--; for(let b=1;b<=3;b++) set(CX,TB+b,iz,"door"); set(CX,TB+4,iz,"win"); set(CX-1,TB+2,iz,"win"); set(CX+1,TB+2,iz,"win"); }
+    { let iz=CZ+14; while(iz>CZ && get(CX,TB+2,iz)!=="wBark") iz--; for(let b=1;b<=3;b++) set(CX,TB+b,iz,"door"); set(CX,TB+4,iz,"win"); }
     const F=[tx(1),TB+TH,tz(1)];
     const shell=(cx,cy,cz,rx,ry,rz)=>{ for(let x=Math.floor(cx-rx-1);x<=cx+rx+1;x++) for(let y=Math.floor(cy-ry-1);y<=cy+ry+1;y++) for(let z=Math.floor(cz-rz-1);z<=cz+rz+1;z++){ const q=((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2;
       if(q<=1+(rand()-.5)*.4 && q>=.58){ set(x,y,z,lf());
@@ -515,7 +515,7 @@ export function build(A){
       // ausgefranste Kronenränder, vereinzelte Blüten und kleine Blattbüschel nach unten
       for(let x=CX-46;x<=CX+46;x++) for(let z=CZ-40;z<=CZ+40;z++) for(let y=F[1]-12;y<=F[1]+28;y++){ const b=get(x,y,z); if(!b||!LEAVES.includes(b)) continue;
         const r=rand(); if(r<.05){ const d=[[1,0,0],[-1,0,0],[0,0,1],[0,0,-1],[0,1,0]][Math.floor(rand()*5)]; if(!get(x+d[0],y+d[1],z+d[2])) set(x+d[0],y+d[1],z+d[2],lf()); }
-        else if(r<.075 && !get(x,y-1,z)) set(x,y-1,z, rand()<.6?"pinkP":"yellowP");
+        else if(r<.075 && !get(x,y-1,z)) set(x,y-1,z,"yellowP");
         else if(r<.095 && !get(x,y-1,z) && !get(x,y-2,z)){ set(x,y-1,z,lf()); set(x,y-2,z,rand()<.5?"wVine":lf()); } }
     }
   }
