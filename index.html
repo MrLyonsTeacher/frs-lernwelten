@@ -317,7 +317,7 @@ function freiDialog(k){
       <button class="fd-more" type="button" data-more="${b}">▾ Einzelne Themen${th.some(t=>xs.includes(t.id))?` (${th.filter(t=>xs.includes(t.id)).length} gesperrt)`:""}</button>
       <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${xs.includes(t.id)?"":"checked"}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
     <div class="fd-auto"><span><b>Automatischer Reset</b><em>Fortschritt, Namen, Niveau und Trainer-Daten werden gelöscht und der Tab wird geschlossen. Die Uhr startet, wenn die Schüler den Code scannen.</em>
-      <select id="fRes">${[[0,"Kein automatischer Reset"],[45,"Nach 45 Minuten"],[90,"Nach 90 Minuten"]].map(([m,t])=>`<option value="${m}" ${((selRaw(k)||{}).r||0)===m?"selected":""}>${t}</option>`).join("")}</select></span></div>
+      <select id="fRes">${[[0,"Kein automatischer Reset"],[45,"Nach 45 Minuten"],[90,"Nach 90 Minuten"]].map(([m,t])=>`<option value="${m}" ${(selRaw(k) ? (selRaw(k).r||0) : 90)===m?"selected":""}>${t}</option>`).join("")}</select></span></div>
     <div class="fd-row"><button class="btn" id="fMk">Code erzeugen</button><button class="btn ghost" id="fAll">Alles öffnen</button>${closeB}</div>
     <div class="fd-out" id="fOut"></div>`;
   if(!dlg.open) dlg.showModal();
