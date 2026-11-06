@@ -75,10 +75,10 @@ details summary{cursor:pointer;font-weight:700;min-height:40px;display:flex;alig
 
 /* Klassenübersicht */
 #report{position:fixed;inset:0;z-index:10;background:var(--bg);overflow:auto;padding:1rem}
-.rp-bar{max-width:1100px;margin:0 auto .8rem;display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center}
+.rp-bar{max-width:1400px;margin:0 auto .8rem;display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center}
 .rp-sortlbl{color:var(--muted)}
 .rp-sort[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.rp-page{max-width:1100px;margin:0 auto;background:#fff;color:#16201C;border-radius:12px;padding:1.4rem 1.6rem;
+.rp-page{max-width:1400px;margin:0 auto;background:#fff;color:#16201C;border-radius:12px;padding:1.4rem 1.6rem;
   --g:#CFEFDC; --gi:#0F5132; --y:#FCEFC4; --yi:#6B4E00; --r:#F9D3CE; --ri:#8A1C12; --ln:#E2E6E4; --mu:#5E6A65; --ac:#1E6B52}
 .rp-head{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:flex-end;border-bottom:2px solid #16201C;padding-bottom:.6rem;margin-bottom:1rem}
 .rp-head h2{font-size:1.6rem;margin:0}
@@ -106,8 +106,27 @@ details summary{cursor:pointer;font-weight:700;min-height:40px;display:flex;alig
 .rp-warn{color:var(--ri);font-size:.85rem;margin-top:.5rem}
 @media (max-width:820px){ .rp-grid{grid-template-columns:1fr} }
 .rp-grid.wide{grid-template-columns:1fr} .rp-grid.wide>div:first-child{columns:2;column-gap:2.4rem} .rp-grid.wide>div:first-child>h3,.rp-grid.wide>div:first-child>.rp-note{column-span:all} .rp-grid.wide .st-row{break-inside:avoid;break-after:avoid}
+/* Klassenübersicht neu: Rubriken untereinander, nur bearbeitete Themen, schmale Tabelle mit gedrehten Spaltenköpfen */
+.rp-stack{display:block}
+.rp-sec{margin:0 0 1rem}
+.rp-cols{columns:2;column-gap:2.4rem}
+.rp-rub{break-inside:avoid;margin:0 0 .9rem}
+.rp-rub-h{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;border-bottom:2px solid var(--ac);margin:0 0 .3rem;padding-bottom:.15rem;font-weight:700;font-size:.95rem;color:var(--ac)}
+.rp-rub-h small{font-weight:400;color:var(--mu);font-size:.78rem}
+.rp-rub .st-row{grid-template-columns:minmax(8rem,1.25fr) minmax(4rem,1fr) 2.3rem 3.1rem;margin:.2rem 0}
+.st-row .cnt{font-size:.75rem;color:var(--mu);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rp-tablewrap{overflow-x:auto}
+.rp-table th.vt{height:12rem;vertical-align:bottom;padding:0 0 .3rem;min-width:1.7rem;max-width:2rem}
+.rp-table th.vt span{display:block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;max-height:11.6rem;overflow:hidden;text-overflow:ellipsis;margin:0 auto;font-size:.72rem}
+.rp-table td.sc{min-width:1.7rem;padding:.28rem .1rem}
+.rp-table td.fbk{min-width:15rem;max-width:22rem}
+.fb-s,.fb-w,.fb-o{display:block}.fb-o{color:var(--mu);font-size:.74rem}
 @media print{
   @page{size:A4 landscape;margin:10mm}
+  .rp-table th.vt{height:34mm} .rp-table th.vt span{max-height:33mm;font-size:6.5pt}
+  .rp-rub-h{font-size:9.5pt} .rp-rub .st-row{margin:1.5pt 0} .st-row .cnt{font-size:7pt}
+  .rp-table td.fbk{font-size:7pt;min-width:0;max-width:none}
+  .rp-tablewrap{overflow:visible}
   body{background:#fff}
   main,.rp-bar{display:none !important}
   #report{position:static;padding:0;overflow:visible;background:#fff}
@@ -361,15 +380,16 @@ function renderTable(){
   const avg = rows.reduce((a,r)=>a+pctOf(r,C),0)/rows.length;
   const cfg = document.getElementById("cfgRow"); cfg.hidden = !C.insel;
   if(C.insel){
+    const used = C.ids.map((_,i)=>i).filter(i=>rows.some(r=>vals(r,C)[i]!==null));   // nur Themen, die jemand bearbeitet hat
     document.getElementById("table").innerHTML = `<table>
-    <thead><tr><th>Name</th><th>Gruppe</th><th>Rang</th><th>Spiele</th><th>Qualität</th><th>Umfang</th><th>Gesamt</th>${C.heads.map(h=>`<th>${esc(h)}</th>`).join("")}<th>Abgegeben</th><th></th></tr></thead>
+    <thead><tr><th>Name</th><th>Gruppe</th><th>Rang</th><th>Spiele</th><th>Qualität</th><th>Umfang</th><th>Gesamt</th>${used.map(i=>`<th>${esc(C.heads[i])}</th>`).join("")}<th>Abgegeben</th><th></th></tr></thead>
     <tbody>${rows.map(r=>{ const M=metrics(r,C), pc=Math.round(M.G*100);
       return `<tr class="${r.valid?"":"invalid"}">
         <td>${r.valid?"":"⚠ "}${esc(r.name)}</td><td>${esc(r.grp)}</td>
         <td>${M.rank?`${M.rank.icon} ${esc(M.rank.name)} <small>(${M.today})</small>`:"–"}</td>
         <td class="n">${M.games}</td><td class="n">${Math.round(M.Q*100)} %</td><td class="n">${Math.round(M.U*100)} %</td>
         <td class="n"><span class="bar" style="width:${Math.round(Math.min(pc,100)*0.6)}px"></span><b>${pc} %</b></td>
-        ${C.ids.map((_,i)=>{ const t=tpct(r,C,i); return `<td class="n">${t===null?"–":Math.round(t*100)+" %"}</td>`; }).join("")}
+        ${used.map(i=>{ const t=tpct(r,C,i); return `<td class="n">${t===null?"–":Math.round(t*100)+" %"}</td>`; }).join("")}
         <td>${esc(r.time.replace("T"," "))}</td>
         <td><button class="del" data-del="${esc(r.key)}" aria-label="${esc(r.name)} löschen">×</button></td></tr>`; }).join("")}</tbody>
     </table><p class="count">${rows.length} Schüler · Durchschnitt ${Math.round(avg*100)} % (Gesamt = ${Math.round(WQ*100)} % Qualität + ${Math.round((1-WQ)*100)} % Umfang, Ziel ${ZIEL} Spiele)</p>`;
@@ -426,19 +446,33 @@ document.getElementById("csv").onclick = ()=>{
 let rpSort = "name";
 function cls(p){ return p>=0.8 ? "c-g" : p>=0.5 ? "c-y" : "c-r"; }
 function colorOf(p){ return p>=0.8 ? "#2E9E66" : p>=0.5 ? "#D9A21B" : "#D2493A"; }
-// Kurz-Rückmeldung: starke und schwache Bereiche (Inseln) bzw. Stationen
+// Kurzname eines Themas für schmale Spalten
+const shortT = t => String(t).replace(/^Words: /,"").replace(/^Word Power: /,"WP: ").replace(/^Vocab Trainer: /,"Trainer: ");
+const kname = g => FRS.kategorien[g] ? FRS.kategorien[g].de : g;
+const listN = (arr, n) => arr.slice(0,n).join(", ") + (arr.length>n ? ` (+${arr.length-n})` : "");
+// Rückmeldung je Schüler: was war stark (ab 80 %), was sollte wiederholt werden (unter 50 %), wo wurde noch gar nichts gemacht
 function feedback(r, C){
-  const v = vals(r,C), units = {};
-  v.forEach((x,i)=>{ if(x===null) return; const u = C.insel ? C.groups[i] : i; (units[u] = units[u] || {p:0,m:0}); units[u].p += x; units[u].m += C.insel ? tmax(r,C,i) : C.smax[i]; });
-  const keys = Object.keys(units);
-  if(!keys.length) return `<span class="fb-none">noch nichts bearbeitet</span>`;
-  const nm = u => C.insel ? (FRS.kategorien[u] ? FRS.kategorien[u].de : u) : C.heads[u];
-  const strong = keys.filter(u=>units[u].p/units[u].m>=.8).map(nm), weak = keys.filter(u=>units[u].p/units[u].m<.5).map(nm);
-  const parts = [];
-  if(strong.length) parts.push(`<span class="fb-s">Stark: ${esc(strong.join(", "))}</span>`);
-  if(weak.length) parts.push(`<span class="fb-w">Üben: ${esc(weak.join(", "))}</span>`);
-  if(!parts.length) parts.push(`<span class="fb-m">solide (50–79 %)</span>`);
-  return parts.join(" ");
+  const v = vals(r,C);
+  if(C.insel){
+    const rows = []; v.forEach((x,i)=>{ if(x===null) return; rows.push({i, p:tpct(r,C,i), g:C.groups[i]}); });
+    if(!rows.length) return `<span class="fb-none">noch nichts bearbeitet</span>`;
+    const strong = rows.filter(x=>x.p>=.8).sort((a,b)=>b.p-a.p), weak = rows.filter(x=>x.p<.5).sort((a,b)=>a.p-b.p);
+    const out = [];
+    if(strong.length) out.push(`<span class="fb-s">✔ Stark: ${esc(listN(strong.map(x=>shortT(C.heads[x.i])),3))}</span>`);
+    if(weak.length) out.push(`<span class="fb-w">↻ Wiederholen: ${esc(listN(weak.map(x=>shortT(C.heads[x.i])),3))}</span>`);
+    if(!strong.length && !weak.length) out.push(`<span class="fb-m">solide (50–79 %) – mit Wiederholen auf grün bringen</span>`);
+    const played = new Set(rows.map(x=>x.g)), allG = [...new Set(C.groups)], miss = allG.filter(g=>!played.has(g));
+    if(miss.length && played.size) out.push(`<span class="fb-o">Noch nichts in: ${esc(miss.map(kname).join(", "))}</span>`);
+    const M = metrics(r,C); if(M.games < Math.max(1, Math.round(ZIEL*0.5))) out.push(`<span class="fb-o">Wenig gespielt: ${M.games} von ${ZIEL} Spielen</span>`);
+    return out.join("");
+  }
+  const rows = []; v.forEach((x,i)=>{ if(x!==null) rows.push({i, p:x/C.smax[i]}); });
+  if(!rows.length) return `<span class="fb-none">noch nichts bearbeitet</span>`;
+  const strong = rows.filter(x=>x.p>=.8), weak = rows.filter(x=>x.p<.5), out = [];
+  if(strong.length) out.push(`<span class="fb-s">✔ Stark: ${esc(listN(strong.map(x=>C.heads[x.i]),3))}</span>`);
+  if(weak.length) out.push(`<span class="fb-w">↻ Wiederholen: ${esc(listN(weak.map(x=>C.heads[x.i]),3))}</span>`);
+  if(!out.length) out.push(`<span class="fb-m">solide (50–79 %)</span>`);
+  return out.join("");
 }
 function renderReport(){
   const all = shown(); if(!all.length) return false;
@@ -449,17 +483,25 @@ function renderReport(){
   const done = C.heads.map((_,i)=> base.filter(r=>vals(r,C)[i]!==null));
   const stAvg = C.heads.map((_,i)=> done[i].length ? (C.insel ? done[i].reduce((a,r)=>a+tpct(r,C,i),0)/done[i].length : done[i].reduce((a,r)=>a+vals(r,C)[i],0)/done[i].length/C.smax[i]) : null);
   const avgM = C.insel ? { Q: base.reduce((a,r)=>a+metrics(r,C).Q,0)/base.length, g: base.reduce((a,r)=>a+metrics(r,C).games,0)/base.length } : null;
-  const weakest = stAvg.map((p,i)=>({p,i})).filter(x=>x.p!==null).sort((a,b)=>a.p-b.p).slice(0,2).filter(x=>x.p<0.8);
+  // Welche Spalten werden angezeigt? Bei Klasseninseln nur Themen, die mindestens ein Schüler bearbeitet hat – sortiert nach Beteiligung
+  const shownIdx = C.heads.map((_,i)=>i).filter(i=> !C.insel || done[i].length>0);
+  const byPart = (a,b)=> done[b].length-done[a].length || (stAvg[b]||0)-(stAvg[a]||0) || a-b;
   const rows = valid.slice().sort(rpSort==="pts" ? (a,b)=>pctOf(b,C)-pctOf(a,C) || a.name.localeCompare(b.name,"de") : (a,b)=>a.name.localeCompare(b.name,"de")).concat(invalid);
   const grp = fGrp.value==="*" ? ([...new Set(all.map(r=>r.grp))].filter(Boolean).join(", ") || "alle Gruppen") : (fGrp.value || "ohne Gruppe");
   const bestP = Math.max(...base.map(r=>pctOf(r,C)));
-  // Gruppenzeile über den Themen (nur Inseln)
-  let groupRow = "";
-  if(C.insel){
-    const spans = []; C.groups.forEach(g=>{ const l=spans[spans.length-1]; if(l && l.g===g) l.n++; else spans.push({g,n:1}); });
-    groupRow = `<tr class="grp-row"><th></th><th></th>${spans.map(s=>`<th colspan="${s.n}">${FRS.kategorien[s.g]?FRS.kategorien[s.g].icon+" "+esc(FRS.kategorien[s.g].de):esc(s.g)}</th>`).join("")}<th></th></tr>`;
-  }
+  const stRow = i => `<div class="st-row"><span title="${esc(C.heads[i])}">${esc(C.insel?shortT(C.heads[i]):C.heads[i])}</span><span class="st-track">${stAvg[i]===null?"":`<span class="st-fill" style="display:block;width:${Math.round(stAvg[i]*100)}%;background:${colorOf(stAvg[i])}"></span>`}</span><span class="pc">${stAvg[i]===null?"–":Math.round(stAvg[i]*100)}</span>${C.insel?`<span class="cnt">${done[i].length}/${base.length}</span>`:`<span></span>`}</div>`;
+  // Spalten gruppiert nach Rubrik (Insel) bzw. eine Gruppe (Stationen)
+  const rubs = []; if(C.insel){ [...new Set(shownIdx.map(i=>C.groups[i]))].forEach(g=>rubs.push({g, idx:shownIdx.filter(i=>C.groups[i]===g).sort(byPart)})); } else rubs.push({g:null, idx:shownIdx});
+  const rubAvg = R => { const l = R.idx.filter(i=>stAvg[i]!==null); return l.length ? l.reduce((a,i)=>a+stAvg[i],0)/l.length : null; };
+  const skipped = C.insel ? C.heads.length - shownIdx.length : 0;
+  const best = shownIdx.filter(i=>stAvg[i]!==null && stAvg[i]>=.8 && done[i].length>=Math.max(2,base.length/3)).sort((a,b)=>stAvg[b]-stAvg[a]).slice(0,3);
+  const weak = shownIdx.filter(i=>stAvg[i]!==null && stAvg[i]<.8).sort((a,b)=>stAvg[a]-stAvg[b]).slice(0,3);
   const label = C.insel ? "Themen" : "Stationen";
+  const secHTML = rubs.map(R=>`<div class="rp-rub">${R.g?`<div class="rp-rub-h"><span>${FRS.kategorien[R.g]?FRS.kategorien[R.g].icon+" "+esc(kname(R.g)):esc(R.g)}</span><small>${rubAvg(R)===null?"":"Ø "+Math.round(rubAvg(R)*100)+" % · "}${R.idx.length} Themen bearbeitet</small></div>`:""}${R.idx.map(stRow).join("")}</div>`).join("");
+  // Tabelle: Spalten = angezeigte Themen, nach Rubrik gruppiert, in derselben Reihenfolge wie links
+  const colOrder = rubs.flatMap(R=>R.idx);
+  const groupRow = C.insel ? `<tr class="grp-row"><th></th><th></th>${rubs.map(R=>`<th colspan="${R.idx.length}">${FRS.kategorien[R.g]?FRS.kategorien[R.g].icon+" "+esc(kname(R.g)):esc(R.g)}</th>`).join("")}<th></th></tr>` : "";
+  const headCell = i => C.insel ? `<th class="vt" title="${esc(C.heads[i])}"><span>${esc(shortT(C.heads[i]))}</span></th>` : `<th>${esc(C.heads[i])}</th>`;
   document.getElementById("rpPage").innerHTML = `
     <div class="rp-head">
       <div><h2>${esc(info.titel)}</h2><p>${esc(grp)} · Stand ${new Date().toLocaleDateString("de-DE")}</p></div>
@@ -470,30 +512,27 @@ function renderReport(){
                  : `<div class="rp-kpi"><b>${Math.round(bestP*100)} %</b><span>Bestes Ergebnis</span></div>`}
       </div>
     </div>
-    <div class="rp-grid${C.heads.length>6?" wide":""}">
-      <div>
-        <h3>${label} im Klassenschnitt</h3>
-        ${C.heads.map((h,i)=> stAvg[i]===null
-          ? `<div class="st-row"><span>${esc(h)}</span><span class="st-track"></span><span class="pc">–</span></div>`
-          : `<div class="st-row"><span>${esc(h)}</span><span class="st-track"><span class="st-fill" style="display:block;width:${Math.round(stAvg[i]*100)}%;background:${colorOf(stAvg[i])}"></span></span><span class="pc">${Math.round(stAvg[i]*100)}</span></div>`
-            + (C.insel?`<div class="st-sub">bearbeitet von ${done[i].length} / ${base.length}</div>`:"")).join("")}
-        <div class="rp-note">${weakest.length
-          ? `<b>Wiederholen lohnt sich bei:</b> ${weakest.map(w=>esc(C.heads[w.i])+" ("+Math.round(w.p*100)+" %)").join(" und ")}`
+    <div class="rp-stack">
+      <div class="rp-sec">
+        <h3>${label} im Klassenschnitt${C.insel?" <span style=\"font-weight:400;color:var(--mu);font-size:.8rem\">– sortiert nach Beteiligung (Zahl rechts = wie viele Schüler das Thema bearbeitet haben)</span>":""}</h3>
+        <div class="${C.insel?"rp-cols":""}">${secHTML}</div>
+        <div class="rp-note">${best.length?`<b>Das kann die Klasse:</b> ${best.map(i=>esc(shortT(C.heads[i]))+" ("+Math.round(stAvg[i]*100)+" %)").join(", ")}<br>`:""}${weak.length
+          ? `<b>Wiederholen lohnt sich bei:</b> ${weak.map(i=>esc(shortT(C.heads[i]))+" ("+Math.round(stAvg[i]*100)+" %)").join(", ")}`
           : `<b>Alles im grünen Bereich.</b>`}
-          <br><span style="color:var(--mu)">${C.insel?`„–“ heißt: Thema noch nicht bearbeitet. Themen-Prozente beziehen sich nur auf die gespielten Spiele. Gesamt = ${Math.round(WQ*100)} % Qualität + ${Math.round((1-WQ)*100)} % Umfang (Ziel: ${ZIEL} Spiele). Q = Qualität, U = Umfang.`:"Niedrige Werte können auch heißen, dass eine Station noch nicht bearbeitet wurde."}</span></div>
+          <br><span style="color:var(--mu)">${C.insel?`Nicht bearbeitete Themen (${skipped}) sind ausgeblendet. Themen-Prozente beziehen sich nur auf die gespielten Spiele. Gesamt = ${Math.round(WQ*100)} % Qualität + ${Math.round((1-WQ)*100)} % Umfang (Ziel: ${ZIEL} Spiele). Q = Qualität, U = Umfang.`:"Niedrige Werte können auch heißen, dass eine Station noch nicht bearbeitet wurde."}</span></div>
       </div>
-      <div>
+      <div class="rp-sec">
         <h3>Einzelergebnisse (in Prozent)</h3>
-        <table class="rp-table">
-          <thead>${groupRow}<tr><th>Name</th><th style="text-align:left">Gesamt</th>${C.heads.map(h=>`<th>${esc(h)}</th>`).join("")}<th style="text-align:left">Kurz-Rückmeldung</th></tr></thead>
+        <div class="rp-tablewrap"><table class="rp-table">
+          <thead>${groupRow}<tr><th>Name</th><th style="text-align:left">Gesamt</th>${colOrder.map(headCell).join("")}<th style="text-align:left">Rückmeldung</th></tr></thead>
           <tbody>${rows.map(r=>{ const pc=pctOf(r,C), v=vals(r,C);
             return `<tr><td class="nm" title="${esc(r.name)}">${r.valid?"":"⚠ "}${esc(r.name)}</td>
               <td class="tot"><span class="tb" style="width:${Math.round(Math.min(pc,1)*50)}px"></span><b>${Math.round(pc*100)} %</b> ${C.insel ? (()=>{ const M=metrics(r,C); return `<span class="tot-sub">Q ${Math.round(M.Q*100)} · U ${Math.round(M.U*100)} · ${M.games} Sp.${M.rank?` · ${M.rank.icon} ${esc(M.rank.name)}`:""}</span>`; })() : `<span style="color:var(--mu)">${r.pts}/${r.max}</span>`}</td>
-              ${v.map((x,i)=>{ if(x===null) return `<td class="c-n">–</td>`; const p = C.insel ? tpct(r,C,i) : x/C.smax[i];
-                return `<td class="${cls(p)}" title="${x} Punkte">${Math.round(Math.min(p,1)*100)}</td>`; }).join("")}
+              ${colOrder.map(i=>{ const x=v[i]; if(x===null) return `<td class="c-n sc">–</td>`; const p = C.insel ? tpct(r,C,i) : x/C.smax[i];
+                return `<td class="${cls(p)} sc" title="${esc(C.heads[i])}: ${x} Punkte">${Math.round(Math.min(p,1)*100)}</td>`; }).join("")}
               <td class="fbk">${feedback(r,C)}</td></tr>`; }).join("")}</tbody>
-        </table>
-        <div class="rp-legend"><span><i class="c-g"></i>ab 80 %</span><span><i class="c-y"></i>50–79 %</span><span><i class="c-r"></i>unter 50 %</span>${C.insel?`<span><i class="c-n"></i>nicht bearbeitet</span>`:""}</div>
+        </table></div>
+        <div class="rp-legend"><span><i class="c-g"></i>ab 80 % (stark)</span><span><i class="c-y"></i>50–79 %</span><span><i class="c-r"></i>unter 50 % (wiederholen)</span>${C.insel?`<span><i class="c-n"></i>nicht gespielt</span>`:""}</div>
         ${invalid.length?`<p class="rp-warn">⚠ ${invalid.length} Code${invalid.length>1?"s":""} mit falscher Prüfziffer (vermutlich verändert) – nicht im Durchschnitt enthalten.</p>`:""}
       </div>
     </div>`;
