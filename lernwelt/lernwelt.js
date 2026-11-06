@@ -151,6 +151,11 @@ function load(){
   // ältere Spielstände (nur Bestwert pro Spiel) übernehmen
   for(const id in S.lv){ const r = S.lv[id]; if(!r.it){ r.it = {}; r.legacy = r.best || 0; } }
 }
+// Reset: auch die Namen/Kürzel aller anderen Welten und der Insel löschen, damit beim „Finish“ kein früherer Name erscheint
+function clearNames(){ try{ for(const k of Object.keys(localStorage)){
+  if(/^insel-.*-name$/.test(k)) localStorage.removeItem(k);
+  else if(/^lw-.*-v1$/.test(k)){ try{ const r = JSON.parse(localStorage.getItem(k)); if(r && r.name){ r.name = ""; localStorage.setItem(k, JSON.stringify(r)); } }catch(e){} }
+} }catch(e){} }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 
 /* ---------- Effekte ---------- */
@@ -937,7 +942,7 @@ const LW = {
       const g = e.target.closest("[data-go]");
       if(g){ const to=g.dataset.go; if(location.hash.slice(1)===to) render(); else location.hash=to; return; }
       if(e.target.closest("[data-again]")){ render(); window.scrollTo(0,0); return; }
-      if(e.target.closest("#lwReset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); render(); }
+      if(e.target.closest("#lwReset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); clearNames(); render(); }
     });
     document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ p.hidden=true; }); });
     window.addEventListener("hashchange", ()=>{ hearStop(); render(); window.scrollTo(0,0); });

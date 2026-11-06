@@ -15,13 +15,30 @@
   function lockedThema(k, id){ const s = state(k); return !!(s && Array.isArray(s.x) && s.x.includes(id)); }
   function locked(k, kat){ const s = state(k); return s ? !s.open.includes(kat) : (STANDARD_GESPERRT[k]||[]).includes(kat); }
   async function checkPw(pw){ try{ return (await sha("frs-lernwelten:" + String(pw).trim())) === PWHASH; }catch(e){ return false; } }
-  async function makeCode(k, open, x){ const payload = JSON.stringify(x && x.length ? { k:+k, o:open, x, t:Date.now() } : { k:+k, o:open, t:Date.now() }); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
+  async function makeCode(k, open, x, r){ const o = { k:+k, o:open, t:Date.now() }; if(x && x.length) o.x = x; if(r>0) o.r = +r; const payload = JSON.stringify(o); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
   async function apply(code){
     try{ const [p, sig] = String(code).trim().split("."); const payload = unb64(p);
       if(!sig || (await sha(PWHASH + payload)).slice(0,14) !== sig) return null;
       const o = JSON.parse(payload); if(!o || !Array.isArray(o.o) || !o.k) return null;
-      localStorage.setItem(KEY(o.k), JSON.stringify({ open:o.o, x:Array.isArray(o.x)?o.x:[], ts:o.t })); return o;
+      localStorage.setItem(KEY(o.k), JSON.stringify({ open:o.o, x:Array.isArray(o.x)?o.x:[], ts:o.t, r:o.r>0?o.r:0 }));
+      if(o.r>0) localStorage.setItem(RKEY, String(Date.now() + o.r*60000)); else localStorage.removeItem(RKEY);   // Auto-Reset: in o.r Minuten
+      return o;
     }catch(e){ return null; } }
   function clear(k){ try{ localStorage.removeItem(KEY(k)); }catch(e){} }
-  window.FREI = { state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  /* Alles zurücksetzen (Leih-iPads): Fortschritt, Namen/Kürzel, Tageszähler und Vokabeltrainer-Daten löschen.
+     Bleiben: Freigabe (Sperren), Niveau und ♀/♂-Wahl. */
+  function wipe(){
+    try{ for(const k of Object.keys(localStorage)){
+      if(/^lw-/.test(k) || /^insel-.*-name$/.test(k) || /^frs-day-k/.test(k) || /^vt8-/.test(k)) localStorage.removeItem(k);
+    } }catch(e){}
+  }
+  /* Automatischer Reset: der Code der Lehrkraft kann „nach r Minuten zurücksetzen“ enthalten. Geprüft beim Laden jeder Seite,
+     alle 20 s und wenn der iPad-Bildschirm wieder aktiv wird. Einmalig – beim nächsten Scannen startet die Uhr neu. */
+  const RKEY = "frs-reset-at";
+  function sweep(){ try{ const t = +localStorage.getItem(RKEY); if(t && Date.now() >= t){ localStorage.removeItem(RKEY); wipe(); return true; } }catch(e){} return false; }
+  if(sweep()) window.FREI_WAS_RESET = true;
+  const tick = () => { if(sweep()) location.reload(); };
+  setInterval(tick, 20000); document.addEventListener("visibilitychange", () => { if(!document.hidden) tick(); });
+  const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
+  window.FREI = { wipe, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();

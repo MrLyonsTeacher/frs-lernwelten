@@ -209,7 +209,7 @@ function home(){
       <button class="mode" data-m="type"><b>⌨️ Eintippen</b><span>${cur==="irr"?"Past und Participle schreiben":"Deutsch → Englisch schreiben"}</span></button>
       <button class="mode" data-m="list"><b>📋 Liste</b><span>Alle Wörter ansehen und suchen</span></button>
       ${cur==="irr"?"":`<button class="mode" data-m="mix"><b>🎲 Aufgabenmix</b><span>Zuordnen · Das passt nicht · Fehler finden · Diktat (28 Punkte)</span></button>`}
-      <button class="mode mock" data-m="mock"><b>📝 Mock Test · ${esc(TITLE())}</b><span>50 Punkte · Prozent und vorläufige Note${best?` · Dein Bestwert: ${best.pct} % (Note ${best.note})`:""}</span></button>
+      <button class="mode mock" data-m="mock"><b>📝 Mock Test · ${esc(TITLE())}${cur!=="irr"&&secs.size?" · "+[...secs].map(esc).join(" + "):""}</b><span>${cur!=="irr"&&secs.size?"nur die gewählten Abschnitte · eigener Übungstest (zählt nicht für Bestwert)":"50 Punkte"} · Prozent und vorläufige Note${best?` · Dein Bestwert: ${best.pct} % (Note ${best.note})`:""}</span></button>
     </div></section>`;
 }
 
@@ -329,20 +329,22 @@ function mixParts(all){
     {id:"4", titel:"Teil 4 · Diktat: Hör zu und schreibe das Wort (2 Punkte je Wort)", items:D}]; }
 function mock(mode){
   MODE = mode || "test";
-  const all = cur==="irr" ? IRR : unit().items; let parts;
+  const all = cur==="irr" ? IRR : unit().items; let parts;     // all = ganze Unit (für Falschantworten), P = gewählte Abschnitte (Aufgaben)
+  const P = cur==="irr" ? IRR : pool(), f = Math.min(1, P.length/30), cnt = n => Math.max(1, Math.round(n*f));   // kleine Auswahl → kürzerer Test
   if(cur==="irr"){ const v = shuffle(IRR);
     parts = [{id:"A", titel:"Teil A · Deutsch → Infinitiv (1 Punkt je Frage)", items:v.slice(0,10).map(it=>({kind:"mc", it, pts:1, q:`<b>${esc(it.de)}</b> – wie heißt der Infinitiv?`, opts:shuffle([it].concat(shuffle(IRR.filter(o=>o!==it&&o.inf!==it.inf&&!overlap(o,it))).slice(0,3))).map(o=>({t:o.inf, ok:o===it}))}))},
       {id:"B", titel:"Teil B · Formen schreiben (je 1 Punkt für Past und Participle)", items:v.slice(10,30).map(it=>({kind:"irr", it, pts:2}))}]; }
-  else if(MODE==="mix"){ parts = mixParts(all); }
+  else if(MODE==="mix"){ parts = mixParts(P); }
   else { const used = new Set(), take = (arr,n) => { const out=[]; for(const it of shuffle(arr)){ if(out.length>=n) break; const k=norm(it.head); if(used.has(k)) continue; used.add(k); out.push(it); } return out; };
     const FOTO = window.FOTO8 || {}, fotoOf = it => FOTO[norm(it.head)];
-    const PIC = take(all.filter(i=>i.typeOk && fotoOf(i)), 7);     // Bildaufgaben: nur Wörter, zu denen es ein Foto gibt
-    const A = take(all.filter(i=>!i.phrase||Math.random()<.3), 14-2*PIC.length), Bp = take(all.filter(i=>i.typeOk && cloze(i)===null),10);
-    const C = take(all.filter(i=>cloze(i)), 8); const need = 8 - C.length; const extra = need>0 ? take(all.filter(i=>i.typeOk),need) : [];
+    const PIC = take(P.filter(i=>i.typeOk && fotoOf(i)), cnt(7));     // Bildaufgaben: nur Wörter, zu denen es ein Foto gibt
+    const A = take(P.filter(i=>!i.phrase||Math.random()<.3), Math.max(0, Math.round(14*f)-2*PIC.length)), Bp = take(P.filter(i=>i.typeOk && cloze(i)===null), cnt(10));
+    const C = take(P.filter(i=>cloze(i)), cnt(8)); const need = cnt(8) - C.length; const extra = need>0 ? take(P.filter(i=>i.typeOk),need) : [];
     parts = [{id:"A", titel: PIC.length ? "Teil A · Bilder: Schreibe das englische Wort daneben (2 Punkte je Bild)"+(A.length?" und Englisch → Deutsch, ein Kreuz setzen (1 Punkt)":"") : "Teil A · Englisch → Deutsch, ein Kreuz setzen (1 Punkt je Frage)",
         items: PIC.map(it=>({kind:"pic", it, pts:2, foto:fotoOf(it)})).concat(A.map(it=>({kind:"mc", it, pts:1, q:`Was heißt „<b>${esc(it.head)}</b>“?`, opts:mcOptions(it,all,"en")})))},
       {id:"B", titel:"Teil B · Deutsch → Englisch schreiben (2 Punkte je Wort)", items:Bp.concat(extra).map(it=>({kind:"type", it, pts:2}))},
       {id:"C", titel:"Teil C · Wörterkasten: ordne jedem Satz das passende Wort zu (2 Punkte je Satz)", items:C.map(it=>({kind:"gap", it, pts:2, c:cloze(it)}))}]; }
+  parts = parts.filter(p=>p.items.length);
   const maxPts = parts.reduce((a,p)=>a+p.items.reduce((b,x)=>b+x.pts,0),0); let n = 0;
   parts.forEach(p=>{ if(MODE!=="mix" && p.id==="C") p.bank = shuffle(p.items.map(x=>x.c.ans[0])); if(p.items[0] && p.items[0].kind==="match") p.dbank = shuffle(p.items.map(x=>x.it.deShort)); });
   const html = parts.map(p=>`<div class="part">${esc(p.titel)}</div>`+p.items.map(x=>{ x.n = ++n; const id = "i"+x.n; let b;
@@ -357,7 +359,7 @@ function mock(mode){
     return `<div class="it"><span class="n">${x.n}.</span><span class="p">${x.pts} P.</span> ${b}</div>`; }).join("")
     + (p.id==="A" && p.items.some(x=>x.kind==="pic") ? `<details class="credits"><summary>Bildnachweis (Wikimedia Commons)</summary><ul>${p.items.filter(x=>x.kind==="pic").map(x=>`<li>${x.n}. ${esc(x.foto.f.replace(/_/g," "))} – ${esc(x.foto.by||"")} ${esc(x.foto.lic||"")}</li>`).join("")}</ul></details>` : "")
     + (p.id==="C" ? `<div class="wbank"><b>Wörterkasten</b> <span class="small">(jedes Wort passt zu genau einem Satz)</span><div class="wchips">${p.bank.map(w=>`<span class="wchip" data-w="${esc(w)}">${esc(w)}</span>`).join("")}</div></div>` : "")).join("");
-  V.innerHTML = `<div class="prog"><span>${MODE==="mix"?"Aufgabenmix":"Mock Test"} · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>${MODE==="mix"?"🎲 Aufgabenmix":"📝 Mock Test"}</h2><p class="sub">${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
+  V.innerHTML = `<div class="prog"><span>${MODE==="mix"?"Aufgabenmix":"Mock Test"} · ${esc(TITLE())}</span><button class="chip" data-a="home">Abbrechen</button></div><section class="panel test"><h2>${MODE==="mix"?"🎲 Aufgabenmix":"📝 Mock Test"}</h2><p class="sub">${cur!=="irr"&&secs.size?`Nur: <b>${[...secs].map(esc).join(" + ")}</b> (${P.length} Vokabeln) · `:""}${maxPts} Punkte · ohne Hilfsmittel · du bekommst am Ende Prozent und eine vorläufige Note.<br>Bei Wörtern mit 🔠 zählt die Groß-/Kleinschreibung (falsch geschrieben = nur halbe Punkte).</p>${html}<div class="row" style="margin-top:18px"><button class="btn gold" data-a="submit" id="sub">Abgeben und auswerten</button></div></section>`;
   window.scrollTo(0,0);
   V.onchange = e => { if(!e.target.classList.contains("bk-sel")) return; const used = [...V.querySelectorAll(".bk-sel")].map(x=>x.value);
     V.querySelectorAll(".wchip").forEach(c=>c.classList.toggle("used", used.includes(c.dataset.w))); };
@@ -381,7 +383,7 @@ function finish(parts, maxPts){
     tot += s; br.push([p.id, s, m]); }
   const pct = Math.round(tot/maxPts*100), [lo, note, txt] = noteOf(pct);
   // Bestwert speichern – im Format der Klassenwelt, damit die Inselübersicht und der Ergebnis-Code ihn mitzählen
-  const save = MODE!=="mix";   // der Aufgabenmix ist reine Übung: kein Bestwert, kein Ergebnis-Code
+  const save = MODE!=="mix" && (cur==="irr" || !secs.size);   // der Aufgabenmix ist reine Übung: kein Bestwert, kein Ergebnis-Code
   if(save){ const bests = store.get("vt8-best", {}), old = bests[ID()]; if(!old || pct>old.pct) bests[ID()] = {pct, note, pts:tot}; store.set("vt8-best", bests); }
   if(save) try{ const key = "lw-"+ID()+"-v1", r = store.get(key, {lv:{}, name:"", done:false, seen:{}}); const lv = r.lv.mock || (r.lv.mock = {best:0, runs:0, it:{}}); lv.runs = (lv.runs||0)+1; lv.best = Math.max(lv.best||0, tot); lv.it = lv.it||{}; if(tot>=maxPts) lv.pf = true; store.set(key, r);
     store.set("lw-meta-"+ID(), {max:maxPts, titel:"Vokabeltest "+TITLE(), ids:["mock"], maxima:[maxPts]}); }catch(e){}

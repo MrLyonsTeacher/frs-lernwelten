@@ -282,6 +282,10 @@
       topicIds.forEach(id=>localStorage.removeItem("lw-"+id+"-v1"));
       localStorage.removeItem("frs-day-k"+k);
       if(klasseId) localStorage.removeItem("insel-"+klasseId+"-name");
+      for(const key of Object.keys(localStorage)){   // Namen/Kürzel in allen Welten + Vokabeltrainer (Bestwerte, Lernstand) ebenfalls löschen
+        if(/^insel-.*-name$/.test(key) || /^vt8-/.test(key)) localStorage.removeItem(key);
+        else if(/^lw-.*-v1$/.test(key)){ try{ const r = JSON.parse(localStorage.getItem(key)); if(r && r.name){ r.name = ""; localStorage.setItem(key, JSON.stringify(r)); } }catch(e){} }
+      }
     }catch(e){}
   }
   /* ---------- Niveau (G/M/E) und weiblich/männlich ---------- */
