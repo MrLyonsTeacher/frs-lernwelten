@@ -348,13 +348,13 @@ async function main(){
   const rkc = $("#rkChip"); if(rkc){ const op=()=>UH.rankSheet(K, UH.today(K), true); rkc.addEventListener("click", op); rkc.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); op(); } }); }
   function doReset(closeTab){
     if(!confirm("Reset everything? All flags, games and your initials on this iPad will be deleted.\n\nAlles zurücksetzen? Alle Flaggen, Spiele und dein Kürzel auf diesem iPad werden gelöscht.\n\n(Show your result code to your teacher first!)")) return;
-    UH.resetClass(K, KL.themen.map(t=>t.id), KL.id);
+    UH.resetClass(K, KL.themen.map(t=>t.id), KL.id); if(window.FREI) FREI.wipe();   // komplett: auch Niveau, ♀/♂, Namen, Trainer
     if(!closeTab){ location.replace(location.pathname + "?k=" + K); return; }
     try{ window.close(); }catch(e){}
     // Browser erlauben window.close() nur für Fenster, die per Skript geöffnet wurden. Sonst: leere Abschlussseite.
     setTimeout(()=>{ document.open(); document.write('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#111;color:#fff;font:700 22px/1.4 system-ui;text-align:center;padding:24px"><div>✅ Reset done.<br>Please close this tab now.<br><small style="font-weight:400;opacity:.7">Zurückgesetzt. Bitte schließe diesen Tab.</small></div>'); document.close(); }, 350);
   }
-  $("#resetBtn").addEventListener("click", ()=>doReset(false));
+  $("#resetBtn").addEventListener("click", ()=>doReset(true));
   window.addEventListener("hashchange", ()=>{ if(location.hash==="#fertig") openFinish(); });
   if(location.hash==="#fertig") openFinish();
   const startA = new URLSearchParams(location.search).get("a");

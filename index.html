@@ -316,7 +316,7 @@ function freiDialog(k){
     <div class="fd-list">${bereiche.map(b=>{ const th = c.themen.filter(t=>t.kat===b); return `<div class="fd-area"><label><input type="checkbox" data-b="${b}" ${open.includes(b)?"checked":""}><span>${FRS.kategorien[b].icon||""} ${esc(FRS.kategorien[b].name)}</span><small>${th.length} Lernwelten</small></label>
       <button class="fd-more" type="button" data-more="${b}">▾ Einzelne Themen${th.some(t=>xs.includes(t.id))?` (${th.filter(t=>xs.includes(t.id)).length} gesperrt)`:""}</button>
       <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${xs.includes(t.id)?"":"checked"}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
-    <label class="fd-auto"><input type="checkbox" id="fRes" ${(selRaw(k)||{}).r?"checked":""}><span><b>Nach 60 Minuten automatisch zurücksetzen</b><em>Fortschritt, Namen und Kürzel auf dem iPad werden gelöscht. Die Uhr startet, wenn die Schüler den Code scannen.</em></span></label>
+    <label class="fd-auto"><input type="checkbox" id="fRes" ${(selRaw(k)||{}).r?"checked":""}><span><b>Nach 90 Minuten automatisch zurücksetzen</b><em>Fortschritt, Namen, Niveau und Trainer-Daten werden gelöscht und der Tab wird geschlossen. Die Uhr startet, wenn die Schüler den Code scannen.</em></span></label>
     <div class="fd-row"><button class="btn" id="fMk">Code erzeugen</button><button class="btn ghost" id="fAll">Alles öffnen</button>${closeB}</div>
     <div class="fd-out" id="fOut"></div>`;
   if(!dlg.open) dlg.showModal();
@@ -334,9 +334,9 @@ document.addEventListener("click", async e=>{
   const mb = e.target.closest("[data-more]"); if(mb){ const s = dlg.querySelector(`[data-sub="${mb.dataset.more}"]`); s.hidden = !s.hidden; mb.textContent = (s.hidden?"▾":"▴")+mb.textContent.slice(1); return; }
   if(e.target.matches("[data-b]")){ const s = dlg.querySelector(`[data-sub="${e.target.dataset.b}"]`); if(s) e.target.checked ? s.removeAttribute("data-off") : s.setAttribute("data-off",""); return; }
   if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=true); dlg.querySelectorAll("[data-sub]").forEach(s=>s.removeAttribute("data-off")); return; }
-  if(e.target.closest("#fMk")){ const o = picked(), x = pickedX(o); const r = dlg.querySelector("#fRes") && dlg.querySelector("#fRes").checked ? 60 : 0; try{ localStorage.setItem(SELKEY(k), JSON.stringify({o, x, r})); }catch(err){}
+  if(e.target.closest("#fMk")){ const o = picked(), x = pickedX(o); const r = dlg.querySelector("#fRes") && dlg.querySelector("#fRes").checked ? 90 : 0; try{ localStorage.setItem(SELKEY(k), JSON.stringify({o, x, r})); }catch(err){}
     const code = await FREI.makeCode(k, o, x, r), url = abs(`englisch/welt.html?k=${k}&frei=${code}`), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
-    document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt${x.length?` (dazu ${x.length} einzelne Themen gesperrt)`:""}${r?" · Auto-Reset nach 60 Minuten":""}.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;
+    document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt${x.length?` (dazu ${x.length} einzelne Themen gesperrt)`:""}${r?" · Auto-Reset nach 90 Minuten":""}.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;
     renderPanel(); }
 });
 renderTabs(); renderPanel();

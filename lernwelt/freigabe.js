@@ -26,19 +26,24 @@
     }catch(e){ return null; } }
   function clear(k){ try{ localStorage.removeItem(KEY(k)); }catch(e){} }
   /* Alles zurücksetzen (Leih-iPads): Fortschritt, Namen/Kürzel, Tageszähler und Vokabeltrainer-Daten löschen.
-     Bleiben: Freigabe (Sperren), Niveau und ♀/♂-Wahl. */
+     Niveau geht zurück auf M, ♀/♂ auf Standard. Bleibt: nur die Freigabe (Sperren). */
   function wipe(){
     try{ for(const k of Object.keys(localStorage)){
-      if(/^lw-/.test(k) || /^insel-.*-name$/.test(k) || /^frs-day-k/.test(k) || /^vt8-/.test(k)) localStorage.removeItem(k);
+      if(/^lw-/.test(k) || /^insel-.*-name$/.test(k) || /^frs-day-k/.test(k) || /^vt8-/.test(k) || k==="frs-niveau" || k==="frs-gender" || k==="frs-tab") localStorage.removeItem(k);
     } }catch(e){}
   }
   /* Automatischer Reset: der Code der Lehrkraft kann „nach r Minuten zurücksetzen“ enthalten. Geprüft beim Laden jeder Seite,
      alle 20 s und wenn der iPad-Bildschirm wieder aktiv wird. Einmalig – beim nächsten Scannen startet die Uhr neu. */
   const RKEY = "frs-reset-at";
   function sweep(){ try{ const t = +localStorage.getItem(RKEY); if(t && Date.now() >= t){ localStorage.removeItem(RKEY); wipe(); return true; } }catch(e){} return false; }
-  if(sweep()) window.FREI_WAS_RESET = true;
-  const tick = () => { if(sweep()) location.reload(); };
+  /* Tab schließen: Browser erlauben window.close() nur für per Skript geöffnete Tabs – sonst erscheint eine Abschlussseite. */
+  function closeTab(){
+    try{ window.close(); }catch(e){}
+    setTimeout(()=>{ document.open(); document.write('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#111;color:#fff;font:700 22px/1.4 system-ui;text-align:center;padding:24px"><div>✅ Reset done.<br>Please close this tab now.<br><small style="font-weight:400;opacity:.7">Zurückgesetzt. Bitte schließe diesen Tab.</small></div>'); document.close(); }, 250);
+  }
+  if(sweep()) setTimeout(closeTab, 0);
+  const tick = () => { if(sweep()) closeTab(); };
   setInterval(tick, 20000); document.addEventListener("visibilitychange", () => { if(!document.hidden) tick(); });
   const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
-  window.FREI = { wipe, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  window.FREI = { wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();

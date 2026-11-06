@@ -942,7 +942,7 @@ const LW = {
       const g = e.target.closest("[data-go]");
       if(g){ const to=g.dataset.go; if(location.hash.slice(1)===to) render(); else location.hash=to; return; }
       if(e.target.closest("[data-again]")){ render(); window.scrollTo(0,0); return; }
-      if(e.target.closest("#lwReset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); clearNames(); render(); }
+      if(e.target.closest("#lwReset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); if(window.FREI && FREI.wipe){ FREI.wipe(); FREI.closeTab(); } else { clearNames(); render(); } }
     });
     document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ p.hidden=true; }); });
     window.addEventListener("hashchange", ()=>{ hearStop(); render(); window.scrollTo(0,0); });
