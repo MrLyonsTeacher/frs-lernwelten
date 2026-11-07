@@ -234,7 +234,7 @@ async function main(){
   document.title = `Class ${K} · ${WI.name} – FRS Lernwelten`;
   const BER = FRS.bereicheFuer(K), byKat = b => KL.themen.filter(t=>t.kat===b);
   const names = {}, counts = {}, icons = {};
-  BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).length; icons[b]=FRS.kategorien[b].icon; });
+  BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).filter(t=>!(window.FREI&&FREI.lockedThema(K,t.id))).length; icons[b]=FRS.kategorien[b].icon; });
   const RK = () => UH.rank(K, UH.today(K));
   const FLAGQ = t => t.grp!=="test";   // grp:"test" = Testvorbereitung: keine Flaggen
   const allMax = KL.themen.filter(FLAGQ).reduce((a,t)=>a+t.max,0), sum = () => KL.themen.filter(FLAGQ).reduce((a,t)=>{ const p=prog(t); return a+(p?p.pts:0); },0);
@@ -284,7 +284,7 @@ async function main(){
       + `<p class="qsec">📝 Test preparation<small>Practise for the vocabulary test – no flags here · Vorbereitung auf den Vokabeltest – hier gibt es keine Flaggen</small></p><div class="qgrid">${tl.map(testTile).join("")}</div>`;
   }
   function openArea(k){
-    const kat = FRS.kategorien[k], list = byKat(k), ort = spotsInfo[k] && spotsInfo[k].ort || kat.ort;
+    const kat = FRS.kategorien[k], all = byKat(k), list = all.filter(t=>!FREI.lockedThema(K,t.id)), ort = spotsInfo[k] && spotsInfo[k].ort || kat.ort;
     if(FREI.locked(K,k)){   // von der Lehrkraft gesperrt: nur Hinweis, keine Aufgaben
       if(W3) W3.focus(k);
       document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.kat===k));
@@ -296,7 +296,7 @@ async function main(){
     if(W3) W3.focus(k);
     document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.kat===k));
     P.innerHTML = `<h2>${kat.icon} ${esc(kat.name)}</h2><p class="ort">${esc(ort)} · ${list.length} ${list.length===1?"quest":"quests"}</p>
-      ${list.length ? sections(list) : `<div class="empty">No quests here yet – coming soon!</div>`}
+      ${list.length ? sections(list) : (all.length ? `<div class="empty">Your teacher will open the quests here soon.<br><small>Deine Lehrkraft schaltet die Aufgaben bald frei.</small></div>` : `<div class="empty">No quests here yet – coming soon!</div>`)}
       <button class="wback" id="back">← Back to ${esc(WI.name)}</button>`;
     P.classList.toggle("many", list.length > 4);
     document.body.classList.add("area-open");
