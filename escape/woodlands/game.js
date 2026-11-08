@@ -102,7 +102,7 @@ const PZ=POOL.PZ,px=POOL.px,expandOrder=POOL.expandOrder;
 
 /* ---------- Bilder ---------- */
 const ASSET='woodlands/assets/';
-const IM={ground:null,players:{},obj:{},big:{},int:{},npc:{},owl:[]};
+const IM={ground:null,players:{},obj:{},big:{},int:{},npc:{},owl:[],wisp:null};
 const INTN='rune_off rune_on plate_off plate_on gate_closed gate_open'.split(' ');
 const BIGN='oak round spruce dead stumphouse hut treehouse cottage worldtree_dead worldtree_alive arch'.split(' ');
 const HOUSES=['cottage','treehouse','hut','stumphouse'],HOUSE_W={cottage:2.1,treehouse:2.7,hut:2.1,stumphouse:2.5};
@@ -130,6 +130,7 @@ const assetsP=(async()=>{
   await Promise.all(BIGN.map(async n=>{IM.big[n]=await loadImg(ASSET+'big_'+n+'.png')}));
   await Promise.all(INTN.map(async n=>{IM.int[n]=await loadImg(ASSET+'int_'+n+'.png')}));
   await Promise.all(['elder','archer'].map(async n=>{IM.npc[n]=await loadImg(ASSET+'npc_'+n+'.png')}));
+  IM.wisp=await loadImg(ASSET+'wisps.png');
   IM.owl=await Promise.all([0,1,2,3].map(i=>loadImg(ASSET+'owl_'+i+'.png')));
   buildTiles();buildSprites();ASSETS_READY=true;
 })();
@@ -716,8 +717,7 @@ function render(dt){
   w.wisps.forEach(q=>{
     const x=q.x+Math.sin(t*q.sp+q.ph)*.9,y=q.y+Math.cos(t*q.sp*1.3+q.ph)*.6-.3;
     const sx=wx(x),sy=wy(y);if(sx<-40||sx>VW+40||sy<-40||sy>VH+40)return;
-    const gr=ctx.createRadialGradient(sx,sy,0,sx,sy,T*.35);gr.addColorStop(0,'rgba(220,255,250,.95)');gr.addColorStop(.3,'rgba(120,230,255,.5)');gr.addColorStop(1,'rgba(120,230,255,0)');
-    ctx.fillStyle=gr;ctx.fillRect(sx-T*.35,sy-T*.35,T*.7,T*.7);
+    if(IM.wisp){const row=q.k>=w.M-2?2:(q.k%3===1?1:0),fr=Math.floor(t*4+q.ph*3)%4,sz=T*.75;ctx.save();ctx.globalCompositeOperation='lighter';ctx.imageSmoothingEnabled=false;ctx.drawImage(IM.wisp,fr*96,row*96,96,96,sx-sz/2,sy-sz/2,sz,sz);ctx.restore();ctx.imageSmoothingEnabled=true}
     lights.push([x,y,1.2,.55]);
   });
   /* Partikel (Weltkoordinaten) */
