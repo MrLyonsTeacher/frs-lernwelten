@@ -404,7 +404,7 @@ sndBtn.addEventListener('click',()=>{
 
 /* ---------- 3D-Szene ---------- */
 let GL=false,renderer,scene,camera,lava,lavaMat,lavaLight,emberMat,emberGeo,ePos,eSpd,door,portalMat,portalLight,coreLight;
-let ambL,coolL,composer=null,bloom=null,fpsAcc=0,fpsN=0,perfT=0;
+let igShake=0,ambL,coolL,composer=null,bloom=null,fpsAcc=0,fpsN=0,perfT=0;
 let crystalRoot,crystalLights=[],crystals=[],doorLamps=[];
 let gateGroup,stonesGroup,valvesGroup,coreGroup,tabletGroup,stones=[],valveObjs=[],coreMesh,coreMat,tabletMat;
 const camPos=new THREE.Vector3(0,3.4,8.2),camLook=new THREE.Vector3(0,1.8,-4),tgtPos=new THREE.Vector3(0,3.4,8.2),tgtLook=new THREE.Vector3(0,1.8,-4);
@@ -541,6 +541,19 @@ function initScene(){
     'float edge=smoothstep(1.0,0.86,r);',
     'gl_FragColor=vec4(col,edge*(0.78+0.22*act));}'].join('\n')});
   const disc=new THREE.Mesh(new THREE.CircleGeometry(2.3,48),portalMat);disc.position.set(0,2.75,0);door.add(disc);
+  door.disc=disc;
+  const mAdd=(c)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+  door.rings=[0,1,2].map(i=>{const m=new THREE.Mesh(new THREE.RingGeometry(2.3,2.62,56),mAdd(i===1?0xffe9b0:0x9fe0ff));m.position.set(0,2.75,.25);door.add(m);return m});
+  door.beam=new THREE.Mesh(new THREE.CylinderGeometry(.7,2.3,16,24,1,true),mAdd(0xa8e4ff));door.beam.position.set(0,10.6,.2);door.add(door.beam);
+  door.floorGlow=new THREE.Mesh(new THREE.CircleGeometry(4.6,40),mAdd(0x7ac8ff));door.floorGlow.rotation.x=-Math.PI/2;door.floorGlow.position.set(0,.07,2.2);door.add(door.floorGlow);
+  {const N=280;door.vp=new Float32Array(N*3);door.vSeed=Array.from({length:N},(_,i)=>({a:Math.random()*6.283,p:Math.random(),s:.5+Math.random()*.9}));
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(door.vp,3));
+   door.vortex=new THREE.Points(g,new THREE.PointsMaterial({color:0xcdeeff,size:.16,map:softTex(),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+   door.vortex.frustumCulled=false;door.add(door.vortex)}
+  {door.bp=[];door.bolts=[];for(let b=0;b<7;b++){const arr=new Float32Array(12*3),g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+    const ln=new THREE.Line(g,new THREE.LineBasicMaterial({color:b%2?0xffffff:0x9fe0ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));ln.frustumCulled=false;door.add(ln);door.bp.push(arr);door.bolts.push(ln)}
+   door.boltT=0}
+  door.lit=false;door.igT=0;door.flashT=0;
   portalLight=new THREE.PointLight(0x7ac8ff,0,16,1.6);portalLight.position.set(0,2.75,1.2);door.add(portalLight);
   for(let i=0;i<7;i++){
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(.14,10,8),new THREE.MeshBasicMaterial({color:0x6b5a55}));
@@ -609,6 +622,12 @@ function setGroups(id){
   coreLight.intensity=id==='core'?1.6:0;
 }
 
+let _soft=null;
+function softTex(){if(_soft)return _soft;const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return _soft=new THREE.CanvasTexture(c)}
+function portalSound(){
+  [392,523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.45,'sine',.1),i*90));
+  setTimeout(()=>beep(98,.9,'sawtooth',.07),0);
+}
 function shadowify(g){g.traverse(o=>{if(o.isMesh&&o.material&&!o.material.isShaderMaterial&&!o.material.isMeshBasicMaterial){o.castShadow=true;o.receiveShadow=true}})}
 function setupPost(){
   try{
@@ -677,11 +696,11 @@ function buildCrystals(n,seq){
 function buildStones(rows){
   if(!GL)return;
   disposeGroup(stonesGroup);stones=[];
-  const R=rows.length,z0=3.2,dz=1.5;
+  const R=rows.length,z0=3.6,dz=Math.min(1.5,(z0+4.4)/Math.max(1,R-1)),depth=Math.min(1.2,dz*.84);
   for(let r=0;r<R;r++)for(let c=0;c<3;c++){
     const g=new THREE.Group();
     const mat=new THREE.MeshStandardMaterial({color:0x4a3633,roughness:.85,flatShading:true,emissive:0x000000,emissiveIntensity:0});
-    const base=new THREE.Mesh(new THREE.BoxGeometry(1.9,.32,1.2),mat);
+    const base=new THREE.Mesh(new THREE.BoxGeometry(1.9,.32,depth),mat);
     const face=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),new THREE.MeshBasicMaterial({map:shapeTex(rows[r].shapes[c]),transparent:true}));
     face.rotation.x=-Math.PI/2;face.position.y=.17;g.add(base,face);
     g.position.set((c-1)*2.3,.16,z0-r*dz);
@@ -714,7 +733,7 @@ function layoutDoorLamps(n){
   const sp=.5;
   doorLamps.forEach((l,i)=>{l.visible=i<n;l.position.set((i-(n-1)/2)*sp,6.45,.1)});
 }
-function resetDoor(){if(GL){door.open=0;door.openNow=0;lampBad=0;portalMat.uniforms.act.value=0}}
+function resetDoor(){if(GL){door.open=0;door.openNow=0;door.lit=false;door.flashT=0;lampBad=0;portalMat.uniforms.act.value=0}}
 function flashCrystal(i,ms){
   const c=crystals[i];if(!c)return;
   c.target=1;setTimeout(()=>{if(crystals[i]===c)c.target=0},ms);
@@ -875,10 +894,33 @@ function frame(now){
   }
 
   door.openNow+=(door.open-door.openNow)*(1-Math.exp(-dt*2.2));
-  {const a=door.openNow;portalMat.uniforms.t.value=T;portalMat.uniforms.act.value=a;
-   portalLight.intensity=a*(2.6+.5*Math.sin(T*5));
-   door.halo.material.opacity=a*.8;door.halo.rotation.z=T*.5*a;door.halo.scale.setScalar(1+.015*Math.sin(T*6)*a);
-   for(let q=0;q<door.runes.length;q++){const w=Math.max(0,Math.min(1,a*1.6-q/12*.6));door.runes[q].emissiveIntensity=w*(1.4+.4*Math.sin(T*4+q))}}
+  {const a=door.openNow;
+   if(door.open>0&&!door.lit){door.lit=true;door.igT=0;if(!REDUCED){door.flashT=.45;igShake=.6}portalSound()}
+   if(door.open===0&&door.lit)door.lit=false;
+   if(door.lit)door.igT+=dt;
+   const ig=door.lit?door.igT:0;
+   portalMat.uniforms.t.value=T;portalMat.uniforms.act.value=a;
+   const bk=(x=>1+2.7*Math.pow(x-1,3)+1.7*Math.pow(x-1,2))(Math.min(1,ig/.9));
+   door.disc.scale.setScalar(door.lit?Math.max(.1,bk):1);
+   portalLight.intensity=a*(3.2+.9*Math.sin(T*5))+(door.lit?Math.max(0,1-ig*1.4)*9:0);
+   door.halo.material.opacity=a*.9;door.halo.rotation.z=T*(.4+1.6*a)*a;door.halo.scale.setScalar(1+.02*Math.sin(T*6)*a+(door.lit?Math.max(0,.18*(1-ig*1.2)):0));
+   for(let q=0;q<door.runes.length;q++){const w=Math.max(0,Math.min(1,ig*2.2-q/12*1.4));door.runes[q].emissiveIntensity=w*(2.2+.7*Math.sin(T*4+q))+(door.lit&&ig<.9?Math.max(0,1-ig*1.1)*3:0)}
+   door.rings.forEach((m,i)=>{const pr=(ig-i*.3)/1.3;if(door.lit&&pr>0&&pr<1){m.scale.setScalar(1+pr*2.6);m.material.opacity=Math.pow(1-pr,1.4)*.95}else m.material.opacity=0});
+   {const burst=door.lit?(ig<1.6?Math.min(1,ig/.12)*(1-ig/1.6):0):0;door.beam.material.opacity=burst*.55+(door.lit?a*.05:0);door.beam.scale.x=1+burst*.4;
+    door.floorGlow.material.opacity=a*(.26+.08*Math.sin(T*3))+burst*.3}
+   door.vortex.material.opacity=a*.95;
+   if(a>.02){const vp=door.vp;for(let n=0;n<door.vSeed.length;n++){const sd=door.vSeed[n];sd.p=(sd.p+dt*.22*sd.s*(.5+a))%1;
+      const r=.25+3.7*(1-sd.p),an=sd.a+(1-sd.p)*5.2+T*1.3;vp[n*3]=Math.cos(an)*r;vp[n*3+1]=2.75+Math.sin(an)*r;vp[n*3+2]=.2+Math.sin(T*2+n)*.15}
+    door.vortex.geometry.attributes.position.needsUpdate=true}
+   door.boltT-=dt;
+   if(door.lit&&door.boltT<=0){door.boltT=.05;const strong=ig<1.6?1:.55;
+     door.bolts.forEach((ln,b)=>{
+       if(Math.random()<(ig<1.6?.9:.4)){const arr=door.bp[b],k=Math.floor(Math.random()*12),ra=k/12*Math.PI*2,sx0=Math.cos(ra)*2.55,sy0=2.75+Math.sin(ra)*2.55,ex=(Math.random()-.5)*.8,ey=2.75+(Math.random()-.5)*.8;
+         for(let m=0;m<12;m++){const t=m/11,j=Math.sin(Math.PI*t)*.42*(m===0||m===11?0:1);arr[m*3]=sx0+(ex-sx0)*t+(Math.random()-.5)*j*2;arr[m*3+1]=sy0+(ey-sy0)*t+(Math.random()-.5)*j*2;arr[m*3+2]=.3}
+         ln.geometry.attributes.position.needsUpdate=true;ln.material.opacity=a*strong}
+       else ln.material.opacity=0})}
+   if(!door.lit)door.bolts.forEach(ln=>{ln.material.opacity=0});
+   if(!TR.active&&door.flashT>0){door.flashT-=dt;const wp=$('#wipe');wp.style.background='#dff3ff';wp.style.opacity=door.flashT>0?String(door.flashT/.45*.7):'0'}}
   if(lampBad>0)lampBad-=dt;
   for(let i=0;i<doorLamps.length;i++){
     const l=doorLamps[i];
@@ -900,6 +942,7 @@ function frame(now){
     const amp=playing?(.012+.075*prog*prog):(G.phase==='lost'?.09:.01);
     sx=Math.sin(T*37)*amp+Math.sin(T*23)*amp*.6;sy=Math.cos(T*31)*amp;
   }
+  if(!REDUCED&&igShake>0){sx+=(Math.random()-.5)*igShake*.22;sy+=(Math.random()-.5)*igShake*.22;igShake=Math.max(0,igShake-dt*.9)}
   const sway=(G.phase==='lobby'&&!REDUCED)?Math.sin(T*.22)*1.1:0;
   camera.position.set(camPos.x+sway+sx,camPos.y+sy,camPos.z);
   camera.lookAt(camLook);
