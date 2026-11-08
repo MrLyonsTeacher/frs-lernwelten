@@ -168,10 +168,15 @@ input[type=text]{background:#08140f}
 .hud .hud-in{padding-top:max(8px,env(safe-area-inset-top,0px))}
 .hud button,.hud .chip{pointer-events:auto}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.intro{position:absolute;inset:0;z-index:10;background:#050a14 url(woodlands/assets/intro.jpg) center/cover no-repeat;display:grid;align-items:end;justify-items:center;padding:24px;transition:opacity 1.4s ease;cursor:pointer}
+.intro.out{opacity:0;pointer-events:none}
+.intro p{margin:0 0 6vh;max-width:640px;text-align:center;font:700 clamp(18px,3.2vw,28px)/1.35 var(--font-display);color:#f1e9ff;text-shadow:0 2px 12px #000,0 0 3px #000}
+#lobbybg{position:absolute;inset:0;background:#050a14 url(woodlands/assets/intro.jpg) center/cover no-repeat;filter:brightness(.55)}
 </style>
 </head>
 <body>
 <div id="app">
+  <div id="lobbybg"></div>
   <canvas id="cv" aria-label="Spielfeld"></canvas>
 
   <header class="hud" id="hud" hidden>
@@ -197,6 +202,7 @@ input[type=text]{background:#08140f}
   <div class="dlg" id="dlg" hidden role="dialog"></div>
   <div class="modal" id="modal" hidden></div>
 
+  <div class="intro" id="intro" hidden><p>Der Weltenbaum welkt, und das Licht des Waldes schwindet. Nur ihr könnt ihn noch retten.</p></div>
   <section class="lobby" id="lobby">
     <div class="card">
       <div>

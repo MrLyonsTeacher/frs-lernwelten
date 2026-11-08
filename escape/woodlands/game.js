@@ -284,10 +284,17 @@ function beginGame(sp){
   ents=[];for(let i=0;i<P;i++){const s=spawnFor(G.world,0,i);ents.push(newEnt(i,s.x,s.y))}
   parts.length=0;
   setCi(0,true);
-  lobby.hidden=true;endEl.hidden=true;hud.hidden=false;pad.hidden=false;abtn.hidden=false;
+  lobby.hidden=true;endEl.hidden=true;hud.hidden=false;pad.hidden=false;abtn.hidden=false;$('#lobbybg').hidden=true;playIntro();
   if(G.spectator){const r=G.world.clear[0];cam.x=r.cx;cam.y=r.cy;toast('Du schaust zu. In der nächsten Runde bist du dabei.')}
   else if(!G.solo&&G.roles.length)toast('Deine Rolle: '+G.roles.map(r=>ROLE_NAME[r]).join(' und '),4200);
   if(!G.spectator)showDialog([{who:'Eule Ilmara',text:'Willkommen, Wanderer! Der Weltenbaum welkt, und mit ihm das Licht des Waldes. Nur die Runensteine können ihn retten.'},{who:'Eule Ilmara',text:'Jeder von euch sieht andere Hinweise. Sprecht miteinander und löst die Runen der Reihe nach. Ich warte hier auf euch.'},{who:'Eule Ilmara',text:'Der Pfeil zeigt euch den Weg. Mit der A-Taste sprecht ihr mit Dingen und öffnet die Runensteine. Viel Glück!'}]);
+}
+let introT=0;
+function playIntro(){
+  const el=$('#intro');if(!el||G.spectator)return;
+  clearTimeout(introT);el.hidden=false;el.classList.remove('out');
+  const end=()=>{clearTimeout(introT);el.classList.add('out');setTimeout(()=>{el.hidden=true},1500)};
+  el.onclick=end;introT=setTimeout(end,4500);
 }
 function setCi(i,first){
   G.ci=i;G.cur=G.order[i];G.chHints=0;G.feedback='';G.fbBad=false;G.locked=false;
@@ -650,6 +657,7 @@ function render(dt){
   tAnim+=dt;
   const t=tAnim,w=G.world||demo;
   ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(G.phase==='lobby'){ctx.clearRect(0,0,VW,VH);return}
   ctx.fillStyle='#050c10';ctx.fillRect(0,0,VW,VH);
   if(!w||!ASSETS_READY)return;
   /* Kamera */
@@ -867,7 +875,7 @@ $('#soloBtn').addEventListener('click',startSolo);
 $('#againBtn').addEventListener('click',newRound);
 $('#homeBtn').addEventListener('click',()=>{
   G.phase='lobby';G.solo=false;G.world=null;ents=[];closeModal(true);closeDialog();
-  endEl.hidden=true;hud.hidden=true;pad.hidden=true;abtn.hidden=true;lobby.hidden=false;
+  endEl.hidden=true;hud.hidden=true;pad.hidden=true;abtn.hidden=true;lobby.hidden=false;$('#lobbybg').hidden=false;
 });
 
 /* ---------- Start ---------- */
