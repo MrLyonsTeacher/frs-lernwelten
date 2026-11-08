@@ -4,7 +4,7 @@ workers_dev = true
 compatibility_date = "2025-01-01"
 
 [[durable_objects.bindings]]
-name = "escape-relay"
+name = "ROOM"
 class_name = "Room"
 
 [[migrations]]
