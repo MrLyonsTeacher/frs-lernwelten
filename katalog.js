@@ -166,6 +166,9 @@ const FRS = {
       { id:"bb2", titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 9 · 8 Spiele", pfad:"sport/basketball.html",
         stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] }
     ]},
+    { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
+      { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" }
+    ]},
     { id:"sonstiges", name:"Sonstiges", icon:"🧩", materialien:[] }
   ]
 };

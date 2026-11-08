@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#13294B">
+<title>iPad-Verbindungstest · FRS Escape Rooms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14233B;--ink2:#3C4C64;--muted:#6A788D;--bg:#F3F5F8;--surface:#fff;--line:#E1E6ED;--line2:#CDD5E0;--navy:#13294B;--coral:#E8553B;--ok:#1F8A55;--warn:#B7791F;--bad:#C0392B;--r:14px}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Lexend",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #3B7DD8;outline-offset:2px}
+header{background:var(--navy);color:#fff}
+header div{max-width:860px;margin:0 auto;padding:.9rem 1.1rem;padding-left:max(1.1rem,env(safe-area-inset-left,0px));padding-right:max(1.1rem,env(safe-area-inset-right,0px))}
+header b{font:700 1.3rem "Fredoka",sans-serif}
+header small{display:block;color:#AFC0D6}
+main{max-width:860px;margin:0 auto;padding:1.1rem;padding-left:max(1.1rem,env(safe-area-inset-left,0px));padding-right:max(1.1rem,env(safe-area-inset-right,0px));padding-bottom:max(2.5rem,env(safe-area-inset-bottom,0px));display:grid;gap:1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem;display:grid;gap:.8rem;box-shadow:0 1px 2px rgba(20,35,59,.06)}
+.card h2{margin:0;font-size:1.05rem}
+.card p{margin:0;color:var(--ink2)}
+.small{font-size:.85rem;color:var(--muted)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem}
+.s{display:grid;gap:.1rem;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--line2);background:#fff}
+.s small{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.s b{font-size:1rem}
+.s.ok{border-color:#9AD3B5;background:#F1FAF5}.s.ok b{color:var(--ok)}
+.s.warn{border-color:#E6CB93;background:#FFF9EC}.s.warn b{color:var(--warn)}
+.s.bad{border-color:#E6A8A0;background:#FFF3F1}.s.bad b{color:var(--bad)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.4rem 1.1rem;border-radius:10px;border:1px solid var(--line2);background:#fff;font-weight:600;cursor:pointer}
+.btn.pri{background:var(--navy);color:#fff;border-color:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:.6rem;flex-wrap:wrap}
+input[type=text]{flex:1 1 200px;min-width:0;min-height:46px;padding:0 .8rem;border:1px solid var(--line2);border-radius:10px;background:#fff}
+label{font-size:.85rem;color:var(--muted);font-weight:500}
+.fld{display:grid;gap:.3rem}
+canvas{width:100%;height:auto;aspect-ratio:16/9;border-radius:10px;background:#1a0c0a;display:block}
+.dev{display:flex;gap:.5rem;flex-wrap:wrap;list-style:none;margin:0;padding:0}
+.dev li{padding:.3rem .7rem;border-radius:999px;background:var(--bg);border:1px solid var(--line2);font-weight:600;font-size:.9rem}
+.dev li.me{background:var(--navy);color:#fff;border-color:transparent}
+.log{list-style:none;margin:0;padding:.5rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);display:grid;gap:.3rem;max-height:200px;overflow:auto;min-height:3.2rem}
+.log li{font-size:.9rem}
+.log li b{font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div><b>iPad-Verbindungstest</b><small>FRS Escape Rooms · prüft Grafik, Ton und die Live-Verbindung</small></div></header>
+<main>
+
+<section class="card" aria-labelledby="hSum">
+  <h2 id="hSum">Ergebnis</h2>
+  <div class="sum">
+    <div class="s" id="sGrafik"><small>Grafik</small><b>noch nicht getestet</b></div>
+    <div class="s" id="sNetz"><small>Verbindung</small><b>noch nicht getestet</b></div>
+    <div class="s" id="sGeraete"><small>Geräte in der Gruppe</small><b>–</b></div>
+    <div class="s" id="sTon"><small>Ton</small><b>noch nicht getestet</b></div>
+  </div>
+  <p class="small" id="devInfo"></p>
+</section>
+
+<section class="card" aria-labelledby="hGfx">
+  <h2 id="hGfx">1 · Grafik</h2>
+  <p>Zeigt 5 Sekunden lang einen Lavafluss in 3D-Qualität und misst, wie flüssig das Gerät ihn darstellt.</p>
+  <canvas id="gfx" width="640" height="360" aria-label="Grafiktest"></canvas>
+  <div class="row"><button class="btn pri" id="gfxBtn">Grafiktest starten</button></div>
+  <p class="small" id="gfxOut" aria-live="polite"></p>
+</section>
+
+<section class="card" aria-labelledby="hNet">
+  <h2 id="hNet">2 · Verbindung zwischen den iPads</h2>
+  <p>Öffne diese Seite auf mindestens zwei Geräten und gib überall denselben Gruppencode ein. Dann sollte jedes Gerät die anderen sehen.</p>
+  <div class="fld" id="relayBox" hidden>
+    <label for="relay">Adresse des Vermittlungsdienstes</label>
+    <input type="text" id="relay" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="wss://frs-escape-relay.dein-name.workers.dev">
+    <span class="small">Diese Adresse bekommst du nach dem Einrichten bei Cloudflare. Sie wird auf diesem Gerät gemerkt.</span>
+  </div>
+  <div class="fld">
+    <label for="code">Gruppencode</label>
+    <div class="row"><input type="text" id="code" value="test" maxlength="24" autocomplete="off" autocapitalize="none" spellcheck="false"><button class="btn pri" id="netBtn">Verbinden</button></div>
+  </div>
+  <p id="netOut" class="small" aria-live="polite"></p>
+  <div id="live" hidden>
+    <h2 style="font-size:.95rem;margin:.2rem 0 .5rem">Geräte in der Gruppe</h2>
+    <ul class="dev" id="devs"></ul>
+    <p class="small" id="lat" aria-live="polite"></p>
+    <div class="fld" style="margin-top:.6rem">
+      <label for="msg">Nachricht an alle Geräte</label>
+      <div class="row"><input type="text" id="msg" maxlength="80" placeholder="Hallo!" autocomplete="off"><button class="btn" id="msgBtn">Senden</button></div>
+    </div>
+    <ul class="log" id="log" aria-live="polite"></ul>
+    <div class="row" style="margin-top:.6rem"><button class="btn" id="leaveBtn">Trennen</button></div>
+  </div>
+</section>
+
+<section class="card" aria-labelledby="hSnd">
+  <h2 id="hSnd">3 · Ton</h2>
+  <p>Wenn du den Ton hörst, funktioniert Ton im Spiel. Prüfe, dass der Stumm-Schalter am iPad aus ist und die Lautstärke hoch.</p>
+  <div class="row"><button class="btn pri" id="sndBtn">Ton abspielen</button></div>
+</section>
+
+</main>
+<script src="config.js"></script>
+<script src="net.js"></script>
+<script>
+(function(){
+"use strict";
+const $ = s => document.querySelector(s);
+const set = (id, cls, text) => { const e = $(id); e.className = "s" + (cls ? " " + cls : ""); e.querySelector("b").textContent = text; };
+
+/* Geräteinfo */
+const ua = navigator.userAgent || "";
+const dpr = window.devicePixelRatio || 1;
+$("#devInfo").textContent = "Dieses Gerät: " + (/iPad/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ? "iPad" : /iPhone/.test(ua) ? "iPhone" : "Computer oder anderes Gerät")
+  + " · Bildschirm " + screen.width + "×" + screen.height + " (Faktor " + dpr + ")";
+
+/* 1 · Grafik */
+function gfxTest(){
+  const cv = $("#gfx"), out = $("#gfxOut"), btn = $("#gfxBtn");
+  const gl = cv.getContext("webgl2") || cv.getContext("webgl");
+  if(!gl){ set("#sGrafik","bad","kein 3D möglich"); out.textContent = "Dieses Gerät oder dieser Browser kann kein 3D (WebGL) darstellen."; return; }
+  const w = Math.round(cv.clientWidth * Math.min(dpr, 2)) || 640, h = Math.round(w * 9 / 16);
+  cv.width = w; cv.height = h; gl.viewport(0, 0, w, h);
+  const vs = "attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}";
+  const fs = "precision highp float;uniform vec2 r;uniform float t;"
+    + "float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}"
+    + "float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}"
+    + "float fbm(vec2 p){float v=0.0;float a=0.5;for(int i=0;i<6;i++){v+=a*n(p);p=p*2.03+vec2(7.1,3.7);a*=0.5;}return v;}"
+    + "void main(){vec2 uv=gl_FragCoord.xy/r.y*3.0;float f=fbm(uv+vec2(t*0.2,t*0.1));float g=fbm(uv*2.0-vec2(t*0.25,0.0)+f*2.0);float k=fbm(uv*4.0+g*3.0+t*0.1);"
+    + "float c=smoothstep(0.44,0.58,mix(g,k,0.5));vec3 hot=mix(vec3(1.0,0.34,0.05),vec3(1.0,0.82,0.25),g);gl_FragColor=vec4(mix(hot,vec3(0.13,0.05,0.04),c*0.85),1.0);}";
+  function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+  const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr, gl.LINK_STATUS)){ set("#sGrafik","bad","Fehler beim Start"); out.textContent = "Der 3D-Test konnte nicht starten."; return; }
+  gl.useProgram(pr);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const ur = gl.getUniformLocation(pr, "r"), ut = gl.getUniformLocation(pr, "t");
+  btn.disabled = true; out.textContent = "Test läuft …"; set("#sGrafik","","läuft …");
+  const t0 = performance.now(); let last = t0, frames = 0, worst = 0;
+  (function loop(now){
+    const dt = now - last; last = now;
+    if(frames > 0) worst = Math.max(worst, dt);
+    frames++;
+    gl.uniform2f(ur, w, h); gl.uniform1f(ut, (now - t0) / 1000);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if(now - t0 < 5000){ requestAnimationFrame(loop); return; }
+    const fps = frames / ((now - t0) / 1000);
+    const rating = fps >= 50 ? ["ok","sehr gut"] : fps >= 30 ? ["warn","ausreichend"] : ["bad","zu langsam"];
+    set("#sGrafik", rating[0], rating[1] + " · " + Math.round(fps) + " Bilder/s");
+    out.textContent = "Durchschnitt " + Math.round(fps) + " Bilder pro Sekunde, längster Ruckler " + Math.round(worst) + " ms. "
+      + (rating[0] === "ok" ? "Das reicht für die Escape Rooms." : rating[0] === "warn" ? "Spielbar. Bei starker Hitze oder vielen Effekten kann es ruckeln." : "Die Escape Rooms würden hier ruckeln. Prüfe, ob das iPad zu warm oder der Energiesparmodus an ist.");
+    btn.disabled = false; btn.textContent = "Nochmal testen";
+  })(t0);
+}
+$("#gfxBtn").addEventListener("click", gfxTest);
+
+/* 2 · Verbindung */
+let room = null, pingT = 0, lats = [], offs = [];
+const relayInput = $("#relay");
+function relayAddr(){ return (relayInput.hidden ? "" : relayInput.value.trim()) || FRSNet.relayUrl(); }
+(function initRelayBox(){
+  let saved = ""; try{ saved = localStorage.getItem("frs-relay") || ""; }catch(e){}
+  const cfg = (window.FRS_ESCAPE && window.FRS_ESCAPE.relay) || "";
+  if(!cfg){ $("#relayBox").hidden = false; relayInput.value = saved; }
+})();
+function logLine(who, text){
+  const li = document.createElement("li"), b = document.createElement("b");
+  b.textContent = who + ": "; li.appendChild(b); li.appendChild(document.createTextNode(text));
+  const log = $("#log"); log.appendChild(li); while(log.children.length > 30) log.removeChild(log.firstChild); log.scrollTop = log.scrollHeight;
+}
+function short(id){ return id.slice(0, 4).toUpperCase(); }
+function paintDevs(){
+  if(!room) return;
+  const ps = room.peers(), ul = $("#devs"); ul.textContent = "";
+  ps.forEach(p => { const li = document.createElement("li"); li.textContent = "Gerät " + short(p.peer) + (p.isMe ? " (du)" : ""); if(p.isMe) li.className = "me"; ul.appendChild(li); });
+  const n = ps.length;
+  set("#sGeraete", n >= 2 ? "ok" : "warn", n + (n === 1 ? " Gerät (nur du)" : " Geräte verbunden"));
+}
+async function doPing(){
+  if(!room) return;
+  try{
+    const ms = await room.ping(); lats.push(ms); if(lats.length > 10) lats.shift();
+    const avg = Math.round(lats.reduce((a,b)=>a+b,0)/lats.length);
+    $("#lat").textContent = "Antwortzeit: " + ms + " ms (Durchschnitt " + avg + " ms)";
+    set("#sNetz", avg < 250 ? "ok" : "warn", (avg < 250 ? "gut" : "langsam") + " · " + avg + " ms");
+  }catch(e){ $("#lat").textContent = "Keine Antwort vom Dienst."; set("#sNetz","bad","Verbindung unterbrochen"); }
+}
+function leave(){
+  offs.forEach(f => { try{ f(); }catch(e){} }); offs = [];
+  clearInterval(pingT); if(room){ room.leave(); room = null; }
+  $("#live").hidden = true; $("#netBtn").disabled = false; $("#netBtn").textContent = "Verbinden";
+  set("#sGeraete", "", "–");
+}
+async function connect(){
+  const addr = relayAddr(), code = $("#code").value;
+  const out = $("#netOut");
+  if(!addr){ out.textContent = "Bitte zuerst die Adresse des Vermittlungsdienstes eintragen."; set("#sNetz","warn","Adresse fehlt"); return; }
+  if(!FRSNet.cleanCode(code)){ out.textContent = "Bitte einen Gruppencode eingeben (Buchstaben und Zahlen)."; return; }
+  if(!relayInput.hidden){ try{ localStorage.setItem("frs-relay", relayInput.value.trim()); }catch(e){} }
+  leave();
+  $("#netBtn").disabled = true; out.textContent = "Verbinde …"; set("#sNetz","","verbinde …");
+  try{
+    room = await FRSNet.connect(addr, code);
+  }catch(e){
+    $("#netBtn").disabled = false;
+    const why = String(e && e.message || e);
+    out.textContent = why === "timeout" || why === "unreachable"
+      ? "Der Vermittlungsdienst ist nicht erreichbar. Entweder ist die Adresse falsch oder das Schul-WLAN blockiert die Verbindung."
+      : why === "no-websocket" ? "Dieser Browser unterstützt die Live-Verbindung nicht." : "Verbindung fehlgeschlagen (" + why + ").";
+    set("#sNetz","bad","nicht erreichbar"); return;
+  }
+  out.textContent = "Verbunden mit Gruppe „" + room.code + "“. Gib auf dem anderen Gerät denselben Code ein.";
+  $("#live").hidden = false; $("#netBtn").textContent = "Neu verbinden"; $("#netBtn").disabled = false;
+  set("#sNetz","ok","verbunden"); lats = [];
+  offs.push(room.onPeers(paintDevs));
+  offs.push(room.onConnection(ok => { if(!ok){ set("#sNetz","warn","verbinde neu …"); } else { doPing(); } }));
+  offs.push(room.on("chat", m => logLine(m.isMe ? "Du" : "Gerät " + short(m.peer), String(m.data && m.data.text || "").slice(0, 80))));
+  paintDevs(); doPing(); pingT = setInterval(doPing, 3000);
+}
+$("#netBtn").addEventListener("click", connect);
+$("#code").addEventListener("keydown", e => { if(e.key === "Enter") connect(); });
+$("#leaveBtn").addEventListener("click", () => { leave(); $("#netOut").textContent = "Getrennt."; set("#sNetz","","noch nicht getestet"); });
+function sendMsg(){
+  const v = $("#msg").value.trim(); if(!v || !room) return;
+  room.emit("chat", { text: v }).then(() => { $("#msg").value = ""; }).catch(() => { $("#netOut").textContent = "Nachricht nicht gesendet. Die Verbindung ist gerade weg."; });
+}
+$("#msgBtn").addEventListener("click", sendMsg);
+$("#msg").addEventListener("keydown", e => { if(e.key === "Enter") sendMsg(); });
+
+/* 3 · Ton */
+$("#sndBtn").addEventListener("click", () => {
+  try{
+    const C = window.AudioContext || window.webkitAudioContext; if(!C) throw new Error("kein Audio");
+    const ctx = new C(); if(ctx.resume) ctx.resume();
+    [523, 659, 784].forEach((f, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * .22;
+      o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(.2, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + .32);
+    });
+    set("#sTon", "ok", "abgespielt, hörbar?");
+  }catch(e){ set("#sTon", "bad", "nicht möglich"); }
+});
+})();
+</script>
+</body>
+</html>
