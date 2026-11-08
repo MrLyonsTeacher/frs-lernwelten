@@ -167,7 +167,8 @@ const FRS = {
         stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
-      { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" }
+      { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" },
+      { id:"esc-vulkan", titel:"Der Vulkan · Klasse 5", info:"Kooperativer 3D-Escape-Room für 1–6 Personen, 35 oder 70 Minuten", pfad:"escape/vulkan.html?k=5" }
     ]},
     { id:"sonstiges", name:"Sonstiges", icon:"🧩", materialien:[] }
   ]
