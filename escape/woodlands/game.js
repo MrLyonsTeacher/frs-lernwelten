@@ -102,7 +102,7 @@ const PZ=POOL.PZ,px=POOL.px,expandOrder=POOL.expandOrder;
 
 /* ---------- Bilder ---------- */
 const ASSET='woodlands/assets/';
-const IM={ground:null,players:{},obj:{},big:{},int:{}};
+const IM={ground:null,players:{},obj:{},big:{},int:{},npc:{},owl:[]};
 const INTN='rune_off rune_on plate_off plate_on gate_closed gate_open'.split(' ');
 const BIGN='oak round spruce dead stumphouse hut treehouse cottage worldtree_dead worldtree_alive arch'.split(' ');
 const HOUSES=['cottage','treehouse','hut','stumphouse'],HOUSE_W={cottage:2.1,treehouse:2.7,hut:2.1,stumphouse:2.5};
@@ -129,6 +129,8 @@ const assetsP=(async()=>{
   await Promise.all(OBJN.map(async n=>{IM.obj[n]=await loadImg(ASSET+'obj_'+n+'.png')}));
   await Promise.all(BIGN.map(async n=>{IM.big[n]=await loadImg(ASSET+'big_'+n+'.png')}));
   await Promise.all(INTN.map(async n=>{IM.int[n]=await loadImg(ASSET+'int_'+n+'.png')}));
+  await Promise.all(['elder','archer'].map(async n=>{IM.npc[n]=await loadImg(ASSET+'npc_'+n+'.png')}));
+  IM.owl=await Promise.all([0,1,2,3].map(i=>loadImg(ASSET+'owl_'+i+'.png')));
   buildTiles();buildSprites();ASSETS_READY=true;
 })();
 
@@ -214,6 +216,8 @@ function buildWorld(seed,M,P){
   for(let k=0;k<M-1;k++){const r=clear[k];block[idx(r.cx,r.cy)]=1;objs.push({t:'station',x:r.cx,y:r.cy,k:k});ground[idx(r.cx,r.cy)]=9}
   /* Eule */
   {const r=clear[0],ox=r.cx-3,oy=r.cy;block[idx(ox,oy)]=1;objs.push({t:'owl',x:ox,y:oy})}
+  if(M>=4){const r=clear[Math.max(1,Math.floor((M-1)/2))],ax=r.cx+3,ay=r.cy;if(!block[idx(ax,ay)]){block[idx(ax,ay)]=1;objs.push({t:'archer',x:ax,y:ay})}}
+  {const ex=last.cx-3,ey=last.cy;block[idx(ex,ey)]=1;objs.push({t:'elder',x:ex,y:ey})}
   /* Weltenbaum und Platten */
   for(let y=last.cy-2;y<=last.cy;y++)for(let x=last.cx-1;x<=last.cx+1;x++){block[idx(x,y)]=1;ground[idx(x,y)]=5}
   const PP=[[-1,2],[1,2],[-3,2],[3,2],[-2,3],[2,3]];
@@ -444,13 +448,13 @@ function interact(){
   const f=DIRS[m.dir];cands.push([m.x+f[0],m.y+f[1]]);
   DIRS.forEach(d=>cands.push([m.x+d[0],m.y+d[1]]));
   for(const c of cands){
-    const o=w.objs.find(q=>q.x===c[0]&&q.y===c[1]&&(q.t==='station'||q.t==='owl'));
+    const o=w.objs.find(q=>q.x===c[0]&&q.y===c[1]&&(q.t==='station'||q.t==='owl'||q.t==='elder'||q.t==='archer'));
     if(o){
       if(o.t==='station'){
         if(o.k===G.ci)openModal();
         else if(o.k<G.ci)showDialog([{who:'Runenstein',text:'Diese Rune leuchtet bereits. Hier ist alles getan.'}]);
         else showDialog([{who:'Runenstein',text:'Der Stein schlummert noch. Löst zuerst die vorherige Rune (Pfeil folgen).'}]);
-      }else owlTalk();
+      }else if(o.t==='owl')owlTalk();else npcTalk(o.t);
       return;
     }
     const wt=w.objs.find(q=>q.t==='worldtree');
@@ -462,6 +466,11 @@ function interact(){
   }
 }
 function block(w,x,y){return w.block[y*w.W+x]===1}
+function npcTalk(t){
+  const left=G.order.length-1-G.ci;
+  if(t==='elder')showDialog(G.cur==='finale'?[{who:'Meister Eldrion',text:'Ihr habt es bis hierher geschafft. Der Weltenbaum wartet auf euch.'},{who:'Meister Eldrion',text:'Stellt euch alle gleichzeitig auf die leuchtenden Platten. Keine darf fehlen.'}]:[{who:'Meister Eldrion',text:'Seit Generationen hüte ich diesen Baum. Nun brauche ich eure Hilfe. Sammelt das Licht der '+(G.order.length-1)+' Runen.'}]);
+  else showDialog([{who:'Waldläuferin Sylvi',text:'Im Wald ist es gefährlich dunkel geworden. Bleibt zusammen und redet viel miteinander.'},{who:'Waldläuferin Sylvi',text:left>0?'Noch '+left+(left===1?' Rune':' Runen')+', dann ist der Baum gerettet. Die Zeit läuft, aber jede gelöste Rune bringt Licht zurück.':'Jetzt zum Weltenbaum!'}]);
+}
 function owlTalk(){
   const left=G.order.length-1-G.ci;
   const lines=G.cur==='finale'
@@ -588,17 +597,25 @@ function drawStation(o,sx,sy,t){
   else ctx.drawImage(im,sx+T/2-ww/2,sy+T*.98-hh+bob,ww,hh);
   ctx.imageSmoothingEnabled=true;
 }
-function drawOwl(sx,sy,t){
-  const b=Math.sin(t*2)*T*.02;
-  ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.9,T*.3,T*.1,0,0,6.2832);ctx.fill();
-  ctx.fillStyle='#3a2416';ctx.fillRect(sx+T*.25,sy+T*.62,T*.5,T*.28);
-  ctx.fillStyle='#8a6a4a';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.45+b,T*.3,T*.34,0,0,6.2832);ctx.fill();
-  ctx.fillStyle='#b89a74';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.55+b,T*.17,T*.2,0,0,6.2832);ctx.fill();
-  ctx.fillStyle='#8a6a4a';ctx.beginPath();ctx.moveTo(sx+T*.22,sy+T*.2+b);ctx.lineTo(sx+T*.3,sy+T*.02+b);ctx.lineTo(sx+T*.4,sy+T*.18+b);ctx.fill();
-  ctx.beginPath();ctx.moveTo(sx+T*.78,sy+T*.2+b);ctx.lineTo(sx+T*.7,sy+T*.02+b);ctx.lineTo(sx+T*.6,sy+T*.18+b);ctx.fill();
-  ctx.fillStyle='#fff3b0';ctx.beginPath();ctx.arc(sx+T*.4,sy+T*.36+b,T*.09,0,6.2832);ctx.arc(sx+T*.6,sy+T*.36+b,T*.09,0,6.2832);ctx.fill();
-  ctx.fillStyle='#111';ctx.beginPath();ctx.arc(sx+T*.4,sy+T*.37+b,T*.04,0,6.2832);ctx.arc(sx+T*.6,sy+T*.37+b,T*.04,0,6.2832);ctx.fill();
-  ctx.fillStyle='#e8a33c';ctx.beginPath();ctx.moveTo(sx+T*.46,sy+T*.45+b);ctx.lineTo(sx+T*.54,sy+T*.45+b);ctx.lineTo(sx+T*.5,sy+T*.54+b);ctx.fill();
+function nearestEnt(o){let b=null,bd=1e9;ents.forEach(e=>{const d=Math.hypot(e.rx-o.x,e.ry-o.y);if(d<bd){bd=d;b=e}});return {e:b,d:bd}}
+function drawOwl2(o,sx,sy,t){
+  const nr=nearestEnt(o);
+  let f=0;
+  if(nr.e&&nr.d<4.5)f=(nr.e.rx<o.x)?3:2;
+  else if((t*.6)%5>4.8)f=1;
+  if(G.phase==='won')f=1;
+  const im=IM.owl[f];if(!im)return;
+  const ww=T*.95*im.width/356,hh=ww*im.height/im.width;
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.92,T*.38,T*.1,0,0,6.2832);ctx.fill();
+  ctx.imageSmoothingEnabled=false;ctx.drawImage(im,sx+T/2-ww/2,sy+T*.98-hh+Math.sin(t*2)*T*.01,ww,hh);ctx.imageSmoothingEnabled=true;
+}
+function drawNpc(o,sx,sy,t){
+  const im=IM.npc[o.t];if(!im)return;
+  const nr=nearestEnt(o);let dir=0;
+  if(nr.e&&nr.d<6){const dx=nr.e.rx-o.x,dy=nr.e.ry-o.y;dir=Math.abs(dx)>Math.abs(dy)?(dx<0?1:2):(dy<0?3:0)}
+  const dw=T*.92,dh=dw*96/66;
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.88,T*.3,T*.11,0,0,6.2832);ctx.fill();
+  ctx.imageSmoothingEnabled=false;ctx.drawImage(im,66,dir*96,66,96,sx+T/2-dw/2,sy+T*.92-dh,dw,dh);ctx.imageSmoothingEnabled=true;
 }
 function drawWorldTree(o,sx,sy,t){
   const solved=G.found.filter(Boolean).length,total=Math.max(1,G.order.length-1),heal=G.phase==='won'?1:solved/total;
@@ -676,7 +693,8 @@ function render(dt){
       const sx=wx(o.x),sy=wy(o.y);
       if(o.t==='station'){drawStation(o,sx,sy,t);if(o.k===G.ci&&G.phase==='play')lights.push([o.x+.5,o.y+.5,2.6,.9]);else if(o.k<G.ci)lights.push([o.x+.5,o.y+.5,1.8,.7])}
       else if(o.house){const im=IM.big[o.t],ww=T*HOUSE_W[o.t],hh=ww*im.height/im.width;ctx.imageSmoothingEnabled=false;ctx.drawImage(im,sx+T-ww/2,sy+T*1.0-hh,ww,hh);ctx.imageSmoothingEnabled=true;lights.push([o.x+1,o.y-.2,1.8,.6])}
-      else if(o.t==='owl')drawOwl(sx,sy,t);
+      else if(o.t==='owl')drawOwl2(o,sx,sy,t);
+      else if(o.t==='elder'||o.t==='archer')drawNpc(o,sx,sy,t);
       else if(o.t==='worldtree'){drawWorldTree(o,sx,sy,t);const solved=G.found.filter(Boolean).length;lights.push([o.x+.5,o.y-1,2+solved*.5,.8])}
       else if(IM.obj[o.t]){const im=IM.obj[o.t],ww=T*(OBJ_W[o.t]||1)*.95,hh=ww*im.height/im.width;ctx.imageSmoothingEnabled=false;ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.92,ww*.4,T*.1,0,0,6.2832);ctx.fill();ctx.drawImage(im,sx+T/2-ww/2,sy+T*.97-hh,ww,hh);ctx.imageSmoothingEnabled=true;if(o.t==='campfire'||o.t==='lamp')lights.push([o.x+.5,o.y+.3,2.2,.8])}
       else if(SPR[o.t])ctx.drawImage(SPR[o.t],sx,sy-T*.1,T,T*1.0);
