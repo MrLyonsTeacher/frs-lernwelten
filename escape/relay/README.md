@@ -10,9 +10,9 @@ Die Bezeichnungen im Cloudflare-Menü ändern sich gelegentlich. Sinngemäß:
 
 1. Im Cloudflare-Dashboard unter **Workers & Pages** einen neuen Worker aus einem **Git-Repository** erstellen
    und `MrLyonsTeacher/frs-lernwelten` auswählen.
-2. Als **Root-Verzeichnis** `escape/relay` angeben. Der Name darf `frs-escape-relay` bleiben.
+2. Als **Root-Verzeichnis** `escape/relay` angeben. Der Name muss `escape-relay` lauten (wie in `wrangler.toml`).
 3. Build-Befehl leer lassen, Deploy-Befehl `npx wrangler deploy`. Dann bereitstellen.
-4. Cloudflare zeigt danach die Adresse, etwa `https://frs-escape-relay.dein-name.workers.dev`.
+4. Cloudflare zeigt danach die Adresse, etwa `https://escape-relay.dein-name.workers.dev`.
    Öffne sie im Browser: Es sollte „FRS Escape Relay: läuft.“ erscheinen.
 5. Diese Adresse auf der Testseite `escape/test.html` eintragen (dort mit `wss://` statt `https://`, die Seite
    wandelt `https://` aber auch selbst um) oder in `escape/config.js` festschreiben.

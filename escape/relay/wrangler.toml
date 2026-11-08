@@ -1,9 +1,10 @@
-name = "frs-escape-relay"
+name = "escape-relay"
 main = "src/index.js"
+workers_dev = true
 compatibility_date = "2025-01-01"
 
 [[durable_objects.bindings]]
-name = "ROOM"
+name = "escape-relay"
 class_name = "Room"
 
 [[migrations]]
