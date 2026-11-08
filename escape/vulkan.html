@@ -121,6 +121,10 @@ input[type=text]{flex:1 1 180px;min-width:0;min-height:48px;padding:0 14px;borde
   .hud{right:min(420px,38%)}
   .sheet{left:auto;top:0;bottom:0;max-height:none;width:min(420px,38%);border-top:0;border-left:1px solid var(--line);padding-top:12px}
 }
+.alpha{display:flex;flex-wrap:wrap;gap:4px}.alpha span{display:grid;place-items:center;width:34px;padding:3px 0;border-radius:6px;background:var(--raise);border:1px solid var(--line);font-size:11px;color:var(--muted)}.alpha b{font:800 15px var(--font-display);color:var(--ink)}
+.mo{display:inline-flex;gap:6px;align-items:center}.mo .dot{width:12px;height:12px;border-radius:50%;background:var(--ember);display:block}.mo .dash{width:30px;height:12px;border-radius:7px;background:var(--ember);display:block}
+.map{border-collapse:collapse;margin:auto}.map th{font:700 13px var(--font-body);color:var(--muted);width:42px;height:28px}.map td{width:42px;height:42px;border:1px solid var(--line);background:#0e0607;text-align:center;padding:0}.map td img{width:30px;height:30px;vertical-align:middle}
+.lamps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.lamp{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#1b0f10;border:2px solid var(--line);font:800 14px var(--font-display);color:var(--muted)}.lamp.on{background:#ffd27a;color:#2a1608;border-color:#fff2c4;box-shadow:0 0 14px 3px rgba(255,210,122,.65)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -256,9 +260,9 @@ const ROLE_SETS={
   6:[['research'],['decode'],['mechanic'],['guard'],['cartographer'],['radio']]
 };
 const MODES={
-  short:{label:'Kurz',min:35,info:'5 Kammern, etwa 35 Minuten.',order:['gate','lava','crystal','valves','core']},
-  long:{label:'Lang',min:70,info:'7 Kammern, etwa 70 Minuten (Doppelstunde).',order:['gate','lava','side','crystal','valves','meta','core']},
-  test:{label:'Schnelltest',min:12,info:'5 Kammern mit nur 12 Minuten, zum Ausprobieren.',order:['gate','lava','crystal','valves','core']}
+  short:{label:'Kurz',min:35,info:'7 Kammern, etwa 35 Minuten.',order:['gate','lava','X','crystal','X','valves','core']},
+  long:{label:'Lang',min:70,info:'11 Kammern, etwa 70 Minuten (Doppelstunde).',order:['gate','lava','X','side','crystal','X','valves','X','meta','X','core']},
+  test:{label:'Schnelltest',min:12,info:'6 Kammern mit nur 12 Minuten, zum Ausprobieren.',order:['gate','X','crystal','valves','core']}
 };
 const CH_NAME={gate:'Der Eingang',lava:'Der Lavafluss',side:'Die Nebenhöhle',crystal:'Die Kristallhöhle',valves:'Die Druckventile',meta:'Das Siegel',core:'Der Vulkankern'};
 const CH_VIEWS={
@@ -317,6 +321,7 @@ function gen(seed,P,order,st){
     else if(id==='side')D.side=genSide(rnd);
     else if(id==='crystal')D.crystal=makePuzzle((seed+k*7919)>>>0,P,st);
     else if(id==='valves'){const V=Math.max(2,Math.min(4,P)),t=[];for(let j=0;j<V;j++)t.push(1+Math.floor(rnd()*9));D.valves={V:V,t:t}}
+    else if(px(id)&&PZ[px(id)])D[id]=PZ[px(id)].gen(rnd,st,P);
   });
   const dr=rngFor(seed,99);
   D.digits=order.slice(0,-1).map(()=>1+Math.floor(dr()*9));
@@ -617,7 +622,7 @@ function setGroups(id){
   stonesGroup.visible=id==='lava';
   valvesGroup.visible=id==='valves';
   coreGroup.visible=id==='core';
-  tabletGroup.visible=(id==='side'||id==='meta');
+  tabletGroup.visible=(id==='side'||id==='meta'||!!px(id));
   if(id!=='crystal'&&id!=='none')crystalLights.forEach(l=>{l.intensity=0});
   coreLight.intensity=id==='core'?1.6:0;
 }
@@ -660,7 +665,7 @@ const ATM={
 const _c=new THREE.Color();
 function stepAtmosphere(dt){
   if(!GL)return;
-  const a=ATM[G.phase==='lobby'?'gate':G.cur]||ATM.gate,k=1-Math.exp(-dt*1.6);
+  const a=ATM[G.phase==='lobby'?'gate':(px(G.cur)&&PZ[px(G.cur)]?PZ[px(G.cur)].atm:G.cur)]||ATM.gate,k=1-Math.exp(-dt*1.6);
   _c.setHex(a.fog);scene.fog.color.lerp(_c,k);renderer.setClearColor(scene.fog.color,1);
   _c.setHex(a.amb);ambL.color.lerp(_c,k);
   _c.setHex(a.cool);coolL.color.lerp(_c,k);
@@ -745,7 +750,7 @@ function setView(name){
   document.querySelectorAll('#views [data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===name)));
 }
 function buildViews(){
-  const list=CH_VIEWS[G.cur]||CH_VIEWS.crystal;
+  const list=CH_VIEWS[G.cur]||(px(G.cur)?[['overview','Überblick'],['tablet','Tafel']]:CH_VIEWS.crystal);
   $('#views').innerHTML=list.map(v=>'<button class="chip" data-view="'+v[0]+'" aria-pressed="false">'+v[1]+'</button>').join('');
 }
 function layout(){
@@ -768,7 +773,7 @@ const TCOL={door:'#d6efff',drop:'#d6efff',cave:'#d6efff',shaft:'#d6efff',seal:'#
 const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const eout=x=>1-Math.pow(1-x,3);
 function startTransition(next){
-  const st=TSTYLE[G.order[next]]||'door';
+  const st=TSTYLE[G.order[next]]||['drop','cave','shaft','seal'][next%4];
   if(!GL||REDUCED){enterChamber(next);return}
   TR.active=true;TR.t=0;TR.style=st;TR.next=next;TR.swapped=false;
   sheet.hidden=true;layout();
@@ -800,7 +805,7 @@ function trWipe(style,u,out){
 }
 function trCard(show){
   const el=$('#tcard');
-  if(show){el.innerHTML='<small>Kammer '+(G.ci+1)+' von '+G.order.length+'</small>'+esc(CH_NAME[G.cur]);el.style.opacity='1';el.style.transition='opacity .5s'}
+  if(show){el.innerHTML='<small>Kammer '+(G.ci+1)+' von '+G.order.length+'</small>'+esc(chName(G.cur));el.style.opacity='1';el.style.transition='opacity .5s'}
   else{el.style.opacity='0'}
 }
 function stepTransition(dt){
@@ -999,7 +1004,7 @@ function onPick(t){
 function beginGame(sp){
   clearTimeout(endTimer);clearTimeout(advT);stopSeq();
   const mode=MODES[sp.mode]?sp.mode:'short';
-  G.mode=mode;G.order=MODES[mode].order.slice();
+  G.mode=mode;G.order=expandOrder(MODES[mode].order,sp.seed);
   const P=sp.roster?Math.min(6,Math.max(1,sp.roster.length)):1;
   G.P=P;G.epoch=sp.epoch;G.seed=sp.seed;G.total=sp.total;G.roster=sp.roster||[];G.solo=!sp.roster;G.hostPeer=sp.host||null;
   G.sets=ROLE_SETS[P];G.stage=Math.max(1,Math.min(6,sp.stage|0||1));applyStage(G.stage);G.data=gen(sp.seed,P,G.order,G.stage);G.digits=G.data.digits;
@@ -1022,6 +1027,7 @@ function enterChamber(i,first,fromTr){
   if(cr)G.rev=new Array(cr.len).fill(false);
   const v=G.data.valves;G.valveState=v?Array.from({length:v.V},()=>({v:1,until:0})):[];
   G.coreVals=new Array(G.digits.length).fill(0);
+  G.pu=(px(G.cur)&&PZ[px(G.cur)])?PZ[px(G.cur)].init(G.data[G.cur]):null;
   G.tab=G.roles[0]||null;
   if(GL){
     resetDoor();setGroups(G.cur);
@@ -1032,9 +1038,9 @@ function enterChamber(i,first,fromTr){
   }
   buildViews();setView('overview');
   $('#chEye').textContent='Kammer '+(i+1)+' von '+G.order.length;
-  $('#chName').textContent=CH_NAME[G.cur];
+  $('#chName').textContent=chName(G.cur);
   renderSheet();paintHud();
-  if(!first)toast('Kammer '+(i+1)+': '+CH_NAME[G.cur],3000);
+  if(!first)toast('Kammer '+(i+1)+': '+chName(G.cur),3000);
 }
 function myPeer(){
   if(!RM.named)return null;
@@ -1123,6 +1129,11 @@ function handleAct(d,mineAct){
     const dg=$('#dg-core'+d.j);if(dg)dg.textContent=d.v;
   }else if(d.type==='solve'&&id==='valves'){
     chamberDone();
+  }else if(d.type==='x'&&px(id)&&PZ[px(id)]){
+    const r=PZ[px(id)].act(G.data[id],G.pu,d,mineAct);
+    if(r&&r.ok)chamberDone();
+    else if(r&&r.wrong)wrong(mineAct,r.wrong);
+    else if(r&&r.render)renderSheet();
   }else if(d.type==='hint'){
     if(d.n===G.chHints+1&&G.chHints<3){
       G.chHints++;G.hintsTotal++;G.deadline-=PEN_HINT*1000;
@@ -1136,7 +1147,7 @@ function wrong(mineAct,msg){
   beep(160,.3,'sawtooth',.1);
   if(mineAct){G.feedback=msg+' Das hat '+PEN_TRY+' Sekunden gekostet.';G.fbBad=true;const fb=$('#fb');if(fb){fb.textContent=G.feedback;fb.className='fb bad'}}
   else toast('Fehlversuch bei den anderen (−'+PEN_TRY+' s).');
-  if(G.cur==='lava')renderSheet();
+  if(G.cur==='lava'||px(G.cur))renderSheet();
 }
 function metaSum(){
   const m=G.order.indexOf('meta');let s=0;
@@ -1209,6 +1220,7 @@ function valveOpen(j){
 /* ---------- Texte ---------- */
 function hintText(id,n){
   const d=G.data;
+  if(px(id)&&PZ[px(id)])return PZ[px(id)].hint(d[id],n);
   if(id==='gate'){
     const ans=d.gate.seq.map(s=>LETTERS[d.gate.perm[s]]);
     if(n===1)return 'Die Forscher/in sagt die Symbole der Reihe nach. Die Entschlüsseler/in sagt den Buchstaben dazu. Die Mechaniker/in drückt ihn.';
@@ -1251,6 +1263,7 @@ function hintText(id,n){
 }
 function explain(id){
   const d=G.data;
+  if(px(id)&&PZ[px(id)])return PZ[px(id)].explain(d[id]);
   if(id==='gate')return ['Ihr müsst die Tasten am Schloss in der richtigen Reihenfolge drücken.','Die Forscher/in kennt die Reihenfolge der Symbole. Alle Symbole hängen an der Wand und sind für jede Person sichtbar.','Die Entschlüsseler/in weiß, welcher Buchstabe zu welchem Symbol gehört.','Die Mechaniker/in hat die Buchstaben-Tasten und drückt sie.','Wichtig: Nichts zeigen, alles beschreiben. Das Schloss hat '+d.gate.len+' Tasten.'];
   if(id==='lava')return ['Ihr müsst die Steinplatten reihenweise überqueren. In jeder Reihe ist genau ein Stein sicher.','Wer eine Karte hat (Forscher/in, Entschlüsseler/in und weitere), weiß, welches Zeichen in welcher Reihe sicher ist.','Die Mechaniker/in sieht die Steine und tritt auf den richtigen.','Ein falscher Stein schickt die Gruppe zurück zur ersten Reihe. Es gibt '+d.lava.R+' Reihen.'];
   if(id==='side')return ['Eine geheime Zahl öffnet die Nebenhöhle.','Jede Person kennt einen oder mehrere Hinweise zur Zahl. Nur zusammen findet ihr sie.','Die Mechaniker/in stellt die Zahl ein und prüft das Schloss.'];
@@ -1265,6 +1278,243 @@ function dials(kind,arr,min,start){
   return '<div class="dials">'+arr.map((v,i)=>'<div class="dial"><button data-act="up" data-k="'+kind+'" data-i="'+(i+start)+'" aria-label="Stelle '+(i+1)+' erhöhen">▲</button><div class="dg" id="dg-'+kind+(i+start)+'" role="img" aria-label="Stelle '+(i+1)+'">'+v+'</div><button data-act="dn" data-k="'+kind+'" data-i="'+(i+start)+'" aria-label="Stelle '+(i+1)+' verringern">▼</button></div>').join('')+'</div>';
 }
 function fb(){return '<p class="fb'+(G.fbBad?' bad':'')+'" id="fb" aria-live="polite">'+esc(G.feedback)+'</p>'}
+
+/* ---------- Rätsel-Pool: abwechslungsreiche Kammern ---------- */
+const INFO=['research','decode','cartographer','radio'];
+const WORDS={3:['GAS','ERZ','TAL'],4:['LAVA','GLUT','BERG','RISS'],5:['ASCHE','MAGMA','FEUER','STEIN','FUNKE','BEBEN'],6:['KRATER','VULKAN','SCHLOT','FLAMME']};
+const MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..'};
+const ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function morseHtml(c){return '<span class="mo">'+MORSE[c].split('').map(x=>x==='.'?'<i class="dot"></i>':'<i class="dash"></i>').join('')+'</span>'}
+function alphaStrip(){return '<div class="alpha">'+ALPHA.split('').map((c,i)=>'<span><b>'+c+'</b>'+(i+1)+'</span>').join('')+'</div>'}
+function pick(arr,rnd){return arr[Math.floor(rnd()*arr.length)]}
+function xdials(u){
+  return '<div class="dials">'+u.vals.map((v,i)=>'<div>'+(u.labels&&u.labels[i]?'<div class="small" style="text-align:center;margin-bottom:4px">'+u.labels[i]+'</div>':'')
+    +'<div class="dial"><button data-act="xup" data-i="'+i+'" aria-label="erhöhen">▲</button><div class="dg" id="xd'+i+'">'+esc(u.show(i,v))+'</div><button data-act="xdn" data-i="'+i+'" aria-label="verringern">▼</button></div></div>').join('')+'</div>';
+}
+function wordInit(len){return {vals:new Array(len).fill(0),mods:new Array(len).fill(26),show:(i,v)=>ALPHA[v]}}
+function wordSub(word){
+  return function(d,u,a){
+    if(a.op!=='sub'||!nums(a.vals,word.length))return null;
+    let ok=0;for(let i=0;i<word.length;i++)if(a.vals[i]===ALPHA.indexOf(word[i]))ok++;
+    return ok===word.length?{ok:true}:{wrong:ok+' von '+word.length+' Buchstaben stimmen.'};
+  };
+}
+function mechWord(u,lead,btn){return '<p class="lead">'+lead+'</p>'+xdials(u)+'<div><button class="btn primary" data-act="xsub">'+(btn||'Schloss prüfen')+'</button></div>'+fb()+'<p class="small">Ein Fehlversuch kostet '+PEN_TRY+' Sekunden.</p>'}
+function noPiece(){return '<p class="lead">In dieser Kammer hast du keinen eigenen Hinweis. Hilf mit, die Hinweise der anderen zusammenzusetzen.</p>'}
+const PZ={};
+
+/* 1. Geheimschrift (Caesar) */
+PZ.cipher={name:'Die Geheimschrift',atm:'side',
+  gen(rnd,st){const len=st<=2?4:(st<=4?5:6),word=pick(WORDS[len],rnd),shift=2+Math.floor(rnd()*(st<=2?5:(st<=4?10:22)));
+    return {word,shift,cipher:word.split('').map(c=>ALPHA[(ALPHA.indexOf(c)+shift)%26]).join('')}},
+  init(d){return wordInit(d.word.length)},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Du stellst das geheime Wort ein. Es hat '+d.word.length+' Buchstaben. Deine Gruppe entschlüsselt es für dich.');
+    if(r==='research'||r==='cartographer'){
+      const p=rolePieces(r,d.word.length,['research','cartographer']);
+      if(!p.length)return noPiece();
+      return '<p class="lead">Das ist ein Teil der verschlüsselten Nachricht. Sag deiner Gruppe die Buchstaben in dieser Reihenfolge.</p><ul class="list">'+p.map(i=>'<li><span class="k">BUCHSTABE '+(i+1)+'</span><span class="v">'+d.cipher[i]+'</span></li>').join('')+'</ul>';
+    }
+    if(r==='decode')return '<p class="lead">Du kennst den Schlüssel: Der Absender hat jeden Buchstaben um <b>'+d.shift+'</b> Stellen im Alphabet nach vorne geschoben. Zum Entschlüsseln musst du so viele Stellen zurückzählen. Nach A geht es bei Z weiter.</p>'+(existing(['radio']).length?'':'<h3 class="sub">Alphabet</h3>'+alphaStrip());
+    if(r==='radio')return '<p class="lead">Du hast das Alphabet mit Nummern. Damit kann man leicht vor- und zurückzählen.</p>'+alphaStrip();
+    return noPiece();
+  },
+  explain(d){return ['Ein geheimes Wort mit '+d.word.length+' Buchstaben öffnet diese Kammer. Es wurde in Geheimschrift verschlüsselt.','Wer die Nachricht hat (Forscher/in), liest die verschlüsselten Buchstaben vor.','Die Entschlüsseler/in kennt den Schlüssel: um wie viele Stellen die Buchstaben verschoben wurden. Zurückzählen im Alphabet ergibt das echte Wort.','Die Mechaniker/in stellt das Wort am Schloss ein.']},
+  hint(d,n){if(n===1)return 'Zählt vom verschlüsselten Buchstaben so viele Stellen im Alphabet zurück, wie der Schlüssel sagt.';if(n===2)return 'Der erste Buchstabe des Wortes ist '+d.word[0]+'.';return 'Die ersten beiden Buchstaben sind '+d.word.slice(0,2)+'.'},
+  act(d,u,a){return wordSub(d.word)(d,u,a)}
+};
+
+/* 2. Kabel-Logik */
+const WCOL=[{n:'Rot',c:'#ff5468'},{n:'Blau',c:'#5aa0ff'},{n:'Grün',c:'#4be39a'},{n:'Gelb',c:'#ffd23c'},{n:'Lila',c:'#b57bff'},{n:'Orange',c:'#ff9a3c'}];
+function perms(n){const out=[];(function rec(a,rest){if(!rest.length){out.push(a);return}for(let i=0;i<rest.length;i++)rec(a.concat(rest[i]),rest.slice(0,i).concat(rest.slice(i+1)))})([],Array.from({length:n},(_,i)=>i+1));return out}
+PZ.wires={name:'Die Schaltwand',atm:'valves',
+  gen(rnd,st){
+    const N=st<=2?4:(st<=4?5:6),cols=shuffled(WCOL,rnd).slice(0,N),pos=shuffled(Array.from({length:N},(_,i)=>i+1),rnd);
+    const pool=[];
+    for(let c=0;c<N;c++){
+      pool.push({abs:1,t:cols[c].n+' steckt an Anschluss '+pos[c]+'.',f:p=>p[c]===pos[c]});
+      for(let k=1;k<=N;k++)if(k!==pos[c])pool.push({abs:1,t:cols[c].n+' steckt nicht an Anschluss '+k+'.',f:p=>p[c]!==k});
+      for(let e=0;e<N;e++){if(e===c)continue;const df=Math.abs(pos[c]-pos[e]);
+        if(pos[c]<pos[e])pool.push({t:cols[c].n+' steckt links von '+cols[e].n+'.',f:p=>p[c]<p[e]});
+        if(c<e){
+          if(df===1)pool.push({t:cols[c].n+' und '+cols[e].n+' stecken direkt nebeneinander.',f:p=>Math.abs(p[c]-p[e])===1});
+          else pool.push({t:cols[c].n+' und '+cols[e].n+' stecken nicht nebeneinander.',f:p=>Math.abs(p[c]-p[e])!==1});
+          if(df===2)pool.push({t:'Zwischen '+cols[c].n+' und '+cols[e].n+' liegt genau ein Anschluss.',f:p=>Math.abs(p[c]-p[e])===2});
+        }}
+    }
+    const list=shuffled(pool,rnd);
+    let cand=perms(N);const used=[];
+    while(cand.length>1){
+      const rel=list.filter(x=>!x.abs&&used.indexOf(x.t)<0),ab=list.filter(x=>x.abs&&used.indexOf(x.t)<0);
+      let src=(st>2?rel:rel.concat(ab)).slice(0,30),best=null,bn=cand.length;
+      src.forEach(cl=>{const nx=cand.filter(cl.f);if(nx.length<bn){bn=nx.length;best={cl,nx}}});
+      if(!best){src=ab.slice(0,30);src.forEach(cl=>{const nx=cand.filter(cl.f);if(nx.length<bn){bn=nx.length;best={cl,nx}}})}
+      if(!best)break;
+      used.push(best.cl.t);cand=best.nx;
+    }
+    return {N,cols,pos,clues:used,uc:cand.length};
+  },
+  init(d){return {vals:new Array(d.N).fill(1),mods:new Array(d.N).fill(d.N),mins:new Array(d.N).fill(1),show:(i,v)=>String(v),labels:d.cols.map(c=>'<span style="color:'+c.c+';font-weight:800">'+c.n+'</span>')}},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Du steckst die Kabel an der Schaltwand ein. Jede Farbe gehört an einen eigenen Anschluss von 1 bis '+d.N+' (von links nach rechts). Deine Gruppe findet heraus, wohin welches Kabel gehört.','Schaltwand prüfen');
+    const p=rolePieces(r,d.clues.length,INFO);if(!p.length)return noPiece();
+    return '<p class="lead">Das sind deine Hinweise zur Schaltwand. Die Hinweise der anderen brauchst du auch. Nur zusammen passt alles.</p><ul class="list">'+p.map(i=>'<li><span>'+esc(d.clues[i])+'</span></li>').join('')+'</ul>';
+  },
+  explain(d){return ['An der Schaltwand müssen '+d.N+' farbige Kabel an den richtigen Anschlüssen stecken (1 bis '+d.N+' von links nach rechts).','Jede Person kennt ein paar Hinweise, wo welches Kabel steckt oder in welcher Beziehung Kabel zueinander stehen.','Sammelt alle Hinweise und schließt Möglichkeiten aus, bis genau eine Anordnung übrig ist.','Die Mechaniker/in stellt die Anschlüsse ein und prüft.']},
+  hint(d,n){if(n===1)return 'Schreibt die Anschlüsse 1 bis '+d.N+' auf und tragt Hinweis für Hinweis die Farben ein.';if(n===2)return d.cols[0].n+' steckt an Anschluss '+d.pos[0]+'.';return d.cols[0].n+' steckt an Anschluss '+d.pos[0]+' und '+d.cols[1].n+' an Anschluss '+d.pos[1]+'.'},
+  act(d,u,a){
+    if(a.op!=='sub'||!nums(a.vals,d.N))return null;
+    if(new Set(a.vals).size!==d.N)return {wrong:'Jeder Anschluss darf nur einmal vorkommen.'};
+    let ok=0;for(let i=0;i<d.N;i++)if(a.vals[i]===d.pos[i])ok++;
+    return ok===d.N?{ok:true}:{wrong:ok+' von '+d.N+' Kabeln stecken richtig.'};
+  }
+};
+
+/* 3. Waage */
+const SL='ABCDEFGHI';
+PZ.scales={name:'Die Waage',atm:'meta',
+  gen(rnd,st){
+    const N=st<=2?6:(st<=4?8:9),h=Math.floor(rnd()*N),light=st>=5&&rnd()<.5;
+    let cand=Array.from({length:N},(_,i)=>i),ws=[];
+    for(let t=0;t<120&&!(cand.length===1&&ws.length>=3+(st>=4?1:0));t++){
+      const k=1+Math.floor(rnd()*Math.min(3,Math.floor(N/2))),sh=shuffled(Array.from({length:N},(_,i)=>i),rnd),L=sh.slice(0,k).sort((a,b)=>a-b),R=sh.slice(k,2*k).sort((a,b)=>a-b);
+      let res='E';if(L.indexOf(h)>=0)res=light?'R':'L';else if(R.indexOf(h)>=0)res=light?'L':'R';  // welche Schale sinkt
+      let nx;
+      if(res==='E')nx=cand.filter(x=>L.indexOf(x)<0&&R.indexOf(x)<0);
+      else{const side=(res==='L')===!light?L:R;nx=cand.filter(x=>side.indexOf(x)>=0)}
+      if(cand.length>1&&nx.length>=cand.length)continue;
+      ws.push({L,R,res});cand=nx;
+    }
+    return {N,h,light,ws,uc:cand.length};
+  },
+  init(d){return {sel:null}},
+  wtext(d,w){return w.L.map(i=>SL[i]).join(' + ')+'  gegen  '+w.R.map(i=>SL[i]).join(' + ')+'  →  '+(w.res==='E'?'Gleichgewicht':(w.res==='L'?'linke':'rechte')+' Schale sinkt')},
+  role(r,d,u){
+    if(r==='mechanic'){
+      return '<p class="lead">Du zeigst auf den Stein, den deine Gruppe für den Besonderen hält. Tippe ihn an und bestätige.</p>'
+        +'<div class="keys" style="grid-template-columns:repeat(3,1fr)">'+Array.from({length:d.N},(_,i)=>'<button class="key" data-act="xpick" data-i="'+i+'" aria-pressed="'+(u.sel===i)+'"'+(u.sel===i?' style="border-color:var(--lava);background:#3a1d12"':'')+'>'+SL[i]+'</button>').join('')+'</div>'
+        +'<div><button class="btn primary" data-act="xsubsel"'+(u.sel==null?' disabled':'')+'>'+(u.sel==null?'Wähle einen Stein':'Stein '+SL[u.sel]+' melden')+'</button></div>'+fb();
+    }
+    if(r==='decode')return '<p class="lead">Du kennst die Regel der Waage: Unter den '+d.N+' Steinen (A bis '+SL[d.N-1]+') ist genau einer <b>'+(d.light?'leichter':'schwerer')+'</b> als die anderen. Die Schale, in der er liegt, '+(d.light?'steigt':'sinkt')+'. Die Wägungen haben andere in deiner Gruppe.</p>';
+    const p=rolePieces(r,d.ws.length,['research','cartographer','radio']);if(!p.length)return noPiece();
+    return '<p class="lead">Das sind Ergebnisse von Wägungen. Wer die Regel kennt, sagt dir, was sie bedeuten.</p><ul class="list">'+p.map(i=>'<li><span class="k">WÄGUNG '+(i+1)+'</span><span>'+esc(PZ.scales.wtext(d,d.ws[i]))+'</span></li>').join('')+'</ul>';
+  },
+  explain(d){return ['Unter '+d.N+' Steinen ist einer '+(d.light?'leichter':'schwerer')+' als die anderen. Ihr müsst ihn finden.','Mehrere Wägungen sind schon gemacht. Die Ergebnisse liegen bei den Personen mit Karten.','Die Entschlüsseler/in kennt die Regel: Ist der besondere Stein schwerer oder leichter, und was bedeutet das für die Schalen?','Die Mechaniker/in meldet den Stein.']},
+  hint(d,n){const o=(d.h+1)%d.N;if(n===1)return 'Steine, die in einer Wägung mit Gleichgewicht vorkommen, sind unverdächtig.';if(n===2)return 'Der gesuchte Stein ist nicht '+SL[o]+'.';return 'Der gesuchte Stein ist '+SL[d.h]+' oder '+SL[o]+'.'},
+  act(d,u,a){if(a.op!=='sub'||typeof a.i!=='number')return null;return a.i===d.h?{ok:true}:{wrong:'Das ist nicht der gesuchte Stein.'}}
+};
+
+/* 4. Schatzkarte */
+PZ.map={name:'Die Schatzkarte',atm:'lava',
+  gen(rnd,st){
+    const N=st<=2?5:(st<=4?6:7),steps=st<=2?2:(st<=4?3:4),cells=shuffled(Array.from({length:N*N},(_,i)=>i),rnd),lm=[];
+    for(let s=0;s<6;s++)lm.push({s,x:cells[s]%N,y:Math.floor(cells[s]/N)});
+    for(let tries=0;tries<200;tries++){
+      const st0=lm[Math.floor(rnd()*6)];let x=st0.x,y=st0.y;const mv=[];let okk=true;
+      for(let k=0;k<steps&&okk;k++){
+        const opts=[];[['rechts',1,0],['links',-1,0],['oben',0,-1],['unten',0,1]].forEach(o=>{for(let n=1;n<=3;n++){const nx=x+o[1]*n,ny=y+o[2]*n;if(nx>=0&&nx<N&&ny>=0&&ny<N&&(!mv.length||mv[mv.length-1].dir!==o[0]))opts.push({dir:o[0],n,nx,ny})}});
+        if(!opts.length){okk=false;break}
+        const o=pick(opts,rnd);mv.push(o);x=o.nx;y=o.ny;
+      }
+      if(okk&&!(x===st0.x&&y===st0.y))return {N,lm,start:st0.s,mv,ans:[x,y]};
+    }
+    return {N,lm,start:lm[0].s,mv:[{dir:'rechts',n:1,nx:lm[0].x+1,ny:lm[0].y}],ans:[lm[0].x+1,lm[0].y]};
+  },
+  init(d){return {vals:[0,0],mods:[d.N,d.N],show:(i,v)=>i===0?ALPHA[v]:String(v+1),labels:['Spalte','Zeile']}},
+  steps(d){const a=['Starte bei dem Zeichen '+SHAPES[d.start]+'.'];d.mv.forEach(m=>a.push('Gehe '+m.n+' Feld'+(m.n>1?'er':'')+' nach '+m.dir+'.'));a.push('Dort liegt der Schatz.');return a},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Du gibst das Feld ein, auf dem der Schatz liegt: erst die Spalte (Buchstabe), dann die Zeile (Zahl).','Schatz melden');
+    if(r==='research'){
+      let t='<table class="map"><tr><th></th>'+Array.from({length:d.N},(_,i)=>'<th>'+ALPHA[i]+'</th>').join('')+'</tr>';
+      for(let y=0;y<d.N;y++){t+='<tr><th>'+(y+1)+'</th>';for(let x=0;x<d.N;x++){const m=d.lm.find(q=>q.x===x&&q.y===y);t+='<td>'+(m?img(m.s):'')+'</td>'}t+='</tr>'}
+      return '<p class="lead">Du hast die Karte. Die Wegbeschreibung hat jemand anderes. Hilf, den Weg auf der Karte zu verfolgen und das Zielfeld zu nennen.</p>'+t+'</table>';
+    }
+    const st=PZ.map.steps(d),p=rolePieces(r,st.length,['decode','cartographer','radio']);if(!p.length)return noPiece();
+    return '<p class="lead">Das ist ein Teil der Wegbeschreibung zum Schatz. Die Karte hat jemand anderes.</p><ul class="list">'+p.map(i=>'<li><span class="k">SCHRITT '+(i+1)+'</span><span>'+esc(st[i])+'</span></li>').join('')+'</ul>';
+  },
+  explain(d){return ['Der Schatz liegt auf einem Feld der Karte. Spalten sind Buchstaben, Zeilen sind Zahlen (Zeile 1 ist oben).','Die Forscher/in hat die Karte mit den Zeichen.','Die anderen haben die Wegbeschreibung: Start-Zeichen, dann Schritt für Schritt Richtungen.','Die Mechaniker/in gibt Spalte und Zeile des Ziels ein.']},
+  hint(d,n){if(n===1)return 'Fangt bei dem Zeichen an und zählt die Felder einzeln auf der Karte ab.';if(n===2)return 'Das Ziel liegt in Spalte '+ALPHA[d.ans[0]]+'.';return 'Das Ziel liegt in Spalte '+ALPHA[d.ans[0]]+' und in der '+(d.ans[1]<d.N/2?'oberen':'unteren')+' Hälfte der Karte.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,2))return null;return a.vals[0]===d.ans[0]&&a.vals[1]===d.ans[1]?{ok:true}:{wrong:'Das ist nicht das Zielfeld.'}}
+};
+
+/* 5. Zahlenreihe */
+PZ.sequence={name:'Die Zahlenreihe',atm:'crystal',
+  gen(rnd,st){
+    const kinds=st<=2?['add']:(st<=4?['add','quad','mul']:['quad','fib','mulp','alt']);
+    for(let t=0;t<100;t++){
+      const kind=pick(kinds,rnd);let a=[];
+      if(kind==='add'){const d=2+Math.floor(rnd()*8),s=1+Math.floor(rnd()*20);for(let i=0;i<8;i++)a.push(s+d*i)}
+      else if(kind==='quad'){const d=1+Math.floor(rnd()*3),e=1+Math.floor(rnd()*3),s=Math.floor(rnd()*10);let v=s,df=d;for(let i=0;i<8;i++){a.push(v);v+=df;df+=e}}
+      else if(kind==='mul'){const m=2+Math.floor(rnd()*2),s=1+Math.floor(rnd()*3);for(let i=0;i<8;i++)a.push(s*Math.pow(m,i))}
+      else if(kind==='fib'){const x=1+Math.floor(rnd()*4),y=1+Math.floor(rnd()*5);a=[x,y];for(let i=2;i<8;i++)a.push(a[i-1]+a[i-2])}
+      else if(kind==='mulp'){const m=2,c=Math.floor(rnd()*3)-1||1,s=1+Math.floor(rnd()*3);a=[s];for(let i=1;i<8;i++)a.push(a[i-1]*m+c)}
+      else{const p=3+Math.floor(rnd()*6),q=1+Math.floor(rnd()*(p-1)),s=5+Math.floor(rnd()*20);a=[s];for(let i=1;i<8;i++)a.push(a[i-1]+(i%2?p:-q))}
+      if(a.every(v=>v>=0&&v<1000)&&new Set(a).size>=6)return {kind,terms:a.slice(0,7),ans:a[7]};
+    }
+    return {kind:'add',terms:[2,4,6,8,10,12,14],ans:16};
+  },
+  tip(k){return {add:'Schaut auf den Abstand zwischen zwei Nachbarn. Er bleibt immer gleich.',quad:'Der Abstand zwischen den Nachbarn bleibt nicht gleich. Er ändert sich selbst regelmäßig.',mul:'Vergleicht jede Zahl mit der davor: Sie wird jedes Mal vervielfacht.',fib:'Zwei Zahlen nebeneinander ergeben zusammen die nächste.',mulp:'Erst wird vervielfacht, dann kommt immer dieselbe kleine Zahl dazu oder weg.',alt:'Abwechselnd wird etwas addiert und etwas abgezogen.'}[k]},
+  init(d){return {vals:[0,0,0],mods:[10,10,10],show:(i,v)=>String(v)}},
+  role(r,d,u){
+    if(r==='mechanic'){const x=u.vals;return mechWord(u,'Du stellst die nächste Zahl der Reihe ein (bis zu drei Stellen). Deine Gruppe findet die Regel und rechnet sie aus.','Zahl melden')}
+    const p=rolePieces(r,d.terms.length,INFO),tip=r==='decode'?'<div class="hint">'+esc(PZ.sequence.tip(d.kind))+'</div>':'';
+    if(!p.length&&!tip)return noPiece();
+    return '<p class="lead">Eine Zahlenreihe hat eine Regel. Ihr kennt jeweils nur einzelne Zahlen. Gesucht ist das 8. Glied.</p>'+(p.length?'<ul class="list">'+p.map(i=>'<li><span class="k">GLIED '+(i+1)+'</span><span class="v">'+d.terms[i]+'</span></li>').join('')+'</ul>':'')+tip;
+  },
+  explain(d){return ['Eine Zahlenreihe folgt einer Regel. Gesucht ist die 8. Zahl.','Jede Person kennt nur einzelne Zahlen der Reihe. Nennt sie euch der Reihe nach.','Die Entschlüsseler/in hat einen Tipp zur Art der Regel.','Die Mechaniker/in stellt die gesuchte Zahl ein.']},
+  hint(d,n){if(n===1)return PZ.sequence.tip(d.kind);if(n===2)return 'Die gesuchte Zahl hat '+(d.ans>=100?'drei':(d.ans>=10?'zwei':'eine'))+' Stelle'+(d.ans>=10?'n':'')+'.';return 'Die gesuchte Zahl ist '+(d.ans%2?'ungerade':'gerade')+' und liegt zwischen '+Math.max(0,d.ans-6)+' und '+(d.ans+6)+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,3))return null;return a.vals[0]*100+a.vals[1]*10+a.vals[2]===d.ans?{ok:true}:{wrong:'Das ist nicht die nächste Zahl.'}}
+};
+
+/* 6. Schalter-Rätsel */
+PZ.switches={name:'Die Schalttafel',atm:'core',
+  gen(rnd,st){
+    const S=st<=2?4:(st<=4?5:6),rules=[];
+    for(let i=0;i<S;i++){const k=1+Math.floor(rnd()*(st<=2?2:3));rules.push(shuffled(Array.from({length:S},(_,j)=>j),rnd).slice(0,k).sort((a,b)=>a-b))}
+    for(let t=0;t<50;t++){
+      const sol=Array.from({length:S},()=>rnd()<.5?1:0);if(sol.reduce((a,b)=>a+b,0)<2)continue;
+      const lamps=new Array(S).fill(1);sol.forEach((p,i)=>{if(p)rules[i].forEach(j=>{lamps[j]^=1})});
+      if(lamps.some(x=>!x))return {S,rules,start:lamps,sol,max:2*S+2};
+    }
+    return {S,rules:Array.from({length:S},(_,i)=>[i]),start:[0,1,1,1,1,1].slice(0,S),sol:[1,0,0,0,0,0].slice(0,S),max:2*S+2};
+  },
+  init(d){return {lamps:d.start.slice(),presses:0}},
+  lampRow(d,u){return '<div class="lamps" aria-label="Lampen">'+u.lamps.map((v,i)=>'<span class="lamp '+(v?'on':'')+'" aria-label="Lampe '+(i+1)+(v?' an':' aus')+'">'+(i+1)+'</span>').join('')+'</div><p class="small">Schaltungen: '+u.presses+' von '+d.max+'</p>'},
+  role(r,d,u){
+    const row=PZ.switches.lampRow(d,u);
+    if(r==='mechanic')return '<p class="lead">Du bedienst die Schalter. Alle Lampen sollen leuchten. Jeder Schalter schaltet bestimmte Lampen um. Welche, wissen die anderen.</p>'+row+'<div class="keys" style="grid-template-columns:repeat(3,1fr)">'+Array.from({length:d.S},(_,i)=>'<button class="key" data-act="xpress" data-i="'+i+'">'+(i+1)+'</button>').join('')+'</div>'+fb();
+    const p=rolePieces(r,d.rules.length,INFO);if(!p.length)return '<p class="lead">Du siehst die Lampen und hilfst beim Planen.</p>'+row;
+    return '<p class="lead">Das sind die Regeln einiger Schalter. Die anderen kennen die übrigen.</p><ul class="list">'+p.map(i=>'<li><span class="k">SCHALTER '+(i+1)+'</span><span>schaltet Lampe '+d.rules[i].map(j=>j+1).join(' und ')+' um</span></li>').join('')+'</ul>'+row;
+  },
+  explain(d){return ['Alle '+d.S+' Lampen sollen gleichzeitig leuchten. Die Mechaniker/in bedient die Schalter, höchstens '+d.max+'-mal, sonst beginnt alles von vorn.','Jeder Schalter schaltet immer dieselben Lampen um: An wird aus, aus wird an.','Die Regeln der Schalter sind auf alle Personen verteilt. Sagt sie euch und plant, welche Schalter gedrückt werden.']},
+  hint(d,n){const first=d.sol.indexOf(1);if(n===1)return 'Ein Schalter, den ihr zweimal drückt, hebt sich selbst auf. Jeder Schalter wird höchstens einmal gebraucht.';if(n===2)return 'Schaut zuerst, welche Lampen noch aus sind, und welche Schalter diese Lampen umschalten.';return 'Schalter '+(first+1)+' gehört zur Lösung.'},
+  act(d,u,a){
+    if(a.op!=='press'||typeof a.i!=='number'||a.i<0||a.i>=d.S)return null;
+    d.rules[a.i].forEach(j=>{u.lamps[j]^=1});u.presses++;beep(260+a.i*40,.08,'triangle',.06);
+    if(u.lamps.every(Boolean))return {ok:true};
+    if(u.presses>=d.max){u.lamps=d.start.slice();u.presses=0;return {wrong:'Zu viele Schaltungen. Alle Lampen sind wieder wie am Anfang.'}}
+    return {render:true};
+  }
+};
+
+/* 7. Lichtsignale (Morse) */
+PZ.morse={name:'Die Lichtsignale',atm:'gate',
+  gen(rnd,st){const len=st<=2?3:(st<=4?4:5);return {word:pick(WORDS[len],rnd)}},
+  init(d){return wordInit(d.word.length)},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Du stellst das Wort ein, das deine Gruppe aus den Lichtsignalen entschlüsselt. Es hat '+d.word.length+' Buchstaben.');
+    if(r==='research')return '<p class="lead">Du siehst die Lichtsignale. Jeder Block ist ein Buchstabe. Ein Punkt ist ein kurzes Signal, ein Strich ein langes. Beschreibe sie deiner Gruppe der Reihe nach.</p><ul class="list">'+d.word.split('').map((c,i)=>'<li><span class="k">BUCHSTABE '+(i+1)+'</span>'+morseHtml(c)+'</li>').join('')+'</ul>';
+    const p=rolePieces(r,26,['decode','cartographer','radio']);if(!p.length)return noPiece();
+    return '<p class="lead">Du hast einen Teil der Morse-Tabelle. Sag deiner Gruppe, welcher Buchstabe zu welchem Signal gehört.</p><ul class="list">'+p.map(i=>'<li><b class="v" style="min-width:28px">'+ALPHA[i]+'</b>'+morseHtml(ALPHA[i])+'</li>').join('')+'</ul>';
+  },
+  explain(d){return ['Ein Wort mit '+d.word.length+' Buchstaben wird als Morse-Lichtsignal gezeigt: kurz und lang.','Die Forscher/in sieht die Signale und beschreibt sie.','Die Tabelle, welches Signal welcher Buchstabe ist, ist auf die anderen verteilt.','Die Mechaniker/in stellt das Wort ein.']},
+  hint(d,n){if(n===1)return 'Ein Punkt ist kurz, ein Strich ist lang. Jeder Block ist ein Buchstabe. Vergleicht jedes Signal mit der Tabelle.';if(n===2)return 'Der erste Buchstabe des Wortes ist '+d.word[0]+'.';return 'Die ersten beiden Buchstaben sind '+d.word.slice(0,2)+'.'},
+  act(d,u,a){return wordSub(d.word)(d,u,a)}
+};
+function px(id){return typeof id==='string'&&id.indexOf('x:')===0?id.slice(2):null}
+function chName(id){return CH_NAME[id]||(px(id)&&PZ[px(id)]?PZ[px(id)].name:'')}
+function expandOrder(tpl,seed){const types=shuffled(Object.keys(PZ),rngFor(seed,500));let k=0;return tpl.map(id=>id==='X'?'x:'+types[(k++)%types.length]:id)}
+
 
 function guardBody(){
   const hs=[];for(let i=1;i<=G.chHints;i++)hs.push('<div class="hint">'+esc(hintText(G.cur,i))+'</div>');
@@ -1363,6 +1613,7 @@ function roleBody(r){
   if(G.cur==='side')return sideRole(r);
   if(G.cur==='crystal')return crystalRole(r);
   if(G.cur==='meta')return metaRole(r);
+  if(px(G.cur)&&PZ[px(G.cur)])return PZ[px(G.cur)].role(r,G.data[G.cur],G.pu);
   return '';
 }
 function valvesBody(){
@@ -1401,7 +1652,7 @@ function renderSheet(){
   }else{
     const shared=(G.cur==='valves'||G.cur==='core');
     if(shared){
-      h+='<div><span class="eyebrow">Alle zusammen</span><h2>'+CH_NAME[G.cur]+'</h2></div>';
+      h+='<div><span class="eyebrow">Alle zusammen</span><h2>'+chName(G.cur)+'</h2></div>';
       h+=(G.cur==='valves'?valvesBody():coreBody());
       if(G.roles.indexOf('guard')>=0)h+='<details><summary>Erklärungen für die Gruppe (Wächter/in)</summary><div>'+guardBody()+'</div></details>';
     }else{
@@ -1443,6 +1694,11 @@ sheet.addEventListener('click',e=>{
   else if(a==='ctry')act({type:'try',code:G.dial.slice()});
   else if(a==='mtry')act({type:'try',val:G.metaVals[0]*10+G.metaVals[1]});
   else if(a==='ktry')act({type:'try',vals:G.coreVals.slice()});
+  else if(a==='xup'||a==='xdn'){const u=G.pu;if(!u||!u.vals)return;const i=Number(b.dataset.i),m=u.mods[i],mn=u.mins?u.mins[i]:0;u.vals[i]=((u.vals[i]-mn+(a==='xup'?1:-1)+m)%m)+mn;const el=$('#xd'+i);if(el)el.textContent=u.show(i,u.vals[i])}
+  else if(a==='xsub'){if(G.pu&&G.pu.vals)act({type:'x',op:'sub',vals:G.pu.vals.slice()})}
+  else if(a==='xsubsel'){if(G.pu&&G.pu.sel!=null)act({type:'x',op:'sub',i:G.pu.sel})}
+  else if(a==='xpick'){if(G.pu){G.pu.sel=Number(b.dataset.i);renderSheet()}}
+  else if(a==='xpress')act({type:'x',op:'press',i:Number(b.dataset.i)});
   else if(a==='vopen')valveOpen(Number(b.dataset.j));
   else if(a==='cd')act({type:'cd'});
   else if(a==='hint'){if(G.chHints<3)act({type:'hint',n:G.chHints+1})}
