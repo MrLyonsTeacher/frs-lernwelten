@@ -194,10 +194,10 @@ PZ.sequence={name:'Die Zahlenreihe',atm:'crystal',
 /* 6. Schalter-Rätsel */
 PZ.switches={name:'Die Schalttafel',atm:'core',
   gen(rnd,st){
-    const S=st<=2?4:(st<=4?5:6),rules=[];
+    const S=st<=2?3:(st<=4?4:5),rules=[];
     for(let i=0;i<S;i++){const k=1+Math.floor(rnd()*(st<=2?2:3));rules.push(shuffled(Array.from({length:S},(_,j)=>j),rnd).slice(0,k).sort((a,b)=>a-b))}
     for(let t=0;t<50;t++){
-      const sol=Array.from({length:S},()=>rnd()<.5?1:0);if(sol.reduce((a,b)=>a+b,0)<2)continue;
+      const sol=Array.from({length:S},()=>rnd()<.5?1:0),sn=sol.reduce((a,b)=>a+b,0);if(sn<(st<=2?1:2)||(st<=2&&sn>2))continue;
       const lamps=new Array(S).fill(1);sol.forEach((p,i)=>{if(p)rules[i].forEach(j=>{lamps[j]^=1})});
       if(lamps.some(x=>!x))return {S,rules,start:lamps,sol,max:2*S+2};
     }
@@ -211,7 +211,7 @@ PZ.switches={name:'Die Schalttafel',atm:'core',
     const p=rolePieces(r,d.rules.length,INFO);if(!p.length)return '<p class="lead">Du siehst die Lampen und hilfst beim Planen.</p>'+row;
     return '<p class="lead">Das sind die Regeln einiger Schalter. Die anderen kennen die übrigen.</p><ul class="list">'+p.map(i=>'<li><span class="k">SCHALTER '+(i+1)+'</span><span>schaltet Lampe '+d.rules[i].map(j=>j+1).join(' und ')+' um</span></li>').join('')+'</ul>'+row;
   },
-  explain(d){return ['Alle '+d.S+' Lampen sollen gleichzeitig leuchten. Die Mechaniker/in bedient die Schalter, höchstens '+d.max+'-mal, sonst beginnt alles von vorn.','Jeder Schalter schaltet immer dieselben Lampen um: An wird aus, aus wird an.','Die Regeln der Schalter sind auf alle Personen verteilt. Sagt sie euch und plant, welche Schalter gedrückt werden.']},
+  explain(d){return ['Alle '+d.S+' Lampen sollen gleichzeitig leuchten. Die Mechaniker/in bedient die Schalter, höchstens '+d.max+'-mal, sonst beginnt alles von vorn.','Jeder Schalter schaltet immer dieselben Lampen um: An wird aus, aus wird an. Beispiel: Schalter 2 schaltet Lampe 1 und 3 um. Ist Lampe 1 aus und Lampe 3 an, ist danach Lampe 1 an und Lampe 3 aus.','Die Regeln der Schalter sind auf alle Personen verteilt. Sagt sie euch und plant, welche Schalter gedrückt werden.']},
   hint(d,n){const first=d.sol.indexOf(1);if(n===1)return 'Ein Schalter, den ihr zweimal drückt, hebt sich selbst auf. Jeder Schalter wird höchstens einmal gebraucht.';if(n===2)return 'Schaut zuerst, welche Lampen noch aus sind, und welche Schalter diese Lampen umschalten.';return 'Schalter '+(first+1)+' gehört zur Lösung.'},
   act(d,u,a){
     if(a.op!=='press'||typeof a.i!=='number'||a.i<0||a.i>=d.S)return null;

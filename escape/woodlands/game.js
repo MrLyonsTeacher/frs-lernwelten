@@ -172,7 +172,7 @@ function buildWorld(seed,M,P){
     const w=M>1?k/(M-1):0,r=wr();
     if(r<w*.55)return wr()<(k===M-1?.55:.2)?17:16;
     if(w>.5&&r<w*.8)return 4;
-    const q=wr();if(q<.5)return 0;if(q<.68)return 2;if(q<.84)return 3;if(q<.92)return 5;return 1;
+    const q=wr();if(q<.55)return 0;if(q<.75)return 2;if(q<.9)return 3;return 5;
   }
   function openTile(x,y,g){const i=idx(x,y);block[i]=0;forest[i]=0;ground[i]=g}
   clear.forEach(r=>{
