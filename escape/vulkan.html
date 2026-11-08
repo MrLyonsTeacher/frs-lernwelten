@@ -161,9 +161,8 @@ input[type=text]{flex:1 1 180px;min-width:0;min-height:48px;padding:0 14px;borde
       </div>
 
       <div class="block">
-        <h2>Klasse und Niveau</h2>
-        <div class="views" id="klasse" role="group" aria-label="Klasse"></div>
-        <div class="views" id="niveau" role="group" aria-label="Niveau" style="margin-top:8px"></div>
+        <h2>Schwierigkeit</h2>
+        <div class="views" id="diff" role="group" aria-label="Schwierigkeit"></div>
         <p class="small" id="stageInfo"></p>
       </div>
 
@@ -222,7 +221,7 @@ const $=s=>document.querySelector(s);
 const REDUCED=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 let PEN_TRY=15, PEN_HINT=30;
 const BONUS=30, HOLD_MS=5000;
-/* Schwierigkeit: Stufe 1 bis 6 (Klasse 5 bis 10, Niveau G -1 / M 0 / E +1) */
+/* Schwierigkeit: vier Wahlstufen, intern auf Stufe 1 bis 6 abgebildet */
 const STAGES=[null,
   {pt:10,ph:20,gate:4,lava:5,cry:4,tm:1.2},
   {pt:12,ph:25,gate:4,lava:6,cry:4,tm:1.1},
@@ -230,12 +229,11 @@ const STAGES=[null,
   {pt:18,ph:35,gate:5,lava:7,cry:5,tm:1.0},
   {pt:20,ph:40,gate:6,lava:8,cry:6,tm:.95},
   {pt:25,ph:45,gate:6,lava:8,cry:6,tm:.9}];
-const NIV={G:-1,M:0,E:1};
-function stageFor(k,n){return Math.max(1,Math.min(6,(k|0)-4+(NIV[n]||0)))}
+const DIFFS=[{id:1,label:'Einfach',stage:1,info:'Mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal',stage:3,info:'Die Standardstufe für eine gute Gruppe.'},{id:3,label:'Schwer',stage:5,info:'Längere Rätsel, weniger Zeit, härtere Strafen.'},{id:4,label:'Sehr schwer',stage:6,info:'Die größte Herausforderung, knappe Zeit.'}];
+function stageFor(d){const x=DIFFS.find(q=>q.id===(d|0));return x?x.stage:3}
 function applyStage(st){PEN_TRY=STAGES[st].pt;PEN_HINT=STAGES[st].ph}
 const QS=new URLSearchParams(location.search);
-(function(){const k=parseInt(QS.get('k'),10),n=String(QS.get('n')||'M').toUpperCase();
-  window.__FRS_K=(k>=5&&k<=10)?k:5;window.__FRS_N=NIV[n]!==undefined?n:'M'})();
+window.__FRS_D=(function(){const d=parseInt(QS.get('d'),10);return(d>=1&&d<=4)?d:2})();
 
 /* ---------- Daten ---------- */
 const COLORS=[
@@ -327,7 +325,7 @@ function gen(seed,P,order,st){
 
 /* ---------- Zustand ---------- */
 const G={phase:'lobby',solo:false,spectator:false,epoch:0,seed:0,total:480,deadline:0,endRemaining:0,mode:'short',order:[],ci:0,cur:'gate',data:null,digits:[],found:[],locked:false,P:1,me:0,sets:ROLE_SETS[1],roster:[],roles:[],tab:null,chHints:0,hintsTotal:0,attempts:0,rev:[],playing:false,dial:[],gateIn:[],lavaRow:0,sideVals:[0,0],metaVals:[0,0],valveState:[],coreVals:[],solveSent:false,feedback:'',fbBad:false,hostPeer:null,view:'overview'};
-const RM={room:null,named:null,offs:[],count:0,mode:'short',k:window.__FRS_K,n:window.__FRS_N};
+const RM={room:null,named:null,offs:[],count:0,mode:'short',d:window.__FRS_D};
 let seqTok=0,endTimer=0,advT=0;
 
 function remaining(){return G.phase==='play'?Math.max(0,(G.deadline-performance.now())/1000):G.endRemaining}
@@ -1001,7 +999,7 @@ function myPeer(){
   for(let i=0;i<ps.length;i++)if(ps[i].isMe&&ps[i].sameTab)return ps[i].peer;
   return null;
 }
-function curStage(){return stageFor(RM.k,RM.n)}
+function curStage(){return stageFor(RM.d)}
 function startSolo(){
   initAudio();
   {const st=curStage();beginGame({epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:null,host:null,stage:st})}
@@ -1444,13 +1442,11 @@ setInterval(()=>{paintValves();checkValves()},120);
 
 /* ---------- Gruppenraum ---------- */
 function paintStage(){
-  $('#klasse').innerHTML=[5,6,7,8,9,10].map(k=>'<button class="chip" data-k="'+k+'" aria-pressed="'+(RM.k===k)+'">Klasse '+k+'</button>').join('');
-  $('#niveau').innerHTML=['G','M','E'].map(n=>'<button class="chip" data-n="'+n+'" aria-pressed="'+(RM.n===n)+'">'+n+'-Niveau</button>').join('');
-  const st=curStage();
-  $('#stageInfo').textContent='Schwierigkeit: Stufe '+st+' von 6. Wer die Runde startet, bestimmt die Stufe für die ganze Gruppe.';
+  $('#diff').innerHTML=DIFFS.map(x=>'<button class="chip" data-d="'+x.id+'" aria-pressed="'+(RM.d===x.id)+'">'+x.label+'</button>').join('');
+  const cur=DIFFS.find(x=>x.id===RM.d);
+  $('#stageInfo').textContent=cur.info+' Wer die Runde startet, bestimmt die Schwierigkeit für die ganze Gruppe.';
 }
-$('#klasse').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;RM.k=+b.dataset.k;paintStage()});
-$('#niveau').addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;RM.n=b.dataset.n;paintStage()});
+$('#diff').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;RM.d=+b.dataset.d;paintStage()});
 function paintMode(){
   $('#mode').innerHTML=Object.keys(MODES).map(k=>'<button class="chip" data-mode="'+k+'" aria-pressed="'+(RM.mode===k)+'">'+MODES[k].label+' · '+MODES[k].min+' Min.</button>').join('');
   $('#modeInfo').textContent=MODES[RM.mode].info;
