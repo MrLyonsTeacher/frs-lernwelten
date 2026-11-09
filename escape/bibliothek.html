@@ -381,7 +381,7 @@ function drawShape(ctx,i,s,col){
   ctx.fill();
 }
 const SHURL=[];
-function shapeURL(i){return 'vulkan/assets/sym'+i+'.png'}
+function shapeURL(i){return 'bibliothek/assets/sym'+i+'.png'}
 function img(i){return '<img alt="" src="'+shapeURL(i)+'">'}
 function shp(i){return '<span class="shp">'+img(i)+'<span>'+SHAPES[i]+'</span></span>'}
 
@@ -439,7 +439,7 @@ function roomIdx(){let n=0;for(let i=0;i<G.ci;i++)if(px(G.order[i]))n++;return n
 const DIM=new THREE.Color(0x7c82a0);
 let T=0,lampBad=0,coreCool=0,coreCoolT=0;
 const SHTEX=[];
-function shapeTex(i){if(SHTEX[i])return SHTEX[i];const t=new THREE.TextureLoader().load('vulkan/assets/sym'+i+'.png');t.anisotropy=4;return SHTEX[i]=t}
+function shapeTex(i){if(SHTEX[i])return SHTEX[i];const t=new THREE.TextureLoader().load('bibliothek/assets/sym'+i+'.png');t.anisotropy=4;return SHTEX[i]=t}
 /* Gemalte Texturen und Aufsteller aus vulkan/assets */
 const TXL=new THREE.TextureLoader(),TXC={},SPC={};
 function vtex(n,rx,ry){const k=n+'|'+rx+'|'+ry;if(TXC[k])return TXC[k];const t=TXL.load('vulkan/assets/tex_'+n+'.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;t.repeat.set(rx||1,ry||rx||1);t.anisotropy=4;return TXC[k]=t}
