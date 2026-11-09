@@ -154,21 +154,43 @@ function build(){
     [-1,1].forEach(s=>{if(s===1&&x>-6&&x<5)return;const r=mesh(rib,plank,x,4,s*(zAt(4)-.35));r.rotation.x=-s*phi;ship.add(r)});
     const beam=mesh(new THREE.BoxGeometry(.4,.4,10.6),plank,x,6.1,0);ship.add(beam);
   }
-  /* Heck mit Fenstern */
-  const castle=mesh(new THREE.BoxGeometry(8,4.2,11.6),plank,-14,9.1,0);ship.add(castle);
-  const winM=new THREE.MeshBasicMaterial({color:0xffc566});function winM2(){return winM}
-  {const wd=mat('planks',2,1,{color:0x6a6a60}),rs=mat('rust',1,1,{roughness:.8,metalness:.3});
-   ship.add(mesh(new THREE.BoxGeometry(5.6,2.6,9.6),plank,-15,12.3,0));
-   ship.add(mesh(new THREE.BoxGeometry(2.6,1.8,7.4),plank,-16.2,14.5,0));
-   [[-18.4,9.1,.55],[-18.6,12.3,.45]].forEach(c=>{ship.add(mesh(new THREE.BoxGeometry(.9,.25,12.2-c[2]*0),wd,c[0],c[1]-2*(c[1]>10?.65:1),0))});
-   for(let k=0;k<2;k++)ship.add(mesh(new THREE.BoxGeometry(8.4-k*2.2,.28,12-k*2.4),wd,-14-k,11.25+k*2.4,0));
-   [-1,1].forEach(sd=>{ship.add(mesh(new THREE.BoxGeometry(8.4,.3,.35),wd,-14,11.45,sd*5.85));
-     for(let x=-17.6;x<=-10.4;x+=1.2)ship.add(mesh(new THREE.CylinderGeometry(.07,.09,.9,6),wd,x,11.0,sd*5.85))});
-   for(let i=-1;i<=1;i++){const w=new THREE.Mesh(new THREE.PlaneGeometry(1.0,1.3),winM2());w.position.set(-17.82,12.3,i*2.3);w.rotation.y=-Math.PI/2;ship.add(w)}
-   [-1,1].forEach(sd=>{spr('lantern',1.2,ship,-18.9,10.8,sd*5.5);const lq=mesh(new THREE.TorusGeometry(.5,.12,6,12),rs,-18.7,9.6,sd*3);lq.rotation.y=Math.PI/2;ship.add(lq)});
+  /* Heck: gerundete, gestufte Aufbauten mit Galerien, Fenstern und Zierleisten */
+  const winM=new THREE.MeshBasicMaterial({color:0xffc566});
+  {const wd=mat('planks',.3,.3,{color:0x6a6a60}),rs=mat('rust',1,1,{roughness:.8,metalness:.3}),cu=mat('copper',1,1,{roughness:.55,metalness:.4});
+   const cwall=mat('planks',.2,.2,{color:0x9a9a90});
+   function fpShape(xf,xr,hw,k){const xm=xf-k,sh=new THREE.Shape();sh.moveTo(xf,-hw);sh.lineTo(xf,hw);sh.lineTo(xm,hw);
+     for(let i=1;i<=24;i++){const t=i/24*Math.PI;sh.lineTo(xm-(xm-xr)*Math.sin(t),hw*Math.cos(t))}sh.lineTo(xf,-hw);return sh}
+   function ptsOf(xf,xr,hw,k,n){const xm=xf-k,p=[];for(let i=0;i<=n;i++){const t=i/n*Math.PI;p.push(new THREE.Vector3(xm-(xm-xr)*Math.sin(t),0,hw*Math.cos(t)))}return p}
+   const tiers=[{y:Y1,h:4.3,xf:-9.6,xr:-18.8,hw:5.5,k:2.6},{y:Y1+4.3,h:2.7,xf:-10.8,xr:-17.9,hw:4.6,k:2.2},{y:Y1+7,h:1.9,xf:-12.2,xr:-16.6,hw:3.4,k:1.4}];
+   tiers.forEach((T,ti)=>{
+     const g=new THREE.ExtrudeGeometry(fpShape(T.xf,T.xr,T.hw,T.k),{depth:T.h,bevelEnabled:true,bevelThickness:.12,bevelSize:.12,bevelSegments:2,curveSegments:8});g.rotateX(-Math.PI/2);
+     const m=mesh(g,cwall,0,T.y,0);ship.add(m);
+     /* Kranzleisten oben und unten */
+     [T.y+.02,T.y+T.h+.06].forEach((yy,ki)=>{const pts=ptsOf(T.xf,T.xr,T.hw+.22,T.k,40);const pa=[new THREE.Vector3(T.xf,0,-(T.hw+.22)),new THREE.Vector3(T.xf,0,T.hw+.22)];
+       const path=new THREE.CatmullRomCurve3(pts.concat([]),false);const tube=new THREE.Mesh(new THREE.TubeGeometry(path,60,.14,6,false),wd);tube.position.y=yy;tube.castShadow=true;ship.add(tube);
+       [-1,1].forEach(sd=>{const l=mesh(new THREE.BoxGeometry(T.xf-(T.xf-T.k),.26,.28),wd,T.xf-T.k/2,yy,sd*(T.hw+.22));ship.add(l)})});
+     /* Fenster rund um das Heck */
+     const nW=[9,7,5][ti],xm=T.xf-T.k,rx=xm-T.xr;
+     for(let i=0;i<nW;i++){const t=(.1+.8*(i/(nW-1)))*Math.PI,x=xm-rx*Math.sin(t),z=T.hw*Math.cos(t);
+       const nx=-(xm-x)/(rx*rx),nz=z/(T.hw*T.hw),ang=Math.atan2(nx,nz),L=Math.hypot(nx,nz);
+       const gw=new THREE.Group();const fr=mesh(new THREE.BoxGeometry(.95,1.3,.16),cu,0,0,0);const gl=new THREE.Mesh(new THREE.PlaneGeometry(.7,1.0),winM);gl.position.z=.1;
+       const arch=mesh(new THREE.CylinderGeometry(.35,.35,.16,10,1,false,0,Math.PI),cu,0,.65,0);arch.rotation.x=Math.PI/2;arch.rotation.y=Math.PI/2;
+       gw.add(fr,gl,arch);gw.position.set(x+nx/L*.12,T.y+T.h*.5,z+nz/L*.12);gw.rotation.y=ang;ship.add(gw)}
+     /* Seitenfenster */
+     [-1,1].forEach(sd=>{for(let x=T.xf-1.2;x>T.xf-T.k-.3;x-=1.5){const w=new THREE.Mesh(new THREE.PlaneGeometry(.7,.95),winM);w.position.set(x,T.y+T.h*.5,sd*(T.hw+.15));w.rotation.y=sd>0?0:Math.PI;ship.add(w);
+       const f=mesh(new THREE.BoxGeometry(.9,1.15,.12),cu,x,T.y+T.h*.5,sd*(T.hw+.09));ship.add(f)}});
+     /* Reling auf dem Dach der Stufe */
+     const rp=ptsOf(T.xf,T.xr,T.hw+.35,T.k,40),rc=new THREE.CatmullRomCurve3(rp,false);
+     const rail=new THREE.Mesh(new THREE.TubeGeometry(rc,60,.07,5,false),wd);rail.position.y=T.y+T.h+.95;ship.add(rail);
+     rp.forEach((p,i)=>{if(i%2)return;ship.add(mesh(new THREE.CylinderGeometry(.05,.06,.9,5),wd,p.x,T.y+T.h+.5,p.z))});
+     [-1,1].forEach(sd=>{const r=mesh(new THREE.BoxGeometry(T.xf-(T.xf-T.k),.08,.08),wd,T.xf-T.k/2,T.y+T.h+.95,sd*(T.hw+.35));ship.add(r)});
+   });
+   /* Hecklaternen und Zierwerk */
+   [-1,1].forEach(sd=>{spr('lantern',1.4,ship,-18.9,Y1+3.2,sd*4.3);const lq=mesh(new THREE.TorusGeometry(.6,.14,6,14),rs,-18.9,Y1+1.4,sd*3.6);lq.rotation.y=Math.PI/2;ship.add(lq)});
+   spr('lantern',1.6,ship,-17.2,Y1+8.9,0);
+   /* Dachluke und Schornstein-Zierde */
+   ship.add(mesh(new THREE.BoxGeometry(2.2,.5,1.8),cwall,-14.4,Y1+8.9,0));
    ship.add(mesh(new THREE.CylinderGeometry(.18,.26,5,8),plank,-8.6,11.0,0));}
-
-  for(let i=-2;i<=2;i++){const w=new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.6),winM);w.position.set(-18.05,9.1,i*2.1);w.rotation.y=-Math.PI/2;ship.add(w)}
   const lant=new THREE.PointLight(0xffb450,2.2,26,1.6);lant.position.set(-16,8,0);ship.add(lant);flick.push(lant);
   /* Masten, Rahen, Segel */
   const mast=(x,h,lean)=>{const g=new THREE.Group();const m=mesh(new THREE.CylinderGeometry(.35,.55,h,10),plank,0,h/2,0);g.add(m);
