@@ -61,7 +61,7 @@ const SPN='barrel crate cannon wheel anchor lantern chest chestopen coins mast r
 function loadSpr(n){return new Promise(res=>{loader.load('wrack/assets/spr_'+n+'.png',t=>{t.anisotropy=4;SPT[n]=t;res()},undefined,()=>res())})}
 function loadMisc(n,f){return new Promise(res=>{loader.load('wrack/assets/'+f,t=>{TEX[n]=t;res()},undefined,()=>res())})}
 function spr(n,h,parent,x,y,z,o){o=o||{};const t=SPT[n];if(!t)return null;const im=t.image,asp=im.width/im.height;
-  const m=new THREE.SpriteMaterial({map:t,transparent:true,alphaTest:.04,fog:true,color:o.color||0xffffff,blending:o.add?THREE.AdditiveBlending:THREE.NormalBlending,depthWrite:!o.add});
+  const m=new THREE.SpriteMaterial({map:t,transparent:!!o.add,alphaTest:.45,fog:true,color:o.color||0xffffff,blending:o.add?THREE.AdditiveBlending:THREE.NormalBlending,depthWrite:!o.add});
   const sp=new THREE.Sprite(m);sp.scale.set(h*asp,h,1);sp.center.set(.5,o.mid?.5:0);sp.position.set(x,y,z);parent.add(sp);return sp}
 let sky=new THREE.Object3D(),CAU,CAU2;const cAnim=[];const flick=[];const sway=[];const tick=[];
 function quad(a,b,c,d,m,su,sv){
@@ -73,7 +73,7 @@ function quad(a,b,c,d,m,su,sv){
 const ship=new THREE.Group();scene.add(ship);ship.position.y=.4;ship.rotation.x=.1;
 function build(){
   CAU=TEX.caustics;CAU.wrapS=CAU.wrapT=THREE.RepeatWrapping;if(THREE.sRGBEncoding)CAU.encoding=THREE.LinearEncoding;
-  const sandM=mat('sand',24,24,{side:THREE.FrontSide});
+  const sandM=mat('sand',24,24,{side:THREE.FrontSide,color:0xa9bdb6});
   /* Meeresboden mit sanften Hügeln */
   const SG=new THREE.PlaneGeometry(220,220,90,90);SG.rotateX(-Math.PI/2);
   const p=SG.attributes.position;
@@ -87,11 +87,62 @@ function build(){
   const plank=mat('planks',1,1),barn=mat('barnacle',1,1),floorM=mat('planks',1,1);
   const zAt=y=>4+(y-.8)/6.2*2.2,Y0=.8,Y1=7;
   const wall=(x0,x1,y0,y1,s,m)=>quad([x0,y0,s*zAt(y0)],[x1,y0,s*zAt(y0)],[x1,y1,s*zAt(y1)],[x0,y1,s*zAt(y1)],m,(x1-x0)/7,(y1-y0)/7);
-  ship.add(wall(-18,14,Y0,Y1,-1,barn));
-  ship.add(wall(-18,-4,Y0,Y1,1,barn));ship.add(wall(3,14,Y0,Y1,1,barn));
-  ship.add(wall(-4,3,Y0,2.2,1,barn));ship.add(wall(-4,3,5.6,Y1,1,plank));
-  [-1,1].forEach(s=>ship.add(quad([14,Y0,s*4],[22,2.5,0],[22,8,0],[14,Y1,s*zAt(Y1)],plank,2,1.5)));
-  ship.add(quad([-18,Y0,-4],[-18,Y0,4],[-18,Y1,6.2],[-18,Y1,-6.2],plank,2,1.2));
+  /* Gewölbter Rumpf: Querschnitte von Heck bis Bug, Kiel gerundet, Bug spitz und hochgezogen */
+  const XS=-18,XB=22,NX=64,NE=26,KB=1.6;
+  const wsc=x=>x<8?(x<-13?.88+.12*Math.min(1,(x+18)/5):1):Math.pow(Math.max(0,1-Math.pow((x-8)/14,2)),.55);
+  const rise=x=>x>8?Math.pow((x-8)/14,2)*4.2:0;
+  function hp(x,e,side){ /* Punkt auf dem Rumpf, e 0=Kiel .. 1=Reling */
+    const w=wsc(x),yr=Y1+rise(x)+(x<-12?.0:0),lift=rise(x)*.28;let y,z;
+    if(e<.3){const th=e/.3*Math.PI/2;z=Math.sin(th)*4;y=Y0-KB*Math.cos(th)+lift*(e/.3)}
+    else{const q=(e-.3)/.7;y=Y0+q*(yr-Y0)+lift*(1-q);z=zAt(Y0+q*(Y1-Y0))+.35*Math.sin(Math.PI*q)}
+    return [x,y,side*z*w]}
+  const damaged=(x,y,side)=>{if(side>0&&x>-4&&x<3&&y>2.2&&y<5.6)return true;
+    const n=Math.sin(x*.9+side*3)*Math.cos(y*1.3+x*.2)+Math.sin(x*.37-y*.8+side);return y>3.4&&n>1.15};
+  function hullPart(e0,e1,m,uvx,uvy){
+    const pos=[],uv=[],idx=[];const rows=Math.max(2,Math.round((e1-e0)*NE)),cols=NX;
+    for(const side of [-1,1]){const base=pos.length/3;
+      for(let j=0;j<=rows;j++)for(let i=0;i<=cols;i++){const x=XS+(XB-XS)*i/cols,e=e0+(e1-e0)*j/rows,p=hp(x,e,side);pos.push(p[0],p[1],p[2]);uv.push(x/uvx,(e*7.5)/uvy+side*.37)}
+      for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const a=base+j*(cols+1)+i,b=a+1,c=a+cols+1,d=c+1;
+        const cx=XS+(XB-XS)*(i+.5)/cols,cy=hp(cx,e0+(e1-e0)*(j+.5)/rows,side)[1];if(damaged(cx,cy,side))continue;
+        idx.push(a,c,b,b,c,d)}}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+    const o=new THREE.Mesh(g,m);o.castShadow=true;o.receiveShadow=true;return o}
+  ship.add(hullPart(0,.34,barn,8,3));ship.add(hullPart(.34,.62,mat('barnacle',1,1),9,3.2));ship.add(hullPart(.62,1,plank,9,3.4));
+  /* Heckabschluss (flacher Spiegel mit Rundung) */
+  {const pts=[];for(let k=0;k<=NE;k++)pts.push(hp(XS,k/NE,-1));for(let k=NE;k>=0;k--)pts.push(hp(XS,k/NE,1));
+   const pos=[];pts.forEach(p=>pos.push(...p));pos.push(XS,Y0+2,0);const c=pts.length,idx=[];for(let k=0;k<c-1;k++)idx.push(k,k+1,c);
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(pts.map((p,i)=>[p[2]/6,p[1]/6]).flat().concat([0,0]),2));g.setIndex(idx);g.computeVertexNormals();
+   ship.add(new THREE.Mesh(g,plank))}
+  /* Wulste (Schandeckel), Reling, Geschützpforten, Kiel, Ruder */
+  const rustM=mat('rust',1,1,{roughness:.8,metalness:.3}),woodD=mat('planks',2,1,{color:0x6a6a60});
+  function strip(e,th,off,m){const pos=[],idx=[],uv=[];for(const side of [-1,1]){const base=pos.length/3;
+      for(let i=0;i<=NX;i++){const x=XS+(XB-XS)*i/NX;const p0=hp(x,e,side),p1=hp(x,e+th,side);
+        [p0,p1].forEach((p,k)=>{pos.push(p[0],p[1],p[2]+side*off);uv.push(x/4,k)})}
+      for(let i=0;i<NX;i++){const a=base+i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();const o=new THREE.Mesh(g,m);o.castShadow=true;return o}
+  ship.add(strip(.5,.035,.3,woodD));ship.add(strip(.74,.035,.3,woodD));ship.add(strip(.985,.03,.5,woodD));ship.add(strip(.3,.03,.28,rustM));
+  {const k=mesh(new THREE.BoxGeometry(40,.5,.7),woodD,2,Y0-KB-.1,0);k.scale.x=1;ship.add(k);
+   const rud=mesh(new THREE.BoxGeometry(.5,6,1.6),woodD,-18.5,Y0+1,0);rud.rotation.z=.04;ship.add(rud);
+   const gpM=new THREE.MeshBasicMaterial({color:0x061418}),frM=mat('copper',1,1,{roughness:.6});
+   for(const side of [-1,1])for(let x=-12;x<=14;x+=3.2){if(side>0&&x>-5&&x<4)continue;
+     const p=hp(x,.66,side),pn=hp(x,.69,side);const ang=Math.atan2(pn[2]-p[2],pn[1]-p[1]);
+     const g=new THREE.Group();const hole=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.95),gpM);hole.position.z=side*.03;
+     const fr=mesh(new THREE.BoxGeometry(1.35,1.2,.12),frM,0,0,side*-.02);g.add(fr,hole);g.position.set(p[0],p[1],p[2]+side*.42);g.rotation.y=side>0?0:Math.PI;g.rotation.x=0;ship.add(g);
+     if(side<0&&(x|0)%2===0){const c=mesh(new THREE.CylinderGeometry(.14,.18,1.0,8),mat('rust',1,1),p[0],p[1],p[2]-.9);c.rotation.x=Math.PI/2;ship.add(c)}}
+   /* Reling-Pfosten */
+   const post=new THREE.CylinderGeometry(.07,.09,.9,6);
+   for(const side of [-1,1])for(let x=-12;x<19;x+=1.4){const p=hp(x,1,side);if(Math.random()<.2)continue;ship.add(mesh(post,woodD,p[0],p[1]+.35,p[2]+side*.35))}
+   /* Bugspriet, Galionsfigur-Zierde, Bugbänder */
+   const bs=mesh(new THREE.CylinderGeometry(.22,.38,12,10),plank,0,0,0);bs.position.set(26,Y1+3.4,0);bs.rotation.z=-Math.PI/2+.42;ship.add(bs);
+   const fh=mesh(new THREE.TorusGeometry(.9,.18,8,16,Math.PI*1.4),rustM,22.2,Y1+1.3,0);fh.rotation.set(0,Math.PI/2,.6);ship.add(fh);
+   /* zerbrochene Planken am Riss */
+   for(let k=0;k<14;k++){const x=-4+Math.random()*7,y=2.2+Math.random()*3.4,p=hp(x,.3+.7*((y-Y0)/(Y1-Y0)),1);const pl=mesh(new THREE.BoxGeometry(.18+Math.random()*.1,1.2+Math.random()*1.6,.07),plank,p[0],p[1]+(Math.random()<.5?.9:-.9),p[2]+.15);pl.rotation.set(Math.random()*.5,Math.random()*.4,(Math.random()-.5)*.8);ship.add(pl)}
+   /* Bewuchs am Rumpf */
+   const gn=['coral1','coral2','coral3','anemone','weed1','weed2','coral2','anemone'];
+   for(let k=0;k<110;k++){const x=XS+Math.random()*(XB-XS-3),e=.04+Math.random()*.62,side=Math.random()<.5?-1:1,p=hp(x,e,side);
+     if(p[1]<-.3)continue;const n=gn[(Math.random()*gn.length)|0];const h=.5+Math.random()*1.1;const sp2=spr(n,h,ship,p[0],p[1]-.1,p[2]+side*.35);if(sp2&&n.indexOf('weed')===0)sway.push({o:sp2.material,a:.1,s:.6+Math.random()*.5,p:Math.random()*6,mat:true})}
+  }
+  ship.add(quad([-18,Y0,-4],[-18,Y0,4],[-18,Y1,6.2],[-18,Y1,-6.2],plank,2,1.2).clone());ship.children.pop();
   ship.add(quad([-18,Y0,-4],[14,Y0,-4],[14,Y0,4],[-18,Y0,4],floorM,6,2));
   /* Oberdeck mit Loch in der Mitte */
   const dk=mat('planks',1,1);
@@ -105,7 +156,18 @@ function build(){
   }
   /* Heck mit Fenstern */
   const castle=mesh(new THREE.BoxGeometry(8,4.2,11.6),plank,-14,9.1,0);ship.add(castle);
-  const winM=new THREE.MeshBasicMaterial({color:0xffc566});
+  const winM=new THREE.MeshBasicMaterial({color:0xffc566});function winM2(){return winM}
+  {const wd=mat('planks',2,1,{color:0x6a6a60}),rs=mat('rust',1,1,{roughness:.8,metalness:.3});
+   ship.add(mesh(new THREE.BoxGeometry(5.6,2.6,9.6),plank,-15,12.3,0));
+   ship.add(mesh(new THREE.BoxGeometry(2.6,1.8,7.4),plank,-16.2,14.5,0));
+   [[-18.4,9.1,.55],[-18.6,12.3,.45]].forEach(c=>{ship.add(mesh(new THREE.BoxGeometry(.9,.25,12.2-c[2]*0),wd,c[0],c[1]-2*(c[1]>10?.65:1),0))});
+   for(let k=0;k<2;k++)ship.add(mesh(new THREE.BoxGeometry(8.4-k*2.2,.28,12-k*2.4),wd,-14-k,11.25+k*2.4,0));
+   [-1,1].forEach(sd=>{ship.add(mesh(new THREE.BoxGeometry(8.4,.3,.35),wd,-14,11.45,sd*5.85));
+     for(let x=-17.6;x<=-10.4;x+=1.2)ship.add(mesh(new THREE.CylinderGeometry(.07,.09,.9,6),wd,x,11.0,sd*5.85))});
+   for(let i=-1;i<=1;i++){const w=new THREE.Mesh(new THREE.PlaneGeometry(1.0,1.3),winM2());w.position.set(-17.82,12.3,i*2.3);w.rotation.y=-Math.PI/2;ship.add(w)}
+   [-1,1].forEach(sd=>{spr('lantern',1.2,ship,-18.9,10.8,sd*5.5);const lq=mesh(new THREE.TorusGeometry(.5,.12,6,12),rs,-18.7,9.6,sd*3);lq.rotation.y=Math.PI/2;ship.add(lq)});
+   ship.add(mesh(new THREE.CylinderGeometry(.18,.26,5,8),plank,-8.6,11.0,0));}
+
   for(let i=-2;i<=2;i++){const w=new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.6),winM);w.position.set(-18.05,9.1,i*2.1);w.rotation.y=-Math.PI/2;ship.add(w)}
   const lant=new THREE.PointLight(0xffb450,2.2,26,1.6);lant.position.set(-16,8,0);ship.add(lant);flick.push(lant);
   /* Masten, Rahen, Segel */
@@ -146,11 +208,11 @@ function build(){
     m.position.set((Math.random()-.5)*90,16,(Math.random()-.5)*70);m.rotation.set(0,Math.random()*3,.28);scene.add(m);sway.push({o:m,a:.04,s:.15+Math.random()*.1,p:Math.random()*6,axis:'y'})}
   if(TEX.sky){sky=new THREE.Mesh(new THREE.SphereGeometry(200,40,20),new THREE.MeshBasicMaterial({map:TEX.sky,side:THREE.BackSide,fog:false,depthWrite:false}));sky.renderOrder=-10;scene.add(sky)}
   scene.add(new THREE.HemisphereLight(0x9ae8f2,0x123c46,.95));
-  const sun=new THREE.DirectionalLight(0xb6f1ff,.65);sun.position.set(10,50,12);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-45;sc.right=45;sc.top=30;sc.bottom=-30;sc.far=120;scene.add(sun);const fill=new THREE.DirectionalLight(0x8fe6f0,.4);fill.position.set(-30,12,-25);scene.add(fill);const fill2=new THREE.DirectionalLight(0x8fe6f0,.3);fill2.position.set(25,8,30);scene.add(fill2);
+  const sun=new THREE.DirectionalLight(0xb6f1ff,.65);sun.position.set(10,50,12);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0006;sun.shadow.normalBias=.06;const sc=sun.shadow.camera;sc.left=-45;sc.right=45;sc.top=30;sc.bottom=-30;sc.far=120;scene.add(sun);const fill=new THREE.DirectionalLight(0x8fe6f0,.4);fill.position.set(-30,12,-25);scene.add(fill);const fill2=new THREE.DirectionalLight(0x8fe6f0,.3);fill2.position.set(25,8,30);scene.add(fill2);
   /* Meeresschnee und Blasen */
   const N=900,pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(Math.random()-.5)*120;pos[i*3+1]=Math.random()*30;pos[i*3+2]=(Math.random()-.5)*90}
   const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  const snow=new THREE.Points(sg,new THREE.PointsMaterial({size:.12,color:0xcff,transparent:true,opacity:.6,depthWrite:false,fog:true}));scene.add(snow);
+  const snow=new THREE.Points(sg,new THREE.PointsMaterial({size:.09,map:glowTex(),color:0xcff,transparent:true,opacity:.5,depthWrite:false,fog:true}));scene.add(snow);
   tick.push((t,dt)=>{const a=sg.attributes.position;for(let i=0;i<N;i++){let y=a.getY(i)+dt*(.18+(i%5)*.02);if(y>30)y=0;a.setY(i,y);a.setX(i,a.getX(i)+Math.sin(t*.3+i)*dt*.1)}a.needsUpdate=true});
   const B=160,bp=new Float32Array(B*3),vent=[[8,0,-14],[-20,0,12],[14,1,3],[-2,0,22]];
   for(let i=0;i<B;i++){const v=vent[i%4];bp[i*3]=v[0];bp[i*3+1]=Math.random()*26;bp[i*3+2]=v[2]}
@@ -165,7 +227,7 @@ function build(){
     for(let i=0;i<12;i++){const f=spr(c[5],.55+Math.random()*.25,scene,0,0,0,{mid:1});if(!f)continue;const asp=f.scale.x/f.scale.y,hh=f.scale.y;
       const ph=i*.5,rr=c[3]+(i%4)*.8,sp=.18+si*.03;
       tick.push(tm=>{const a=tm*sp+ph,x=c[0]+Math.cos(a)*rr,z=c[2]+Math.sin(a)*rr*.6,y=c[1]+Math.sin(tm*.7+i)*1.2;f.position.set(x,y,z);
-        const vx=-Math.sin(a)*rr,vz=Math.cos(a)*rr*.6;const rx=Math.cos(camYaw),rz=-Math.sin(camYaw);const side=vx*rx+vz*rz;f.scale.x=(side>=0?-1:1)*Math.abs(f.scale.x)})}
+        const vx=-Math.sin(a)*rr,vz=Math.cos(a)*rr*.6;const rx=Math.cos(camYaw),rz=-Math.sin(camYaw);const side=vx*rx+vz*rz;if(Math.abs(side)>.6)f.scale.x=(side>=0?-1:1)*Math.abs(f.scale.x)})}
   });
 }
 /* Kamerapfad */
