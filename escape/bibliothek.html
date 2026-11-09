@@ -282,10 +282,11 @@ const ROLE_SETS={
   6:[['research'],['decode'],['mechanic'],['guard'],['cartographer'],['radio']]
 };
 const MODES={
-  short:{label:'Kurz',min:15,info:'2 Räume und das Finale, etwa 15 Minuten (Probe-Version).',order:['X','X','core']},
-  long:{label:'Lang',min:35,info:'4 Räume und das Finale, etwa 35 Minuten.',order:['X','X','X','X','core']},
-  test:{label:'Schnelltest',min:8,info:'1 Raum und das Finale, etwa 8 Minuten, zum Ausprobieren.',order:['X','core']}
+  short:{label:'Kurz',min:35,info:'3 Säle mit je 2 Rätseln und das Finale, etwa 35 Minuten.',rooms:[2,2,2]},
+  long:{label:'Lang',min:70,info:'5 Säle mit je 2 Rätseln und das Finale, etwa 70 Minuten (Doppelstunde).',rooms:[2,2,2,2,2]},
+  test:{label:'Schnelltest',min:10,info:'1 Saal mit 2 Rätseln und das Finale, etwa 10 Minuten, zum Ausprobieren.',rooms:[2]}
 };
+Object.keys(MODES).forEach(k=>{const m=MODES[k];m.order=[];m.roomOf=[];m.rooms.forEach((n,r)=>{for(let q=0;q<n;q++){m.order.push('X');m.roomOf.push(r)}});m.order.push('core');m.roomOf.push(-1)});
 const CH_NAME={core:'Das Buch der Bücher'};
 const CH_VIEWS={core:[['core','Buch'],['door','Ausgang']]};
 
@@ -421,6 +422,7 @@ let WW=null,skyM,skyMesh;const BG={n:0,a:null,b:null,glow:null,fade:0,cache:{},f
 let igShake=0,ambL,coolL,composer=null,bloom=null,fpsAcc=0,fpsN=0,perfT=0;
 let crystalRoot,crystalLights=[],crystals=[],doorLamps=[];
 let gateGroup,stonesGroup,valvesGroup,coreGroup,tabletGroup,stones=[],valveObjs=[],coreMesh,coreMat,tabletMat;
+const _fv1=new THREE.Vector3(),_fv2=new THREE.Vector3(),_fv3=new THREE.Vector3();
 const camPos=new THREE.Vector3(0,3.4,8.2),camLook=new THREE.Vector3(0,1.8,-4),tgtPos=new THREE.Vector3(0,3.4,8.2),tgtLook=new THREE.Vector3(0,1.8,-4);
 const VIEWS={
   overview:{p:[0,0,0],l:[0,0,-20]},
@@ -435,7 +437,9 @@ const ROOMS=[
   {p:[-1.8,-.4,-3],l:[-.4,-.4,-20]},
   {p:[1.6,.4,-.5],l:[.4,.1,-20]}
 ];
-function roomIdx(){let n=0;for(let i=0;i<G.ci;i++)if(px(G.order[i]))n++;return n%ROOMS.length}
+function roomIdx(){const m=MODES[G.mode]||MODES.short,r=m.roomOf[G.ci];return Math.max(0,r)%ROOMS.length}
+function roomFrac(){const m=MODES[G.mode]||MODES.short,r=m.roomOf[G.ci];if(r<0)return 0;let n=0,f=0;m.roomOf.forEach((q,i)=>{if(q===r){n++;if(G.found[i])f++}});return n?f/n:0}
+function sameRoomNext(k){const m=MODES[G.mode]||MODES.short;return m.roomOf[k+1]>=0&&m.roomOf[k+1]===m.roomOf[k]}
 const DIM=new THREE.Color(0x7c82a0);
 let T=0,lampBad=0,coreCool=0,coreCoolT=0;
 const SHTEX=[];
@@ -547,8 +551,12 @@ function initScene(){
    BG.propGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffdc80,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));BG.propGlow.position.set(-3.3,-3.6,-11.1);BG.propGlow.scale.set(5,5,1);scene.add(BG.propGlow);
    BG.prop=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false,fog:false}));BG.prop.position.set(-3.3,-3.6,-11);BG.prop.visible=false;scene.add(BG.prop);
    BG.doorArt=new THREE.Group();BG.doorArt.userData={tag:'door'};BG.doorArt.position.set(0,-2.1,-13);scene.add(BG.doorArt);
-   const dmk=u=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(3.5,4.5),new THREE.MeshBasicMaterial({map:bt(u),transparent:true,depthWrite:false,fog:false}));m.userData={tag:'door'};BG.doorArt.add(m);return m};
-   BG.doorZ=dmk('tuer_zu.png');BG.doorO=dmk('tuer_auf.png');BG.doorO.material.opacity=0;BG.doorO.position.z=.02;
+   const dm=u=>new THREE.MeshBasicMaterial({map:bt(u),transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide});
+   {const base=new THREE.Mesh(new THREE.PlaneGeometry(3.5,4.5),dm('tuer_basis.png'));base.userData={tag:'door'};BG.doorArt.add(base);
+    BG.doorGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffe4a0,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));BG.doorGlow.position.set(0,-.4,.02);BG.doorGlow.scale.set(3.4,4.2,1);BG.doorArt.add(BG.doorGlow);
+    const lw=154/496*3.5,lh=455/640*4.5,ly=-(407-320)/640*4.5;
+    const mk=(u,hx,dx)=>{const pv=new THREE.Group();pv.position.set(hx,ly,.04);const m=new THREE.Mesh(new THREE.PlaneGeometry(lw,lh),dm(u));m.position.x=dx;m.userData={tag:'door'};pv.add(m);BG.doorArt.add(pv);return pv};
+    BG.pl=mk('fluegel_l.png',(99-248)/496*3.5,lw/2);BG.pr=mk('fluegel_r.png',(407-248)/496*3.5,-lw/2);}
    BG.book=artSprite('buch_dunkel.png',4.9);BG.book.position.set(0,.9,-19.8);BG.book.visible=false;scene.add(BG.book);
    BG.bookLit=artSprite('buch_hell.png',5.6,{op:0});BG.bookLit.position.set(0,1.45,-19.79);BG.bookLit.visible=false;scene.add(BG.bookLit);
    for(let i=0;i<6;i++){const p=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load('bibliothek/assets/fx_7.jpg'),transparent:true,opacity:.0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
@@ -611,7 +619,7 @@ function initScene(){
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(.14,10,8),new THREE.MeshBasicMaterial({color:0x6b5a55}));
     door.add(lamp);doorLamps.push(lamp);
   }
-  door.position.set(0,-2.63,-12.9);door.scale.setScalar(.3);door.open=0;door.openNow=0;scene.add(door);
+  door.position.set(0,-2.63,-12.9);door.scale.setScalar(.3);door.open=0;[door.halo,door.beam,door.floorGlow,door.vortex].concat(door.rings,door.bolts).forEach(o=>{o.visible=false});door.openNow=0;scene.add(door);
 
   /* Funken */
   const EN=420;ePos=new Float32Array(EN*3);eSpd=new Float32Array(EN);
@@ -815,9 +823,14 @@ const TSTYLE={core:'dive'};
 const TCOL={door:'#d6efff',drop:'#d6efff',cave:'#d6efff',shaft:'#d6efff',seal:'#d6efff',dive:'#d6efff'};
 const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const eout=x=>1-Math.pow(1-x,3);
+let FLY=null,WIPEOUT=0;
+function flyThrough(next){
+  if(!GL||REDUCED){enterChamber(next);return}
+  FLY={t:0,next:next,from:camPos.clone(),look:camLook.clone()};
+}
 function startTransition(next){
   const st=TSTYLE[G.order[next]]||['drop','cave','shaft','seal'][next%4];
-  enterChamber(next);return;
+  flyThrough(next);return;
   TR.active=true;TR.t=0;TR.style=st;TR.next=next;TR.swapped=false;
   sheet.hidden=true;layout();
 }
@@ -943,11 +956,11 @@ function frame(now){
   door.openNow+=(door.open-door.openNow)*(1-Math.exp(-dt*2.2));
   if(door.leaves){const lo=1-Math.min(1,door.openNow*1.4);door.leaves.material.opacity=lo;door.leaves.visible=lo>.01;door.leaves.position.x=-door.openNow*.0}
   {const a=door.openNow;
-   if(door.open>0&&!door.lit){door.lit=true;door.igT=0;if(!REDUCED){door.flashT=.45;igShake=.6}portalSound()}
+   if(door.open>0&&!door.lit){door.lit=true;door.igT=0;beep(392,.3,'sine',.08);setTimeout(()=>beep(523,.4,'sine',.08),120)}
    if(door.open===0&&door.lit)door.lit=false;
    if(door.lit)door.igT+=dt;
    const ig=door.lit?door.igT:0;
-   portalMat.uniforms.t.value=T;portalMat.uniforms.act.value=a;door.disc.visible=a>.02;
+   portalMat.uniforms.t.value=T;portalMat.uniforms.act.value=a;door.disc.visible=false;
    const bk=(x=>1+2.7*Math.pow(x-1,3)+1.7*Math.pow(x-1,2))(Math.min(1,ig/.9));
    door.disc.scale.setScalar(door.lit?Math.max(.1,bk):1);
    portalLight.intensity=a*(3.2+.9*Math.sin(T*5))+(door.lit?Math.max(0,1-ig*1.4)*9:0);
@@ -975,7 +988,7 @@ function frame(now){
     l.material.color.setHex(lampBad>0?0xff5468:(G.found[i]||G.phase==='won'?0x4be39a:0x6b5a55));
   }
 
-  if(BG.doorZ){const o=Math.min(1,door.openNow*1.6);BG.doorZ.material.opacity=1-o;BG.doorO.material.opacity=o;BG.doorArt.visible=G.cur!=='core'&&G.phase!=='lobby';door.visible=BG.doorArt.visible}
+  if(BG.pl){const ang=door.openNow*1.38;BG.pl.rotation.y=-ang;BG.pr.rotation.y=ang;BG.doorGlow.material.opacity=Math.min(1,door.openNow*1.2)*(.75+.15*Math.sin(T*3));BG.doorArt.visible=G.cur!=='core'&&G.phase!=='lobby';door.visible=BG.doorArt.visible}
   if(BG.prop&&BG.prop.visible){const solved=G.found[G.ci]||G.phase==='won';BG.prop.position.y=-3.6+Math.sin(T*1.6)*.06;BG.propGlow.material.opacity=solved?(.55+.2*Math.sin(T*3)):.0}
   if(BG.book&&BG.book.visible){const w=G.phase==='won'?1:0;BG.bookLit.material.opacity+=(w-BG.bookLit.material.opacity)*Math.min(1,dt*1.8);BG.book.material.opacity=1-BG.bookLit.material.opacity*.95}
   BG.fg&&BG.fg.children.forEach((c,i)=>{if(c.userData.bob)c.position.y=2.6+Math.sin(T*.9)*.25;c.material.rotation=Math.sin(T*.5+i)*.02});
@@ -991,7 +1004,16 @@ function frame(now){
 
   const k=1-Math.exp(-dt*3);
   if(TR.active){stepTransition(dt);stepAtmosphere(dt);drawScene();vig.style.opacity='0';return}
-  camPos.lerp(tgtPos,k);camLook.lerp(tgtLook,k);
+  if(FLY){
+    FLY.t+=dt;const u=Math.min(1,FLY.t/1.7),e=u*u*(3-2*u),e2=u*u;
+    const A=FLY.from,P1=_fv1.set(0,-1.9,-10.5),P2=_fv2.set(0,-1.85,-15.5);
+    if(u<.55){const w=e/(.55*.55*(3-2*.55));camPos.lerpVectors(A,P1,Math.min(1,u/.55*(u/.55)*(3-2*u/.55)))}
+    else{const w=(u-.55)/.45;camPos.lerpVectors(P1,P2,w*w)}
+    camLook.lerp(_fv3.set(0,-1.9,-30),Math.min(1,dt*4));tgtPos.copy(camPos);tgtLook.copy(camLook);
+    const wp=$('#wipe');wp.style.background='#fff3d6';wp.style.opacity=String(Math.max(0,(u-.62)/.38));
+    if(u>=1){const n=FLY.next;FLY=null;enterChamber(n);camPos.copy(tgtPos).add(_fv1.set(0,-.3,-3.5));camLook.copy(tgtLook);WIPEOUT=1}
+  }else if(WIPEOUT>0){WIPEOUT=Math.max(0,WIPEOUT-dt*1.4);const wp=$('#wipe');wp.style.background='#fff3d6';wp.style.opacity=String(WIPEOUT)}
+  camPos.lerp(tgtPos,FLY?1:k);camLook.lerp(tgtLook,FLY?1:k);
   let sx=0,sy=0;
   if(!REDUCED){
     const amp=playing?(.012+.075*prog*prog):(G.phase==='lost'?.09:.01);
@@ -1080,6 +1102,7 @@ function beginGame(sp){
   else if(G.roles.length&&!G.solo)toast('Deine Rolle: '+G.roles.map(r=>ROLE_NAME[r]).join(' und '),4200);
 }
 function enterChamber(i,first,fromTr){
+  FLY=null;
   clearTimeout(advT);stopSeq();if(!fromTr)cancelTransition();
   G.ci=i;G.cur=G.order[i];G.locked=false;G.chHints=0;G.feedback='';G.fbBad=false;
   G.gateIn=[];G.lavaRow=0;G.sideVals=[0,0];G.metaVals=[0,0];G.rev=[];G.playing=false;G.solveSent=false;
@@ -1090,17 +1113,17 @@ function enterChamber(i,first,fromTr){
   G.pu=(px(G.cur)&&PZ[px(G.cur)])?PZ[px(G.cur)].init(G.data[G.cur]):null;
   G.tab=G.roles[0]||null;
   if(GL){
-    resetDoor();setGroups(G.cur);
+    resetDoor();setGroups(G.cur);if(px(G.cur)){const f=roomFrac();door.open=f;door.openNow=f}
     if(G.cur==='crystal'){buildCrystals(cr.len,cr.seq)}
     else if(G.cur==='lava')buildStones(G.data.lava.rows);
     else if(G.cur==='valves')buildValves(v.V);
     shadowify(crystalRoot);shadowify(stonesGroup);shadowify(valvesGroup);
   }
   buildViews();setView('overview');
-  $('#chEye').textContent='Kammer '+(i+1)+' von '+G.order.length;
+  $('#chEye').textContent=px(G.cur)?('Saal '+(roomIdx()+1)+' · Rätsel '+(i+1)+' von '+(G.order.length-1)):'Finale';
   $('#chName').textContent=chName(G.cur);
   renderSheet();paintHud();
-  if(!first)toast('Kammer '+(i+1)+': '+chName(G.cur),3000);
+  if(!first)toast(px(G.cur)&&sameRoomNext(i-1)?('Nächstes Rätsel im Saal: '+chName(G.cur)):('Rätsel '+(i+1)+': '+chName(G.cur)),3000);
 }
 function myPeer(){
   if(!RM.named)return null;
@@ -1219,11 +1242,12 @@ function chamberDone(){
   const k=G.ci;
   if(k===G.order.length-1){finish('won');return}
   G.locked=true;G.found[k]=true;G.deadline+=BONUS*1000;
-  if(GL)door.open=1;
+  const same=sameRoomNext(k);
+  if(GL)door.open=same?roomFrac():1;
   beep(523,.2,'sine');setTimeout(()=>beep(784,.35,'sine'),160);
-  toast('Kammer '+(k+1)+' geschafft! +'+BONUS+' Sekunden. Eine Ziffer ist auf den Seiten erschienen, merkt sie euch.',3400);
+  toast('Rätsel '+(k+1)+' gelöst! +'+BONUS+' Sekunden. Eine Ziffer ist auf den Seiten erschienen, merkt sie euch.',3400);
   renderSheet();
-  advT=setTimeout(()=>{if(G.phase==='play'&&G.ci===k)startTransition(k+1)},2600);
+  advT=setTimeout(()=>{if(G.phase==='play'&&G.ci===k){if(same)enterChamber(k+1);else startTransition(k+1)}},same?2400:2900);
 }
 function finish(phase){
   if(G.phase!=='play')return;
@@ -1244,7 +1268,7 @@ function showEnd(){
   $('#endEye').textContent=won?'Tinte zurück':'Zeit abgelaufen';
   $('#endTitle').textContent=won?'Das Buch der Bücher schreibt wieder!':'Die Zeit war schneller.';
   $('#endText').textContent=won?'Die Tinte fließt zurück in die Seiten und die Wörter leuchten wieder. Gute Teamarbeit.':'Kein Problem. Mit neuen Rätseln und einer neuen Runde klappt es bestimmt.';
-  $('#endSum').innerHTML='<span>Kammern <b>'+n+' von '+G.order.length+'</b></span><span>Zeit übrig <b>'+fmt(G.endRemaining)+'</b></span><span>Fehlversuche <b>'+G.attempts+'</b></span><span>Hinweise <b>'+G.hintsTotal+'</b></span>';
+  $('#endSum').innerHTML='<span>Rätsel <b>'+n+' von '+G.order.length+'</b></span><span>Zeit übrig <b>'+fmt(G.endRemaining)+'</b></span><span>Fehlversuche <b>'+G.attempts+'</b></span><span>Hinweise <b>'+G.hintsTotal+'</b></span>';
   endEl.hidden=false;
 }
 
@@ -1330,7 +1354,7 @@ function explain(id){
   if(id==='crystal')return ['Die Forscher/in schickt einen Impuls, die Kristalle leuchten nacheinander in Farben.','Die Entschlüsseler/in (und weitere) wissen, welche Farbe zu welcher Ziffer gehört.','Die Mechaniker/in stellt den Code ein. Er hat '+d.crystal.len+' Stellen, eine pro Kristall von links nach rechts.'];
   if(id==='valves')return ['Alle '+d.valves.V+' Ventile müssen gleichzeitig offen sein. Ein Ventil bleibt nach dem Öffnen '+(HOLD_MS/1000)+' Sekunden offen.','Jede Person stellt ihre Ventile ein, kennt aber den Zielwert nicht. Der steht bei der nächsten Person.','Mit dem Knopf Countdown starten zählt ihr gemeinsam 3, 2, 1, JETZT.'];
   if(id==='meta')return ['Das Siegel öffnet sich mit der Summe aller bisher gefundenen Seitenziffern.','Jede Person kennt nur ihre eigenen Ziffern. Sie müssen sie der Gruppe nennen.','Die Mechaniker/in stellt die Summe ein.'];
-  return ['Das ist das Finale. Jede Person kennt andere Ziffern, als sie einstellt.','Sagt euch die Ziffern aus allen Kammern, stellt die Räder ein und startet die Tinte gemeinsam.','Das Schloss zeigt allen, was gerade eingestellt ist.'];
+  return ['Das ist das Finale. Jede Person kennt andere Ziffern, als sie einstellt.','Sagt euch die Ziffern aus allen Rätseln, stellt die Räder ein und startet die Tinte gemeinsam.','Das Schloss zeigt allen, was gerade eingestellt ist.'];
 }
 
 /* ---------- Rollenkarte ---------- */
@@ -1346,11 +1370,11 @@ function chName(id){return CH_NAME[id]||(px(id)&&PZ[px(id)]?PZ[px(id)].name:'')}
 
 function guardBody(){
   const hs=[];for(let i=1;i<=G.chHints;i++)hs.push('<div class="hint">'+esc(hintText(G.cur,i))+'</div>');
-  return '<p class="lead">Du bist für die Erklärungen zuständig. Sag der Gruppe zu Beginn, wie die Kammer funktioniert, und hilf allen weiter, wenn sie nicht mehr wissen, was zu tun ist. Du siehst keine Rätselteile, dafür kennst du die Regeln.</p>'
-    +'<h3 class="sub">Das erklärst du in dieser Kammer</h3>'
+  return '<p class="lead">Du bist für die Erklärungen zuständig. Sag der Gruppe zu Beginn, wie das Rätsel funktioniert, und hilf allen weiter, wenn sie nicht mehr wissen, was zu tun ist. Du siehst keine Rätselteile, dafür kennst du die Regeln.</p>'
+    +'<h3 class="sub">Das erklärst du bei diesem Rätsel</h3>'
     +'<ul class="log">'+explain(G.cur).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>'
     +'<h3 class="sub">Allgemein</h3>'
-    +'<ul class="log"><li>Jede Person hat eine andere Rolle und sieht andere Hinweise. Sprecht miteinander, zeigt nichts auf dem Bildschirm.</li><li>Ein Fehlversuch kostet '+PEN_TRY+' Sekunden, eine geschaffte Kammer bringt '+BONUS+' Sekunden.</li><li>Die Lava oben zeigt, wie viel Zeit bleibt.</li></ul>'
+    +'<ul class="log"><li>Jede Person hat eine andere Rolle und sieht andere Hinweise. Sprecht miteinander, zeigt nichts auf dem Bildschirm.</li><li>Ein Fehlversuch kostet '+PEN_TRY+' Sekunden, ein gelöstes Rätsel bringt '+BONUS+' Sekunden.</li><li>Die Lava oben zeigt, wie viel Zeit bleibt.</li></ul>'
     +'<h3 class="sub">Wenn ihr nicht weiterkommt</h3>'
     +'<p class="small">Frag zuerst nach: Wer sieht was? Hilft das nicht, fordere unten einen Hinweis an.</p>'
     +'<div><button class="btn" data-act="hint"'+(G.chHints>=3?' disabled':'')+'>'+(G.chHints>=3?'Keine Hinweise mehr':'Hinweis anfordern (−'+PEN_HINT+' s)')+'</button></div>'
@@ -1387,7 +1411,7 @@ function lavaRole(r){
       +'<div class="row3">'+sh.map((s,c)=>'<button class="btnshape" data-act="stone" data-c="'+c+'">'+img(s)+'<span>'+['Links','Mitte','Rechts'][c]+'</span></button>').join('')+'</div>'+fb();
   }
   const p=rolePieces(r,L.R,['cartographer','research','decode','radio']);
-  if(!p.length)return '<p class="lead">Du hilfst in dieser Kammer beim Beschreiben und Mitdenken.</p>';
+  if(!p.length)return '<p class="lead">Du hilfst bei diesem Rätsel beim Beschreiben und Mitdenken.</p>';
   return '<p class="lead">Du hast einen Teil der Karte. Sag der Gruppe, welches Zeichen in welcher Reihe sicher ist. Die Reihen werden von vorne nach hinten betreten.</p>'
     +'<ul class="list">'+p.map(i=>'<li><span class="k">REIHE '+(i+1)+'</span>'+shp(L.rows[i].shapes[L.rows[i].safe])+'</li>').join('')+'</ul>';
 }
@@ -1399,7 +1423,7 @@ function sideRole(r){
       +'<div><button class="btn primary" data-act="stry">Schloss prüfen</button></div>'+fb();
   }
   const p=rolePieces(r,d.clues.length,['research','decode','cartographer','radio']);
-  if(!p.length)return '<p class="lead">Du hilfst in dieser Kammer beim Mitdenken.</p>';
+  if(!p.length)return '<p class="lead">Du hilfst bei diesem Rätsel beim Mitdenken.</p>';
   return '<p class="lead">Gesucht ist eine Zahl mit zwei Stellen. Das ist dein Hinweis. Die anderen haben andere.</p>'
     +'<ul class="list">'+p.map(i=>'<li><span>'+esc(d.clues[i])+'</span></li>').join('')+'</ul>';
 }
@@ -1459,7 +1483,7 @@ function coreBody(){
   const D=G.digits.length;let h='<p class="lead">Das ist das Finale. Jede Person stellt Räder ein, deren Ziffern jemand anderes kennt. Sagt euch die Seitenziffern, bis alle Räder stimmen, und startet dann die Tinte.</p>';
   const ops=[];for(let j=0;j<D;j++)if(mine(j+1))ops.push(j);
   if(ops.length){
-    h+='<div class="card2"><h3>Deine Räder</h3><div class="dials">'+ops.map(j=>'<div><div class="small">Kammer '+(j+1)+'</div><div class="dial"><button data-act="up" data-k="core" data-i="'+j+'" aria-label="Rad '+(j+1)+' erhöhen">▲</button><div class="dg" id="dg-core'+j+'" role="img" aria-label="Rad '+(j+1)+'">'+G.coreVals[j]+'</div><button data-act="dn" data-k="core" data-i="'+j+'" aria-label="Rad '+(j+1)+' verringern">▼</button></div></div>').join('')+'</div></div>';
+    h+='<div class="card2"><h3>Deine Räder</h3><div class="dials">'+ops.map(j=>'<div><div class="small">Rätsel '+(j+1)+'</div><div class="dial"><button data-act="up" data-k="core" data-i="'+j+'" aria-label="Rad '+(j+1)+' erhöhen">▲</button><div class="dg" id="dg-core'+j+'" role="img" aria-label="Rad '+(j+1)+'">'+G.coreVals[j]+'</div><button data-act="dn" data-k="core" data-i="'+j+'" aria-label="Rad '+(j+1)+' verringern">▼</button></div></div>').join('')+'</div></div>';
   }
   h+='<div class="card2"><h3>Schloss</h3><div class="entry"><b id="cv">'+G.coreVals.join(' ')+'</b></div></div>';
   h+='<div class="field"><button class="btn primary" data-act="ktry">Tinte starten</button></div>'+fb();
@@ -1467,7 +1491,7 @@ function coreBody(){
 }
 function digitsCard(){
   const items=[];
-  for(let k=0;k<G.order.length-1;k++)if(G.found[k]&&mine(k))items.push('<li><span class="k">AUS KAMMER '+(k+1)+'</span><span class="v">'+G.digits[k]+'</span></li>');
+  for(let k=0;k<G.order.length-1;k++)if(G.found[k]&&mine(k))items.push('<li><span class="k">AUS RÄTSEL '+(k+1)+'</span><span class="v">'+G.digits[k]+'</span></li>');
   if(!items.length)return '';
   return '<div class="dig"><h3 class="sub">Deine Seitenziffern. Merke sie dir.</h3><ul class="list">'+items.join('')+'</ul></div>';
 }
