@@ -100,6 +100,25 @@ details summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;alig
 details>div{display:grid;gap:10px;padding-top:6px}
 
 .lobby,.end{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(to top,rgba(10,12,40,.8),rgba(10,12,40,.3))}
+.intro{position:absolute;inset:0;z-index:10;background:#0a0c28 url(bibliothek/assets/intro.jpg) center/cover no-repeat;display:grid;place-items:center;padding:20px;transition:opacity 1.4s ease;cursor:pointer}
+.intro::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,12,40,.35),rgba(10,12,40,.88))}
+.intro[hidden]{display:none}
+.intro.out{opacity:0;pointer-events:none}
+.scroll{--s:calc(min(760px,94vw,95vh)/100);position:relative;width:min(760px,94vw,calc(88vh*1.078));aspect-ratio:900/835;filter:drop-shadow(0 18px 40px rgba(0,0,0,.7));opacity:0;animation:scIn 1.1s .2s ease forwards}
+.scroll .bg{position:absolute;inset:0;width:100%;height:100%;display:block;clip-path:inset(46% 0 46% 0);animation:scOpen 1.6s .5s cubic-bezier(.3,.7,.2,1) forwards}
+@keyframes scIn{to{opacity:1}}
+@keyframes scOpen{to{clip-path:inset(0 0 0 0)}}
+@keyframes scLine{to{opacity:1;transform:none}}
+.scroll .txt{position:absolute;left:21%;right:23%;top:20%;bottom:24%;display:flex;flex-direction:column;justify-content:flex-start}
+.scroll h2{margin:0 0 calc(var(--s)*1.1);text-align:center;font:800 calc(var(--s)*5)/1.1 var(--font-display);color:#2c2a5e;letter-spacing:.02em;opacity:0;animation:scLine .9s 1.8s forwards}
+.scroll .orn{display:block;margin:0 auto calc(var(--s)*1.4);width:50%;height:2px;background:linear-gradient(90deg,transparent,#b7842a 30%,#b7842a 70%,transparent);opacity:0;animation:scLine .9s 1.9s forwards}
+.scroll p{margin:0 0 calc(var(--s)*1.3);font:600 calc(var(--s)*2.5)/1.4 Georgia,'Palatino Linotype',serif;color:#2f2a45;text-align:left;opacity:0;transform:translateY(4px);animation:scLine .9s ease forwards}
+.scroll p:nth-of-type(1){animation-delay:2.4s}.scroll p:nth-of-type(2){animation-delay:4.4s}.scroll p:nth-of-type(3){animation-delay:6.4s}
+.scroll p:first-of-type::first-letter{font:800 2.2em/.9 var(--font-display);float:left;margin:.04em .1em 0 0;color:#8a2230}
+.scroll .seal{position:absolute;left:44%;bottom:9%;width:11%;opacity:0;transform:scale(1.5) rotate(-12deg);animation:scSeal .5s 8s cubic-bezier(.3,1.4,.5,1) forwards;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5))}
+@keyframes scSeal{to{opacity:1;transform:none}}
+.intro .tap{position:absolute;bottom:3vh;left:0;right:0;text-align:center;font:700 15px var(--font-display);color:#f6f0e0;opacity:0;animation:scLine 1s 8.4s forwards;text-shadow:0 2px 8px #000}
+@media (prefers-reduced-motion:reduce){.scroll,.scroll .bg,.scroll h2,.scroll .orn,.scroll p,.scroll .seal,.intro .tap{animation-duration:.01s!important;animation-delay:0s!important}}
 .lobby{background:linear-gradient(to top,rgba(10,12,40,.78),rgba(10,12,40,.35)),#12163a url(bibliothek/assets/intro.jpg) center/cover no-repeat}
 .end{z-index:8}
 .card{pointer-events:auto;width:min(580px,100%);max-height:100%;overflow:auto;display:grid;gap:14px;padding:22px;border-radius:14px;background:var(--panel-solid);border:1px solid var(--line)}
@@ -137,6 +156,7 @@ input[type=text]{flex:1 1 180px;min-width:0;min-height:48px;padding:0 14px;borde
   <div class="wipe" id="wipe"></div>
   <div class="tcard" id="tcard" aria-hidden="true"></div>
 
+  <div class="intro" id="intro" hidden><div class="scroll"><img class="bg" src="bibliothek/assets/scroll.png" alt=""><div class="txt"><h2>Die Tinte versiegt</h2><span class="orn"></span><p>Hoch über den Wolken liegt die Himmelsbibliothek. Seit Jahrhunderten schreibt das Buch der Bücher jede Geschichte der Welt von selbst auf.</p><p>Doch die Tinte versiegt. Die Wörter verblassen, die Seiten werden leer, und in den Sälen fehlt das Licht. Jeder Saal hält ein Rätsel bereit, das nur eine Gruppe lösen kann.</p><p>Sprecht miteinander, teilt eure Hinweise und bringt die Tinte durch alle Säle bis zum Buch der Bücher zurück.</p></div><img class="seal" src="bibliothek/assets/seal.png" alt=""></div><div class="tap">Tippen zum Starten</div></div>
   <header class="hud" id="hud" hidden>
     <div class="hud-in">
       <div class="hud-row">
@@ -397,14 +417,14 @@ sndBtn.addEventListener('click',()=>{
 });
 
 /* ---------- 3D-Szene ---------- */
-let WW=null,skyM,skyMesh;const BG={n:0,a:null,b:null,glow:null,fade:0,cache:{}};let GL=false,renderer,scene,camera,lava,lavaMat,lavaLight,emberMat,emberGeo,ePos,eSpd,door,portalMat,portalLight,coreLight;
+let WW=null,skyM,skyMesh;const BG={n:0,a:null,b:null,glow:null,fade:0,cache:{},fg:null,prop:null,propGlow:null,doorArt:null,book:null,bookLit:null,pages:[]};let GL=false,renderer,scene,camera,lava,lavaMat,lavaLight,emberMat,emberGeo,ePos,eSpd,door,portalMat,portalLight,coreLight;
 let igShake=0,ambL,coolL,composer=null,bloom=null,fpsAcc=0,fpsN=0,perfT=0;
 let crystalRoot,crystalLights=[],crystals=[],doorLamps=[];
 let gateGroup,stonesGroup,valvesGroup,coreGroup,tabletGroup,stones=[],valveObjs=[],coreMesh,coreMat,tabletMat;
 const camPos=new THREE.Vector3(0,3.4,8.2),camLook=new THREE.Vector3(0,1.8,-4),tgtPos=new THREE.Vector3(0,3.4,8.2),tgtLook=new THREE.Vector3(0,1.8,-4);
 const VIEWS={
   overview:{p:[0,0,0],l:[0,0,-20]},
-  door:{p:[0,-.4,-9.5],l:[0,-1.1,-20]},
+  door:{p:[0,-1.2,-5],l:[0,-2.3,-13]},
   core:{p:[0,0,-3.5],l:[0,.2,-20]}
 };
 const ROOMS=[
@@ -459,6 +479,42 @@ function disposeGroup(g){
 }
 
 
+
+/* Gemalte Aufsteller */
+const BT={};
+function bt(u){return BT[u]||(BT[u]=TXL.load('bibliothek/assets/'+u))}
+function artSprite(file,h,opt){
+  opt=opt||{};
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:bt(file),transparent:true,depthWrite:false,fog:false,blending:opt.add?THREE.AdditiveBlending:THREE.NormalBlending,opacity:opt.op===undefined?1:opt.op}));
+  const im=bt(file);
+  const fit=()=>{const w=im.image.width,hh=im.image.height;sp.scale.set(h*w/hh,h,1)};
+  if(im.image&&im.image.width)fit();else{sp.scale.set(h,h,1);const old=im.onUpdate;const iv=setInterval(()=>{if(im.image&&im.image.width){fit();clearInterval(iv)}},80)}
+  return sp;
+}
+const FG_SETS=[[7,8,10],[5,8,10],[7,9,10],[8,7,10],[7,8,10],[5,7,10]];
+const PROP_FOR={cipher:'req_9.png',wires:'req_15.png',scales:'req_12.png',map:'req_4.png',sequence:'req_6.png',switches:'req_10.png',morse:'req_1.png'};
+function buildFg(n){
+  if(!BG.fg)return;
+  while(BG.fg.children.length)BG.fg.remove(BG.fg.children[0]);
+  if(n>=6)return;
+  const set=FG_SETS[(n-1)%FG_SETS.length];
+  const a=artSprite('vg_'+set[0]+'.png',3.6);a.position.set(-6.9,-2.6,-9);BG.fg.add(a);
+  const b=artSprite('vg_'+set[1]+'.png',2.8);b.position.set(8.4,-3.0,-10);BG.fg.add(b);
+  const c=artSprite('vg_'+set[2]+'.png',3.4);c.position.set(-5.5,6.2,-9.5);BG.fg.add(c);
+  const d=artSprite('vg_10.png',3.0);d.position.set(6.4,6.6,-11);BG.fg.add(d);
+  const e=artSprite('vg_12.png',2.6);e.position.set(4.8,2.6,-8);e.userData.bob=1;BG.fg.add(e);
+}
+function setProp(id){
+  if(!BG.prop)return;
+  const t=px(id)&&PROP_FOR[px(id)];
+  BG.prop.visible=!!t;BG.propGlow.visible=!!t;
+  if(!t)return;
+  const sp=artSprite(t,2.7);
+  BG.prop.material.map=sp.material.map;BG.prop.material.needsUpdate=true;
+  const im=sp.material.map;
+  const fit=()=>{BG.prop.scale.set(2.7*im.image.width/im.image.height,2.7,1)};
+  if(im.image&&im.image.width)fit();else{const iv=setInterval(()=>{if(im.image&&im.image.width){fit();clearInterval(iv)}},80)}
+}
 function loadBg(n,cb){
   if(BG.cache[n]){cb(BG.cache[n]);return}
   new THREE.TextureLoader().load('bibliothek/assets/raum_'+n+'.jpg',function(t){t.anisotropy=4;BG.cache[n]=t;cb(t)});
@@ -486,7 +542,17 @@ function initScene(){
    BG.a=new THREE.Mesh(g,pm());BG.a.position.set(0,0,-20);BG.a.renderOrder=-2;scene.add(BG.a);
    BG.b=new THREE.Mesh(g,pm());BG.b.position.set(0,0,-19.98);BG.b.renderOrder=-1;BG.b.visible=false;scene.add(BG.b);
    BG.glow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffd978,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
-   BG.glow.position.set(0,1.9,-19.9);BG.glow.scale.set(5,5,1);BG.glow.visible=false;scene.add(BG.glow);}
+   BG.glow.position.set(0,1.9,-19.9);BG.glow.scale.set(5,5,1);BG.glow.visible=false;scene.add(BG.glow);
+   BG.fg=new THREE.Group();scene.add(BG.fg);
+   BG.propGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffdc80,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));BG.propGlow.position.set(-3.3,-3.6,-11.1);BG.propGlow.scale.set(5,5,1);scene.add(BG.propGlow);
+   BG.prop=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false,fog:false}));BG.prop.position.set(-3.3,-3.6,-11);BG.prop.visible=false;scene.add(BG.prop);
+   BG.doorArt=new THREE.Group();BG.doorArt.userData={tag:'door'};BG.doorArt.position.set(0,-2.1,-13);scene.add(BG.doorArt);
+   const dmk=u=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(3.5,4.5),new THREE.MeshBasicMaterial({map:bt(u),transparent:true,depthWrite:false,fog:false}));m.userData={tag:'door'};BG.doorArt.add(m);return m};
+   BG.doorZ=dmk('tuer_zu.png');BG.doorO=dmk('tuer_auf.png');BG.doorO.material.opacity=0;BG.doorO.position.z=.02;
+   BG.book=artSprite('buch_dunkel.png',4.9);BG.book.position.set(0,.9,-19.8);BG.book.visible=false;scene.add(BG.book);
+   BG.bookLit=artSprite('buch_hell.png',5.6,{op:0});BG.bookLit.position.set(0,1.45,-19.79);BG.bookLit.visible=false;scene.add(BG.bookLit);
+   for(let i=0;i<6;i++){const p=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load('bibliothek/assets/fx_7.jpg'),transparent:true,opacity:.0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
+     p.userData={x:-10+i*4+Math.random()*2,y:-7+Math.random()*14,z:-4-Math.random()*10,sp:.3+Math.random()*.4,ph:Math.random()*6};p.scale.set(2.6,2.6,1);scene.add(p);BG.pages.push(p)}}
   const srng=mulberry(4711);
   lavaMat=new THREE.ShaderMaterial({uniforms:{t:{value:0},heat:{value:0},gx:{value:(function(){const t=TXL.load('vulkan/assets/lava_glow.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;return t})()},tx:{value:(function(){const t=TXL.load('vulkan/assets/tex_lava.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;return t})()}},vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',fragmentShader:lavaFragment()});
   const lg=new THREE.PlaneGeometry(70,70,1,1);lg.rotateX(-Math.PI/2);
@@ -545,7 +611,7 @@ function initScene(){
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(.14,10,8),new THREE.MeshBasicMaterial({color:0x6b5a55}));
     door.add(lamp);doorLamps.push(lamp);
   }
-  door.position.set(0,-2.6,-19.3);door.scale.setScalar(.55);door.open=0;door.openNow=0;scene.add(door);
+  door.position.set(0,-2.63,-12.9);door.scale.setScalar(.3);door.open=0;door.openNow=0;scene.add(door);
 
   /* Funken */
   const EN=420;ePos=new Float32Array(EN*3);eSpd=new Float32Array(EN);
@@ -598,7 +664,7 @@ function initScene(){
 function setGroups(id){
   if(!GL)return;
   crystalRoot.visible=false;gateGroup.visible=false;stonesGroup.visible=false;valvesGroup.visible=false;
-  coreGroup.visible=false;tabletGroup.visible=false;setBg(id==='core'?6:(id==='none'?1:(roomIdx()%5)+1));
+  coreGroup.visible=false;tabletGroup.visible=false;{const rn=id==='core'?6:(id==='none'?1:(roomIdx()%5)+1);setBg(rn);buildFg(rn);setProp(id);if(BG.book){BG.book.visible=BG.bookLit.visible=(id==='core')}}
   crystalLights.forEach(l=>{l.intensity=0});
   coreLight.intensity=0;
 }
@@ -711,8 +777,8 @@ function buildValves(V){
 }
 function layoutDoorLamps(n){
   if(!GL)return;
-  const sp=.5;
-  doorLamps.forEach((l,i)=>{l.visible=i<n;l.position.set((i-(n-1)/2)*sp,7.0,.12)});
+  const sp=1.5;
+  doorLamps.forEach((l,i)=>{l.visible=i<n;l.scale.setScalar(2.6);l.position.set((i-(n-1)/2)*sp,10.6,.12)});
 }
 function resetDoor(){if(GL){door.open=0;door.openNow=0;door.lit=false;door.flashT=0;lampBad=0;portalMat.uniforms.act.value=0}}
 function flashCrystal(i,ms){
@@ -909,6 +975,11 @@ function frame(now){
     l.material.color.setHex(lampBad>0?0xff5468:(G.found[i]||G.phase==='won'?0x4be39a:0x6b5a55));
   }
 
+  if(BG.doorZ){const o=Math.min(1,door.openNow*1.6);BG.doorZ.material.opacity=1-o;BG.doorO.material.opacity=o;BG.doorArt.visible=G.cur!=='core'&&G.phase!=='lobby';door.visible=BG.doorArt.visible}
+  if(BG.prop&&BG.prop.visible){const solved=G.found[G.ci]||G.phase==='won';BG.prop.position.y=-3.6+Math.sin(T*1.6)*.06;BG.propGlow.material.opacity=solved?(.55+.2*Math.sin(T*3)):.0}
+  if(BG.book&&BG.book.visible){const w=G.phase==='won'?1:0;BG.bookLit.material.opacity+=(w-BG.bookLit.material.opacity)*Math.min(1,dt*1.8);BG.book.material.opacity=1-BG.bookLit.material.opacity*.95}
+  BG.fg&&BG.fg.children.forEach((c,i)=>{if(c.userData.bob)c.position.y=2.6+Math.sin(T*.9)*.25;c.material.rotation=Math.sin(T*.5+i)*.02});
+  BG.pages.forEach((p,i)=>{const u=p.userData;u.y+=dt*u.sp;if(u.y>8){u.y=-8;u.x=-12+Math.random()*24}p.position.set(u.x+Math.sin(T*.6+u.ph)*1.2,u.y,u.z);p.material.rotation=Math.sin(T*.8+u.ph)*.5;p.material.opacity=G.phase==='lobby'?0:.55*Math.min(1,(u.y+8)/3)*Math.min(1,(8-u.y)/3)});
   if(BG.fade){const b=BG.b.material;b.opacity=Math.min(1,b.opacity+dt/.9);if(b.opacity>=1){BG.a.material.map=b.map;BG.a.material.needsUpdate=true;BG.b.visible=false;BG.fade=0}}
   if(BG.glow){const on=G.cur==='core'&&G.phase!=='lobby',wn=G.phase==='won'?1:.3;BG.glow.visible=on;if(on){BG.glow.material.opacity=(.3+.2*Math.sin(T*2))*(.4+wn*1.1);const sc=4+wn*3.5;BG.glow.scale.set(sc,sc,1)}}
   const sp=1+prog*2.2;
@@ -927,8 +998,8 @@ function frame(now){
     sx=Math.sin(T*37)*amp+Math.sin(T*23)*amp*.6;sy=Math.cos(T*31)*amp;
   }
   if(!REDUCED&&igShake>0){sx+=(Math.random()-.5)*igShake*.22;sy+=(Math.random()-.5)*igShake*.22;igShake=Math.max(0,igShake-dt*.9)}
-  const sway=(G.phase==='lobby'&&!REDUCED)?Math.sin(T*.22)*1.1:0;
-  camera.position.set(camPos.x+sway+sx,camPos.y+sy,camPos.z);
+  const sway=!REDUCED?Math.sin(T*.22)*(G.phase==='lobby'?1.1:.5):0,swy=!REDUCED?Math.sin(T*.17)*.18:0;
+  camera.position.set(camPos.x+sway+sx,camPos.y+sy+swy,camPos.z);
   camera.lookAt(camLook);
   stepAtmosphere(dt);
   drawScene();
@@ -946,7 +1017,7 @@ canvas.addEventListener('pointerup',e=>{
   if(moved>10)return;
   const r=canvas.getBoundingClientRect(),ndc=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
   const ray=new THREE.Raycaster();ray.setFromCamera(ndc,camera);
-  const targets=[door,lava,crystalRoot,stonesGroup,valvesGroup,coreGroup,tabletGroup,gateGroup].filter(o=>o.visible);
+  const targets=[BG.doorArt,door,lava,crystalRoot,stonesGroup,valvesGroup,coreGroup,tabletGroup,gateGroup].filter(o=>o.visible);
   const hits=ray.intersectObjects(targets,true);
   if(!hits.length)return;
   let o=hits[0].object,t=null;
@@ -980,6 +1051,15 @@ function onPick(t){
 }
 
 /* ---------- Spielstart ---------- */
+let introT=0,introSeen=false;
+function playIntro(){
+  const el=$('#intro');if(!el||G.spectator)return;
+  const t0=performance.now();
+  clearTimeout(introT);el.hidden=false;el.classList.remove('out');
+  let done=false;
+  const end=()=>{if(done)return;done=true;clearTimeout(introT);G.deadline+=performance.now()-t0;el.classList.add('out');setTimeout(()=>{el.hidden=true},1500)};
+  el.onclick=end;introT=setTimeout(end,16000);
+}
 function beginGame(sp){
   clearTimeout(endTimer);clearTimeout(advT);stopSeq();
   const mode=MODES[sp.mode]?sp.mode:'short';
@@ -992,9 +1072,10 @@ function beginGame(sp){
   G.roles=G.solo?ROLE_SETS[1][0].slice():(my>=0?G.sets[my]:[]);
   G.found=new Array(G.order.length).fill(false);G.hintsTotal=0;G.attempts=0;
   G.phase='play';G.deadline=performance.now()+sp.total*1000;G.endRemaining=0;
-  if(GL){layoutDoorLamps(G.order.length-1);resetDoor();emberMat.color.setHex(0x9ff3ff);coreCoolT=0;coreCool=0}
+  if(GL){layoutDoorLamps(G.order.length-1);resetDoor();emberMat.color.setHex(0xffe9a8);coreCoolT=0;coreCool=0}
   lobby.hidden=true;endEl.hidden=true;hud.hidden=false;
   enterChamber(0,true);
+  if(!introSeen&&!G.spectator){introSeen=true;playIntro()}
   if(G.spectator)toast('Du schaust zu. In der nächsten Runde bist du dabei.');
   else if(G.roles.length&&!G.solo)toast('Deine Rolle: '+G.roles.map(r=>ROLE_NAME[r]).join(' und '),4200);
 }
@@ -1564,7 +1645,7 @@ $('#soloBtn').addEventListener('click',startSolo);
 $('#againBtn').addEventListener('click',newRound);
 $('#homeBtn').addEventListener('click',()=>{
   clearTimeout(endTimer);clearTimeout(advT);G.phase='lobby';G.solo=false;endEl.hidden=true;sheet.hidden=true;hud.hidden=true;lobby.hidden=false;
-  if(GL){setGroups('none');buildCrystals(4,[0,1,2,3]);layoutDoorLamps(4);resetDoor();emberMat.color.setHex(0x9ff3ff);coreCoolT=0;coreCool=0}
+  if(GL){setGroups('none');buildCrystals(4,[0,1,2,3]);layoutDoorLamps(4);resetDoor();emberMat.color.setHex(0xffe9a8);coreCoolT=0;coreCool=0}
   G.found=[];
   setView('overview');layout();
 });
