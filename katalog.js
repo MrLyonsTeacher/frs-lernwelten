@@ -170,7 +170,7 @@ const FRS = {
       { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" },
       { id:"esc-vulkan", titel:"Der Vulkan", info:"Kooperativer 3D-Escape-Room für 1–6 Personen, 35 oder 70 Minuten", pfad:"escape/vulkan.html" },
       { id:"esc-woodlands", titel:"Die Woodlands", info:"Kooperativer 2D-Escape-Room im Elbenwald für 1–6 Personen, 35 oder 70 Minuten", pfad:"escape/woodlands.html" },
-      { id:"esc-wrack", titel:"Das Wrack (Ablauf-Test)", info:"Kooperativer 3D-Escape-Room im versunkenen Schiff, erster Ablauf mit 4 Räumen und Finale", pfad:"escape/wrack.html" },
+      { id:"esc-wrack", titel:"Das Wrack", info:"Kooperativer Escape-Room im versunkenen Schiff: Raum für Raum durch die Schott-Türen bis zur Schatzkammer", pfad:"escape/wrack.html" },
       { id:"esc-bibliothek", titel:"Die Bibliothek der Tinte (Ablauf-Test)", info:"Kooperativer Escape-Room in der gemalten Himmelsbibliothek, erster Ablauf mit 4 Räumen und Finale", pfad:"escape/bibliothek.html" },
       { id:"esc-wrack-vorschau", titel:"Das Wrack (Vorschau)", info:"Erste 3D-Vorschau des versunkenen Schiffs, noch ohne Rätsel", pfad:"escape/wrack-preview.html" }
     ]},
