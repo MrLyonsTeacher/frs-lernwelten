@@ -168,15 +168,18 @@ function buildWorld(seed,M,P){
     const x0=c*CW+((CW-RW)>>1),y0=row*CH+((CH-RH)>>1);
     clear.push({k:k,x:x0,y:y0,w:RW,h:RH,cx:x0+(RW>>1),cy:y0+(RH>>1)});
   }
-  function pickGround(k,wr){
-    const w=M>1?k/(M-1):0,r=wr();
-    if(r<w*.55)return wr()<(k===M-1?.55:.2)?17:16;
-    if(w>.5&&r<w*.8)return 4;
-    const q=wr();if(q<.55)return 0;if(q<.75)return 2;if(q<.9)return 3;return 5;
+  function pickGround(k,x,y){
+    const w=M>1?k/(M-1):0,bx=Math.floor(x/3),by=Math.floor(y/3);
+    const n=hash2(bx+k*13,by+7),n2=hash2(bx*3+5,by*5+k);
+    if(w>=.7&&n<w*.35&&n2<.3)return 17;          /* violette Risse nur kurz vor dem Weltenbaum */
+    if(n<w*.4)return 16;                          /* trockener Boden */
+    if(w>.4&&n<w*.7)return 4;                     /* Wurzelboden */
+    const f=hash2(x*7+k,y*11);
+    return f<.72?0:(f<.86?2:3);                   /* gesundes Gras, Blüten, Laub */
   }
   function openTile(x,y,g){const i=idx(x,y);block[i]=0;forest[i]=0;ground[i]=g}
   clear.forEach(r=>{
-    for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)openTile(x,y,pickGround(r.k,rnd));
+    for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)openTile(x,y,pickGround(r.k,x,y));
   });
   for(let k=0;k<M-1;k++){
     const a=clear[k],b=clear[k+1],pg=()=>rnd()<.5?6:7;
@@ -189,15 +192,20 @@ function buildWorld(seed,M,P){
       gates.push({k:k,tiles:[0,1,2].map(i=>({x:a.cx-1+i,y:a.y+RH})),anim:0});
     }
   }
-  const sub=(r,k)=>{ /* Hindernisse in einer Lichtung */
-    const n=k===M-1?0:4+Math.floor(rnd()*4);
-    for(let t=0,placed=0;t<60&&placed<n;t++){
-      const x=r.x+Math.floor(rnd()*r.w),y=r.y+Math.floor(rnd()*r.h);
-      if(Math.abs(x-r.cx)<=1||Math.abs(y-r.cy)<=1)continue;
-      if(k===0&&y===r.cy+2)continue;
-      if(block[idx(x,y)])continue;
-      const kind=OBST[Math.floor(rnd()*OBST.length)];
-      block[idx(x,y)]=1;objs.push({t:kind,x:x,y:y});placed++;
+  const COMMON=['bush','berrybush','rock','mossrock','stump','log','mushblue','mushviolet'],LAND=['statue','bench','barrel','crate'];
+  const landAt={};   /* Wahrzeichen gibt es nur einmal pro Welt */
+  {const pool=[];for(let k=0;k<M-1;k++)pool.push(k);const ps=shuffled(pool,rnd);LAND.forEach((l,i)=>{const k=ps[i%Math.max(1,ps.length)];(landAt[k]=landAt[k]||[]).push(l)})}
+  const sub=(r,k)=>{ /* Hindernisse in einer Lichtung: jede Sorte höchstens einmal */
+    const lm=landAt[k]||[];
+    const kinds=k===M-1?[]:shuffled(COMMON,rnd).slice(0,3+Math.floor(rnd()*2)).concat(lm);
+    for(const kind of kinds){
+      for(let t=0;t<60;t++){
+        const x=r.x+Math.floor(rnd()*r.w),y=r.y+Math.floor(rnd()*r.h);
+        if(Math.abs(x-r.cx)<=1||Math.abs(y-r.cy)<=1)continue;
+        if(k===0&&y===r.cy+2)continue;
+        if(block[idx(x,y)])continue;
+        block[idx(x,y)]=1;objs.push({t:kind,x:x,y:y});break;
+      }
     }
     if(k!==M-1&&k>0&&rnd()<.5){ /* kleiner Teich in einer Ecke */
       const px0=rnd()<.5?r.x:r.x+r.w-2,py0=rnd()<.5?r.y:r.y+r.h-2;
@@ -205,11 +213,14 @@ function buildWorld(seed,M,P){
       if(okp)for(let y=py0;y<py0+2;y++)for(let x=px0;x<px0+2;x++){block[idx(x,y)]=1;ground[idx(x,y)]=(x+y)%2?13:12}
     }
   };
-  for(let k=1;k<M-1;k++){const r=clear[k],t=HOUSES[(k-1)%HOUSES.length],hx=r.x+1,hy=r.y+1;if(!block[idx(hx,hy)]&&!block[idx(hx+1,hy)]){block[idx(hx,hy)]=1;block[idx(hx+1,hy)]=1;objs.push({t:t,x:hx,y:hy,house:1})}}
+  {const hk=shuffled(Array.from({length:Math.max(0,M-2)},(_,i)=>i+1),rnd);
+   HOUSES.forEach((t,i)=>{if(i>=hk.length)return;const r=clear[hk[i]],hx=r.x+1,hy=r.y+1;if(!block[idx(hx,hy)]&&!block[idx(hx+1,hy)]){block[idx(hx,hy)]=1;block[idx(hx+1,hy)]=1;objs.push({t:t,x:hx,y:hy,house:1})}})}
   clear.forEach(sub);
   clear.forEach(r=>{
-    for(let t=0;t<10;t++){const x=r.x+Math.floor(rnd()*r.w),y=r.y+Math.floor(rnd()*r.h);if(block[idx(x,y)]||objs.some(o=>o.x===x&&o.y===y))continue;objs.push({t:['fern','flowers','grass','grass','reeds'][Math.floor(rnd()*5)],x:x,y:y,deco:1})}
-    [[r.x,r.y],[r.x+r.w-1,r.y]].forEach(p=>{if(r.k!==M-1&&!block[idx(p[0],p[1])]&&!objs.some(o=>o.x===p[0]&&o.y===p[1])){block[idx(p[0],p[1])]=1;objs.push({t:'lamp',x:p[0],y:p[1]})}});
+    shuffled(['fern','flowers','grass','reeds'],rnd).forEach(kind=>{
+      for(let t=0;t<10;t++){const x=r.x+Math.floor(rnd()*r.w),y=r.y+Math.floor(rnd()*r.h);if(block[idx(x,y)]||objs.some(o=>o.x===x&&o.y===y))continue;objs.push({t:kind,x:x,y:y,deco:1});break}
+    });
+    if(r.k!==M-1){const cs=shuffled([[r.x,r.y],[r.x+r.w-1,r.y],[r.x,r.y+r.h-1],[r.x+r.w-1,r.y+r.h-1]],rnd);for(const p of cs){if(!block[idx(p[0],p[1])]&&!(r.k===0&&p[1]===r.cy+2)&&!objs.some(o=>o.x===p[0]&&o.y===p[1])){block[idx(p[0],p[1])]=1;objs.push({t:'lamp',x:p[0],y:p[1]});break}}}
   });
   {const r0=clear[0],fx=r0.cx+3,fy=r0.cy;if(!block[idx(fx,fy)]){block[idx(fx,fy)]=1;objs.push({t:'campfire',x:fx,y:fy})}}
   const last=clear[M-1];
@@ -220,7 +231,7 @@ function buildWorld(seed,M,P){
   if(M>=4){const r=clear[Math.max(1,Math.floor((M-1)/2))],ax=r.cx+3,ay=r.cy;if(!block[idx(ax,ay)]){block[idx(ax,ay)]=1;objs.push({t:'archer',x:ax,y:ay})}}
   {const ex=last.cx-3,ey=last.cy;block[idx(ex,ey)]=1;objs.push({t:'elder',x:ex,y:ey})}
   /* Weltenbaum und Platten */
-  for(let y=last.cy-2;y<=last.cy;y++)for(let x=last.cx-1;x<=last.cx+1;x++){block[idx(x,y)]=1;ground[idx(x,y)]=5}
+  for(let y=last.cy-2;y<=last.cy;y++)for(let x=last.cx-1;x<=last.cx+1;x++){block[idx(x,y)]=1;ground[idx(x,y)]=4}
   const PP=[[-1,2],[1,2],[-3,2],[3,2],[-2,3],[2,3]];
   for(let i=0;i<P;i++){const p=PP[i],x=last.cx+p[0],y=last.cy+p[1];plates.push({x:x,y:y});ground[idx(x,y)]=23}
   objs.push({t:'worldtree',x:last.cx,y:last.cy});
