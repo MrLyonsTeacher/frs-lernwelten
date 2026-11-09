@@ -31,7 +31,9 @@ function noPiece(){return '<p class="lead">In dieser Kammer hast du keinen eigen
 function wrowHtml(u){
   window.__wu=u;
   const css='<style>#wrow{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:8px 0}#wrow .ws{flex:1 1 0;max-width:84px;min-width:0;text-align:center}#wrow .wn{font-size:12px;opacity:.75;margin-bottom:4px}#wrow button{width:100%;min-height:76px;border-radius:12px;border:3px solid rgba(255,255,255,.25);font:800 14px/1.1 inherit;color:#111;padding:4px 2px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}#wrow button.drag{position:relative;z-index:5;opacity:.92;box-shadow:0 8px 22px rgba(0,0,0,.5);transition:none}#wrow button.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.55);transform:translateY(-6px)}</style>';
-  return css+'<div id="wrow" role="group" aria-label="Schaltwand">'+u.order.map((c,p)=>'<div class="ws"><div class="wn">Anschluss '+(p+1)+'</div><button type="button" data-act="wpick" data-p="'+p+'" class="'+(u.sel===p?'sel':'')+'" style="background:'+u.cols[c].c+'" aria-label="Anschluss '+(p+1)+': '+u.cols[c].n+'">'+u.cols[c].n+'</button></div>').join('')+'</div>';
+  return css+'<div id="wrow" role="group" aria-label="Schaltwand">'+u.order.map((c,p)=>'<div class="ws"><div class="wn">Anschluss '+(p+1)+'</div>'+(function(){const col=u.cols[c],ic=window.WIRE_ICONS&&window.WIRE_ICONS[col.n];
+    if(ic)return '<button type="button" data-act="wpick" data-p="'+p+'" class="'+(u.sel===p?'sel':'')+'" style="background:rgba(255,255,255,.07);border-color:'+col.c+';color:inherit;padding:6px 2px" aria-label="Anschluss '+(p+1)+': '+col.n+'"><img src="'+ic+'" alt="" draggable="false" style="display:block;height:58px;max-width:100%;margin:0 auto 4px;object-fit:contain;pointer-events:none;-webkit-user-drag:none">'+col.n+'</button>';
+    return '<button type="button" data-act="wpick" data-p="'+p+'" class="'+(u.sel===p?'sel':'')+'" style="background:'+col.c+'" aria-label="Anschluss '+(p+1)+': '+col.n+'">'+col.n+'</button>'})()+'</div>').join('')+'</div>';
 }
 let wDrag=null,wSwallow=false;
 function wSwap(u,q,p){const t=u.order[q];u.order[q]=u.order[p];u.order[p]=t;u.sel=null;u.order.forEach((c,i)=>{u.vals[c]=i+1})}
@@ -51,7 +53,7 @@ function wEnd(e,cancel){
   const d=wDrag;if(!d||e.pointerId!==d.id)return;wDrag=null;
   try{d.b.releasePointerCapture(e.pointerId)}catch(x){}
   if(!d.on)return;
-  wSwallow=true;setTimeout(()=>{wSwallow=false},350);
+  wSwallow=true;setTimeout(()=>{wSwallow=false},80);
   const u=window.__wu;d.b.style.transform='';d.b.classList.remove('drag');
   if(cancel||!u||!u.order){wRender(u);return}
   let to=-1,best=1e9;
@@ -126,7 +128,7 @@ PZ.wires={name:'Die Schaltwand',atm:'valves',
   },
   init(d){return {order:Array.from({length:d.N},(_,i)=>i),sel:null,cols:d.cols,vals:Array.from({length:d.N},(_,i)=>i+1),mods:new Array(d.N).fill(d.N),mins:new Array(d.N).fill(1),show:(i,v)=>String(v)}},
   role(r,d,u){
-    if(r==='mechanic')return '<p class="lead">Du ordnest die Kabel an der Schaltwand. Tippe ein Kabel an und dann ein zweites: Die beiden tauschen die Plätze. Die Anschlüsse sind von links nach rechts von 1 bis '+d.N+' nummeriert. Deine Gruppe findet heraus, wohin welches Kabel gehört.</p>'+wrowHtml(u)+'<div><button class="btn primary" data-act="xsub">Schaltwand prüfen</button></div>'+fb()+'<p class="small">Ein Fehlversuch kostet '+penTry()+' Sekunden.</p>';
+    if(r==='mechanic')return '<p class="lead">Du ordnest die Kabel an der Schaltwand. Zieh ein Kabel auf einen anderen Platz oder tippe zwei Kabel nacheinander an: Die beiden tauschen die Plätze. Die Anschlüsse sind von links nach rechts von 1 bis '+d.N+' nummeriert. Deine Gruppe findet heraus, wohin welches Kabel gehört.</p>'+wrowHtml(u)+'<div><button class="btn primary" data-act="xsub">Schaltwand prüfen</button></div>'+fb()+'<p class="small">Ein Fehlversuch kostet '+penTry()+' Sekunden.</p>';
     const p=rolePieces(r,d.clues.length,INFO);if(!p.length)return noPiece();
     return '<p class="lead">Das sind deine Hinweise zur Schaltwand. Die Hinweise der anderen brauchst du auch. Nur zusammen passt alles.</p><ul class="list">'+p.map(i=>'<li><span>'+esc(d.clues[i])+'</span></li>').join('')+'</ul>';
   },
