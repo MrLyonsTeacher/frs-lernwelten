@@ -30,9 +30,38 @@ function noPiece(){return '<p class="lead">In dieser Kammer hast du keinen eigen
 /* Schaltwand: Kabel als tauschbare Farbkarten in einer Reihe (Anschluss 1..N) */
 function wrowHtml(u){
   window.__wu=u;
-  const css='<style>#wrow{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:8px 0}#wrow .ws{flex:1 1 0;max-width:84px;min-width:0;text-align:center}#wrow .wn{font-size:12px;opacity:.75;margin-bottom:4px}#wrow button{width:100%;min-height:76px;border-radius:12px;border:3px solid rgba(255,255,255,.25);font:800 14px/1.1 inherit;color:#111;padding:4px 2px;cursor:pointer;touch-action:manipulation}#wrow button.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.55);transform:translateY(-6px)}</style>';
+  const css='<style>#wrow{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:8px 0}#wrow .ws{flex:1 1 0;max-width:84px;min-width:0;text-align:center}#wrow .wn{font-size:12px;opacity:.75;margin-bottom:4px}#wrow button{width:100%;min-height:76px;border-radius:12px;border:3px solid rgba(255,255,255,.25);font:800 14px/1.1 inherit;color:#111;padding:4px 2px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}#wrow button.drag{position:relative;z-index:5;opacity:.92;box-shadow:0 8px 22px rgba(0,0,0,.5);transition:none}#wrow button.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.55);transform:translateY(-6px)}</style>';
   return css+'<div id="wrow" role="group" aria-label="Schaltwand">'+u.order.map((c,p)=>'<div class="ws"><div class="wn">Anschluss '+(p+1)+'</div><button type="button" data-act="wpick" data-p="'+p+'" class="'+(u.sel===p?'sel':'')+'" style="background:'+u.cols[c].c+'" aria-label="Anschluss '+(p+1)+': '+u.cols[c].n+'">'+u.cols[c].n+'</button></div>').join('')+'</div>';
 }
+let wDrag=null,wSwallow=false;
+function wSwap(u,q,p){const t=u.order[q];u.order[q]=u.order[p];u.order[p]=t;u.sel=null;u.order.forEach((c,i)=>{u.vals[c]=i+1})}
+function wRender(u){const w=document.getElementById('wrow');if(w){const tmp=document.createElement('div');tmp.innerHTML=wrowHtml(u);w.replaceWith(tmp.querySelector('#wrow'))}}
+document.addEventListener('pointerdown',function(e){
+  const b=e.target.closest&&e.target.closest('[data-act=wpick]');if(!b||(e.button&&e.button!==0))return;
+  wDrag={b:b,p:Number(b.dataset.p),x:e.clientX,y:e.clientY,on:false,id:e.pointerId};
+  try{b.setPointerCapture(e.pointerId)}catch(x){}
+});
+document.addEventListener('pointermove',function(e){
+  const d=wDrag;if(!d||e.pointerId!==d.id)return;
+  const dx=e.clientX-d.x,dy=e.clientY-d.y;
+  if(!d.on&&Math.hypot(dx,dy)>8){d.on=true;d.b.classList.add('drag')}
+  if(d.on){d.b.style.transform='translate('+dx+'px,'+dy+'px) scale(1.06)';e.preventDefault()}
+});
+function wEnd(e,cancel){
+  const d=wDrag;if(!d||e.pointerId!==d.id)return;wDrag=null;
+  try{d.b.releasePointerCapture(e.pointerId)}catch(x){}
+  if(!d.on)return;
+  wSwallow=true;setTimeout(()=>{wSwallow=false},350);
+  const u=window.__wu;d.b.style.transform='';d.b.classList.remove('drag');
+  if(cancel||!u||!u.order){wRender(u);return}
+  let to=-1,best=1e9;
+  document.querySelectorAll('#wrow .ws').forEach((el,i)=>{const r=el.getBoundingClientRect();if(e.clientY>r.top-30&&e.clientY<r.bottom+30){const dd=Math.abs(e.clientX-(r.left+r.width/2));if(dd<best){best=dd;to=i}}});
+  if(to>=0&&to!==d.p)wSwap(u,d.p,to);
+  u.sel=null;wRender(u);
+}
+document.addEventListener('pointerup',e=>wEnd(e,false));
+document.addEventListener('pointercancel',e=>wEnd(e,true));
+document.addEventListener('click',function(e){if(wSwallow&&e.target.closest&&e.target.closest('[data-act=wpick]')){e.stopPropagation();e.preventDefault()}},true);
 document.addEventListener('click',function(e){
   const b=e.target.closest&&e.target.closest('[data-act=wpick]');if(!b)return;
   const u=window.__wu;if(!u||!u.order)return;
