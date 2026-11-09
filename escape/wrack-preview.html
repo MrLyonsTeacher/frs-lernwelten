@@ -193,7 +193,7 @@ function build(){
   const gl=new THREE.PointLight(0xffb030,2.4,12,1.5);gl.position.set(-8,Y0+1.6,-2);ship.add(gl);flick.push(gl);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(),color:0xffc040,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.7,fog:false}));sp.scale.set(5,5,1);sp.position.set(-8,Y0+1.5,-2.2);ship.add(sp);
   /* Innenlicht, kühl von oben durch das Deckloch */
-  const hole=new THREE.SpotLight(0x9fefff,1.8,40,.5,.6,1);hole.position.set(.5,22,0);hole.target.position.set(.5,0,0);hole.castShadow=true;hole.shadow.mapSize.set(1024,1024);ship.add(hole,hole.target);
+  const hole=new THREE.SpotLight(0x9fefff,1.8,40,.5,.6,1);hole.position.set(.5,22,0);hole.target.position.set(.5,0,0);hole.castShadow=true;hole.shadow.mapSize.set(2048,2048);hole.shadow.bias=-.0008;hole.shadow.normalBias=.08;hole.shadow.radius=3;hole.shadow.camera.near=8;hole.shadow.camera.far=36;ship.add(hole,hole.target);
   /* Felsen, Korallen, Tang als gemalte Aufsteller */
   const rockM=mat('stone',2,2);
   function around(n,fn,rmin,rmax){for(let i=0;i<n;i++){const a=Math.random()*6.28,r=rmin+Math.random()*(rmax-rmin),x=Math.cos(a)*r*1.3,z=Math.sin(a)*r;if(Math.abs(z)<9&&Math.abs(x)<26)continue;fn(x,z,i)}}
@@ -256,7 +256,7 @@ function frame(){
   sky.position.copy(camera.position);
   if(!drag){yaw*=1-Math.min(1,dt*.6);pitch*=1-Math.min(1,dt*.6)}
   cAnim.forEach(c=>c.t.offset.set(t*(.02+c.i*.012)*(c.i?-1:1),t*(.015+c.i*.01)));
-  flick.forEach((l,i)=>{l.intensity=(i?2.4:2.2)*(1+Math.sin(t*7+i*3)*.06+Math.sin(t*13+i)*.04)});
+  flick.forEach((l,i)=>{l.intensity=(i?2.4:2.2)*(1+Math.sin(t*1.4+i*3)*.025)});
   sway.forEach(s=>{if(s.mat){s.o.rotation=Math.sin(t*s.s+s.p)*s.a;return}if(s.axis==='x')s.o.rotation.x=Math.sin(t*s.s+s.p)*s.a;else if(s.axis==='y')s.o.rotation.y+=Math.sin(t*s.s+s.p)*s.a*.002;else s.o.rotation.z=Math.sin(t*s.s+s.p)*s.a});
   tick.forEach(f=>f(t,dt));
   if(composer){try{composer.render()}catch(e){composer=null;renderer.render(scene,camera)}}else renderer.render(scene,camera);

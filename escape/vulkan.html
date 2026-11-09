@@ -100,6 +100,7 @@ details summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;alig
 details>div{display:grid;gap:10px;padding-top:6px}
 
 .lobby,.end{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(to top,rgba(10,4,4,.8),rgba(10,4,4,.3))}
+.lobby{background:linear-gradient(to top,rgba(10,4,4,.78),rgba(10,4,4,.35)),#140a0b url(vulkan/assets/intro.jpg) center/cover no-repeat}
 .end{z-index:8}
 .card{pointer-events:auto;width:min(580px,100%);max-height:100%;overflow:auto;display:grid;gap:14px;padding:22px;border-radius:14px;background:var(--panel-solid);border:1px solid var(--line)}
 .card h1{margin:0;font:800 clamp(30px,6vw,44px)/1.05 var(--font-display);text-wrap:balance}
@@ -434,7 +435,7 @@ function grayTex(n){const k='g_'+n;if(SPC[k])return SPC[k];const c=document.crea
 function vspr(n,h,opt){opt=opt||{};const d=SPDIM[n]||[1,1];const m=new THREE.SpriteMaterial({map:opt.map||sprTex(n),transparent:true,alphaTest:.04,fog:true,color:opt.color===undefined?0xffffff:opt.color});const sp=new THREE.Sprite(m);sp.center.set(.5,opt.mid?.5:0);sp.scale.set(h*d[0]/d[1],h,1);return sp}
 
 function lavaFragment(){return [
-'uniform float t;uniform float heat;uniform sampler2D tx;varying vec3 vW;',
+'uniform float t;uniform float heat;uniform sampler2D tx;uniform sampler2D gx;varying vec3 vW;',
 'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
 'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}',
 'float fbm(vec2 p){float v=0.0;float a=0.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+vec2(7.1,3.7);a*=0.5;}return v;}',
@@ -448,6 +449,8 @@ function lavaFragment(){return [
 '  vec3 col=mix(hot,dark,crust*0.85);',
 '  vec3 tc=0.5*(texture2D(tx,vW.xz*0.045+vec2(t*0.012,t*0.007)).rgb+texture2D(tx,vW.xz*0.03-vec2(t*0.009,t*0.004)).rgb);',
 '  col=mix(col,tc*1.25,0.78);',
+'  vec3 gw=0.5*(texture2D(gx,vW.xz*0.07+vec2(-t*0.015,t*0.01)).rgb+texture2D(gx,vW.xz*0.043+vec2(t*0.01,t*0.006)).rgb);',
+'  col+=gw*(0.28+0.5*heat);',
 '  col*=0.85+0.55*heat;',
 '  gl_FragColor=vec4(col,1.0);',
 '}'].join('\n')}
@@ -501,7 +504,7 @@ function initScene(){
   const ring=new THREE.Mesh(new THREE.TorusGeometry(4.6,.045,6,64),new THREE.MeshBasicMaterial({color:0xff7a2a}));
   ring.rotation.x=Math.PI/2;ring.position.set(0,.03,-2);scene.add(ring);
 
-  lavaMat=new THREE.ShaderMaterial({uniforms:{t:{value:0},heat:{value:0},tx:{value:(function(){const t=TXL.load('vulkan/assets/tex_lava.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;return t})()}},vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',fragmentShader:lavaFragment()});
+  lavaMat=new THREE.ShaderMaterial({uniforms:{t:{value:0},heat:{value:0},gx:{value:(function(){const t=TXL.load('vulkan/assets/lava_glow.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;return t})()},tx:{value:(function(){const t=TXL.load('vulkan/assets/tex_lava.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;return t})()}},vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',fragmentShader:lavaFragment()});
   const lg=new THREE.PlaneGeometry(70,70,1,1);lg.rotateX(-Math.PI/2);
   lava=new THREE.Mesh(lg,lavaMat);lava.position.y=-2.7;lava.userData={tag:'lava'};scene.add(lava);
 
