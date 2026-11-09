@@ -122,6 +122,29 @@ function buildTiles(){
     TILE.push(c);
   }
 }
+const BLEND=new Set([0,2,3,4,6,7,9,15,16,17]);
+let EDGE={};
+function buildEdges(){
+  EDGE={};
+  const nz=(x,y,sd)=>{const a=Math.sin(x*.55+sd)*Math.cos(y*.47+sd*1.7)+Math.sin((x+y)*.31+sd*2.3)*.8+Math.sin(x*1.3-y*.9+sd)*.35;return a/2.15};
+  BLEND.forEach(t=>{
+    EDGE[t]=[];
+    for(let d=0;d<4;d++){EDGE[t][d]=[];
+      for(let v=0;v<2;v++){
+        const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.drawImage(TILE[t],0,0);
+        const im=g.getImageData(0,0,64,64);
+        for(let y=0;y<64;y++)for(let x=0;x<64;x++){
+          const dist=d===0?63-y:d===1?x:d===2?63-x:y;
+          const along=(d===0||d===3)?x:y;
+          const j=nz(along,dist*.6,v*5+d)*11;
+          let a=1-(dist+j-4)/26;a=a<0?0:a>1?1:a;a=a*a*(3-2*a);
+          im.data[(y*64+x)*4+3]=Math.round(im.data[(y*64+x)*4+3]*a*.95);
+        }
+        g.putImageData(im,0,0);EDGE[t][d][v]=c;
+      }
+    }
+  });
+}
 let ASSETS_READY=false;
 const assetsP=(async()=>{
   IM.ground=await loadImg(ASSET+'tiles_ground.png');
@@ -132,7 +155,7 @@ const assetsP=(async()=>{
   await Promise.all(['elder','archer'].map(async n=>{IM.npc[n]=await loadImg(ASSET+'npc_'+n+'.png')}));
   IM.wisp=await loadImg(ASSET+'wisps.png');
   IM.owl=await Promise.all([0,1,2,3].map(i=>loadImg(ASSET+'owl_'+i+'.png')));
-  buildTiles();buildSprites();ASSETS_READY=true;
+  buildTiles();buildEdges();buildSprites();ASSETS_READY=true;
 })();
 
 /* ---------- Platzhalter-Sprites (werden später durch echte Grafik ersetzt) ---------- */
@@ -683,7 +706,17 @@ function render(dt){
   ctx.imageSmoothingEnabled=true;
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
     const g=w.forest[y*w.W+x]?1:w.ground[y*w.W+x];
-    ctx.drawImage(TILE[g],Math.floor(wx(x)),Math.floor(wy(y)),T+1,T+1);
+    const px0=Math.floor(wx(x)),py0=Math.floor(wy(y));
+    ctx.drawImage(TILE[g],px0,py0,T+1,T+1);
+    if(!w.forest[y*w.W+x]&&BLEND.has(g)){
+      const vv=hash2(x,y)<.5?0:1;
+      for(let d=0;d<4;d++){
+        const nx=x+(d===1?-1:d===2?1:0),ny=y+(d===0?1:d===3?-1:0);
+        if(nx<0||ny<0||nx>=w.W||ny>=w.H||w.forest[ny*w.W+nx])continue;
+        const ng=w.ground[ny*w.W+nx];
+        if(ng!==g&&BLEND.has(ng))ctx.drawImage(EDGE[ng][d][vv],px0,py0,T+1,T+1);
+      }
+    }
   }
   /* Platten-Glühen */
   w.plates.forEach(p=>{
