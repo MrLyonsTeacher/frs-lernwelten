@@ -659,6 +659,7 @@ function drawNpc(o,sx,sy,t){
   ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(sx+T/2,sy+T*.88,T*.3,T*.11,0,0,6.2832);ctx.fill();
   ctx.imageSmoothingEnabled=false;ctx.drawImage(im,66,dir*96,66,96,sx+T/2-dw/2,sy+T*.92-dh,dw,dh);ctx.imageSmoothingEnabled=true;
 }
+let treeK=0;
 function drawWorldTree(o,sx,sy,t){
   const solved=G.found.filter(Boolean).length,total=Math.max(1,G.order.length-1),heal=G.phase==='won'?1:solved/total;
   const d=IM.big.worldtree_dead,al=IM.big.worldtree_alive;if(!d||!al)return;
@@ -666,8 +667,44 @@ function drawWorldTree(o,sx,sy,t){
   ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(cx,by-T*.1,T*1.9,T*.3,0,0,6.2832);ctx.fill();
   ctx.imageSmoothingEnabled=false;
   ctx.globalAlpha=1;ctx.drawImage(d,cx-ww/2,by-ww*d.height/d.width,ww,ww*d.height/d.width);
-  ctx.globalAlpha=heal;const wa=ww*1.08;ctx.drawImage(al,cx-wa/2,by-wa*al.height/al.width,wa,wa*al.height/al.width);
+  /* Finale: die lila Adern im Stamm pulsieren, bis alle auf den Platten stehen, dann erstrahlt der Baum gelb */
+  const fin=G.cur==='finale'&&(G.phase==='play'||G.phase==='won');
+  let k=1;
+  if(fin){k=G.phase==='won'?1:(plateT<0?1:Math.min(1,Math.max(0,plateT/1.2)));k=k*k*(3-2*k)}
+  if(!fin){treeK=-1}
+  else{if(treeK<0)treeK=heal;const tg=k;treeK+=(tg-treeK)*.07}
+  const aliveA=fin?treeK*heal:heal;
+  ctx.globalAlpha=aliveA;const wa=ww*1.08;ctx.drawImage(al,cx-wa/2,by-wa*al.height/al.width,wa,wa*al.height/al.width);
   ctx.globalAlpha=1;ctx.imageSmoothingEnabled=true;
+  if(fin){
+    const vg=veinGlow(d);
+    if(vg){
+      const pulse=.5+.5*Math.sin(t*2.4),dh=ww*d.height/d.width,x0=cx-ww/2,y0=by-dh,fade=1-Math.min(1,treeK*1.15);
+      ctx.save();ctx.globalCompositeOperation='lighter';
+      ctx.globalAlpha=Math.min(1,(.55+.45*pulse)*fade);ctx.drawImage(vg.soft,x0-ww*.06,y0-dh*.06,ww*1.12,dh*1.12);
+      ctx.globalAlpha=Math.min(1,(.5+.5*pulse)*fade);ctx.drawImage(vg.sharp,x0,y0,ww,dh);
+      ctx.restore();
+    }
+  }
+}
+let VEIN=null;
+function veinGlow(d){
+  if(VEIN)return VEIN;
+  try{
+    const w=d.width,h=d.height,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(d,0,0);
+    const im=x.getImageData(0,0,w,h),p=im.data;
+    for(let i=0;i<p.length;i+=4){
+      const r=p[i],g=p[i+1],b=p[i+2];
+      if(p[i+3]>200&&b>140&&b>g+55&&r>g+15){p[i]=Math.min(255,r*1.25+40);p[i+1]=Math.min(255,g*1.4+30);p[i+2]=255;p[i+3]=255}else p[i+3]=0;
+    }
+    x.putImageData(im,0,0);
+    const sm=document.createElement('canvas');sm.width=Math.ceil(w/4);sm.height=Math.ceil(h/4);
+    const sx=sm.getContext('2d');sx.imageSmoothingEnabled=true;sx.drawImage(c,0,0,sm.width,sm.height);
+    const s2=document.createElement('canvas');s2.width=Math.ceil(w/2);s2.height=Math.ceil(h/2);
+    const x2=s2.getContext('2d');x2.imageSmoothingEnabled=true;x2.drawImage(sm,0,0,s2.width,s2.height);x2.globalAlpha=.7;x2.drawImage(sm,0,0,s2.width,s2.height);
+    VEIN={sharp:c,soft:s2};
+  }catch(e){VEIN={sharp:document.createElement('canvas'),soft:document.createElement('canvas')}}
+  return VEIN;
 }
 function drawGate(g,sx,sy,t,tl){
   if(tl!==g.tiles[1])return;
