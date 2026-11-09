@@ -328,7 +328,7 @@ function playIntro(){
   const el=$('#intro');if(!el||G.spectator)return;
   clearTimeout(introT);el.hidden=false;el.classList.remove('out');
   const end=()=>{clearTimeout(introT);el.classList.add('out');setTimeout(()=>{el.hidden=true},1500)};
-  el.onclick=end;introT=setTimeout(end,4500);
+  el.onclick=end;introT=setTimeout(end,16000);
 }
 function setCi(i,first){
   G.ci=i;G.cur=G.order[i];G.chHints=0;G.feedback='';G.fbBad=false;G.locked=false;

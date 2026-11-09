@@ -168,9 +168,29 @@ input[type=text]{background:#08140f}
 .hud .hud-in{padding-top:max(8px,env(safe-area-inset-top,0px))}
 .hud button,.hud .chip{pointer-events:auto}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.intro{position:absolute;inset:0;z-index:10;background:#050a14 url(woodlands/assets/intro.jpg) center/cover no-repeat;display:grid;align-items:end;justify-items:center;padding:24px;transition:opacity 1.4s ease;cursor:pointer}
+.intro{position:absolute;inset:0;z-index:10;background:#050a14 url(woodlands/assets/intro.jpg) center/cover no-repeat;display:grid;place-items:center;padding:20px;transition:opacity 1.4s ease;cursor:pointer}
+.intro::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(5,10,20,.35),rgba(5,10,20,.85))}
 .intro.out{opacity:0;pointer-events:none}
-.intro p{margin:0 0 6vh;max-width:640px;text-align:center;font:700 clamp(18px,3.2vw,28px)/1.35 var(--font-display);color:#f1e9ff;text-shadow:0 2px 12px #000,0 0 3px #000}
+.scroll{position:relative;width:min(680px,94%);filter:drop-shadow(0 18px 40px rgba(0,0,0,.7));transform:translateY(8px) scale(.96);opacity:0;animation:scIn 1s .2s ease forwards}
+@keyframes scIn{to{transform:none;opacity:1}}
+.scroll .rod{position:relative;height:26px;border-radius:13px;z-index:2;background:linear-gradient(#5a3a1c,#a8743a 35%,#e0b070 50%,#8a5a2a 70%,#3a2410);box-shadow:0 3px 6px rgba(0,0,0,.5)}
+.scroll .rod::before,.scroll .rod::after{content:"";position:absolute;top:-4px;bottom:-4px;width:20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#e8c27a,#7a4c20 70%,#3a2410)}
+.scroll .rod::before{left:-12px}.scroll .rod::after{right:-12px}
+.scroll .parch{position:relative;margin:-6px 18px;padding:26px 34px 30px;overflow:hidden;max-height:0;animation:scOpen 1.6s .7s cubic-bezier(.3,.7,.2,1) forwards;
+ background:radial-gradient(ellipse at 20% 15%,rgba(255,244,205,.9),transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(120,80,30,.35),transparent 60%),linear-gradient(#e9d4a1,#d8bc82 50%,#cfae70);
+ box-shadow:inset 0 0 40px rgba(110,70,20,.55),inset 0 0 6px rgba(70,40,10,.6);
+ clip-path:polygon(0 0,4% 1.2%,9% 0,16% 1%,24% 0,33% 1.2%,42% 0,52% 1%,61% 0,70% 1.2%,80% 0,90% 1%,100% 0,99% 20%,100% 45%,99% 70%,100% 100%,93% 99%,85% 100%,74% 98.8%,63% 100%,52% 99%,41% 100%,30% 98.8%,19% 100%,9% 99%,0 100%,1% 78%,0 52%,1% 28%)}
+@keyframes scOpen{to{max-height:640px}}
+.scroll h2{margin:0 0 10px;text-align:center;font:800 clamp(24px,4.6vw,36px)/1.1 var(--font-display);color:#3b2410;letter-spacing:.02em;text-shadow:0 1px 0 rgba(255,240,200,.7)}
+.scroll .orn{display:block;margin:0 auto 12px;width:60%;height:10px;background:radial-gradient(circle at 50% 50%,#6b3f14 0 3px,transparent 4px),linear-gradient(90deg,transparent,#6b3f14 30%,#6b3f14 70%,transparent) center/100% 2px no-repeat}
+.scroll .orn{background-repeat:no-repeat;background-position:center}
+.scroll p{margin:0 0 12px;font:600 clamp(15px,2.5vw,20px)/1.5 Georgia,'Palatino Linotype',serif;color:#3b2810;text-align:left;opacity:0;transform:translateY(4px);animation:scLine .9s ease forwards}
+.scroll p:nth-of-type(1){animation-delay:2.0s}.scroll p:nth-of-type(2){animation-delay:4.2s}.scroll p:nth-of-type(3){animation-delay:6.4s}
+.scroll p:first-of-type::first-letter{font:800 2.3em/.9 var(--font-display);float:left;margin:.04em .1em 0 0;color:#7a2a10}
+@keyframes scLine{to{opacity:1;transform:none}}
+.scroll .seal{position:absolute;right:30px;bottom:-14px;z-index:3;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d4553a,#8a1f10 65%,#4a0e06);box-shadow:0 4px 8px rgba(0,0,0,.5),inset 0 0 8px rgba(0,0,0,.4);display:grid;place-items:center;color:#f3b6a0;font:800 26px/1 Georgia,serif;opacity:0;animation:scLine .6s 7.8s forwards}
+.intro .tap{position:absolute;bottom:4vh;left:0;right:0;text-align:center;font:700 15px var(--font-display);color:#f1e9ff;opacity:0;animation:scLine 1s 8.4s forwards;text-shadow:0 2px 8px #000}
+@media (prefers-reduced-motion:reduce){.scroll,.scroll .parch,.scroll p,.scroll .seal,.intro .tap{animation-duration:.01s!important;animation-delay:0s!important}}
 #lobbybg{position:absolute;inset:0;background:#050a14 url(woodlands/assets/intro.jpg) center/cover no-repeat;filter:brightness(.55)}
 </style>
 </head>
@@ -202,7 +222,7 @@ input[type=text]{background:#08140f}
   <div class="dlg" id="dlg" hidden role="dialog"></div>
   <div class="modal" id="modal" hidden></div>
 
-  <div class="intro" id="intro" hidden><p>Der Weltenbaum welkt, und das Licht des Waldes schwindet. Nur ihr könnt ihn noch retten.</p></div>
+  <div class="intro" id="intro" hidden><div class="scroll"><div class="rod"></div><div class="parch"><h2>Der Weltenbaum welkt</h2><span class="orn"></span><p>Seit Jahrhunderten wacht der Weltenbaum über die Woodlands. Doch seine Blätter fallen, seine Wurzeln trocknen aus, und das Licht des Waldes schwindet.</p><p>Die alten Runen, die ihn einst nährten, schlummern tief in den Lichtungen. Jede wird von einem Rätsel bewacht, das nur eine Gruppe lösen kann.</p><p>Findet die Runen, sprecht miteinander und bringt das Licht zurück, bevor die Dunkelheit den ganzen Wald verschluckt.</p></div><div class="rod"></div><div class="seal">W</div></div><div class="tap">Tippen zum Starten</div></div>
   <section class="lobby" id="lobby">
     <div class="card">
       <div>
