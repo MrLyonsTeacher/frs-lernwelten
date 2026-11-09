@@ -16,14 +16,15 @@ canvas{display:block;width:100%;height:100%}
 .load span{background:rgba(4,32,42,.8);padding:10px 18px;border-radius:8px;font-weight:700}
 .intro{position:absolute;inset:0;z-index:10;background:#04202a url(wrack/assets/intro.jpg) center/cover no-repeat;display:grid;place-items:center;padding:20px;transition:opacity 1.4s ease;cursor:pointer}
 .intro::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(2,18,24,.35),rgba(2,18,24,.88))}
+.intro[hidden]{display:none}
 .intro.out{opacity:0;pointer-events:none}
-.scroll{position:relative;width:min(900px,94vw,calc(88vh*1.52));aspect-ratio:1400/922;container-type:inline-size;filter:drop-shadow(0 18px 40px rgba(0,0,0,.7));opacity:0;animation:scIn 1.1s .2s ease forwards}
+.scroll{--s:calc(min(900px,94vw,134vh)/100);position:relative;width:min(900px,94vw,calc(88vh*1.52));aspect-ratio:1400/922;container-type:inline-size;filter:drop-shadow(0 18px 40px rgba(0,0,0,.7));opacity:0;animation:scIn 1.1s .2s ease forwards}
 .scroll .bg{position:absolute;inset:0;width:100%;height:100%;display:block;clip-path:inset(46% 0 46% 0);animation:scOpen 1.6s .5s cubic-bezier(.3,.7,.2,1) forwards}
 @keyframes scIn{to{opacity:1}}@keyframes scOpen{to{clip-path:inset(0 0 0 0)}}
 .scroll .txt{position:absolute;left:17%;right:17%;top:24%;bottom:25%;display:flex;flex-direction:column;justify-content:flex-start}
-.scroll h2{margin:0 0 1.2cqw;text-align:center;font:800 4.4cqw/1.1 system-ui,sans-serif;color:#1f3a3c;opacity:0;animation:scLine .9s 1.8s forwards}
-.scroll .orn{display:block;margin:0 auto 1.6cqw;width:50%;height:2px;background:linear-gradient(90deg,transparent,#2c6a6e 30%,#2c6a6e 70%,transparent);opacity:0;animation:scLine .9s 1.9s forwards}
-.scroll p{margin:0 0 1.5cqw;font:600 2.3cqw/1.45 Georgia,'Palatino Linotype',serif;color:#3a2a14;opacity:0;transform:translateY(4px);animation:scLine .9s ease forwards}
+.scroll h2{margin:0 0 calc(var(--s)*1.2);text-align:center;font:800 calc(var(--s)*3.9)/1.1 system-ui,sans-serif;color:#1f3a3c;opacity:0;animation:scLine .9s 1.8s forwards}
+.scroll .orn{display:block;margin:0 auto calc(var(--s)*1.6);width:50%;height:2px;background:linear-gradient(90deg,transparent,#2c6a6e 30%,#2c6a6e 70%,transparent);opacity:0;animation:scLine .9s 1.9s forwards}
+.scroll p{margin:0 0 calc(var(--s)*1.5);font:600 calc(var(--s)*2.1)/1.42 Georgia,'Palatino Linotype',serif;color:#3a2a14;opacity:0;transform:translateY(4px);animation:scLine .9s ease forwards}
 .scroll p:nth-of-type(1){animation-delay:2.4s}.scroll p:nth-of-type(2){animation-delay:4.6s}.scroll p:nth-of-type(3){animation-delay:6.8s}
 .scroll p:first-of-type::first-letter{font:800 2.2em/.9 system-ui,sans-serif;float:left;margin:.04em .1em 0 0;color:#0b6b73}
 @keyframes scLine{to{opacity:1;transform:none}}
@@ -75,7 +76,7 @@ function holeTex(){const c=document.createElement('canvas');c.width=c.height=128
   const e=g.createLinearGradient(0,0,0,128);g.globalCompositeOperation='destination-out';return new THREE.CanvasTexture(c)}
 
 const SPT={};
-const SPN='barrel crate cannon wheel anchor lantern chest chestopen coins mast rope chain compass map key bell bottle crystal fish1 fish2 fish3 jelly1 jelly2 jelly3 weed1 weed2 coral1 coral2 coral3 anemone starfish shell clam bubbles crab seahorse'.split(' ');
+const SPN='barrel crate cannon wheel anchor lantern chest chestopen coins mast rope chain compass map key bell bottle crystal fish1 fish2 fish3 jelly1 jelly2 jelly3 weed1 weed2 coral1 coral2 coral3 anemone starfish shell clam bubbles crab seahorse'.split(' ').concat('corbel baluster door porthole lantern2 shell mermaid rudder hatch ladder net flag portlid balls rope2 bell2 planks nest'.split(' ').map(n=>'t_'+n));
 function loadSpr(n){return new Promise(res=>{loader.load('wrack/assets/spr_'+n+'.png',t=>{t.anisotropy=4;SPT[n]=t;res()},undefined,()=>res())})}
 function loadMisc(n,f){return new Promise(res=>{loader.load('wrack/assets/'+f,t=>{TEX[n]=t;res()},undefined,()=>res())})}
 function spr(n,h,parent,x,y,z,o){o=o||{};const t=SPT[n];if(!t)return null;const im=t.image,asp=im.width/im.height;
@@ -175,6 +176,7 @@ function build(){
   /* Heck: gerundete, gestufte Aufbauten mit Galerien, Fenstern und Zierleisten */
   const winM=new THREE.MeshBasicMaterial({color:0xffc566});
   {const wd=mat('planks',.3,.3,{color:0x6a6a60}),rs=mat('rust',1,1,{roughness:.8,metalness:.3}),cu=mat('copper',1,1,{roughness:.55,metalness:.4});
+   const fmat=(k,h)=>{const t=TEX[k]?TEX[k].clone():null;if(t){t.needsUpdate=true;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/(h*2),1/h)}return new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.3,roughness:.9,metalness:.05,side:THREE.DoubleSide})};
    const cwall=mat('planks',.2,.2,{color:0x9a9a90});
    function fpShape(xf,xr,hw,k){const xm=xf-k,sh=new THREE.Shape();sh.moveTo(xf,-hw);sh.lineTo(xf,hw);sh.lineTo(xm,hw);
      for(let i=1;i<=24;i++){const t=i/24*Math.PI;sh.lineTo(xm-(xm-xr)*Math.sin(t),hw*Math.cos(t))}sh.lineTo(xf,-hw);return sh}
@@ -182,21 +184,11 @@ function build(){
    const tiers=[{y:Y1,h:4.3,xf:-9.6,xr:-18.8,hw:5.5,k:2.6},{y:Y1+4.3,h:2.7,xf:-10.8,xr:-17.9,hw:4.6,k:2.2},{y:Y1+7,h:1.9,xf:-12.2,xr:-16.6,hw:3.4,k:1.4}];
    tiers.forEach((T,ti)=>{
      const g=new THREE.ExtrudeGeometry(fpShape(T.xf,T.xr,T.hw,T.k),{depth:T.h,bevelEnabled:true,bevelThickness:.12,bevelSize:.12,bevelSegments:2,curveSegments:8});g.rotateX(-Math.PI/2);
-     const m=mesh(g,cwall,0,T.y,0);ship.add(m);
+     const m=mesh(g,[cwall,fmat(['f_win','f_car','f_shu'][ti],T.h)],0,T.y,0);ship.add(m);
      /* Kranzleisten oben und unten */
      [T.y+.02,T.y+T.h+.06].forEach((yy,ki)=>{const pts=ptsOf(T.xf,T.xr,T.hw+.22,T.k,40);const pa=[new THREE.Vector3(T.xf,0,-(T.hw+.22)),new THREE.Vector3(T.xf,0,T.hw+.22)];
        const path=new THREE.CatmullRomCurve3(pts.concat([]),false);const tube=new THREE.Mesh(new THREE.TubeGeometry(path,60,.14,6,false),wd);tube.position.y=yy;tube.castShadow=true;ship.add(tube);
        [-1,1].forEach(sd=>{const l=mesh(new THREE.BoxGeometry(T.xf-(T.xf-T.k),.26,.28),wd,T.xf-T.k/2,yy,sd*(T.hw+.22));ship.add(l)})});
-     /* Fenster rund um das Heck */
-     const nW=[9,7,5][ti],xm=T.xf-T.k,rx=xm-T.xr;
-     for(let i=0;i<nW;i++){const t=(.1+.8*(i/(nW-1)))*Math.PI,x=xm-rx*Math.sin(t),z=T.hw*Math.cos(t);
-       const nx=-(xm-x)/(rx*rx),nz=z/(T.hw*T.hw),ang=Math.atan2(nx,nz),L=Math.hypot(nx,nz);
-       const gw=new THREE.Group();const fr=mesh(new THREE.BoxGeometry(.95,1.3,.16),cu,0,0,0);const gl=new THREE.Mesh(new THREE.PlaneGeometry(.7,1.0),winM);gl.position.z=.1;
-       const arch=mesh(new THREE.CylinderGeometry(.35,.35,.16,10,1,false,0,Math.PI),cu,0,.65,0);arch.rotation.x=Math.PI/2;arch.rotation.y=Math.PI/2;
-       gw.add(fr,gl,arch);gw.position.set(x+nx/L*.12,T.y+T.h*.5,z+nz/L*.12);gw.rotation.y=ang;ship.add(gw)}
-     /* Seitenfenster */
-     [-1,1].forEach(sd=>{for(let x=T.xf-1.2;x>T.xf-T.k-.3;x-=1.5){const w=new THREE.Mesh(new THREE.PlaneGeometry(.7,.95),winM);w.position.set(x,T.y+T.h*.5,sd*(T.hw+.15));w.rotation.y=sd>0?0:Math.PI;ship.add(w);
-       const f=mesh(new THREE.BoxGeometry(.9,1.15,.12),cu,x,T.y+T.h*.5,sd*(T.hw+.09));ship.add(f)}});
      /* Reling auf dem Dach der Stufe */
      const rp=ptsOf(T.xf,T.xr,T.hw+.35,T.k,40),rc=new THREE.CatmullRomCurve3(rp,false);
      const rail=new THREE.Mesh(new THREE.TubeGeometry(rc,60,.07,5,false),wd);rail.position.y=T.y+T.h+.95;ship.add(rail);
@@ -206,15 +198,23 @@ function build(){
    /* Hecklaternen und Zierwerk */
    [-1,1].forEach(sd=>{spr('lantern',1.4,ship,-18.9,Y1+3.2,sd*4.3);const lq=mesh(new THREE.TorusGeometry(.6,.14,6,14),rs,-18.9,Y1+1.4,sd*3.6);lq.rotation.y=Math.PI/2;ship.add(lq)});
    spr('lantern',1.6,ship,-17.2,Y1+8.9,0);
+   [[-1,-18.9,Y1+.2],[1,-18.9,Y1+.2]].forEach(c=>{spr('t_corbel',1.6,ship,c[1],c[2]-1.4,c[0]*3.2)});
+   spr('t_shell',2.2,ship,-18.95,Y1+8.1,0);
+   spr('t_door',2.6,ship,-9.5,Y1,0);
+   spr('t_mermaid',3.4,ship,23.2,Y1+rise(22)-2.5,0);
+   spr('t_flag',3.2,ship,-6.4,19.5,0);
+   spr('t_ladder',3.6,ship,-9.6,Y0,3.4);spr('t_net',3,ship,-5,Y1+.2,5.9);
+   spr('t_balls',1.0,ship,-1.5,Y0,3.2);spr('t_rope2',.9,ship,-14,Y0,-3);spr('t_hatch',1.6,ship,8.6,Y1,0.8);
+   spr('t_planks',2.2,ship,1.5,Y0+.2,3.9);spr('t_bell2',1.8,ship,-9.7,Y1+1.5,3.7);spr('t_nest',2.2,ship,-6,19,0);
    /* Dachluke und Schornstein-Zierde */
    ship.add(mesh(new THREE.BoxGeometry(2.2,.5,1.8),cwall,-14.4,Y1+8.9,0));
    ship.add(mesh(new THREE.CylinderGeometry(.18,.26,5,8),plank,-8.6,11.0,0));}
   const lant=new THREE.PointLight(0xffb450,2.2,26,1.6);lant.position.set(-16,8,0);ship.add(lant);flick.push(lant);
   /* Masten, Rahen, Segel */
   const mast=(x,h,lean)=>{const g=new THREE.Group();const m=mesh(new THREE.CylinderGeometry(.35,.55,h,10),plank,0,h/2,0);g.add(m);
-    [h*.72,h*.5].forEach((y,i)=>{const yard=mesh(new THREE.CylinderGeometry(.14,.14,12-i*2,8),plank,0,y,0);yard.rotation.x=Math.PI/2;yard.rotation.z=(i?.05:-.08);g.add(yard);
-      const sail=new THREE.Mesh(new THREE.PlaneGeometry(9-i*2,y>14?6:5),new THREE.MeshStandardMaterial({map:TEX.canvas,alphaMap:holeTex(),transparent:true,alphaTest:.3,side:THREE.DoubleSide,roughness:1}));
-      sail.position.set(0,y-3,0);sail.rotation.y=Math.PI/2;g.add(sail);sway.push({o:sail,a:.06,s:.8+i*.2,p:i});});
+    [h*.72,h*.5].forEach((y,i)=>{const tx=TEX['sail'+(((x>0)?1:0)+i*1+1)];const sw=9.5-i*1.8,sh=sw*.93;
+      const sail=new THREE.Mesh(new THREE.PlaneGeometry(sw,sh),new THREE.MeshStandardMaterial({map:tx,transparent:false,alphaTest:.5,side:THREE.DoubleSide,roughness:1,emissive:0x2a2418,emissiveMap:tx,emissiveIntensity:.5}));
+      sail.position.set(0,y-sh/2+.35,0);sail.rotation.y=Math.PI/2;sail.castShadow=true;g.add(sail);sway.push({o:sail,a:.05,s:.8+i*.2,p:i});});
     g.position.set(x,1,0);g.rotation.z=lean;ship.add(g);};
   mast(-6,24,.05);mast(6.5,21,-.07);
   const rope=new THREE.LineBasicMaterial({color:0x8a7a4a});
@@ -302,7 +302,7 @@ function frame(){
   if(composer){try{composer.render()}catch(e){composer=null;renderer.render(scene,camera)}}else renderer.render(scene,camera);
   requestAnimationFrame(frame);
 }
-Promise.all(['planks','barnacle','rust','stone','sand','coral','copper','canvas','rope'].map(n=>loadTex(n)).concat(SPN.map(loadSpr),[loadMisc('sky','sky.jpg'),loadMisc('caustics','caustics.jpg')])).then(()=>{
+Promise.all(['planks','barnacle','rust','stone','sand','coral','copper','canvas','rope'].map(n=>loadTex(n)).concat(SPN.map(loadSpr),[loadMisc('sky','sky.jpg'),loadMisc('caustics','caustics.jpg'),loadMisc('f_win','facade_windows.jpg'),loadMisc('f_car','facade_carved.jpg'),loadMisc('f_shu','facade_shutter.jpg'),loadMisc('f_pla','facade_planks.jpg'),loadMisc('sail1','sail_1.png'),loadMisc('sail2','sail_2.png'),loadMisc('sail3','sail_3.png')])).then(()=>{
   build();curves();size();post();
   const l=document.getElementById('load');l.style.opacity=0;setTimeout(()=>l.remove(),1000);
   if(!/nointro/.test(location.search)){const it=document.getElementById('intro');it.hidden=false;let tm;const end=()=>{clearTimeout(tm);it.classList.add('out');setTimeout(()=>{it.hidden=true},1500)};it.onclick=end;tm=setTimeout(end,+(location.search.match(/introms=(\d+)/)||[0,16000])[1])}
