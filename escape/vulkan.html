@@ -249,7 +249,7 @@ const COLORS=[
   {name:'Violett',hex:0xb04dff,css:'#b862ff',sym:'★'},
   {name:'Türkis',hex:0x2fe0d6,css:'#2fe0d6',sym:'✚'}
 ];
-const SHAPES=['Kreis','Dreieck','Quadrat','Raute','Kreuz','Stern'];
+const SHAPES=['Kreis','Dreieck','Quadrat','Raute','Stern','Mond'];
 const LETTERS='ABCDEF';
 const ROLE_NAME={research:'Forscher/in',decode:'Entschlüsseler/in',mechanic:'Mechaniker/in',guard:'Wächter/in',cartographer:'Kartograf/in',radio:'Funker/in'};
 const ROLE_SETS={
@@ -368,12 +368,7 @@ function drawShape(ctx,i,s,col){
   ctx.fill();
 }
 const SHURL=[];
-function shapeURL(i){
-  if(SHURL[i])return SHURL[i];
-  const c=document.createElement('canvas');c.width=c.height=96;
-  drawShape(c.getContext('2d'),i,96,'#ffd9a0');
-  return SHURL[i]=c.toDataURL('image/png');
-}
+function shapeURL(i){return 'vulkan/assets/sym'+i+'.png'}
 function img(i){return '<img alt="" src="'+shapeURL(i)+'">'}
 function shp(i){return '<span class="shp">'+img(i)+'<span>'+SHAPES[i]+'</span></span>'}
 
@@ -409,7 +404,7 @@ sndBtn.addEventListener('click',()=>{
 });
 
 /* ---------- 3D-Szene ---------- */
-let GL=false,renderer,scene,camera,lava,lavaMat,lavaLight,emberMat,emberGeo,ePos,eSpd,door,portalMat,portalLight,coreLight;
+let skyM,skyMesh;let GL=false,renderer,scene,camera,lava,lavaMat,lavaLight,emberMat,emberGeo,ePos,eSpd,door,portalMat,portalLight,coreLight;
 let igShake=0,ambL,coolL,composer=null,bloom=null,fpsAcc=0,fpsN=0,perfT=0;
 let crystalRoot,crystalLights=[],crystals=[],doorLamps=[];
 let gateGroup,stonesGroup,valvesGroup,coreGroup,tabletGroup,stones=[],valveObjs=[],coreMesh,coreMat,tabletMat;
@@ -427,15 +422,19 @@ const VIEWS={
 const DIM=new THREE.Color(0x7c82a0);
 let T=0,lampBad=0,coreCool=0,coreCoolT=0;
 const SHTEX=[];
-function shapeTex(i){
-  if(SHTEX[i])return SHTEX[i];
-  const c=document.createElement('canvas');c.width=c.height=128;
-  const x=c.getContext('2d');drawShape(x,i,128,'#ffe2b0');
-  return SHTEX[i]=new THREE.CanvasTexture(c);
-}
+function shapeTex(i){if(SHTEX[i])return SHTEX[i];const t=new THREE.TextureLoader().load('vulkan/assets/sym'+i+'.png');t.anisotropy=4;return SHTEX[i]=t}
+/* Gemalte Texturen und Aufsteller aus vulkan/assets */
+const TXL=new THREE.TextureLoader(),TXC={},SPC={};
+function vtex(n,rx,ry){const k=n+'|'+rx+'|'+ry;if(TXC[k])return TXC[k];const t=TXL.load('vulkan/assets/tex_'+n+'.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;t.repeat.set(rx||1,ry||rx||1);t.anisotropy=4;return TXC[k]=t}
+function vmat(n,rx,ry,o){o=o||{};o.map=vtex(n,rx,ry);if(o.color===undefined)o.color=0xffffff;return new THREE.MeshStandardMaterial(o)}
+const SPDIM={core:[240,230],cry0:[165,259],cry1:[169,259],cry2:[169,258],cry3:[168,258],cry4:[164,257],crys:[202,254],gauge:[207,272],pedestal:[261,180],torch:[201,271],tablet:[233,277],lever:[233,281],key:[219,251]};
+function sprTex(n){if(SPC[n])return SPC[n];const t=TXL.load('vulkan/assets/'+n+'.png');t.anisotropy=4;return SPC[n]=t}
+function grayTex(n){const k='g_'+n;if(SPC[k])return SPC[k];const c=document.createElement('canvas'),t=new THREE.CanvasTexture(c);const d=SPDIM[n];c.width=d[0];c.height=d[1];
+  const im=new Image();im.onload=()=>{try{const x=c.getContext('2d');x.drawImage(im,0,0);const D=x.getImageData(0,0,c.width,c.height),p=D.data;for(let i=0;i<p.length;i+=4){const g=(p[i]*.3+p[i+1]*.59+p[i+2]*.11)*.62;p[i]=g*1.02;p[i+1]=g*.98;p[i+2]=g*1.1}x.putImageData(D,0,0);t.needsUpdate=true}catch(e){}};im.src='vulkan/assets/'+n+'.png';return SPC[k]=t}
+function vspr(n,h,opt){opt=opt||{};const d=SPDIM[n]||[1,1];const m=new THREE.SpriteMaterial({map:opt.map||sprTex(n),transparent:true,alphaTest:.04,fog:true,color:opt.color===undefined?0xffffff:opt.color});const sp=new THREE.Sprite(m);sp.center.set(.5,opt.mid?.5:0);sp.scale.set(h*d[0]/d[1],h,1);return sp}
 
 function lavaFragment(){return [
-'uniform float t;uniform float heat;varying vec3 vW;',
+'uniform float t;uniform float heat;uniform sampler2D tx;varying vec3 vW;',
 'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
 'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}',
 'float fbm(vec2 p){float v=0.0;float a=0.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+vec2(7.1,3.7);a*=0.5;}return v;}',
@@ -447,6 +446,8 @@ function lavaFragment(){return [
 '  vec3 hot=mix(vec3(1.0,0.34,0.05),vec3(1.0,0.82,0.25),g);',
 '  vec3 dark=vec3(0.13,0.05,0.04);',
 '  vec3 col=mix(hot,dark,crust*0.85);',
+'  vec3 tc=0.5*(texture2D(tx,vW.xz*0.045+vec2(t*0.012,t*0.007)).rgb+texture2D(tx,vW.xz*0.03-vec2(t*0.009,t*0.004)).rgb);',
+'  col=mix(col,tc*1.25,0.78);',
 '  col*=0.85+0.55*heat;',
 '  gl_FragColor=vec4(col,1.0);',
 '}'].join('\n')}
@@ -476,10 +477,12 @@ function initScene(){
     const s=(26+nz*1.7)/l;cp.setXYZ(i,x*s,y*s,z*s);
   }
   cg.computeVertexNormals();
-  const cave=new THREE.Mesh(cg,new THREE.MeshStandardMaterial({color:0x3a2523,roughness:1,metalness:0,flatShading:true,side:THREE.BackSide}));
-  cave.scale.set(1,.5,1);cave.position.y=2;scene.add(cave);
+  const cave=new THREE.Mesh(cg,vmat('wall',7,3.5,{color:0xb08f88,roughness:1,metalness:0,flatShading:true,side:THREE.BackSide}));
+  cave.scale.set(1,.5,1);cave.position.y=2;cave.visible=false;scene.add(cave);
+  {const st=TXL.load('vulkan/assets/sky.jpg');skyM=new THREE.MeshBasicMaterial({map:st,side:THREE.BackSide,fog:false,depthWrite:false,color:0xbb9a90});
+   skyMesh=new THREE.Mesh(new THREE.SphereGeometry(90,48,24),skyM);skyMesh.renderOrder=-10;skyMesh.position.y=6;skyMesh.rotation.y=Math.PI;scene.add(skyMesh);}
 
-  const rockMat=new THREE.MeshStandardMaterial({color:0x2f1f1d,roughness:.95,flatShading:true});
+  const rockMat=vmat('wall',1,2,{color:0x9a7d77,roughness:.95,flatShading:true});
   rockMat.userData.keep=true;
   for(let i=0;i<30;i++){
     const a=srng()*Math.PI*2,r=3+srng()*15,hgt=1.6+srng()*3.8;
@@ -493,12 +496,12 @@ function initScene(){
     m.position.set(Math.cos(a)*r,-4+hgt/2,Math.sin(a)*r-2);scene.add(m);
   }
 
-  const plat=new THREE.Mesh(new THREE.CylinderGeometry(6.2,6.9,3.4,9),new THREE.MeshStandardMaterial({color:0x3b2926,roughness:.9,flatShading:true}));
+  const plat=new THREE.Mesh(new THREE.CylinderGeometry(6.2,6.9,3.4,9),vmat('floor',3,3,{color:0xc9aba3,roughness:.9,flatShading:true}));
   plat.position.set(0,-1.7,-2);scene.add(plat);
   const ring=new THREE.Mesh(new THREE.TorusGeometry(4.6,.045,6,64),new THREE.MeshBasicMaterial({color:0xff7a2a}));
   ring.rotation.x=Math.PI/2;ring.position.set(0,.03,-2);scene.add(ring);
 
-  lavaMat=new THREE.ShaderMaterial({uniforms:{t:{value:0},heat:{value:0}},vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',fragmentShader:lavaFragment()});
+  lavaMat=new THREE.ShaderMaterial({uniforms:{t:{value:0},heat:{value:0},tx:{value:(function(){const t=TXL.load('vulkan/assets/tex_lava.jpg');t.wrapS=t.wrapT=THREE.MirroredRepeatWrapping;return t})()}},vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',fragmentShader:lavaFragment()});
   const lg=new THREE.PlaneGeometry(70,70,1,1);lg.rotateX(-Math.PI/2);
   lava=new THREE.Mesh(lg,lavaMat);lava.position.y=-2.7;lava.userData={tag:'lava'};scene.add(lava);
 
@@ -521,14 +524,16 @@ function initScene(){
   /* Tür */
   /* Portal: ruht dunkel, zündet erst, wenn die Kammer gelöst ist */
   door=new THREE.Group();door.userData={tag:'door'};
-  const stone=new THREE.MeshStandardMaterial({color:0x4a3330,roughness:.9,flatShading:true});
-  const ringM=new THREE.Mesh(new THREE.TorusGeometry(2.55,.42,8,28),stone);ringM.position.set(0,2.75,0);door.add(ringM);
-  [-1,1].forEach(x=>{const f=new THREE.Mesh(new THREE.BoxGeometry(1.1,.5,1.3),stone);f.position.set(x*1.9,.25,0);door.add(f)});
+  const stone=vmat('glyph',3,1,{color:0xc9a899,roughness:.9,flatShading:true});
+  {const dm=n=>new THREE.MeshBasicMaterial({map:(()=>{const t=TXL.load('vulkan/assets/'+n+'.png');t.anisotropy=4;return t})(),transparent:true,alphaTest:.04,color:0xd8c6c0});
+   const pg=new THREE.PlaneGeometry(6.0,6.5);
+   door.frame=new THREE.Mesh(pg,dm('door_frame'));door.frame.position.set(0,3.25,.06);door.add(door.frame);
+   door.leaves=new THREE.Mesh(pg,dm('door_leaves'));door.leaves.position.set(0,3.25,.03);door.add(door.leaves);}
   door.runes=[];
   for(let k=0;k<12;k++){
     const a=k/12*Math.PI*2,m=new THREE.MeshStandardMaterial({color:0x2a1c1b,emissive:0x66ccff,emissiveIntensity:0,roughness:.6,flatShading:true});
     const r=new THREE.Mesh(new THREE.BoxGeometry(.28,.28,.5),m);
-    r.position.set(Math.cos(a)*2.55,2.75+Math.sin(a)*2.55,.3);r.rotation.z=a;door.add(r);door.runes.push(m);
+    r.position.set(Math.cos(a)*2.55,2.75+Math.sin(a)*2.55,.3);r.rotation.z=a;r.visible=false;door.add(r);door.runes.push(m);
   }
   door.halo=new THREE.Mesh(new THREE.TorusGeometry(3.05,.05,6,64),new THREE.MeshBasicMaterial({color:0x8fd8ff,transparent:true,opacity:0}));
   door.halo.position.set(0,2.75,.1);door.add(door.halo);
@@ -574,35 +579,35 @@ function initScene(){
   const tc=document.createElement('canvas');tc.width=tc.height=64;
   const cx=tc.getContext('2d'),gr=cx.createRadialGradient(32,32,0,32,32,32);
   gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(1,'rgba(255,255,255,0)');cx.fillStyle=gr;cx.fillRect(0,0,64,64);
-  emberMat=new THREE.PointsMaterial({color:0xff9a3c,size:.16,map:new THREE.CanvasTexture(tc),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+  emberMat=new THREE.PointsMaterial({color:0xff9a3c,size:.3,map:TXL.load('vulkan/assets/fx_spark.jpg'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
   scene.add(new THREE.Points(emberGeo,emberMat));
 
   /* Requisiten der Kammern */
   gateGroup=new THREE.Group();scene.add(gateGroup);
   for(let i=0;i<6;i++){
     const g=new THREE.Group();
-    const slab=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.05,.2),new THREE.MeshStandardMaterial({color:0x3d2b28,roughness:.8,flatShading:true}));
-    const face=new THREE.Mesh(new THREE.PlaneGeometry(.9,.9),new THREE.MeshBasicMaterial({map:shapeTex(i),transparent:true}));
+    const slab=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.05,.2),vmat('bronze',1,1,{roughness:.8,flatShading:true}));
+    const face=new THREE.Mesh(new THREE.PlaneGeometry(1.0,1.0),new THREE.MeshBasicMaterial({map:shapeTex(i),transparent:true,alphaTest:.04}));
     face.position.z=.11;g.add(slab,face);g.position.set((i-2.5)*1.3,1.7,-5.2);gateGroup.add(g);
   }
-  const ledge=new THREE.Mesh(new THREE.BoxGeometry(8.4,.25,.7),new THREE.MeshStandardMaterial({color:0x2f1f1d,roughness:.9,flatShading:true}));
+  const ledge=new THREE.Mesh(new THREE.BoxGeometry(8.4,.25,.7),vmat('glyph',6,.5,{roughness:.9,flatShading:true}));
   ledge.position.set(0,1.05,-5.1);gateGroup.add(ledge);
 
   stonesGroup=new THREE.Group();scene.add(stonesGroup);
   valvesGroup=new THREE.Group();scene.add(valvesGroup);
 
   coreGroup=new THREE.Group();scene.add(coreGroup);
-  coreMat=new THREE.MeshStandardMaterial({color:0x6a1a0e,emissive:0xff4a14,emissiveIntensity:1,roughness:.4,flatShading:true});
+  coreMat=vmat('lava',2,1,{color:0x6a1a0e,emissive:0xff4a14,emissiveIntensity:1,roughness:.4,flatShading:true});coreMat.emissiveMap=coreMat.map;
   coreMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(1.35,1),coreMat);coreMesh.position.set(0,2.5,-3.2);coreGroup.add(coreMesh);
-  const cr=new THREE.Mesh(new THREE.TorusGeometry(2.1,.08,8,48),new THREE.MeshBasicMaterial({color:0xffb347}));cr.position.set(0,2.5,-3.2);cr.rotation.x=Math.PI/2.4;coreGroup.add(cr);
-  const pil=new THREE.Mesh(new THREE.CylinderGeometry(.5,.8,1.4,8),new THREE.MeshStandardMaterial({color:0x3b2926,flatShading:true}));pil.position.set(0,.7,-3.2);coreGroup.add(pil);
+  const cr=new THREE.Mesh(new THREE.TorusGeometry(2.1,.1,8,48),new THREE.MeshStandardMaterial({map:vtex('brass',6,1),emissive:0x884411,emissiveIntensity:.6,roughness:.4,metalness:.5}));cr.position.set(0,2.5,-3.2);cr.rotation.x=Math.PI/2.4;coreGroup.add(cr);
+  const pil=new THREE.Mesh(new THREE.CylinderGeometry(.5,.8,1.4,8),vmat('glyph',2,1,{flatShading:true}));pil.position.set(0,.7,-3.2);coreGroup.add(pil);
 
   tabletGroup=new THREE.Group();scene.add(tabletGroup);
   const tc2=document.createElement('canvas');tc2.width=256;tc2.height=256;
   const t2=tc2.getContext('2d');t2.fillStyle='#2a1a18';t2.fillRect(0,0,256,256);t2.strokeStyle='#ffb347';t2.lineWidth=6;t2.strokeRect(14,14,228,228);t2.fillStyle='#ffb347';t2.font='bold 150px sans-serif';t2.textAlign='center';t2.textBaseline='middle';t2.fillText('?',128,138);
   tabletMat=new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(tc2),emissive:0xff6a1a,emissiveIntensity:.25,roughness:.7});
-  const tab=new THREE.Mesh(new THREE.BoxGeometry(2.8,3.2,.4),tabletMat);tab.position.set(0,2.1,-3.6);tabletGroup.add(tab);
-  const base=new THREE.Mesh(new THREE.BoxGeometry(3.4,.5,1.2),new THREE.MeshStandardMaterial({color:0x3b2926,flatShading:true}));base.position.set(0,.25,-3.6);tabletGroup.add(base);
+  const sm=vmat('sand',1,1,{flatShading:true,roughness:.85});const tab=new THREE.Mesh(new THREE.BoxGeometry(2.8,3.2,.4),[sm,sm,sm,sm,tabletMat,sm]);tab.position.set(0,2.1,-3.6);tabletGroup.add(tab);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(3.4,.5,1.2),vmat('glyph',3,.4,{flatShading:true}));base.position.set(0,.25,-3.6);tabletGroup.add(base);
 
   buildCrystals(4,[0,1,2,3]);
   setGroups('none');
@@ -669,6 +674,7 @@ function stepAtmosphere(dt){
   const a=ATM[G.phase==='lobby'?'gate':(px(G.cur)&&PZ[px(G.cur)]?PZ[px(G.cur)].atm:G.cur)]||ATM.gate,k=1-Math.exp(-dt*1.6);
   _c.setHex(a.fog);scene.fog.color.lerp(_c,k);renderer.setClearColor(scene.fog.color,1);
   _c.setHex(a.amb);ambL.color.lerp(_c,k);
+  if(skyM){_c.copy(ambL.color).multiplyScalar(2.9);_c.r=Math.min(1,_c.r);_c.g=Math.min(1,_c.g);_c.b=Math.min(1,_c.b);skyM.color.lerp(_c,k)}
   _c.setHex(a.cool);coolL.color.lerp(_c,k);
   if(bloom)bloom.strength+=(a.bl-bloom.strength)*k;
   scene.children.forEach(o=>{if(o.userData&&o.userData.shaft)o.material.opacity=.04+.02*Math.sin(T*.5+o.position.x)});
@@ -683,18 +689,17 @@ function buildCrystals(n,seq){
   const sp=n>=6?1.25:(n===5?1.4:1.6);
   const rockMat=new THREE.MeshStandardMaterial({color:0x2f1f1d,roughness:.95,flatShading:true});
   for(let i=0;i<n;i++){
-    const g=new THREE.Group(),mat=new THREE.MeshStandardMaterial({color:0x7c82a0,roughness:.25,metalness:.15,flatShading:true,emissive:0x000000});
-    const h=1.5+((i*7)%5)*.17;
-    const main=new THREE.Mesh(new THREE.ConeGeometry(.4,h,6,1),mat);main.position.y=h/2+.25;
-    const s1=new THREE.Mesh(new THREE.ConeGeometry(.22,h*.6,5,1),mat);s1.position.set(.42,h*.3+.2,.1);s1.rotation.z=-.4;
-    const s2=new THREE.Mesh(new THREE.ConeGeometry(.2,h*.5,5,1),mat);s2.position.set(-.38,h*.25+.2,.12);s2.rotation.z=.45;
-    const base=new THREE.Mesh(new THREE.DodecahedronGeometry(.62,0),rockMat);base.scale.y=.45;base.position.y=.1;
-    g.add(main,s1,s2,base);
+    const g=new THREE.Group(),mat={color:new THREE.Color(),emissive:new THREE.Color()};
+    const cn=['cry4','cry0','cry2','cry3','cry1','cry0'][seq[i]],h=2.1+((i*7)%5)*.1;
+    const dimS=vspr(cn,h,{map:grayTex(cn)}),litS=vspr(cn,h,{color:seq[i]===5?0x77fff0:0xffffff});
+    litS.material.opacity=0;litS.position.y=.1;dimS.position.y=.1;
+    const gl=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:COLORS[seq[i]].hex,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));gl.scale.set(3.4,3.4,1);gl.position.y=h*.5;
+    g.add(dimS,litS,gl);
     g.position.set((i-(n-1)/2)*sp,0,-3.1+(i%2?.25:-.15));
     g.userData={tag:'crystal',i:i};
     crystalRoot.add(g);
     const c=new THREE.Color(COLORS[seq[i]].hex);
-    crystals.push({g:g,mat:mat,light:crystalLights[i],color:c,glow:0,target:0,shake:0});
+    crystals.push({g:g,mat:mat,light:crystalLights[i],color:c,glow:0,target:0,shake:0,dim:dimS,lit:litS,gl:gl});
     crystalLights[i].position.set(g.position.x,1.6,g.position.z+.8);
   }
   for(let i=n;i<6;i++)crystalLights[i].intensity=0;
@@ -705,9 +710,9 @@ function buildStones(rows){
   const R=rows.length,z0=3.6,dz=Math.min(1.5,(z0+4.4)/Math.max(1,R-1)),depth=Math.min(1.2,dz*.84);
   for(let r=0;r<R;r++)for(let c=0;c<3;c++){
     const g=new THREE.Group();
-    const mat=new THREE.MeshStandardMaterial({color:0x4a3633,roughness:.85,flatShading:true,emissive:0x000000,emissiveIntensity:0});
+    const mat=vmat('crust',1,1,{roughness:.85,flatShading:true,emissive:0x000000,emissiveIntensity:0});
     const base=new THREE.Mesh(new THREE.BoxGeometry(1.9,.32,depth),mat);
-    const face=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),new THREE.MeshBasicMaterial({map:shapeTex(rows[r].shapes[c]),transparent:true}));
+    const fs=Math.min(1.45,depth*1.05);const face=new THREE.Mesh(new THREE.PlaneGeometry(fs,fs),new THREE.MeshBasicMaterial({map:shapeTex(rows[r].shapes[c]),transparent:true,alphaTest:.04}));
     face.rotation.x=-Math.PI/2;face.position.y=.17;g.add(base,face);
     g.position.set((c-1)*2.3,.16,z0-r*dz);
     g.userData={tag:'stone',row:r,col:c};
@@ -719,14 +724,14 @@ function buildValves(V){
   if(!GL)return;
   disposeGroup(valvesGroup);valveObjs=[];
   for(let j=0;j<V;j++){
-    const g=new THREE.Group(),mat=new THREE.MeshStandardMaterial({color:0x8a6a58,metalness:.6,roughness:.4,emissive:0x000000,emissiveIntensity:.8,flatShading:true});
+    const g=new THREE.Group(),mat=vmat('brass',1,1,{metalness:.55,roughness:.4,emissive:0x000000,emissiveIntensity:.8,flatShading:true});
     const wheel=new THREE.Group();
     wheel.add(new THREE.Mesh(new THREE.TorusGeometry(.75,.09,8,28),mat));
     for(let s=0;s<4;s++){const sp=new THREE.Mesh(new THREE.BoxGeometry(1.4,.1,.1),mat);sp.rotation.z=s*Math.PI/4;wheel.add(sp)}
     wheel.add(new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.3,8),mat));
     wheel.children[wheel.children.length-1].rotation.x=Math.PI/2;
     wheel.position.y=1.9;
-    const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,2,8),new THREE.MeshStandardMaterial({color:0x4a3633,flatShading:true}));pipe.position.y=.6;
+    const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,2,8),vmat('bronze',1,2,{flatShading:true,metalness:.4}));pipe.position.y=.6;
     g.add(wheel,pipe);
     g.position.set((j-(V-1)/2)*2.2,0,-3.2);
     g.userData={tag:'valve',j:j};
@@ -737,7 +742,7 @@ function buildValves(V){
 function layoutDoorLamps(n){
   if(!GL)return;
   const sp=.5;
-  doorLamps.forEach((l,i)=>{l.visible=i<n;l.position.set((i-(n-1)/2)*sp,6.45,.1)});
+  doorLamps.forEach((l,i)=>{l.visible=i<n;l.position.set((i-(n-1)/2)*sp,7.0,.12)});
 }
 function resetDoor(){if(GL){door.open=0;door.openNow=0;door.lit=false;door.flashT=0;lampBad=0;portalMat.uniforms.act.value=0}}
 function flashCrystal(i,ms){
@@ -864,10 +869,9 @@ function frame(now){
   for(let i=0;i<crystals.length;i++){
     const c=crystals[i];
     c.glow+=(c.target-c.glow)*(1-Math.exp(-dt*9));
-    c.mat.emissive.copy(c.color).multiplyScalar(c.glow*1.1);
-    c.mat.color.copy(DIM).lerp(c.color,c.glow*.7);
+    c.lit.material.opacity=c.glow;c.gl.material.opacity=c.glow*.75;
     c.light.color.copy(c.color);c.light.intensity=crystalRoot.visible?c.glow*2.4:0;
-    if(c.shake>0){c.shake=Math.max(0,c.shake-dt);c.g.rotation.z=Math.sin(T*50)*c.shake*.25}else c.g.rotation.z=0;
+    if(c.shake>0){c.shake=Math.max(0,c.shake-dt);c.dim.material.rotation=c.lit.material.rotation=Math.sin(T*50)*c.shake*.25}else c.dim.material.rotation=c.lit.material.rotation=0;
   }
 
   if(stonesGroup.visible){
@@ -900,6 +904,7 @@ function frame(now){
   }
 
   door.openNow+=(door.open-door.openNow)*(1-Math.exp(-dt*2.2));
+  if(door.leaves){const lo=1-Math.min(1,door.openNow*1.4);door.leaves.material.opacity=lo;door.leaves.visible=lo>.01;door.leaves.position.x=-door.openNow*.0}
   {const a=door.openNow;
    if(door.open>0&&!door.lit){door.lit=true;door.igT=0;if(!REDUCED){door.flashT=.45;igShake=.6}portalSound()}
    if(door.open===0&&door.lit)door.lit=false;
