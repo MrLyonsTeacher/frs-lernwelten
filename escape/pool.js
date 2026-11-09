@@ -26,6 +26,22 @@ function wordSub(word){
 }
 function mechWord(u,lead,btn){return '<p class="lead">'+lead+'</p>'+xdials(u)+'<div><button class="btn primary" data-act="xsub">'+(btn||'Schloss prüfen')+'</button></div>'+fb()+'<p class="small">Ein Fehlversuch kostet '+penTry()+' Sekunden.</p>'}
 function noPiece(){return '<p class="lead">In dieser Kammer hast du keinen eigenen Hinweis. Hilf mit, die Hinweise der anderen zusammenzusetzen.</p>'}
+
+/* Schaltwand: Kabel als tauschbare Farbkarten in einer Reihe (Anschluss 1..N) */
+function wrowHtml(u){
+  window.__wu=u;
+  const css='<style>#wrow{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:8px 0}#wrow .ws{flex:1 1 0;max-width:84px;min-width:0;text-align:center}#wrow .wn{font-size:12px;opacity:.75;margin-bottom:4px}#wrow button{width:100%;min-height:76px;border-radius:12px;border:3px solid rgba(255,255,255,.25);font:800 14px/1.1 inherit;color:#111;padding:4px 2px;cursor:pointer;touch-action:manipulation}#wrow button.sel{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.55);transform:translateY(-6px)}</style>';
+  return css+'<div id="wrow" role="group" aria-label="Schaltwand">'+u.order.map((c,p)=>'<div class="ws"><div class="wn">Anschluss '+(p+1)+'</div><button type="button" data-act="wpick" data-p="'+p+'" class="'+(u.sel===p?'sel':'')+'" style="background:'+u.cols[c].c+'" aria-label="Anschluss '+(p+1)+': '+u.cols[c].n+'">'+u.cols[c].n+'</button></div>').join('')+'</div>';
+}
+document.addEventListener('click',function(e){
+  const b=e.target.closest&&e.target.closest('[data-act=wpick]');if(!b)return;
+  const u=window.__wu;if(!u||!u.order)return;
+  const p=Number(b.dataset.p);
+  if(u.sel==null||u.sel===undefined)u.sel=p;
+  else if(u.sel===p)u.sel=null;
+  else{const q=u.sel;const t=u.order[q];u.order[q]=u.order[p];u.order[p]=t;u.sel=null;u.order.forEach((c,i)=>{u.vals[c]=i+1})}
+  const w=document.getElementById('wrow');if(w){const tmp=document.createElement('div');tmp.innerHTML=wrowHtml(u);w.replaceWith(tmp.querySelector('#wrow'))}
+});
 const PZ={};
 
 /* 1. Geheimschrift (Caesar) */
@@ -79,9 +95,9 @@ PZ.wires={name:'Die Schaltwand',atm:'valves',
     }
     return {N,cols,pos,clues:used,uc:cand.length};
   },
-  init(d){return {vals:new Array(d.N).fill(1),mods:new Array(d.N).fill(d.N),mins:new Array(d.N).fill(1),show:(i,v)=>String(v),labels:d.cols.map(c=>'<span style="color:'+c.c+';font-weight:800">'+c.n+'</span>')}},
+  init(d){return {order:Array.from({length:d.N},(_,i)=>i),sel:null,cols:d.cols,vals:Array.from({length:d.N},(_,i)=>i+1),mods:new Array(d.N).fill(d.N),mins:new Array(d.N).fill(1),show:(i,v)=>String(v)}},
   role(r,d,u){
-    if(r==='mechanic')return mechWord(u,'Du steckst die Kabel an der Schaltwand ein. Jede Farbe gehört an einen eigenen Anschluss von 1 bis '+d.N+' (von links nach rechts). Deine Gruppe findet heraus, wohin welches Kabel gehört.','Schaltwand prüfen');
+    if(r==='mechanic')return '<p class="lead">Du ordnest die Kabel an der Schaltwand. Tippe ein Kabel an und dann ein zweites: Die beiden tauschen die Plätze. Die Anschlüsse sind von links nach rechts von 1 bis '+d.N+' nummeriert. Deine Gruppe findet heraus, wohin welches Kabel gehört.</p>'+wrowHtml(u)+'<div><button class="btn primary" data-act="xsub">Schaltwand prüfen</button></div>'+fb()+'<p class="small">Ein Fehlversuch kostet '+penTry()+' Sekunden.</p>';
     const p=rolePieces(r,d.clues.length,INFO);if(!p.length)return noPiece();
     return '<p class="lead">Das sind deine Hinweise zur Schaltwand. Die Hinweise der anderen brauchst du auch. Nur zusammen passt alles.</p><ul class="list">'+p.map(i=>'<li><span>'+esc(d.clues[i])+'</span></li>').join('')+'</ul>';
   },
