@@ -40,7 +40,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const lerp=(a,b,t)=>a+(b-a)*t;
 
 const G={phase:'lobby',solo:false,spectator:false,epoch:0,seed:0,total:480,deadline:0,endRemaining:0,mode:'short',order:[],ci:0,cur:'',data:{},P:1,me:0,sets:ROLE_SETS[1],roster:[],roles:[],tab:null,chHints:0,hintsTotal:0,attempts:0,pu:null,feedback:'',fbBad:false,found:[],stage:3,hostPeer:null,locked:false,world:null,modal:false};
-const RM={named:null,offs:[],count:0,mode:'short',d:D0};
+const RM={rot:1,named:null,offs:[],count:0,mode:'short',d:D0};
 function remaining(){return G.phase==='play'?Math.max(0,(G.deadline-performance.now())/1000):G.endRemaining}
 function progress(){return G.phase==='play'?clamp(1-remaining()/G.total,0,1):(G.phase==='lost'?1:0)}
 function existing(list){return list.filter(r=>G.sets.some(s=>s.indexOf(r)>=0))}
@@ -302,6 +302,7 @@ function genData(seed,P,order,st){
   return D;
 }
 function beginGame(sp){
+  G.rot=sp.rot===undefined?1:(sp.rot|0);
   closeModal(true);closeDialog();
   const mode=MODES[sp.mode]?sp.mode:'short';
   G.mode=mode;G.order=expandOrder(Array(MODES[mode].n).fill('X').concat('finale'),sp.seed);
@@ -332,6 +333,8 @@ function playIntro(){
 }
 function setCi(i,first){
   G.ci=i;G.cur=G.order[i];G.chHints=0;G.feedback='';G.fbBad=false;G.locked=false;
+  if(!G.solo&&!G.spectator&&G.me>=0&&G.P>1){const nr=G.sets[(G.me+(G.rot?rotUnit():0))%G.P];const ch=G.ci>0&&nr.join()!==G.roles.join();G.roles=nr.slice();if(ch)setTimeout(()=>{if(G.phase==='play')toast('Rollenwechsel! Du bist jetzt '+G.roles.map(r=>ROLE_NAME[r]).join(' und ')+'.',5000)},3400)}
+  G.tab=G.roles[0]||null;
   G.pu=(px(G.cur)&&PZ[px(G.cur)])?PZ[px(G.cur)].init(G.data[G.cur]):null;
   G.tab=G.roles[0]||null;
   paintHud();
@@ -340,7 +343,7 @@ function setCi(i,first){
 function startSolo(){
   initAudio();
   const st=stageFor(RM.d);
-  beginGame({epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:null,host:null,stage:st});
+  beginGame({epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:null,host:null,stage:st,rot:RM.rot});
 }
 function send(topic,data){
   if(!RM.named)return;
@@ -354,7 +357,7 @@ function startRoom(){
   const roster=(me?[me]:[]).concat(others).slice(0,6);
   if(!roster.length){toast('Noch niemand in der Gruppe sichtbar. Kurz warten und nochmal tippen.');return}
   const st=stageFor(RM.d);
-  send('start',{epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:roster,stage:st});
+  send('start',{epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:roster,stage:st,rot:RM.rot});
 }
 function newRound(){if(G.solo||!RM.named)startSolo();else startRoom()}
 
@@ -879,11 +882,15 @@ function loop(now){
 }
 
 /* ---------- Gruppenraum ---------- */
+function rotUnit(){return G.ci}
+const ROTS=[{id:0,label:'Fest',info:'Jede Person behält ihre Rolle das ganze Spiel über.'},{id:1,label:'Wechseln',info:'Die Rollen wechseln reihum mit jedem neuen Ort (jeder Rune). So lernt jede Person mehrere Rollen kennen.'}];
+function paintRot(){const el=$('#rotSel');if(!el)return;el.innerHTML=ROTS.map(x=>'<button class="chip" data-rot="'+x.id+'" aria-pressed="'+(RM.rot===x.id)+'">'+x.label+'</button>').join('');$('#rotInfo').textContent=ROTS[RM.rot].info+' Gilt nur, wenn ihr zu zweit oder mehr spielt.'}
 function paintStage(){
   $('#diff').innerHTML=DIFFS.map(x=>'<button class="chip" data-d="'+x.id+'" aria-pressed="'+(RM.d===x.id)+'">'+x.label+'</button>').join('');
   const cur=DIFFS.find(x=>x.id===RM.d);
-  $('#stageInfo').textContent=cur.info+' Wer die Runde startet, bestimmt die Schwierigkeit für die ganze Gruppe.';
+  $('#stageInfo').textContent=cur.info+' Wer die Runde startet, bestimmt die Schwierigkeit für die ganze Gruppe.';;paintRot()
 }
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-rot]');if(!b)return;RM.rot=+b.dataset.rot;paintRot()});
 $('#diff').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;RM.d=+b.dataset.d;paintStage()});
 function paintMode(){
   $('#mode').innerHTML=Object.keys(MODES).map(k=>'<button class="chip" data-mode="'+k+'" aria-pressed="'+(RM.mode===k)+'">'+MODES[k].label+' · '+MODES[k].min+' Min.</button>').join('');
@@ -905,7 +912,7 @@ async function joinGroup(){
     RM.offs.push(RM.named.on('start',m=>{
       const d=m.data;
       if(!d||typeof d.epoch!=='number'||d.epoch<=G.epoch||typeof d.seed!=='number'||!Array.isArray(d.roster)||d.roster.length<1||d.roster.length>6||typeof d.total!=='number'||d.total<60||d.total>6000||!MODES[d.mode])return;
-      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage});
+      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot});
     }));
     RM.offs.push(RM.named.on('act',m=>handleAct(m.data,m.isMe&&m.sameTab)));
     RM.offs.push(RM.named.on('state',onState));
@@ -926,7 +933,7 @@ function onState(m){
   if(!d||(m.isMe&&m.sameTab)||typeof d.epoch!=='number')return;
   if(d.epoch>G.epoch){
     if(d.phase==='play'&&MODES[d.mode]&&Array.isArray(d.roster)&&d.roster.length>=1&&d.roster.length<=6&&typeof d.seed==='number'&&typeof d.total==='number'&&typeof d.remaining==='number'){
-      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage});
+      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot});
       closeDialog();
       G.deadline=performance.now()+d.remaining*1000;G.attempts=d.attempts|0;G.hintsTotal=d.hints|0;
       const ci=clamp(d.ci|0,0,G.order.length-1);
@@ -945,7 +952,7 @@ function onState(m){
 }
 setInterval(()=>{
   if(!RM.named||G.solo||G.phase==='lobby'||!G.hostPeer||G.hostPeer!==myPeer())return;
-  send('state',{epoch:G.epoch,phase:G.phase,seed:G.seed,total:G.total,mode:G.mode,stage:G.stage,remaining:remaining(),roster:G.roster,ci:G.ci,hints:G.hintsTotal,attempts:G.attempts});
+  send('state',{epoch:G.epoch,phase:G.phase,seed:G.seed,total:G.total,mode:G.mode,stage:G.stage,rot:G.rot,remaining:remaining(),roster:G.roster,ci:G.ci,hints:G.hintsTotal,attempts:G.attempts});
 },4000);
 
 $('#joinBtn').addEventListener('click',joinGroup);
@@ -965,5 +972,5 @@ paintMode();paintStage();
 pad.hidden=true;abtn.hidden=true;
 assetsP.then(()=>{demo=buildWorld(12345,6,1);cam.x=demo.clear[0].cx;cam.y=demo.clear[0].cy});
 requestAnimationFrame(loop);
-if(DEV)window.__wl={G:G,RM:RM,ents:()=>ents,world:()=>G.world,walkable:walkable,chamberDone:chamberDone,handleAct:handleAct,PZ:PZ,px:px,beginGame:beginGame,tp:(x,y)=>{const m=meEnt();m.x=m.rx=x;m.y=m.ry=y},held:held,interact:interact,buildWorld:buildWorld,ready:()=>ASSETS_READY};
+if(DEV)window.__wl={G:G,enterChamber:setCi,RM:RM,ents:()=>ents,world:()=>G.world,walkable:walkable,chamberDone:chamberDone,handleAct:handleAct,PZ:PZ,px:px,beginGame:beginGame,tp:(x,y)=>{const m=meEnt();m.x=m.rx=x;m.y=m.ry=y},held:held,interact:interact,buildWorld:buildWorld,ready:()=>ASSETS_READY};
 })();

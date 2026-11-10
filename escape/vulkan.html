@@ -171,6 +171,8 @@ input[type=text]{flex:1 1 180px;min-width:0;min-height:48px;padding:0 14px;borde
         <p class="small" id="stageInfo"></p>
       </div>
 
+      <div class="block"><h2>Rollen</h2><div class="views" id="rotSel" role="group" aria-label="Rollen"></div><p class="small" id="rotInfo"></p></div>
+
       <div class="block" id="joinBox">
         <h2>Mit der Gruppe spielen</h2>
         <div class="field">
@@ -332,7 +334,7 @@ function gen(seed,P,order,st){
 
 /* ---------- Zustand ---------- */
 const G={phase:'lobby',solo:false,spectator:false,epoch:0,seed:0,total:480,deadline:0,endRemaining:0,mode:'short',order:[],ci:0,cur:'gate',data:null,digits:[],found:[],locked:false,P:1,me:0,sets:ROLE_SETS[1],roster:[],roles:[],tab:null,chHints:0,hintsTotal:0,attempts:0,rev:[],playing:false,dial:[],gateIn:[],lavaRow:0,sideVals:[0,0],metaVals:[0,0],valveState:[],coreVals:[],solveSent:false,feedback:'',fbBad:false,hostPeer:null,view:'overview'};
-const RM={room:null,named:null,offs:[],count:0,mode:'short',d:window.__FRS_D};
+const RM={rot:1,room:null,named:null,offs:[],count:0,mode:'short',d:window.__FRS_D};
 let seqTok=0,endTimer=0,advT=0;
 
 function remaining(){return G.phase==='play'?Math.max(0,(G.deadline-performance.now())/1000):G.endRemaining}
@@ -1011,6 +1013,7 @@ function onPick(t){
 
 /* ---------- Spielstart ---------- */
 function beginGame(sp){
+  G.rot=sp.rot===undefined?1:(sp.rot|0);
   clearTimeout(endTimer);clearTimeout(advT);stopSeq();
   const mode=MODES[sp.mode]?sp.mode:'short';
   G.mode=mode;G.order=expandOrder(MODES[mode].order,sp.seed);
@@ -1037,6 +1040,7 @@ function enterChamber(i,first,fromTr){
   const v=G.data.valves;G.valveState=v?Array.from({length:v.V},()=>({v:1,until:0})):[];
   G.coreVals=new Array(G.digits.length).fill(0);
   G.pu=(px(G.cur)&&PZ[px(G.cur)])?PZ[px(G.cur)].init(G.data[G.cur]):null;
+  if(!G.solo&&!G.spectator&&G.me>=0&&G.P>1){const nr=G.sets[(G.me+(G.rot?rotUnit():0))%G.P];const ch=G.ci>0&&nr.join()!==G.roles.join();G.roles=nr.slice();if(ch)setTimeout(()=>{if(G.phase==='play')toast('Rollenwechsel! Du bist jetzt '+G.roles.map(r=>ROLE_NAME[r]).join(' und ')+'.',5000)},3400)}
   G.tab=G.roles[0]||null;
   if(GL){
     resetDoor();setGroups(G.cur);
@@ -1060,7 +1064,7 @@ function myPeer(){
 function curStage(){return stageFor(RM.d)}
 function startSolo(){
   initAudio();
-  {const st=curStage();beginGame({epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:null,host:null,stage:st})}
+  {const st=curStage();beginGame({epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:null,host:null,stage:st,rot:RM.rot})}
 }
 function startRoom(){
   initAudio();
@@ -1069,7 +1073,7 @@ function startRoom(){
   const others=RM.named.peers().filter(p=>p.kind==='viewer'&&p.peer!==me).map(p=>p.peer).sort();
   const roster=(me?[me]:[]).concat(others).slice(0,6);
   if(!roster.length){toast('Noch niemand in der Gruppe sichtbar. Kurz warten und nochmal tippen.');return}
-  {const st=curStage();send('start',{epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:roster,stage:st})}
+  {const st=curStage();send('start',{epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:roster,stage:st,rot:RM.rot})}
 }
 function newRound(){if(G.solo||!RM.named)startSolo();else startRoom()}
 
@@ -1517,11 +1521,15 @@ setInterval(()=>{
 setInterval(()=>{paintValves();checkValves()},120);
 
 /* ---------- Gruppenraum ---------- */
+function rotUnit(){return G.ci}
+const ROTS=[{id:0,label:'Fest',info:'Jede Person behält ihre Rolle das ganze Spiel über.'},{id:1,label:'Wechseln',info:'Die Rollen wechseln reihum mit jedem neuen Kammer. So lernt jede Person mehrere Rollen kennen.'}];
+function paintRot(){const el=$('#rotSel');if(!el)return;el.innerHTML=ROTS.map(x=>'<button class="chip" data-rot="'+x.id+'" aria-pressed="'+(RM.rot===x.id)+'">'+x.label+'</button>').join('');$('#rotInfo').textContent=ROTS[RM.rot].info+' Gilt nur, wenn ihr zu zweit oder mehr spielt.'}
 function paintStage(){
   $('#diff').innerHTML=DIFFS.map(x=>'<button class="chip" data-d="'+x.id+'" aria-pressed="'+(RM.d===x.id)+'">'+x.label+'</button>').join('');
   const cur=DIFFS.find(x=>x.id===RM.d);
-  $('#stageInfo').textContent=cur.info+' Wer die Runde startet, bestimmt die Schwierigkeit für die ganze Gruppe.';
+  $('#stageInfo').textContent=cur.info+' Wer die Runde startet, bestimmt die Schwierigkeit für die ganze Gruppe.';;paintRot()
 }
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-rot]');if(!b)return;RM.rot=+b.dataset.rot;paintRot()});
 $('#diff').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;RM.d=+b.dataset.d;paintStage()});
 function paintMode(){
   $('#mode').innerHTML=Object.keys(MODES).map(k=>'<button class="chip" data-mode="'+k+'" aria-pressed="'+(RM.mode===k)+'">'+MODES[k].label+' · '+MODES[k].min+' Min.</button>').join('');
@@ -1543,7 +1551,7 @@ async function joinGroup(){
     RM.offs.push(RM.named.on('start',m=>{
       const d=m.data;
       if(!d||typeof d.epoch!=='number'||d.epoch<=G.epoch||typeof d.seed!=='number'||!Array.isArray(d.roster)||d.roster.length<1||d.roster.length>6||typeof d.total!=='number'||d.total<60||d.total>6000||!MODES[d.mode])return;
-      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage});
+      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot});
     }));
     RM.offs.push(RM.named.on('act',m=>handleAct(m.data,m.isMe&&m.sameTab)));
     RM.offs.push(RM.named.on('state',onState));
@@ -1565,7 +1573,7 @@ function onState(m){
   if(!d||(m.isMe&&m.sameTab)||typeof d.epoch!=='number')return;
   if(d.epoch>G.epoch){
     if(d.phase==='play'&&MODES[d.mode]&&Array.isArray(d.roster)&&d.roster.length>=1&&d.roster.length<=6&&typeof d.seed==='number'&&typeof d.total==='number'&&typeof d.remaining==='number'){
-      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage});
+      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot});
       G.deadline=performance.now()+d.remaining*1000;G.attempts=d.attempts|0;G.hintsTotal=d.hints|0;
       const ci=Math.max(0,Math.min(G.order.length-1,d.ci|0));
       for(let k=0;k<ci;k++)G.found[k]=true;
@@ -1583,7 +1591,7 @@ function onState(m){
 }
 setInterval(()=>{
   if(!RM.named||G.solo||G.phase==='lobby'||!G.hostPeer||G.hostPeer!==myPeer())return;
-  send('state',{epoch:G.epoch,phase:G.phase,seed:G.seed,total:G.total,mode:G.mode,stage:G.stage,remaining:remaining(),roster:G.roster,ci:G.ci,hints:G.hintsTotal,attempts:G.attempts});
+  send('state',{epoch:G.epoch,phase:G.phase,seed:G.seed,total:G.total,mode:G.mode,stage:G.stage,rot:G.rot,remaining:remaining(),roster:G.roster,ci:G.ci,hints:G.hintsTotal,attempts:G.attempts});
 },4000);
 
 $('#joinBtn').addEventListener('click',joinGroup);
