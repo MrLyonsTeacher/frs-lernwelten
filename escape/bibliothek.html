@@ -427,7 +427,7 @@ const _fv1=new THREE.Vector3(),_fv2=new THREE.Vector3(),_fv3=new THREE.Vector3()
 const camPos=new THREE.Vector3(0,3.4,8.2),camLook=new THREE.Vector3(0,1.8,-4),tgtPos=new THREE.Vector3(0,3.4,8.2),tgtLook=new THREE.Vector3(0,1.8,-4);
 const VIEWS={
   overview:{p:[0,0,0],l:[0,0,-20]},
-  door:{p:[0,-1.2,-5],l:[0,-2.3,-13]},
+  door:{p:[0,-1.2,-12],l:[0,-1.2,-20]},
   core:{p:[0,0,-3.5],l:[0,.2,-20]}
 };
 const ROOMS=[
@@ -510,7 +510,21 @@ function buildFg(n){
   const d=artSprite('vg_10.png',3.0);d.position.set(6.4,6.6,-11);BG.fg.add(d);
   const e=artSprite('vg_12.png',2.6);e.position.set(4.8,2.6,-8);e.userData.bob=1;BG.fg.add(e);
 }
+/* Tür auf die Rückwand des Raumbilds setzen: Mitte x, Fußlinie y, Breite in Bildpixeln (1672x941) */
+const DOORFIT={1:[836,581,157],2:[1035,548,125],3:[1233,585,125],4:[1369,585,115],5:[836,573,157]};
+const DOORAT={x:0,y:0};
+function roomView(r){const dx=DOORAT.x;return {p:[r.p[0]*.6+dx*.35,r.p[1],r.p[2]],l:[r.l[0]*.4+dx*.65,r.l[1],r.l[2]]}}
+function placeDoor(n){
+  if(!BG.doorArt)return;
+  const f=DOORFIT[n];if(!f)return;
+  const PW=42.7*1.1,PH=24*1.1,X=(f[0]/1672-.5)*PW,BY=(.5-f[1]/941)*PH,Wd=f[2]/1672*PW,sc=Wd/BG.DW;
+  BG.doorArt.scale.setScalar(sc);BG.doorArt.position.set(X,BY+4.5*sc/2,-19.9);
+  DOORAT.x=X;DOORAT.y=BY+4.5*sc*.42;
+  VIEWS.door.p=[X*.55,DOORAT.y,-11];VIEWS.door.l=[X,DOORAT.y,-20];
+}
 function setProp(id){
+  if(BG.prop){BG.prop.visible=false;BG.propGlow.visible=false}
+  return;
   if(!BG.prop)return;
   const t=px(id)&&PROP_FOR[px(id)];
   BG.prop.visible=!!t;BG.propGlow.visible=!!t;
@@ -552,9 +566,9 @@ function initScene(){
    BG.fg=new THREE.Group();scene.add(BG.fg);
    BG.propGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffdc80,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));BG.propGlow.renderOrder=6;BG.propGlow.position.set(-3.3,-3.6,-11.1);BG.propGlow.scale.set(5,5,1);scene.add(BG.propGlow);
    BG.prop=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false,fog:false}));BG.prop.renderOrder=7;BG.prop.position.set(-3.3,-3.6,-11);BG.prop.visible=false;scene.add(BG.prop);
-   BG.doorArt=new THREE.Group();BG.doorArt.userData={tag:'door'};BG.doorArt.position.set(0,-2.1,-13);scene.add(BG.doorArt);
-   const dm=u=>new THREE.MeshBasicMaterial({map:bt(u),transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide});
-   {const base=new THREE.Mesh(new THREE.PlaneGeometry(3.5,4.5),dm('tuer_basis.png'));base.userData={tag:'door'};base.renderOrder=3;BG.doorArt.add(base);
+   BG.doorArt=new THREE.Group();BG.doorArt.userData={tag:'door'};BG.doorArt.position.set(0,-2,-19.9);scene.add(BG.doorArt);
+   const dm=u=>new THREE.MeshBasicMaterial({map:bt(u),color:0xf2f2f2,transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide});
+   {const DW=BG.DW=3.5,base=new THREE.Mesh(new THREE.PlaneGeometry(DW,4.5),dm('tuer_basis.png'));base.userData={tag:'door'};base.renderOrder=3;BG.doorArt.add(base);
     BG.doorGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffe4a0,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));BG.doorGlow.renderOrder=4;BG.doorGlow.position.set(0,-.4,.02);BG.doorGlow.scale.set(3.4,4.2,1);BG.doorArt.add(BG.doorGlow);
     const lw=154/496*3.5,lh=455/640*4.5,ly=-(407-320)/640*4.5;
     const mk=(u,hx,dx)=>{const pv=new THREE.Group();pv.position.set(hx,ly,.04);const m=new THREE.Mesh(new THREE.PlaneGeometry(lw,lh),dm(u));m.position.x=dx;m.userData={tag:'door'};m.renderOrder=5;pv.add(m);BG.doorArt.add(pv);return pv};
@@ -674,7 +688,7 @@ function initScene(){
 function setGroups(id){
   if(!GL)return;
   crystalRoot.visible=false;gateGroup.visible=false;stonesGroup.visible=false;valvesGroup.visible=false;
-  coreGroup.visible=false;tabletGroup.visible=false;{const rn=id==='core'?6:(id==='none'?1:(roomIdx()%5)+1);setBg(rn);buildFg(rn);setProp(id);if(BG.book){BG.book.visible=BG.bookLit.visible=(id==='core')}}
+  coreGroup.visible=false;tabletGroup.visible=false;{const rn=id==='core'?6:(id==='none'?1:(roomIdx()%5)+1);setBg(rn);placeDoor(rn);buildFg(rn);setProp(id);if(BG.book){BG.book.visible=BG.bookLit.visible=(id==='core')}}
   crystalLights.forEach(l=>{l.intensity=0});
   coreLight.intensity=0;
 }
@@ -797,7 +811,7 @@ function flashCrystal(i,ms){
 }
 function setView(name){
   if(G.phase!=='lobby'&&G.cur==='core'&&name==='overview')name='core';
-  const v=(G.phase==='lobby'||G.phase==='lost')?VIEWS.overview:((name==='overview'||name==='tablet')&&px(G.cur)?ROOMS[roomIdx()]:VIEWS[name]);if(!v)return;
+  const v=(G.phase==='lobby'||G.phase==='lost')?VIEWS.overview:((name==='overview'||name==='tablet')&&px(G.cur)?roomView(ROOMS[roomIdx()%ROOMS.length]):VIEWS[name]);if(!v)return;
   G.view=name;
   if(GL){tgtPos.set(v.p[0],v.p[1],v.p[2]);tgtLook.set(v.l[0],v.l[1],v.l[2])}
   document.querySelectorAll('#views [data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===name)));
@@ -1009,10 +1023,10 @@ function frame(now){
   if(FLY&&G.phase!=='play'){FLY=null;WIPEOUT=1}
   if(FLY){
     FLY.t+=dt;const u=Math.min(1,FLY.t/1.7),e=u*u*(3-2*u),e2=u*u;
-    const A=FLY.from,P1=_fv1.set(0,-1.9,-10.5),P2=_fv2.set(0,-1.85,-15.5);
+    const A=FLY.from,P1=_fv1.set(DOORAT.x*.8,DOORAT.y,-13),P2=_fv2.set(DOORAT.x,DOORAT.y,-19.6);
     if(u<.55){const w=e/(.55*.55*(3-2*.55));camPos.lerpVectors(A,P1,Math.min(1,u/.55*(u/.55)*(3-2*u/.55)))}
     else{const w=(u-.55)/.45;camPos.lerpVectors(P1,P2,w*w)}
-    camLook.lerp(_fv3.set(0,-1.9,-30),Math.min(1,dt*4));tgtPos.copy(camPos);tgtLook.copy(camLook);
+    camLook.lerp(_fv3.set(DOORAT.x,DOORAT.y,-30),Math.min(1,dt*4));tgtPos.copy(camPos);tgtLook.copy(camLook);
     const wp=$('#wipe');wp.style.background='#fff3d6';wp.style.opacity=String(Math.max(0,(u-.62)/.38));
     if(u>=1){const n=FLY.next;FLY=null;enterChamber(n);camPos.copy(tgtPos).add(_fv1.set(0,-.3,-3.5));camLook.copy(tgtLook);WIPEOUT=1}
   }else if(WIPEOUT>0){WIPEOUT=Math.max(0,WIPEOUT-dt*1.4);const wp=$('#wipe');wp.style.background='#fff3d6';wp.style.opacity=String(WIPEOUT)}
