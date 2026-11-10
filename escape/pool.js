@@ -284,6 +284,104 @@ PZ.morse={name:'Die Lichtsignale',atm:'gate',
   act(d,u,a){return wordSub(d.word)(d,u,a)}
 };
 
+/* 8. Zahlenschloss (Code knacken) */
+PZ.lock={name:'Das Zahlenschloss',atm:'valves',
+  fbText(a,b){if(!a&&!b)return 'keine Ziffer ist richtig';const t=[];if(a)t.push(a+' Ziffer'+(a>1?'n':'')+' richtig und am richtigen Platz');if(b)t.push(b+' Ziffer'+(b>1?'n':'')+' richtig, aber am falschen Platz');return t.join(', ')},
+  score(c,g){let a=0,b=0;for(let i=0;i<c.length;i++){if(g[i]===c[i])a++;else if(c.indexOf(g[i])>=0)b++}return [a,b]},
+  gen(rnd,st){
+    const L=st<=4?3:4,all=[];
+    (function rec(p){if(p.length===L){all.push(p.slice());return}for(let d=0;d<10;d++)if(p.indexOf(d)<0){p.push(d);rec(p);p.pop()}})([]);
+    for(let t=0;t<60;t++){
+      const code=all[Math.floor(rnd()*all.length)];let cand=all.slice();const gs=[];
+      for(let k=0;k<400&&cand.length>1&&gs.length<7;k++){
+        const g=all[Math.floor(rnd()*all.length)];if(g.join()===code.join())continue;
+        const sc=PZ.lock.score(code,g),nx=cand.filter(c=>{const q=PZ.lock.score(c,g);return q[0]===sc[0]&&q[1]===sc[1]});
+        if(nx.length<cand.length&&(gs.length>0||nx.length<cand.length*.6)){gs.push({g,a:sc[0],b:sc[1]});cand=nx}
+      }
+      if(cand.length===1&&gs.length>=(st<=2?3:4))return {L,code,gs:shuffled(gs,rnd)};
+    }
+    return {L:3,code:[4,1,7],gs:[{g:[4,2,9],a:1,b:0},{g:[1,7,3],a:0,b:2},{g:[6,5,8],a:0,b:0},{g:[2,0,7],a:1,b:0}]};
+  },
+  init(d){return {vals:new Array(d.L).fill(0),mods:new Array(d.L).fill(10),show:(i,v)=>String(v)}},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Du stellst den '+d.L+'-stelligen Code ein. Jede Ziffer kommt darin höchstens einmal vor. Die Versuche anderer Leute kennt deine Gruppe.','Code prüfen');
+    const p=rolePieces(r,d.gs.length,INFO),rule=r==='decode'?'<div class="hint">So lest ihr die Versuche: „richtig und am richtigen Platz“ heißt, die Ziffer steht genau dort auch im Code. „Richtig, aber am falschen Platz“ heißt, die Ziffer kommt im Code vor, aber an einer anderen Stelle.</div>':'';
+    if(!p.length&&!rule)return noPiece();
+    return '<p class="lead">Andere haben schon versucht, das Schloss zu öffnen. Zu jedem Versuch weißt du, wie nah er dran war.</p>'+(p.length?'<ul class="list">'+p.map(i=>'<li><span class="k">VERSUCH '+(i+1)+'</span><span><b class="v">'+d.gs[i].g.join(' ')+'</b> → '+esc(PZ.lock.fbText(d.gs[i].a,d.gs[i].b))+'</span></li>').join('')+'</ul>':'')+rule;
+  },
+  explain(d){return ['Ein Schloss braucht einen Code mit '+d.L+' Ziffern. Keine Ziffer kommt doppelt vor.','Mehrere frühere Versuche sind auf euch verteilt. Zu jedem steht, wie viele Ziffern stimmen.','Sammelt alle Versuche und schließt Schritt für Schritt aus. Ein Versuch, bei dem keine Ziffer richtig ist, ist ein guter Anfang.','Die Mechaniker/in stellt den Code ein.']},
+  hint(d,n){const z=d.gs.find(g=>!g.a&&!g.b);if(n===1)return z?'Beim Versuch '+z.g.join(' ')+' ist keine Ziffer richtig. Diese Ziffern könnt ihr überall streichen.':'Vergleicht zwei Versuche, die sich ähneln. Was ändert sich, wenn eine Ziffer anders ist?';if(n===2)return 'Die erste Ziffer des Codes ist '+d.code[0]+'.';return 'Der Code beginnt mit '+d.code[0]+' '+d.code[1]+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,d.L))return null;let ok=0;for(let i=0;i<d.L;i++)if(a.vals[i]===d.code[i])ok++;return ok===d.L?{ok:true}:{wrong:'Das Schloss bleibt zu.'}}
+};
+
+/* 9. Symbolrechnung */
+PZ.symbols={name:'Die Symbolrechnung',atm:'crystal',
+  gen(rnd,st){
+    const K=st<=2?3:(st<=4?3:4),sy=shuffled([0,1,2,3,4,5],rnd).slice(0,K),mx=st<=2?9:(st<=4?12:15);
+    for(let t=0;t<200;t++){
+      const v=sy.map(()=>1+Math.floor(rnd()*mx));if(new Set(v).size<K)continue;
+      const eq=[];
+      eq.push({t:[[0,'+'],[0,'+'],[0,'']],r:3*v[0]});
+      eq.push({t:[[0,'+'],[1,'']],r:v[0]+v[1]});
+      if(st>=3&&v[2]>v[1])eq.push({t:[[2,'−'],[1,'']],r:v[2]-v[1]});else eq.push({t:[[1,'+'],[2,'']],r:v[1]+v[2]});
+      if(K===4)eq.push({t:[[3,'+'],[3,'−'],[2,'']],r:2*v[3]-v[2]});
+      if(eq.some(e=>e.r<=0))continue;
+      let q,ans;
+      if(st<=2){q=[[0,'+'],[1,'+'],[2,'']];ans=v[0]+v[1]+v[2]}
+      else if(st<=4){q=[[2,'×'],[0,'+'],[1,'']];ans=v[2]*v[0]+v[1]}
+      else{q=[[3,'×'],[2,'−'],[0,'']];ans=v[3]*v[2]-v[0]}
+      if(ans<=0||ans>999)continue;
+      return {K,sy,v,eq:shuffled(eq,rnd),q,ans};
+    }
+    return {K:3,sy:[0,1,2],v:[2,3,4],eq:[{t:[[0,'+'],[0,'+'],[0,'']],r:6},{t:[[0,'+'],[1,'']],r:5},{t:[[1,'+'],[2,'']],r:7}],q:[[0,'+'],[1,'+'],[2,'']],ans:9};
+  },
+  init(d){return {vals:[0,0,0],mods:[10,10,10],show:(i,v)=>String(v)}},
+  term(d,t){return '<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">'+t.map(x=>'<span class="symt" title="'+SHAPES[d.sy[x[0]]]+'" style="display:inline-block;width:34px;height:34px;vertical-align:middle">'+img(d.sy[x[0]]).replace('<img ','<img style="width:34px;height:34px;object-fit:contain;display:block;margin:0" ')+'</span>'+(x[1]?'<b>'+x[1]+'</b>':'')).join('')+'</span>'},
+  role(r,d,u){
+    const Q='<p class="lead">Gesucht ist: '+PZ.symbols.term(d,d.q)+' <b>= ?</b></p>';
+    if(r==='mechanic')return Q+mechWord(u,'Du stellst das Ergebnis ein (bis zu drei Stellen). Jedes Zeichen steht für eine Zahl. Die Rechnungen dazu kennt deine Gruppe.','Ergebnis melden');
+    const p=rolePieces(r,d.eq.length,INFO),tip=r==='decode'?'<div class="hint">Jedes Zeichen steht immer für dieselbe Zahl. Fangt mit der Rechnung an, in der nur ein Zeichen vorkommt. Punkt vor Strich: × wird zuerst gerechnet.</div>':'';
+    if(!p.length&&!tip)return Q+noPiece();
+    return Q+(p.length?'<ul class="list">'+p.map(i=>'<li><span class="k">RECHNUNG '+(i+1)+'</span><span>'+PZ.symbols.term(d,d.eq[i].t)+' <b>= '+d.eq[i].r+'</b></span></li>').join('')+'</ul>':'')+tip;
+  },
+  explain(d){return ['Jedes Zeichen steht für eine ganze Zahl. Gleiche Zeichen bedeuten immer dieselbe Zahl.','Die Rechnungen sind auf euch verteilt. Löst sie nacheinander: zuerst die, in der nur ein Zeichen vorkommt.','Am Ende rechnet ihr die gesuchte Aufgabe aus. Die Mechaniker/in stellt das Ergebnis ein.']},
+  hint(d,n){if(n===1)return 'Ein Zeichen kommt in einer Rechnung dreimal vor. Teilt das Ergebnis durch 3.';if(n===2)return SHAPES[d.sy[0]]+' ist '+d.v[0]+'.';return SHAPES[d.sy[0]]+' ist '+d.v[0]+' und '+SHAPES[d.sy[1]]+' ist '+d.v[1]+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,3))return null;return a.vals[0]*100+a.vals[1]*10+a.vals[2]===d.ans?{ok:true}:{wrong:'Das Ergebnis stimmt nicht.'}}
+};
+
+/* 10. Zahlenpyramide */
+PZ.pyramid={name:'Die Zahlenpyramide',atm:'lava',
+  gen(rnd,st){
+    const B=st<=2?3:4,mx=st<=2?9:(st<=4?12:20),base=Array.from({length:B},()=>1+Math.floor(rnd()*mx));
+    const rows=[base];while(rows[rows.length-1].length>1){const p=rows[rows.length-1];rows.push(p.slice(1).map((x,i)=>p[i]+x))}
+    const m=Math.floor(rnd()*B),up=m===0?0:(m===B-1?B-2:(rnd()<.5?m-1:m));
+    const known=[];for(let i=0;i<B;i++)if(i!==m)known.push({r:0,i});known.push({r:1,i:up});
+    return {B,rows,m,known:shuffled(known,rnd),ans:rows[B-1][0]};
+  },
+  init(d){return {vals:[0,0,0],mods:[10,10,10],show:(i,v)=>String(v)}},
+  view(d,mine){
+    let h='<div style="display:flex;flex-direction:column;gap:6px;align-items:center;margin:10px 0">';
+    for(let r=d.B-1;r>=0;r--){
+      h+='<div style="display:flex;gap:6px">';
+      for(let i=0;i<d.rows[r].length;i++){
+        const k=mine.some(q=>q.r===r&&q.i===i),top=r===d.B-1;
+        h+='<span style="min-width:52px;height:40px;display:grid;place-items:center;border-radius:8px;font-weight:800;font-size:18px;border:2px solid '+(top?'var(--ember)':'var(--line)')+';background:'+(k?'var(--raise)':'transparent')+'">'+(k?d.rows[r][i]:(top?'?':''))+'</span>';
+      }
+      h+='</div>';
+    }
+    return h+'</div>';
+  },
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Du stellst die Zahl für den obersten Stein der Pyramide ein (bis zu drei Stellen). Deine Gruppe kennt einzelne Steine und rechnet sie aus.','Zahl melden')+PZ.pyramid.view(d,[]);
+    const p=rolePieces(r,d.known.length,INFO),mine=p.map(i=>d.known[i]),tip=r==='decode'?'<div class="hint">Die Regel der Pyramide: Jeder Stein ist die Summe der beiden Steine direkt darunter.</div>':'';
+    if(!p.length&&!tip)return noPiece()+PZ.pyramid.view(d,[]);
+    return '<p class="lead">Das sind die Steine der Pyramide, die du kennst. Die anderen kennen weitere. Gesucht ist der oberste Stein.</p>'+PZ.pyramid.view(d,mine)+tip;
+  },
+  explain(d){return ['Eine Zahlenpyramide mit '+d.B+' Steinen unten. Jeder Stein ist die Summe der beiden Steine direkt darunter.','Einzelne Steine sind auf euch verteilt. Ein Stein unten fehlt, ihr könnt ihn aber aus dem Stein darüber ausrechnen.','Rechnet Reihe für Reihe nach oben. Die Mechaniker/in stellt die oberste Zahl ein.']},
+  hint(d,n){if(n===1)return 'Jeder Stein ist die Summe der beiden darunter. Fehlt unten ein Stein, rechnet ihr: Stein darüber minus Nachbarstein.';if(n===2)return 'Der fehlende Stein in der untersten Reihe ist '+d.rows[0][d.m]+'.';return 'Die Reihe unter der Spitze lautet '+d.rows[d.B-2].join(' und ')+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,3))return null;return a.vals[0]*100+a.vals[1]*10+a.vals[2]===d.ans?{ok:true}:{wrong:'Das ist nicht die Zahl an der Spitze.'}}
+};
+
 function px(id){return typeof id==='string'&&id.indexOf('x:')===0?id.slice(2):null}
 function expandOrder(tpl,seed){const types=shuffled(Object.keys(PZ),rngFor(seed,500));let k=0;return tpl.map(id=>id==='X'?'x:'+types[(k++)%types.length]:id)}
 return {PZ:PZ,px:px,expandOrder:expandOrder,morseHtml:morseHtml,alphaStrip:alphaStrip};
