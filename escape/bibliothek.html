@@ -432,11 +432,11 @@ const VIEWS={
 };
 const ROOMS=[
   {p:[0,0,0],l:[0,0,-20]},
-  {p:[-1.4,.3,-1.5],l:[-.4,0,-20]},
-  {p:[1.4,.1,-2.2],l:[.4,0,-20]},
-  {p:[0,.6,-1],l:[0,.2,-20]},
-  {p:[-1.2,-.3,-3],l:[-.3,-.3,-20]},
-  {p:[1.2,.3,-.5],l:[.3,.1,-20]}
+  {p:[-1.2,.3,.4],l:[-.4,0,-20]},
+  {p:[1.2,.1,.2],l:[.4,0,-20]},
+  {p:[0,.5,.5],l:[0,.2,-20]},
+  {p:[-1,-.2,.3],l:[-.3,-.3,-20]},
+  {p:[1,.3,.4],l:[.3,.1,-20]}
 ];
 function roomIdx(){const m=MODES[G.mode]||MODES.short,r=m.roomOf[G.ci];return Math.max(0,r)%ROOMS.length}
 function roomFrac(){const m=MODES[G.mode]||MODES.short,r=m.roomOf[G.ci];if(r<0)return 0;let n=0,f=0;m.roomOf.forEach((q,i)=>{if(q===r){n++;if(G.found[i])f++}});return n?f/n:0}
@@ -508,19 +508,19 @@ function buildFg(n){
   const b=artSprite('vg_'+set[1]+'.png',2.8);b.position.set(8.4,-3.0,-10);BG.fg.add(b);
   const c=artSprite('vg_'+set[2]+'.png',3.4);c.position.set(-5.5,6.2,-9.5);BG.fg.add(c);
   const d=artSprite('vg_10.png',3.0);d.position.set(6.4,6.6,-11);BG.fg.add(d);
-  const e=artSprite('vg_12.png',2.6);e.position.set(4.8,2.6,-8);e.userData.bob=1;BG.fg.add(e);
 }
 /* Tür auf die Rückwand des Raumbilds setzen: Mitte x, Fußlinie y, Breite in Bildpixeln (1672x941) */
 const DOORFIT={1:[836,581,157],2:[1035,548,125],3:[1233,585,125],4:[1369,585,115],5:[836,573,157]};
 const DOORAT={x:0,y:0};
-function roomView(r){const dx=DOORAT.x;return {p:[r.p[0]*.6+dx*.35,r.p[1],r.p[2]],l:[r.l[0]*.4+dx*.65,r.l[1],r.l[2]]}}
+function roomView(r){const dx=0;return {p:[r.p[0]*.6+dx*.35,r.p[1],r.p[2]],l:[r.l[0]*.4+dx*.65,r.l[1],r.l[2]]}}
 function placeDoor(n){
+  /* Bibliothek: freistehendes Tor mitten im Saal (Pop-up-Kulisse), Fuß auf dem Boden */
   if(!BG.doorArt)return;
-  const f=DOORFIT[n];if(!f)return;
-  const PW=42.7*1.1,PH=24*1.1,X=(f[0]/1672-.5)*PW,BY=(.5-f[1]/941)*PH,Wd=f[2]/1672*PW,sc=Wd/BG.DW;
-  BG.doorArt.scale.setScalar(sc);BG.doorArt.position.set(X,BY+4.5*sc/2,-19.9);
-  DOORAT.x=X;DOORAT.y=BY+4.5*sc*.42;
-  VIEWS.door.p=[X*.55,DOORAT.y,-11];VIEWS.door.l=[X,DOORAT.y,-20];
+  const Z=-12.5,imgY=.79,PH=24*1.1,floorY=(.5-imgY)*PH*(-Z/20),sc=1.25;
+  BG.doorArt.scale.setScalar(sc);BG.doorArt.position.set(0,floorY+4.5*sc/2,Z);
+  if(BG.doorShadow){BG.doorShadow.position.set(0,floorY+.05,Z-.05);BG.doorShadow.visible=true}
+  DOORAT.x=0;DOORAT.y=floorY+4.5*sc*.42;
+  VIEWS.door.p=[0,DOORAT.y+.4,-5.5];VIEWS.door.l=[0,DOORAT.y,-14];
 }
 function setProp(id){
   if(BG.prop){BG.prop.visible=false;BG.propGlow.visible=false}
@@ -566,6 +566,7 @@ function initScene(){
    BG.fg=new THREE.Group();scene.add(BG.fg);
    BG.propGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0xffdc80,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));BG.propGlow.renderOrder=6;BG.propGlow.position.set(-3.3,-3.6,-11.1);BG.propGlow.scale.set(5,5,1);scene.add(BG.propGlow);
    BG.prop=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthWrite:false,fog:false}));BG.prop.renderOrder=7;BG.prop.position.set(-3.3,-3.6,-11);BG.prop.visible=false;scene.add(BG.prop);
+   BG.doorShadow=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex(),color:0x2a2040,transparent:true,opacity:.55,depthWrite:false,fog:false}));BG.doorShadow.scale.set(6.5,1.1,1);BG.doorShadow.renderOrder=2;BG.doorShadow.visible=false;scene.add(BG.doorShadow);
    BG.doorArt=new THREE.Group();BG.doorArt.userData={tag:'door'};BG.doorArt.position.set(0,-2,-19.9);scene.add(BG.doorArt);
    const dm=u=>new THREE.MeshBasicMaterial({map:bt(u),color:0xf2f2f2,transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide});
    {const DW=BG.DW=3.5,base=new THREE.Mesh(new THREE.PlaneGeometry(DW,4.5),dm('tuer_basis.png'));base.userData={tag:'door'};base.renderOrder=3;BG.doorArt.add(base);
@@ -1004,7 +1005,7 @@ function frame(now){
     l.material.color.setHex(lampBad>0?0xff5468:(G.found[i]||G.phase==='won'?0x4be39a:0x6b5a55));
   }
 
-  if(BG.pl){const ang=door.openNow*1.38;BG.pl.rotation.y=-ang;BG.pr.rotation.y=ang;BG.doorGlow.material.opacity=Math.min(1,door.openNow*1.2)*(.75+.15*Math.sin(T*3));BG.doorArt.visible=G.cur!=='core'&&G.phase!=='lobby';door.visible=BG.doorArt.visible}
+  if(BG.pl){const ang=door.openNow*1.38;BG.pl.rotation.y=-ang;BG.pr.rotation.y=ang;BG.doorGlow.material.opacity=Math.min(1,door.openNow*1.2)*(.75+.15*Math.sin(T*3));BG.doorArt.visible=G.cur!=='core'&&G.phase!=='lobby';if(BG.doorShadow)BG.doorShadow.visible=BG.doorArt.visible;door.visible=BG.doorArt.visible}
   if(BG.prop&&BG.prop.visible){const solved=G.found[G.ci]||G.phase==='won';BG.prop.position.y=-3.6+Math.sin(T*1.6)*.06;BG.propGlow.material.opacity=solved?(.55+.2*Math.sin(T*3)):.0}
   if(BG.book&&BG.book.visible){const w=G.phase==='won'?1:0;BG.bookLit.material.opacity+=(w-BG.bookLit.material.opacity)*Math.min(1,dt*1.8);BG.book.material.opacity=1-BG.bookLit.material.opacity*.95}
   BG.fg&&BG.fg.children.forEach((c,i)=>{if(c.userData.bob)c.position.y=2.6+Math.sin(T*.9)*.25;c.material.rotation=Math.sin(T*.5+i)*.02});
@@ -1023,7 +1024,7 @@ function frame(now){
   if(FLY&&G.phase!=='play'){FLY=null;WIPEOUT=1}
   if(FLY){
     FLY.t+=dt;const u=Math.min(1,FLY.t/1.7),e=u*u*(3-2*u),e2=u*u;
-    const A=FLY.from,P1=_fv1.set(DOORAT.x*.8,DOORAT.y,-13),P2=_fv2.set(DOORAT.x,DOORAT.y,-19.6);
+    const A=FLY.from,P1=_fv1.set(DOORAT.x*.8,DOORAT.y,-7.5),P2=_fv2.set(DOORAT.x,DOORAT.y,-15);
     if(u<.55){const w=e/(.55*.55*(3-2*.55));camPos.lerpVectors(A,P1,Math.min(1,u/.55*(u/.55)*(3-2*u/.55)))}
     else{const w=(u-.55)/.45;camPos.lerpVectors(P1,P2,w*w)}
     camLook.lerp(_fv3.set(DOORAT.x,DOORAT.y,-30),Math.min(1,dt*4));tgtPos.copy(camPos);tgtLook.copy(camLook);

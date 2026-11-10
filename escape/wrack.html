@@ -508,7 +508,7 @@ function buildFg(n){
   const f=artSprite(['spr_fish1.png','spr_fish2.png','spr_fish3.png'][n%3],.9);f.position.set(-4,2.5,-9);f.userData.swim=1;BG.fg.add(f);
 }
 /* Tür auf die Rückwand des Raumbilds setzen: Mitte x, Fußlinie y, Breite in Bildpixeln (1672x941) */
-const DOORFIT={1:[836,590,300],2:[848,542,290],3:[810,612,320],4:[852,538,270],5:[820,640,320],6:[830,600,320],7:[836,482,330]};
+const DOORFIT={1:[812,552,270],2:[848,542,290],3:[810,612,320],4:[852,538,270],5:[820,640,320],6:[830,600,320],7:[836,482,330]};
 const DOORAT={x:0,y:0};
 function roomView(r){const dx=DOORAT.x;return {p:[r.p[0]*.6+dx*.35,r.p[1],r.p[2]],l:[r.l[0]*.4+dx*.65,r.l[1],r.l[2]]}}
 function placeDoor(n){
