@@ -309,8 +309,8 @@ function beginGame(sp){
   const P=sp.roster?clamp(sp.roster.length,1,6):1;
   G.P=P;G.epoch=sp.epoch;G.seed=sp.seed;G.total=sp.total;G.roster=sp.roster||[];G.solo=!sp.roster;G.hostPeer=sp.host||null;
   G.sets=ROLE_SETS[P];G.stage=clamp(sp.stage|0||3,1,6);applyStage(G.stage);
-  G.data=genData(sp.seed,P,G.order,G.stage);
-  G.world=buildWorld(sp.seed,G.order.length,P);
+  G.genP=(sp.genP|0)||P;G.data=genData(sp.seed,G.genP,G.order,G.stage);
+  G.world=buildWorld(sp.seed,G.order.length,G.genP);
   const my=sp.roster?G.roster.indexOf(myPeer()):0;
   G.me=my;G.spectator=!G.solo&&my<0;
   G.roles=G.solo?ROLE_SETS[1][0].slice():(my>=0?G.sets[my]:[]);
@@ -320,7 +320,7 @@ function beginGame(sp){
   parts.length=0;
   setCi(0,true);
   lobby.hidden=true;endEl.hidden=true;hud.hidden=false;pad.hidden=false;abtn.hidden=false;$('#lobbybg').hidden=true;playIntro();
-  if(G.spectator){const r=G.world.clear[0];cam.x=r.cx;cam.y=r.cy;toast('Du schaust zu. In der nächsten Runde bist du dabei.')}
+  if(G.spectator){const r=G.world.clear[0];cam.x=r.cx;cam.y=r.cy;toast('Du bist gerade dazugekommen und wirst gleich in die Gruppe aufgenommen.')}
   else if(!G.solo&&G.roles.length)toast('Deine Rolle: '+G.roles.map(r=>ROLE_NAME[r]).join(' und '),4200);
   if(!G.spectator)showDialog([{who:'Eule Ilmara',text:'Willkommen, Wanderer! Der Weltenbaum welkt, und mit ihm das Licht des Waldes. Nur die Runensteine können ihn retten.'},{who:'Eule Ilmara',text:'Jeder von euch sieht andere Hinweise. Sprecht miteinander und löst die Runen der Reihe nach. Ich warte hier auf euch.'},{who:'Eule Ilmara',text:'Der Pfeil zeigt euch den Weg. Mit der A-Taste sprecht ihr mit Dingen und öffnet die Runensteine. Viel Glück!'}]);
 }
@@ -357,7 +357,7 @@ function startRoom(){
   const roster=(me?[me]:[]).concat(others).slice(0,6);
   if(!roster.length){toast('Noch niemand in der Gruppe sichtbar. Kurz warten und nochmal tippen.');return}
   const st=stageFor(RM.d);
-  send('start',{epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:roster,stage:st,rot:RM.rot});
+  send('start',{epoch:Date.now(),seed:(Math.random()*1e9)|0,total:Math.round(MODES[RM.mode].min*60*STAGES[st].tm),mode:RM.mode,roster:roster,stage:st,rot:RM.rot,genP:roster.length});
 }
 function newRound(){if(G.solo||!RM.named)startSolo();else startRoom()}
 
@@ -899,7 +899,7 @@ function paintMode(){
 $('#mode').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(!b)return;RM.mode=b.dataset.mode;paintMode()});
 function paintCount(){
   const n=RM.count;
-  $('#groupCount').textContent=n<=1?'Du bist allein in der Gruppe. Warte auf die anderen oder starte schon.':n+' Personen sind in der Gruppe.'+(n>6?' Die ersten 6 spielen mit, die anderen schauen zu.':'');
+  $('#groupCount').textContent=n<=1?'Du bist allein in der Gruppe. Warte auf die anderen oder starte schon.':n+' Personen sind in der Gruppe.'+(n>6?' Die ersten 6 spielen mit, die anderen schauen zu.':'');;const sb=$('#startBtn');if(sb)sb.textContent=n>1?'Spiel starten ('+Math.min(n,6)+' Geräte)':'Spiel starten'
 }
 async function joinGroup(){
   initAudio();
@@ -912,12 +912,13 @@ async function joinGroup(){
     RM.offs.push(RM.named.on('start',m=>{
       const d=m.data;
       if(!d||typeof d.epoch!=='number'||d.epoch<=G.epoch||typeof d.seed!=='number'||!Array.isArray(d.roster)||d.roster.length<1||d.roster.length>6||typeof d.total!=='number'||d.total<60||d.total>6000||!MODES[d.mode])return;
-      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot});
+      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot,genP:d.genP});
     }));
     RM.offs.push(RM.named.on('act',m=>handleAct(m.data,m.isMe&&m.sameTab)));
     RM.offs.push(RM.named.on('state',onState));
+    RM.offs.push(RM.named.on('roster',m=>{const d=m.data;if(!d||d.epoch!==G.epoch||G.phase!=='play'||m.peer!==G.hostPeer||!Array.isArray(d.roster)||d.roster.length<1||d.roster.length>6)return;applyRoster(d.roster.map(String))}));
     RM.offs.push(RM.named.on('pos',onPos));
-    RM.offs.push(RM.named.onPeers(ch=>{RM.count=ch.peers.filter(p=>p.kind==='viewer').length;paintCount()}));
+    RM.offs.push(RM.named.onPeers(ch=>{RM.count=ch.peers.filter(p=>p.kind==='viewer').length;paintCount();if(G.phase==='play'&&!G.solo&&G.hostPeer===myPeer()&&ch.joined&&ch.joined.length)setTimeout(hostTick,300)}));
     $('#groupName').textContent='Gruppe '+clean;
     $('#joinBox').hidden=true;$('#joinedBox').hidden=false;paintCount();
   }catch(e){console.error('join',e);toast('Beitreten hat nicht geklappt. Versuche es nochmal oder nutze den Testmodus.',4500)}
@@ -933,7 +934,7 @@ function onState(m){
   if(!d||(m.isMe&&m.sameTab)||typeof d.epoch!=='number')return;
   if(d.epoch>G.epoch){
     if(d.phase==='play'&&MODES[d.mode]&&Array.isArray(d.roster)&&d.roster.length>=1&&d.roster.length<=6&&typeof d.seed==='number'&&typeof d.total==='number'&&typeof d.remaining==='number'){
-      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot});
+      beginGame({epoch:d.epoch,seed:d.seed,total:d.total,mode:d.mode,roster:d.roster.map(String),host:m.peer,stage:d.stage,rot:d.rot,genP:d.genP});
       closeDialog();
       G.deadline=performance.now()+d.remaining*1000;G.attempts=d.attempts|0;G.hintsTotal=d.hints|0;
       const ci=clamp(d.ci|0,0,G.order.length-1);
@@ -943,6 +944,7 @@ function onState(m){
     return;
   }
   if(d.epoch===G.epoch&&G.phase==='play'){
+    if(d.phase==='play'&&m.peer===G.hostPeer&&Array.isArray(d.roster)&&d.roster.length>=1&&d.roster.length<=6&&d.roster.join()!==G.roster.join())applyRoster(d.roster.map(String));
     if(d.phase==='play'){
       if(Math.abs(remaining()-d.remaining)>2.5)G.deadline=performance.now()+d.remaining*1000;
       const ci=d.ci|0;
@@ -950,10 +952,33 @@ function onState(m){
     }else if(d.phase==='won'||d.phase==='lost')finish(d.phase);
   }
 }
-setInterval(()=>{
+function applyRoster(list){
+  if(G.solo||!Array.isArray(list)||!list.length)return;
+  const oldRoster=G.roster.slice(),oldRoles=(G.roles||[]).join(),wasSpec=G.spectator;
+  G.roster=list.slice(0,6);G.P=G.roster.length;G.sets=ROLE_SETS[G.P];
+  const my=G.roster.indexOf(myPeer());G.me=my;G.spectator=my<0;
+  G.roles=my>=0?G.sets[(my+(G.rot?rotUnit():0))%G.P].slice():[];
+  {const old=oldRoster;ents=G.roster.map((p,i)=>{const oi=old.indexOf(p);let e=oi>=0?ents[oi]:null;if(!e){const sp0=spawnFor(G.world,G.ci,i);e=newEnt(i,sp0.x,sp0.y)}e.i=i;return e})}
+  const names=G.roles.map(r=>ROLE_NAME[r]).join(' und ');
+  if(my>=0&&wasSpec)toast('Du spielst jetzt mit! Deine Rolle: '+names+'.',5000);
+  else if(my>=0&&G.roles.join()!==oldRoles)toast('Die Gruppe hat sich verändert ('+G.P+' Personen). Deine Rolle jetzt: '+names+'.',5000);
+  if(G.modal)try{renderModal()}catch(e){};try{paintHud()}catch(e){}
+}
+function syncRoster(){
+  /* Host: später Beitretende kommen dazu, dauerhaft Verschwundene (25 s) fallen raus */
+  const now=Date.now(),live=RM.named.peers().filter(p=>p.kind==='viewer').map(p=>p.peer);
+  RM.seen=RM.seen||{};live.forEach(p=>{RM.seen[p]=now});
+  const r=G.roster.filter(p=>live.indexOf(p)>=0||now-(RM.seen[p]||G.epoch)<25000);
+  live.forEach(p=>{if(r.indexOf(p)<0&&r.length<6)r.push(p)});
+  if(r.indexOf(myPeer())<0)return;
+  if(r.join()!==G.roster.join()){applyRoster(r);send('roster',{epoch:G.epoch,roster:r})}
+}
+function hostTick(){
   if(!RM.named||G.solo||G.phase==='lobby'||!G.hostPeer||G.hostPeer!==myPeer())return;
-  send('state',{epoch:G.epoch,phase:G.phase,seed:G.seed,total:G.total,mode:G.mode,stage:G.stage,rot:G.rot,remaining:remaining(),roster:G.roster,ci:G.ci,hints:G.hintsTotal,attempts:G.attempts});
-},4000);
+  if(G.phase==='play')syncRoster();
+  send('state',{epoch:G.epoch,phase:G.phase,seed:G.seed,total:G.total,mode:G.mode,stage:G.stage,rot:G.rot,genP:G.genP,remaining:remaining(),roster:G.roster,ci:G.ci,hints:G.hintsTotal,attempts:G.attempts});
+}
+setInterval(hostTick,4000);
 
 $('#joinBtn').addEventListener('click',joinGroup);
 $('#code').addEventListener('keydown',e=>{if(e.key==='Enter')joinGroup()});
