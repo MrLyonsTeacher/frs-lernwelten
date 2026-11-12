@@ -71,6 +71,12 @@ const FRS = {
       { id:"vt6",  kat:"vocabulary", titel:"Word Reef: Town & Travel", untertitel:"Places, transport, directions",     pfad:"englisch/klasse6/word-reef-town.html",       icon:"🚌", max:58 },
         { id:"vl6",  kat:"vocabulary", titel:"Word Reef: Everyday Life", untertitel:"Free time, clothes, weather, feelings", pfad:"englisch/klasse6/word-reef-life.html",   icon:"🎒", max:59 },
         { id:"wp6", kat:"vocabulary", titel:"Word Power: Word Families", untertitel:"un-, -ful, -less, -ly · opposites", pfad:"englisch/klasse6/word-power.html", icon:"🧬", max:63 },
+        { id:"v6t1", kat:"vocabulary", titel:"Vocab Trainer: Unit 1", untertitel:"Friends · Mock Test", grp:"test", pfad:"englisch/klasse6/vokabeltrainer.html?u=1", icon:"🤝", max:50 },
+        { id:"v6t2", kat:"vocabulary", titel:"Vocab Trainer: Unit 2", untertitel:"Stars! · Mock Test", grp:"test", pfad:"englisch/klasse6/vokabeltrainer.html?u=2", icon:"⭐", max:50 },
+        { id:"v6t3", kat:"vocabulary", titel:"Vocab Trainer: Unit 3", untertitel:"London life · Mock Test", grp:"test", pfad:"englisch/klasse6/vokabeltrainer.html?u=3", icon:"🎡", max:50 },
+        { id:"v6t4", kat:"vocabulary", titel:"Vocab Trainer: Unit 4", untertitel:"Food and drink · Mock Test", grp:"test", pfad:"englisch/klasse6/vokabeltrainer.html?u=4", icon:"🍽️", max:50 },
+        { id:"v6t5", kat:"vocabulary", titel:"Vocab Trainer: Unit 5", untertitel:"In the news · Mock Test", grp:"test", pfad:"englisch/klasse6/vokabeltrainer.html?u=5", icon:"📰", max:50 },
+        { id:"v6ti", kat:"vocabulary", titel:"Irregular Verbs", untertitel:"Past forms · Mock Test", grp:"test", pfad:"englisch/klasse6/vokabeltrainer.html?u=irr", icon:"🔀", max:50 },
         { id:"lon6", kat:"country",    titel:"London Explorer",          untertitel:"Sights, the Tube & history",        pfad:"englisch/klasse6/london-explorer.html",      icon:"🎡", max:50 },
         { id:"fd6",  kat:"country",    titel:"The Galley Café",          untertitel:"Food & drink",                      pfad:"englisch/klasse6/food-and-drink.html",       icon:"🍟", max:54 }
       ]},
