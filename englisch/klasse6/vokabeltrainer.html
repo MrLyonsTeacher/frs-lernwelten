@@ -94,6 +94,7 @@ input.s{font:16px Lexend;padding:10px 12px;border-radius:12px;border:2px solid v
 <body>
 <div class="top"><a class="back" id="back" href="../welt.html?k=6&a=vocabulary">← Water World</a><h1>📚 Vokabeltrainer · Klasse 6</h1></div>
 <main class="wrap" id="v"></main>
+<script src="../saetze.js"></script>
 <script src="vokabeln6.js"></script>
 <script src="gruppen6.js"></script>
 <script src="../../lernwelt/freigabe.js"></script>
@@ -114,7 +115,7 @@ function parseUnits(txts){
     else if(line.startsWith("# ")){ S = line.slice(2).replace("*",""); if(!U.secs.includes(S)) U.secs.push(S); }
     else { const p = line.split("|").map(x=>x.trim()); if(!p[0] || !p[1]) continue;
       const full = p[0], phrase = full.includes("…"), parts = phrase ? [full] : full.split(/,\s+/);
-      const it = {u:U.id, en:full, head:parts[0], forms:parts.slice(1), de:p[1], ex:p[2]||"", sec:S, phrase};
+      const it = {u:U.id, en:full, head:parts[0], forms:parts.slice(1), de:p[1], ex:p[2]||(!phrase&&window.SAETZE&&SAETZE[parts[0].replace(/^to\s+/,"").toLowerCase()])||"", sec:S, phrase};
       it.key = "c6|"+U.id+"|"+full+"|"+it.de.slice(0,14); it.deShort = it.de.split(/;\s*/).slice(0,2).join("; ");
       it.typeOk = !phrase && !/^simple past/.test(it.de);
       U.items.push(it); } }
