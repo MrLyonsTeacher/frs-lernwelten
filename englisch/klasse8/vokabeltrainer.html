@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Vokabeltrainer Klasse 8 – Sky Empire</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../fonts/fonts.css">
 <style>
 :root{--ink:#16305A;--bg:#E4F0FF;--card:#fff;--soft:#EEF5FF;--muted:#4A6A98;--accent:#3A78E0;--gold:#FFC24A;--ok:#1F9D55;--okbg:#DDF5E6;--bad:#D6402F;--badbg:#FDE4E0;--line:#16305A;--track:#D2E2F6}
 *{box-sizing:border-box}
@@ -298,7 +296,7 @@ function list(){
 
 /* G-Niveau: Anfangsbuchstabe und Länge als Hilfe */
 const gHint = it => { let n = ""; try{ n = localStorage.getItem("frs-niveau")||""; }catch(e){} if(n!=="G") return ""; return `<div class="small ghint">Tipp: ${esc(norm(it.head,true).split(" ").map(w=>w[0]+" _".repeat(Math.max(0,w.length-1))).join("   "))}</div>`; };
-const fotoUrl = f => "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(f.replace(/ /g,"_"))+"?width=480";
+const fotoUrl = f => "../../fotos/"+String(f).replace(/[^A-Za-z0-9.\-]+/g,"_").replace(/\.[^.]*$/,"").slice(0,90)+".jpg";   // lokal gehostet (kein Abruf bei Wikimedia)
 /* ---------- Mock Test ---------- */
 /* ---------- Aufgabenmix: Zuordnen · Das passt nicht · Fehler finden · Diktat ---------- */
 let MODE = "test";

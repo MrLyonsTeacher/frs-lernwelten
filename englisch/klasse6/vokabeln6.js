@@ -1,18 +1,18 @@
 /* Vokabeln Klasse 6 · Orange Line 2 · Unit 1–5 (Vocabulary, Seiten 190–232).
-   Format je Zeile:  englisch | deutsch | Beispielsatz (optional)
+   Format je Zeile:  englisch | deutsch | (Beispielsätze bewusst entfernt – Urheberrecht)
    „## Unit n | Titel“ und „# Abschnitt“ gliedern die Liste. Abschnitt mit * = Wortbank: Phrasen/Bilder ohne Übersetzung im Buch, Übersetzung ergänzt. */
 window.VOK6 = window.VOK6 || [];
 window.VOK6.push(String.raw`
 ## Unit 1 | Friends
 # Way in
-to ask about | sich erkundigen nach; fragen nach | Olivia asks Holly about her holidays.
-to talk about | sprechen über | Let's talk about our holidays.
+to ask about | sich erkundigen nach; fragen nach
+to talk about | sprechen über
 hat | Hut |
-I'm fine. | Mir geht es gut. | How are you? – I'm fine.
-Jamaica | Jamaika | Did you have a good time in Jamaica?
-aunt | Tante | aunt ↔ uncle
-fantastic | fantastisch; großartig | How were your holidays? – Fantastic.
-to visit | besuchen | We visited my aunt and uncle.
+I'm fine. | Mir geht es gut.
+Jamaica | Jamaika
+aunt | Tante
+fantastic | fantastisch; großartig
+to visit | besuchen
 grandparents (pl) | Großeltern |
 # Station 1
 to start a band | eine Band gründen |
@@ -26,25 +26,25 @@ to sunbathe on the beach | sonnenbaden am Strand |
 to stay in a hotel | in einem Hotel übernachten |
 to fly to another country | in ein anderes Land fliegen |
 to pack a suitcase | einen Koffer packen |
-summer | Sommer | summer ↔ winter
-parents (pl) | Eltern | mother + father = parents
-to stay | übernachten; bleiben | We can stay at their house on Friday.
-city | Stadt; Großstadt | London and Stuttgart are cities.
+summer | Sommer
+parents (pl) | Eltern
+to stay | übernachten; bleiben
+city | Stadt; Großstadt
 cousin | Cousin; Cousine |
-sang | simple past von to sing (singen) | I sang = ich sang/ich habe gesungen
-before | bevor | Say goodbye before you go.
-to get married | heiraten | They got married last Saturday.
-wedding | Hochzeit | There was a big party after the wedding.
-end | Ende; Schluss | We danced at the end.
-ate | simple past von to eat (essen) | I ate = ich aß/ich habe gegessen
+sang | simple past von to sing (singen)
+before | bevor
+to get married | heiraten
+wedding | Hochzeit
+end | Ende; Schluss
+ate | simple past von to eat (essen)
 cricket | Kricket |
 ball | Ball |
-grandfather | Großvater | Your father's father is your grandfather.
-well | gut | Gwen can't see very well.
-to feel, felt | (sich) fühlen | She can feel the ball with her hands.
-It's Holly's turn. | Holly ist dran. | Thanks, Joy. Now it's Holly's turn.
-everyone | hier: zusammen | Hi everyone, how are you?
-took | simple past von to take (nehmen) | I took = ich nahm/ich habe genommen
+grandfather | Großvater
+well | gut
+to feel, felt | (sich) fühlen
+It's Holly's turn. | Holly ist dran.
+everyone | hier: zusammen
+took | simple past von to take (nehmen)
 # Song: Last summer
 we all slept in a tent | wir schliefen alle in einem Zelt |
 on the sand | im Sand |
@@ -67,100 +67,100 @@ unhappy | unglücklich |
 nervous | nervös; aufgeregt |
 jealous | eifersüchtig; neidisch |
 afraid | ängstlich |
-argument | Auseinandersetzung; Streit | I like your green T-shirt and the blue one.
-to borrow | ausleihen | Can I borrow your bike, please?
-to bring, brought | bringen; mitbringen | I can bring it to school on Monday.
-to understand, understood | verstehen | I don't understand the question.
-to lose, lost | verlieren | to lose ↔ to find
-to have to, had to | müssen | to have to = must
-mine | meins; meine | Is that your bike? – Yes, it's mine.
-when | wann; wenn; als | I was surprised when I saw it.
-to look | aussehen; sehen | Look at that!
-hers | ihre(r/s) | Is that Holly's scarf? – No, it isn't hers.
+argument | Auseinandersetzung; Streit
+to borrow | ausleihen
+to bring, brought | bringen; mitbringen
+to understand, understood | verstehen
+to lose, lost | verlieren
+to have to, had to | müssen
+mine | meins; meine
+when | wann; wenn; als
+to look | aussehen; sehen
+hers | ihre(r/s)
 That's what happened. | Das ist passiert. |
-to happen | geschehen; passieren | What happens in this movie?
-to lend, lent | leihen; verleihen | I don't have a pen. – I can lend you mine.
-so | so | I was so worried about Holly's scarf.
-the same | derselbe; gleich | Our bags are the same.
-as | wie | It's the same bag as hers.
-Never mind. | Macht nichts.; Schon gut.; Mach dir nichts draus. | Kate can't help us today. – Never mind.
-his | seins; seiner | It's not my bike, it's his.
+to happen | geschehen; passieren
+to lend, lent | leihen; verleihen
+so | so
+the same | derselbe; gleich
+as | wie
+Never mind. | Macht nichts.; Schon gut.; Mach dir nichts draus.
+his | seins; seiner
 club | Klub; Verein |
-little | klein | My little sister lost my phone.
+little | klein
 phone | Telefon |
-What's wrong? | Was ist los?; Was stimmt nicht? | What's wrong? = What's the problem?
-to use | benutzen; verwenden | You can use a pencil or a pen.
-It doesn't matter. | Es ist egal. | I'm not good at sport. – It doesn't matter.
-Don't worry. | Mach dir keine Sorgen. | Don't worry. It doesn't matter.
+What's wrong? | Was ist los?; Was stimmt nicht?
+to use | benutzen; verwenden
+It doesn't matter. | Es ist egal.
+Don't worry. | Mach dir keine Sorgen.
 concert | Konzert |
-again | wieder; noch einmal | I wasn't happy when school started again.
+again | wieder; noch einmal
 # Reading corner
-lucky day | Glückstag | Today is my lucky day!
-on the bus | im Bus | Olivia is on the bus.
-to get, got | holen | Dad said we can get pizza.
-takeaway | zum Mitnehmen | I want a takeaway pizza.
-tonight | heute Abend; heute Nacht | There's a film on at 10 o'clock tonight.
-tuna | Thunfisch | I'd like a tuna sandwich.
+lucky day | Glückstag
+on the bus | im Bus
+to get, got | holen
+takeaway | zum Mitnehmen
+tonight | heute Abend; heute Nacht
+tuna | Thunfisch
 # Film corner
-between | zwischen | Ben is between the tree and the ball.
+between | zwischen
 experiment | Versuch |
-have you got | hast du | What have you got in your hand?
+have you got | hast du
 comic | Comic(heft) |
-to ruin | ruinieren; zerstören | You always ruin my things!
-to break, broke | brechen; zerbrechen | You broke my torch.
-on purpose | absichtlich | Sorry, I didn't break your torch on purpose.
-true | wahr | That isn't true!
+to ruin | ruinieren; zerstören
+to break, broke | brechen; zerbrechen
+on purpose | absichtlich
+true | wahr
 Stop it! | Hör(t) auf! |
-to be right | recht haben | Jinsoo is right.
-all right | in Ordnung; alles klar | all right = OK
+to be right | recht haben
+all right | in Ordnung; alles klar
 # Checkpoint
 role play | Rollenspiel |
 silly | albern |
 That isn't fair! | Das ist ungerecht! |
 to mean | meinen |
-I'm playing | ich spiele gerade | I'm playing this game on my phone.
-score | Punktestand | I have a really high score.
+I'm playing | ich spiele gerade
+score | Punktestand
 eye | Auge |
-everything | alles | You forget everything, Luke.
-out of | aus … heraus | I looked out of the window.
-stop | Haltestelle; Halt | The next stop is mine.
-tomorrow | morgen | Tomorrow is Saturday! Great, no school!
-to rush down | hinuntereilen | I rushed down the road.
-stairs (pl) | Treppe | Luke rushed down the stairs of the bus.
-to get off, got off | aussteigen | Luke got off the bus at the stop.
-to finish | beenden; enden; aufhören | Luke wanted to finish his game.
-pocket | Tasche; Hosentasche | I only have 50p in my pocket.
-I must have forgotten it. | Ich muss es vergessen haben. | Where's my phone? – I must have forgotten it.
-to look up | aufschauen; nachschauen | He looked up for the bus.
-not … any more | nicht mehr | They aren't friends any more.
-to phone | anrufen; telefonieren | I must phone my dad.
+everything | alles
+out of | aus … heraus
+stop | Haltestelle; Halt
+tomorrow | morgen
+to rush down | hinuntereilen
+stairs (pl) | Treppe
+to get off, got off | aussteigen
+to finish | beenden; enden; aufhören
+pocket | Tasche; Hosentasche
+I must have forgotten it. | Ich muss es vergessen haben.
+to look up | aufschauen; nachschauen
+not … any more | nicht mehr
+to phone | anrufen; telefonieren
 company | Gesellschaft; Firma |
-to enjoy | genießen | Joy always enjoys music shows on TV.
-dinner | Abendessen | breakfast – lunch – dinner
-not at all | überhaupt nicht; gar nicht | I don't like dogs at all.
-that night | an jenem Abend; in jener Nacht | Luke wasn't happy that night.
-careful | vorsichtig; sorgfältig | Why isn't he careful with his things?
-suddenly | plötzlich; auf einmal | Suddenly he heard a noise.
-rang | simple past von to ring (klingeln) | I rang = ich klingelte/ich habe geklingelt
-to shout | schreien; rufen | You can talk, but please don't shout!
-hall | Flur; Diele; Korridor | Luke's mum shouted from the hall.
-gave | simple past von to give (geben) | I gave = ich gab/ich habe gegeben
+to enjoy | genießen
+dinner | Abendessen
+not at all | überhaupt nicht; gar nicht
+that night | an jenem Abend; in jener Nacht
+careful | vorsichtig; sorgfältig
+suddenly | plötzlich; auf einmal
+rang | simple past von to ring (klingeln)
+to shout | schreien; rufen
+hall | Flur; Diele; Korridor
+gave | simple past von to give (geben)
 That's what friends are for! | Dafür sind Freunde da! |
-best ever score | das beste Ergebnis | Wow! 675! That's my best ever score!
+best ever score | das beste Ergebnis
 # Viewing skills
 How to … | Wie man … |
-polite | höflich | Be polite. It makes people happy.
+polite | höflich
 scene | Szene |
 to walk | laufen |
-to show | zeigen | Laura shows us Greenwich.
-to get to know | kennen lernen | I talked to Gwen and got to know her.
+to show | zeigen
+to get to know | kennen lernen
 What to … | Was man … |
-situation | Situation | I know what to do in different situations.
-best | beste | Laura shows us the best shops.
+situation | Situation
+best | beste
 queue | Warteschlange |
-escalator | Rolltreppe | Laura is on the escalator.
-to wake up, woke up | aufwachen | I wake up at 6:30 every morning.
-to say sorry | sich entschuldigen | I was late and said sorry.
+escalator | Rolltreppe
+to wake up, woke up | aufwachen
+to say sorry | sich entschuldigen
 # Word bank*: Holidays
 go camping | zelten gehen |
 go hiking; go walking | wandern gehen |
@@ -231,18 +231,18 @@ Let's talk about the problem. | Lass uns über das Problem reden. |
 
 ## Unit 2 | Stars!
 # Way in
-You can do it! | Du schaffst es! | You can do it! You can be a star.
-player | Spieler; Spielerin | player → to play
-crowd | Menschenmenge | There were lots of people in the crowd.
-prize | Preis | The winner gets a prize.
-stage | Bühne | Look! The band is on the stage.
-to organize | organisieren | Let's organize a big party.
-jumble sale | Flohmarkt | You can sell old things in a jumble sale.
-to be afraid | sich fürchten; Angst haben | A star is never afraid.
-others | anderen | You always help others.
-to draw, drew | zeichnen | I can draw people.
+You can do it! | Du schaffst es!
+player | Spieler; Spielerin
+crowd | Menschenmenge
+prize | Preis
+stage | Bühne
+to organize | organisieren
+jumble sale | Flohmarkt
+to be afraid | sich fürchten; Angst haben
+others | anderen
+to draw, drew | zeichnen
 picture | Bild |
-job | Aufgabe; Tätigkeit | I help my parents and do jobs at home.
+job | Aufgabe; Tätigkeit
 # Station 1
 to do, did, done | machen; tun |
 to see, saw, seen | sehen |
@@ -292,24 +292,24 @@ to do the washing up | abspülen |
 to clear the table | den Tisch abräumen |
 to hoover my bedroom | mein Schlafzimmer staubsaugen |
 to sweep the floor | den Fußboden fegen |
-actor | Schauspieler; Schauspielerin | They want to talk to her about her job.
+actor | Schauspieler; Schauspielerin
 job | Arbeit; Beruf |
-just | gerade (eben); soeben | I've just phoned Jamila.
-to arrive | ankommen | The train arrives at four o'clock.
+just | gerade (eben); soeben
+to arrive | ankommen
 flight | Flug |
-already | schon; bereits | Is Joy on the way? – No, he's already here!
-to finish | fertigstellen; vervollständigen | We've already finished the questions.
-list | Liste | Here is the list of things you need.
-to wait | warten | I waited for two hours. Where were you?
-not … yet | noch nicht | I have not helped Dad yet.
+already | schon; bereits
+to finish | fertigstellen; vervollständigen
+list | Liste
+to wait | warten
+not … yet | noch nicht
 supermarket | Supermarkt |
-2moro (tomorrow) | morgen | 2moro is Saturday.
-to learn | lernen | Have you already learned the song?
-lines | hier: Text | I haven't learned my lines yet.
-interview | Interview; Befragung | interview → to interview
-It's a date. | Abgemacht! | Ten o'clock tomorrow? – It's a date.
-gr8 (great) | großartig; toll | My flat, 2moro at 4. – Gr8!
-CU (See you!) | Bis später! | CU there!
+2moro (tomorrow) | morgen
+to learn | lernen
+lines | hier: Text
+interview | Interview; Befragung
+It's a date. | Abgemacht!
+gr8 (great) | großartig; toll
+CU (See you!) | Bis später!
 director | Regisseur; Regisseurin |
 hairdresser | Friseur; Friseurin |
 engineer | Ingenieur; Ingenieurin; Techniker; Technikerin |
@@ -328,59 +328,59 @@ to make, made | machen; tun; bilden |
 to take, took | hinbringen |
 to break, broke, broken | brechen; kaputt machen |
 to wear, wore, worn | tragen |
-how many | wie viele | How many films have you acted in?
-to act | spielen | I have acted in three films.
-ever | jemals | Have you ever seen my films?
+how many | wie viele
+to act | spielen
+ever | jemals
 nervous | nervös; aufgeregt |
-embarrassed | verlegen | I was embarrassed and my face went red.
+embarrassed | verlegen
 # Reading corner
-young | jung | young ↔ old
-Have you ever been to …? | Warst du schon in …? | Have you ever been to Greenwich?
+young | jung
+Have you ever been to …? | Warst du schon in …?
 Have you finished yet? | Seid ihr schon fertig? |
-yet | schon | Is Jamila here yet? – No, she's late.
-which | welche | Which countries have you visited?
-grandma | Oma | My father's mother is my grandma.
+yet | schon
+which | welche
+grandma | Oma
 Italy | Italien |
 Spain | Spanien |
-Turkey | Türkei | I lived in Turkey, but now I live in Germany.
-would | würde(n) | I would ask him about his trip.
-what | welche | What other job would you like to do?
-amazing | unglaublich; toll; erstaunlich | That's amazing. I have lived in Italy too.
-another | ein anderer; noch ein | She hasn't lived in another country.
-would like | würde(n) gern; hätte(n) gern | I would like to be an engineer.
-pantomime | Weihnachtstheaterstück | A funny show on the stage at Christmas.
-audition | Vorspielen; Vorsingen; Vortanzen | I have an audition for the pantomime.
-… looking at an advert. | … schaut sich eine Anzeige an. | Joy is looking at an advert.
+Turkey | Türkei
+would | würde(n)
+what | welche
+amazing | unglaublich; toll; erstaunlich
+another | ein anderer; noch ein
+would like | würde(n) gern; hätte(n) gern
+pantomime | Weihnachtstheaterstück
+audition | Vorspielen; Vorsingen; Vortanzen
+… looking at an advert. | … schaut sich eine Anzeige an.
 child (sg), children (pl) | Kind |
-a.m. | vormittags (Uhrzeit) | 10 a.m. = 10:00
-p.m. | nachmittags (Uhrzeit) | 4 p.m. = 16:00
+a.m. | vormittags (Uhrzeit)
+p.m. | nachmittags (Uhrzeit)
 theatre | Theater |
 registration | Anmeldung |
-chance | Chance; Gelegenheit | The audition is Joy's big chance!
-if | wenn; falls | Come on! – Only if I don't have to sing.
-to miss | verpassen | I missed the school bus yesterday.
-minute | Minute | An hour has 60 minutes.
-behind | hinter | Ben is behind the book.
+chance | Chance; Gelegenheit
+if | wenn; falls
+to miss | verpassen
+minute | Minute
+behind | hinter
 sofa | Sofa |
-to hurry | sich beeilen | We're late, please hurry.
-past | nach (bei Uhrzeitangaben) | 11:10 = It's ten past eleven.
-lady | Dame; Frau | lady = woman
-too | zu | I'm sorry. You're too late.
-It's my fault. | Es ist meine Schuld. | Sorry! It's my fault.
+to hurry | sich beeilen
+past | nach (bei Uhrzeitangaben)
+lady | Dame; Frau
+too | zu
+It's my fault. | Es ist meine Schuld.
 to go on | hier: hineingehen |
-judge | Juror; Jurorin | The judges were three chefs.
-corridor | Gang; Flur | Dave sees Joy in the corridor.
-in | drinnen | You were in there a long time!
+judge | Juror; Jurorin
+corridor | Gang; Flur
+in | drinnen
 # Film corner
-ticket | hier: Karte | I have tickets for the acting workshop.
+ticket | hier: Karte
 acting workshop | Schauspielworkshop |
-to remember | sich merken; sich erinnern (an) | Sorry, I can't remember your name.
-just | nur | It was just a joke.
-to believe | glauben | I've won £5,000? I don't believe it!
-yourself | dich selbst | Just believe in yourself. You can do it.
-to panic | panisch werden | Don't panic! You are a good actor.
-who | hier: die, welche | You are the students who have won.
-in the world | auf der Welt | This is the best pizza in the world.
+to remember | sich merken; sich erinnern (an)
+just | nur
+to believe | glauben
+yourself | dich selbst
+to panic | panisch werden
+who | hier: die, welche
+in the world | auf der Welt
 # Checkpoint
 presentation | Präsentation; Vortrag |
 conclusion | Schluss; Schlussfolgerung |
@@ -392,23 +392,23 @@ introduction | Einleitung |
 you spoke quietly | du hast leise gesprochen |
 topic | Thema |
 # Speaking skills
-ill | krank; schlecht | Luke is ill today.
-sore throat | Halsschmerzen | Luke has a sore throat.
-headache | Kopfschmerzen; Kopfweh | Luke has a headache too.
-to have a look | anschauen | Let's have a look at your throat.
-to hurt, hurt | weh tun; verletzen | My throat hurts and I have a headache.
-a little | ein bisschen | It hurts a little.
-to drink, drank, drunk | trinken | Drink lots of tea.
+ill | krank; schlecht
+sore throat | Halsschmerzen
+headache | Kopfschmerzen; Kopfweh
+to have a look | anschauen
+to hurt, hurt | weh tun; verletzen
+a little | ein bisschen
+to drink, drank, drunk | trinken
 leg | Bein |
-stomach ache | Bauchweh; Bauchschmerzen | I have a stomach ache.
-broken | past participle von to break (brechen; zerbrechen) | I have broken my arm.
+stomach ache | Bauchweh; Bauchschmerzen
+broken | past participle von to break (brechen; zerbrechen)
 mouth | Mund |
-stomach | Magen; Bauch | My stomach really hurts.
-head | Kopf | My head hurts. I have a headache.
+stomach | Magen; Bauch
+head | Kopf
 ear | Ohr |
 patient | Patient; Patientin |
-tablet | Tablette | Take a tablet for your headache.
-a lot | sehr | It hurts a lot.
+tablet | Tablette
+a lot | sehr
 # Word bank*: People's qualities
 You are good at … | Du bist gut in … |
 music | Musik |
@@ -477,30 +477,30 @@ It was interesting. | Es war interessant. |
 
 ## Unit 3 | London life
 # Way in
-archive | Archiv | You can put old magazines in an archive.
-blog | Blog; Internettagebuch | Dominik writes his blog every day.
-everyone | alle | Hi everyone back home.
+archive | Archiv
+blog | Blog; Internettagebuch
+everyone | alle
 back home | zu Hause |
-Poland | Polen | Luke's cousin is from Poland.
+Poland | Polen
 boat trip | Bootsfahrt; Schiffsfahrt |
-sight | Sehenswürdigkeit | Come and see the sights of London!
-building | Gebäude | buildings: houses, schools, cinemas, …
-big wheel | Riesenrad | The London Eye is a big wheel.
-to build, built | bauen | build → building
-worker | Arbeiter; Arbeiterin | worker → to work
-UK | Vereinigtes Königreich von Großbritannien und Nordirland | England is in the UK.
+sight | Sehenswürdigkeit
+building | Gebäude
+big wheel | Riesenrad
+to build, built | bauen
+worker | Arbeiter; Arbeiterin
+UK | Vereinigtes Königreich von Großbritannien und Nordirland
 France | Frankreich |
-the Netherlands | die Niederlande | The Netherlands are next to Germany.
-the Czech Republic | Tschechien | Workers from the Czech Republic built the London Eye.
-the most famous | der berühmteste | It's the most famous building in London.
+the Netherlands | die Niederlande
+the Czech Republic | Tschechien
+the most famous | der berühmteste
 clock tower | Uhrenturm |
-to abseil | sich abseilen | People abseil when they clean Big Ben.
-writer | Schriftsteller; Schriftstellerin | writer → to write
-than | als | It is more than 30 years old.
-ago | vor | He worked here more than 400 years ago.
-wheel | Rad | The London Eye is a wheel.
+to abseil | sich abseilen
+writer | Schriftsteller; Schriftstellerin
+than | als
+ago | vor
+wheel | Rad
 restaurant | Restaurant |
-really | echt | It looks really cool.
+really | echt
 # Station 1
 church | Kirche |
 castle | Schloss; Burg |
@@ -514,48 +514,48 @@ square | Platz |
 mosque | Moschee |
 city centre | Stadtzentrum; Stadtmitte |
 lookout point | Aussichtspunkt |
-a/one hundred and one | hunderteins | 101
-a/one hundred and two | hundertzwei | 102
-a/one hundred and ten | hundertzehn | 110
-two hundred | zweihundert | 200
-three hundred | dreihundert | 300
-four hundred and fifty-one | vierhunderteinundfünfzig | 451
-a/one thousand | eintausend | 1,000
-up | hinauf; oben | Let's go up high on the London Eye.
-tower | Turm | The tower has 334 steps.
+a/one hundred and one | hunderteins
+a/one hundred and two | hundertzwei
+a/one hundred and ten | hundertzehn
+two hundred | zweihundert
+three hundred | dreihundert
+four hundred and fifty-one | vierhunderteinundfünfzig
+a/one thousand | eintausend
+up | hinauf; oben
+tower | Turm
 step | Stufe |
 height | Höhe |
-about | ungefähr; circa; etwa | It is about 950 years old.
-fact | Fakt; Tatsache | I know lots of facts about London.
-prison | Gefängnis | He's in prison.
+about | ungefähr; circa; etwa
+fact | Fakt; Tatsache
+prison | Gefängnis
 to weigh | wiegen |
-royal | königlich | The Tower of London was a royal home.
-tonne | Tonne | It weighs 2,100 tonnes.
-copy | Kopie | It is a copy of an old theatre.
+royal | königlich
+tonne | Tonne
+copy | Kopie
 taxi | Taxi |
-It was built … | Es wurde … gebaut. | It was built in 1997.
+It was built … | Es wurde … gebaut.
 # Station 2
 bell | Glocke |
-dome | Kuppel | The dome has 530 steps.
-thought | simple past, past participle von to think (denken) | I thought = ich dachte/ich habe gedacht
+dome | Kuppel
+thought | simple past, past participle von to think (denken)
 tall | groß; hoch |
-as … as | so … wie | Rachel is as old as Kate. They're 16.
+as … as | so … wie
 telephone box | Telefonzelle |
-even | noch; sogar | Berlin is big but London is even bigger.
-pretty | hübsch | pretty = beautiful
-expensive | teuer | This T-shirt is £40. That's very expensive.
-TV studio | Fernsehstudio | There is a TV studio in the Shard.
-office | Büro | My dad works in an office in London.
-floor | Stockwerk | The shopping centre has five floors.
-visitor | Besucher; Besucherin | visitor → to visit
-to sunbathe | sonnenbaden | You can sunbathe in your garden.
-low | niedrig | low ↔ high
-to guess | erraten; raten; überlegen | Guess your partner's number.
-any | irgendein | It is taller than any other building.
-Europe | Europa | Germany and England are in Europe.
-underground | U-Bahn | I go to London by underground.
+even | noch; sogar
+pretty | hübsch
+expensive | teuer
+TV studio | Fernsehstudio
+office | Büro
+floor | Stockwerk
+visitor | Besucher; Besucherin
+to sunbathe | sonnenbaden
+low | niedrig
+to guess | erraten; raten; überlegen
+any | irgendein
+Europe | Europa
+underground | U-Bahn
 burger | Hamburger |
-fast | schnell | Cars are faster than bikes.
+fast | schnell
 cheap | billig |
 large | groß |
 small | klein |
@@ -569,21 +569,21 @@ patterned | gemustert |
 plain | schlicht; einfach |
 comfortable | bequem; angenehm |
 uncomfortable | unbequem; unangenehm |
-department store | Kaufhaus | You can buy lots of things in a department store.
-sale | Schlussverkauf; Ausverkauf | Things are not expensive in the sales.
-top | Top; Oberteil | Holly can wear this top with her jeans.
-department | Abteilung | Let's go to the shoe department.
-these | diese (hier) | These shoes are nice.
-those | jene | These are nice, those are nicer.
-to suit | stehen; passen | Yellow clothes don't suit Gwen.
-size | Größe | This top is very big. I need another size.
-next | als Nächstes | Next they went to the bag department.
-to look for | suchen nach | Help me look for my phone, please.
-isn't it? | nicht wahr?; stimmt's? | It's beautiful, isn't it?
-may | vielleicht | It may be nice, but it isn't my size.
-in the end | schließlich; zum Schluss | In the end Holly buys the shoes.
-not … any | kein | She hasn't got any money.
-shop assistant | Verkäufer; Verkäuferin | The shop assistant gave me my things.
+department store | Kaufhaus
+sale | Schlussverkauf; Ausverkauf
+top | Top; Oberteil
+department | Abteilung
+these | diese (hier)
+those | jene
+to suit | stehen; passen
+size | Größe
+next | als Nächstes
+to look for | suchen nach
+isn't it? | nicht wahr?; stimmt's?
+may | vielleicht
+in the end | schließlich; zum Schluss
+not … any | kein
+shop assistant | Verkäufer; Verkäuferin
 receipt | Quittung |
 # Song: I love your style
 style | Stil |
@@ -606,54 +606,54 @@ everywhere you go | überall wo du hingehst |
 to pick | wählen |
 # Reading corner
 colourful | bunt |
-language | Sprache | I can speak one language – German.
-British | britisch | I like British food best.
-luckily | glücklicherweise | Luckily, I wasn't late.
-hurt | verletzt | No one is hurt.
-help | Hilfe | Fire! Help! Run!
-fire engine | Feuerwehrauto | A modern fire engine.
-to burn down, burnt down | niederbrennen; verbrennen | The theatre has burnt down.
-carpenter | Zimmermann; Tischler | Carpenters make chairs, tables, houses, …
-right | hier: also | Right, let's start.
+language | Sprache
+British | britisch
+luckily | glücklicherweise
+hurt | verletzt
+help | Hilfe
+fire engine | Feuerwehrauto
+to burn down, burnt down | niederbrennen; verbrennen
+carpenter | Zimmermann; Tischler
+right | hier: also
 tool | Werkzeug; Gerät |
-drama | Theater; Drama | Actors act in plays on a stage.
+drama | Theater; Drama
 play | Theaterstück |
 boss | Boss; Chef |
-to own | besitzen | He owns the Globe Theatre.
-part | Rolle | Alex acts the parts of girls.
-landlord | Eigentümer | The landlord wants more money.
-to ask for | bitten um | The landlord has asked for more money.
-rent | Miete | The rent for the room is £200 a month.
-land | Land | Some landlords own a lot of land.
-to pay, paid | bezahlen | How much did you pay for your bike?
-to move (house) | umziehen | First we lived here, then we moved house.
-builder | Bauarbeiter; Bauarbeiterin | Builders make houses.
-to carry | tragen; befördern | The builders carry the theatre.
+to own | besitzen
+part | Rolle
+landlord | Eigentümer
+to ask for | bitten um
+rent | Miete
+land | Land
+to pay, paid | bezahlen
+to move (house) | umziehen
+builder | Bauarbeiter; Bauarbeiterin
+to carry | tragen; befördern
 brick by brick | Stein für Stein |
-plank | Brett; Planke | They carry it plank by plank.
-across | über | They carried the theatre across the river.
-heavy | schwer; stark | The theatre was heavy.
-by | von | It's a new play by Shakespeare.
-important | wichtig; einflussreich | Don't forget. It's very important!
-as | als | I have a part as a man.
+plank | Brett; Planke
+across | über
+heavy | schwer; stark
+by | von
+important | wichtig; einflussreich
+as | als
 cannon | Kanone |
-cannon ball | Kanonenkugel | The cannon ball goes in the cannon.
-to hit, hit | treffen; schlagen | A football has hit the window!
+cannon ball | Kanonenkugel
+to hit, hit | treffen; schlagen
 roof | Dach |
-to be on fire | brennen | The theatre is on fire!
+to be on fire | brennen
 # Film corner
 sunglasses (pl) | Sonnenbrille |
-to wait for | warten auf | We have to wait for Mina.
-to go sightseeing | eine Besichtigungstour machen | We went sightseeing in London.
-sticker | Aufkleber | I like the stickers in your book.
-stallholder | Standinhaber; Standinhaberin | The stallholder was very friendly.
-each | pro Stück | The DVDs are £10 each. = One DVD is £10.
-How about …? | Wie wäre es mit …? | How about £3.50?
-a pair of | ein Paar | I need a pair of sunglasses.
-price | Preis | What's the price of this dress? – It's £9.
-real | echt; richtig; wirklich | Your bedroom is a real mess.
-bargain | Schnäppchen | That bag isn't expensive. It's a bargain!
-to sound | klingen | That sounds good. Thank you.
+to wait for | warten auf
+to go sightseeing | eine Besichtigungstour machen
+sticker | Aufkleber
+stallholder | Standinhaber; Standinhaberin
+each | pro Stück
+How about …? | Wie wäre es mit …?
+a pair of | ein Paar
+price | Preis
+real | echt; richtig; wirklich
+bargain | Schnäppchen
+to sound | klingen
 # Checkpoint
 audio guide | Audioguide |
 pony | Pony |
@@ -675,11 +675,11 @@ delayed | verspätet |
 check-in | Gepäckaufgabe |
 toilet | Toilette |
 airport | Flughafen |
-announcement | Durchsage; Ankündigung | Listen to the announcements.
-passenger | Passagier; Passagierin | The passengers on the bus went to London.
-plane | Flugzeug | This is the plane to Berlin.
-to fly, flew, flown | fliegen | We flew to Turkey in the holidays.
-information desk | Information | Brad, please go to the information desk.
+announcement | Durchsage; Ankündigung
+passenger | Passagier; Passagierin
+plane | Flugzeug
+to fly, flew, flown | fliegen
+information desk | Information
 # Word bank*: London sights
 The O2 | The O2 (Veranstaltungshalle in London) |
 Red double decker bus | roter Doppeldeckerbus |
@@ -760,11 +760,11 @@ pork | Schweinefleisch |
 potato salad | Kartoffelsalat |
 tomato (sg), tomatoes (pl) | Tomate |
 drink | Getränk |
-Jamaican | jamaikanisch | Olivia loves Jamaican food.
-yummy | lecker | yummy = delicious
-sort | Sorte; Art | Coke is a sort of drink.
+Jamaican | jamaikanisch
+yummy | lecker
+sort | Sorte; Art
 delicious | köstlich |
-It's made with … | Es wird aus … gemacht. | It's made with chicken.
+It's made with … | Es wird aus … gemacht.
 # Station 1
 to choose, chose, chosen | auswählen; wählen |
 to spend, spent | ausgeben; verbringen |
@@ -790,25 +790,25 @@ lemon | Zitrone |
 cheesecake | Käsekuchen |
 lasagne | Lasagne |
 spring roll | Frühlingsrolle |
-meal | Mahlzeit; Essen | Breakfast, lunch and dinner are meals.
+meal | Mahlzeit; Essen
 internet | Internet |
-news | Neuigkeit(en); Nachricht(en) | I have so much news to tell you.
-survey | Umfrage | Please answer the questions for our survey.
-main course | Hauptgericht | Joy wants a main course.
-dessert | Nachspeise | Ice cream is my favourite dessert.
-usually | normalerweise; gewöhnlich | Holly is usually early, but today she's late.
+news | Neuigkeit(en); Nachricht(en)
+survey | Umfrage
+main course | Hauptgericht
+dessert | Nachspeise
+usually | normalerweise; gewöhnlich
 allergy | Allergie |
-allergic to | allergisch gegen | Dave can't eat nuts. He's allergic to them.
+allergic to | allergisch gegen
 fingerprint | Fingerabdruck |
-payment machine | Bezahlautomat | The payment machine helps us.
-machine | Automat; Maschine | The machine never breaks.
-to work | hier: funktionieren | My computer doesn't work!
-quick | schnell | Please be quick! I don't want to wait.
-many | viele | There aren't many meals with chips.
-answer | Antwort | Thank you for your answers.
-result | Ergebnis | You can find the results here.
-fried | (in der Pfanne) gebraten | Who likes fried potatoes?
-starter | Vorspeise | starter – main course – dessert
+payment machine | Bezahlautomat
+machine | Automat; Maschine
+to work | hier: funktionieren
+quick | schnell
+many | viele
+answer | Antwort
+result | Ergebnis
+fried | (in der Pfanne) gebraten
+starter | Vorspeise
 # Song: Chinese food
 Chinese | chinesisch |
 bowling | Ballspielen |
@@ -818,9 +818,9 @@ grumpy | mürrisch; schlecht gelaunt |
 I smell food in the air | ich rieche Essen in der Luft |
 noodle | Nudel |
 chow mein | Chow Mein (chinesisches Gericht) |
-cash | (mit) Bargeld | The students don't pay cash.
-dog biscuit | Hundekeks | Sherlock loves dog biscuits.
-person | Person; Mensch | one person – two people
+cash | (mit) Bargeld
+dog biscuit | Hundekeks
+person | Person; Mensch
 # Station 2
 knife (sg), knives (pl) | Messer |
 fork | Gabel |
@@ -839,96 +839,96 @@ straw | Trinkhalm |
 mustard | Senf |
 tray | Tablett |
 toothpick | Zahnstocher |
-food stall | Essensstand | There's a food stall at the market.
+food stall | Essensstand
 menu | Speisekarte |
-jerk | in Gewürzen mariniertes und über Holzfeuer gegrilltes Essen | We can have jerk pork and salad.
-wrap | Wrap (Tortillafladen zum Einwickeln) | Look, they have chicken wraps.
-free range | Freiland- | Free range eggs are the best.
-veggie bean cake | vegetarisches Bohnengericht | I really like the veggie bean cake wrap.
+jerk | in Gewürzen mariniertes und über Holzfeuer gegrilltes Essen
+wrap | Wrap (Tortillafladen zum Einwickeln)
+free range | Freiland-
+veggie bean cake | vegetarisches Bohnengericht
 mama | Mama |
-fresh | frisch | fresh ↔ old
-combination | Kombination | A combination box? – That's a wrap with salad.
-plantain | Kochbanane | I like Mama's fried plantain.
-will | werden | I will have a jerk chicken wrap.
-spicy | würzig; pikant | Jamaican food is usually spicy.
-to try | probieren; versuchen | I'll try the vegetarian salad.
-juice | Saft | orange juice
-thirsty | durstig | I'm so thirsty! I need a drink now.
-to order | bestellen | Let's order three orange juices.
-anything to drink | etwas zu trinken | Anything to drink? – One juice, please.
-anything | irgendetwas | Have you anything for my sore throat?
-I've (I have) got | ich habe | I've got a bottle of orange juice.
+fresh | frisch
+combination | Kombination
+plantain | Kochbanane
+will | werden
+spicy | würzig; pikant
+to try | probieren; versuchen
+juice | Saft
+thirsty | durstig
+to order | bestellen
+anything to drink | etwas zu trinken
+anything | irgendetwas
+I've (I have) got | ich habe
 note | hier: Geldschein |
-to pay back | zurückzahlen | I'll pay you back on Monday.
-won't (= will not) | nicht werden | I won't go away. = I will not go away.
-change | Münzgeld; Wechselgeld | Here's 80p change.
-It won't be long. | Es wird nicht lange dauern. | Sit and wait. It won't be long.
-over there | da drüben; dort drüben | Let's sit over there.
-tuna | Thunfisch | Tuna is a sort of fish.
-extra | zusätzlich; Zusatz- | I'd like a pizza with extra cheese, please.
-any | irgendwelche | Is there any salt over there?
-to watch | hier: aufpassen auf | Can you watch my juice, please?
-to leave, left | verlassen; lassen; abfahren | Oh no, I've left my homework at home.
+to pay back | zurückzahlen
+won't (= will not) | nicht werden
+change | Münzgeld; Wechselgeld
+It won't be long. | Es wird nicht lange dauern.
+over there | da drüben; dort drüben
+tuna | Thunfisch
+extra | zusätzlich; Zusatz-
+any | irgendwelche
+to watch | hier: aufpassen auf
+to leave, left | verlassen; lassen; abfahren
 # Reading corner
-to cook | kochen | My dad often cooks dinner for our family.
-TV show | Fernsehsendung | Joe was in a TV show.
+to cook | kochen
+TV show | Fernsehsendung
 teen | Jugend-; Teenager; Jugendliche |
 chef | Koch; Köchin |
-kid | Kind | kid = child
-to take part (in) | teilnehmen (an) | Joy took part in the play.
-competition | Wettbewerb | Dave has won a prize in a competition!
-entry form | Anmeldeformular | Write your name on the entry form.
-scrambled egg | Rührei | I like scrambled eggs for breakfast.
-to watch | zuschauen | I watched my mum in the kitchen.
-she was making | sie machte | She was making a cake.
+kid | Kind
+to take part (in) | teilnehmen (an)
+competition | Wettbewerb
+entry form | Anmeldeformular
+scrambled egg | Rührei
+to watch | zuschauen
+she was making | sie machte
 flour | Mehl |
-to become, became, become | werden | to become = werden; become = to get bekommen
+to become, became, become | werden
 magic | Magie; Zauberei |
-magic | magisch; Zauber- | I wanted to do magic things.
-cooking | Kochen | cooking → to cook
-ambition | Ziel | My ambition is to be a famous chef.
-own | eigene | I want my own restaurant.
-Italian | italienisch; Italiener; Italienerin | Luigi is an Italian name.
-catering college | Hotelfachschule | I went to catering college after school.
-I prefer working | ich arbeite lieber | I prefer working in the winter.
-most | am meisten | What do you like most at school?
-teamwork | Teamwork | I don't want to work alone. I like teamwork.
-by yourself | allein | You can't do that by yourself.
-especially | besonders; vor allem | Holly likes animals, especially guinea pigs.
-oven | Backofen | There are big ovens in the kitchen.
-to run about | herumrennen | We run about a lot.
-advice | Rat; Ratschlag | Nichola gave me some good advice.
-hard | hart | I work hard and do my best.
-head chef | Chefkoch | The head chef is the boss in the kitchen.
-recipe | Rezept | Joe has a special recipe for scrambled eggs.
-of mine | von mir | This is a recipe of mine.
-ingredient | Zutat | Look at the recipe for the ingredients.
-teaspoon (tsp) | Teelöffel (TL) | I need one teaspoon of milk.
-piece | Stück | I'd like a piece of pizza, please.
-pinch | hier: Prise | You need a pinch of salt.
-secret | geheim | There is a secret ingredient in it.
-method | Methode | Here is the method for the cake.
-to add | hinzufügen | Let's add some tomatoes to this salad.
-to stir | rühren; umrühren | Stir in the eggs with a fork.
+magic | magisch; Zauber-
+cooking | Kochen
+ambition | Ziel
+own | eigene
+Italian | italienisch; Italiener; Italienerin
+catering college | Hotelfachschule
+I prefer working | ich arbeite lieber
+most | am meisten
+teamwork | Teamwork
+by yourself | allein
+especially | besonders; vor allem
+oven | Backofen
+to run about | herumrennen
+advice | Rat; Ratschlag
+hard | hart
+head chef | Chefkoch
+recipe | Rezept
+of mine | von mir
+ingredient | Zutat
+teaspoon (tsp) | Teelöffel (TL)
+piece | Stück
+pinch | hier: Prise
+secret | geheim
+method | Methode
+to add | hinzufügen
+to stir | rühren; umrühren
 microwave | Mikrowelle |
-second | Sekunde | There are 60 seconds in a minute.
-blue cheese | Schimmelkäse | Add blue cheese to the eggs.
-super | super | The new band is super cool.
-to cut, cut | (sich) schneiden | Cut the cheese into small pieces.
-once more | noch einmal | Stir the eggs once more.
+second | Sekunde
+blue cheese | Schimmelkäse
+super | super
+to cut, cut | (sich) schneiden
+once more | noch einmal
 toast | Toast |
-proud (of) | stolz (auf) | Joe is proud to be a chef.
-all | ganz | I'm tired after all this work.
-talk | Gerede | There's a lot of talk about the new film.
-Congratulations! | Glückwunsch! | I've won the competition. – Congratulations!
-tip | Tipp; Ratschlag | Can you give me a tip, please?
+proud (of) | stolz (auf)
+all | ganz
+talk | Gerede
+Congratulations! | Glückwunsch!
+tip | Tipp; Ratschlag
 # Film corner
-to twist | verdrehen; verzerren | I twisted it and now it hurts.
-ankle | Fußgelenk; Fußknöchel | Marley twisted his ankle in the film.
+to twist | verdrehen; verzerren
+ankle | Fußgelenk; Fußknöchel
 basketball | Basketball |
-to pass | reichen | I can pass you the salt.
-lemonade | Limonade | I'd like lemonade, please – not juice.
-Help yourselves! | Bedient euch!; Bedienen Sie sich! | Here we are. Help yourselves!
+to pass | reichen
+lemonade | Limonade
+Help yourselves! | Bedient euch!; Bedienen Sie sich!
 # Checkpoint
 bacon | Speck |
 fried egg | Spiegelei |
@@ -941,16 +941,16 @@ coffee | Kaffee |
 hot chocolate | heiße Schokolade |
 marmalade | Marmelade aus Zitrusfrüchten |
 to book | buchen; reservieren |
-lovely | schön; herzlich; hübsch | Today is a lovely day.
-may | können; dürfen | May I have the menu, please?
-sausage roll | Blätterteig mit Wurstfüllung | I like hot and cold sausage rolls.
+lovely | schön; herzlich; hübsch
+may | können; dürfen
+sausage roll | Blätterteig mit Wurstfüllung
 # Reading skills
-Indian | indisch | I like Indian food.
-message | Nachricht; Botschaft; SMS | Jay sends Dave a message.
-flyer | Flyer; Faltblatt | They make a flyer on Jay's computer.
-dish | Gericht; Speise | Jay shows Dave the dishes on the menu.
-takeaway | Essen zum Mitnehmen | Let's have a takeaway for lunch.
-to | hier: bis | You can order from Tuesday to Sunday.
+Indian | indisch
+message | Nachricht; Botschaft; SMS
+flyer | Flyer; Faltblatt
+dish | Gericht; Speise
+takeaway | Essen zum Mitnehmen
+to | hier: bis
 # Word bank*: Food
 broccoli | Brokkoli |
 carrots | Karotten |
@@ -1009,21 +1009,21 @@ Where are the toilets? | Wo sind die Toiletten? |
 
 ## Unit 5 | In the news
 # Way in
-TYL (Talk to you later!) | Wir reden später! | You can use TYL in a message.
-Good morning. | Guten Morgen. | Good morning. Here is the news.
-gamer | Spieler; Spielerin (Computer) | gamer → game
-to stand, stood | stehen | They are standing at the shop.
-to travel | reisen | I want to travel around the world.
-through | durch | You can see through a window.
-fantasy | Fantasie; Fantasy | You must travel in a fantasy world.
-treasure | Schatz | You have to find the box of treasure.
-newspaper | Zeitung | You can read the news in the newspaper.
-advertisement | Anzeige; Werbespot | Look at the advertisement on that bus.
-text message | SMS | Holly writes a text message to Olivia.
-caller | Anrufer; Anruferin | caller → to call
-LOL (Laugh out loud) | Laut lachen! | That was a good joke. LOL
-to laugh | lachen | We laughed at Luke's joke.
-kiss | Kuss | She gave him a kiss and said goodbye.
+TYL (Talk to you later!) | Wir reden später!
+Good morning. | Guten Morgen.
+gamer | Spieler; Spielerin (Computer)
+to stand, stood | stehen
+to travel | reisen
+through | durch
+fantasy | Fantasie; Fantasy
+treasure | Schatz
+newspaper | Zeitung
+advertisement | Anzeige; Werbespot
+text message | SMS
+caller | Anrufer; Anruferin
+LOL (Laugh out loud) | Laut lachen!
+to laugh | lachen
+kiss | Kuss
 # Station 1
 to chat | chatten; plaudern |
 online | online |
@@ -1040,10 +1040,10 @@ video | Video |
 comment | Kommentar |
 software | Software |
 # Station 2
-outside | draußen; im Freien | There is a long queue outside a shop.
+outside | draußen; im Freien
 jacket | Jacke |
-at the front of | an der Spitze (von); im vorderen Bereich | The boy is standing at the front of the queue.
-to take the dog for a walk | den Hund spazieren führen | It's nice today. Let's take Sherlock for a walk.
+at the front of | an der Spitze (von); im vorderen Bereich
+to take the dog for a walk | den Hund spazieren führen
 to rap | rappen |
 to try on | anprobieren |
 to hang (around), hung | (herum)hängen |
@@ -1055,9 +1055,9 @@ to have a haircut | sich die Haare schneiden lassen |
 to paint | streichen; anmalen; malen |
 to take a break | Pause machen |
 moment | Moment; Augenblick |
-while | während | He's dancing while she's rapping.
-to wave | winken | Look! There's my mum. She's waving.
-in front of | vor; davor | Let's meet in front of the computer shop.
+while | während
+to wave | winken
+in front of | vor; davor
 # Song: Generation XOXO
 n8 (night) | Nacht |
 omg (oh my god) | Oh mein Gott |
@@ -1078,48 +1078,48 @@ bf (best friends) | beste Freunde |
 m8s (mates) | Kumpel |
 4ever (forever) | für immer |
 asap (as soon as possible) | sobald wie möglich |
-I think so. | Ich glaube. | Is she playing football? – I think so.
+I think so. | Ich glaube.
 Your turn. | Du bist dran. |
 # Reading corner
-to test | testen; prüfen | He tested pizzas in a restaurant.
-roller coaster | Achterbahn | I like scary rides.
+to test | testen; prüfen
+roller coaster | Achterbahn
 ride | Fahrt; Ritt |
-theme park | Freizeitpark; Themenpark | In a theme park there are lots of rides.
+theme park | Freizeitpark; Themenpark
 billion | Milliarde |
-to fit | passen | We all fit in my mum's small car.
+to fit | passen
 island | Insel |
-to be called | heißen; genannt werden | One part of London is called Greenwich.
-South Pole | Südpol | Penguins come from the South Pole.
+to be called | heißen; genannt werden
+South Pole | Südpol
 # Film corner
-What about you? | Und du? | I don't think it's true. What about you?
-to agree | zustimmen | I agree, the new band is super cool.
-to disagree | anderer Meinung sein; nicht einverstanden sein | to disagree ↔ to agree
-I don't think so. | Ich glaube nicht. | Do you think it's true? – I don't think so.
-part | Teil | I liked the first part of the film.
+What about you? | Und du?
+to agree | zustimmen
+to disagree | anderer Meinung sein; nicht einverstanden sein
+I don't think so. | Ich glaube nicht.
+part | Teil
 # Checkpoint
 event | Ereignis; Veranstaltung |
 to plant | pflanzen |
 chess | Schach |
 live | live |
-project | Projekt | Now over to David.
+project | Projekt
 flower | Blume |
 to ski | Ski fahren |
-mile | Meile | 1 mile = 1.6 kilometres
-guide | Führer; Führerin | I skied to the South Pole with my guide.
-hard | schwer; schwierig | It is hard to believe.
+mile | Meile
+guide | Führer; Führerin
+hard | schwer; schwierig
 to swim, swam, swum | schwimmen |
-way to go | super | I'm in the school team! – Way to go!
-America | Amerika | They speak English in America.
-texter | SMS-Schreiber; SMS-Schreiberin | texter → text message
+way to go | super
+America | Amerika
+texter | SMS-Schreiber; SMS-Schreiberin
 radio | Radio |
-listener | Zuhörer; Zuhörerin | listener → to listen
-somebody else | jemand anderes | Do you know somebody else who is unusual?
+listener | Zuhörer; Zuhörerin
+somebody else | jemand anderes
 # Writing skills
 wall | Mauer; Wand |
-out | heraus | Come out, Fluffi!
+out | heraus
 lettuce | Kopfsalat |
-finally | schließlich; zum Schluss | Finally they found Fluff.
-at last | endlich; zu guter Letzt | at last = finally
+finally | schließlich; zum Schluss
+at last | endlich; zu guter Letzt
 # Word bank*: Prepositions
 in the box | in der Kiste |
 under the box | unter der Kiste |

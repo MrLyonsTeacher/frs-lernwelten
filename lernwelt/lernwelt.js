@@ -4,6 +4,8 @@
    Der Ergebnis-Code ist kein Level, sondern eine eigene Seite (#fertig), erreichbar über den Fertig-Knopf. */
 (function(){
 "use strict";
+const LW_BASE = (document.currentScript && document.currentScript.src || "").replace(/lernwelt\/lernwelt\.js.*$/,"");   // Basis für lokale Dateien (Fotos)
+const fotoLocal = n => LW_BASE + "fotos/" + String(n).replace(/[^A-Za-z0-9.\-]+/g,"_").replace(/\.[^.]*$/,"").slice(0,90) + ".jpg";
 
 const TXT = {
   de:{map:"Übersicht",pts:"Punkte",stars:"Sterne",next:"Weiter",check:"Prüfen",again:"Nochmal",nextLvl:"Nächstes Spiel",
@@ -32,7 +34,7 @@ const TXT = {
       rankNew:"Neuer Rang!",allRanks:"Alle Ränge",rankNext:(n,name)=>`noch ${n} bis ${name}`,rankTop:"Höchster Rang!",today:"heute",rankOk:"Weiter!",
       review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",cardsHow:"Lies die Infokarten in Ruhe durch. Tipp: Tippe auf **Abspielen** und **Vorlesen**.",cardsHead:"Infokarten",gamesHead:"Spiele",cardsN:n=>`${n} Karten`,cardsDone:"✓ Fertig",cardsRead:"gelesen",cardsNew:"noch nicht gelesen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
       capHint:"🔠 **Achte auf Groß- und Kleinschreibung!** Sie zählt hier.",capMiss:"Fast! Die Großschreibung zählt – so ist es richtig:",
-      videoNote:"Das Video wird von YouTube geladen.",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
+      videoNote:"Das Video liegt bei YouTube. Mit dem Klick öffnet sich YouTube (Google) in einem neuen Tab.",videoExt:"Du verlässt jetzt diese Seite: Das Video liegt bei YouTube (Google).",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
   en:{map:"Games",pts:"points",stars:"stars",next:"Next",check:"Check",again:"Play again",nextLvl:"Next game",
       toMap:"All games",right:"Correct!",wrong:"Not quite.",correctIs:"Correct answer:",forExample:"For example:",timeUp:"Time’s up!",
       start:"Start",record:"New best score!",best:"Best",open:"not played yet",result:"See results",
@@ -59,7 +61,7 @@ const TXT = {
       rankNew:"New rank!",allRanks:"All ranks",rankNext:(n,name)=>`${n} more to ${name}`,rankTop:"Top rank!",today:"today",rankOk:"Keep going!",
       review:"Learn from your mistakes",gap:"Gap",learn:"Learn first",learnAgain:"Learn again",cardsHow:"Read the cards in your own time. Tip: tap **Play** and **Read aloud**.",cardsHead:"Learn the facts",gamesHead:"Games",cardsN:n=>`${n} cards`,cardsDone:"✓ Done",cardsRead:"read",cardsNew:"not read yet",startGame:"Start the game ▸",read:"Read aloud",auto:"Play",pause:"Pause",prev:"Back",
       capHint:"🔠 **Capital letters count here!** · Achte auf Groß- und Kleinschreibung.",capMiss:"Almost! Capital letters count – it is written:",
-      videoNote:"The video is loaded from YouTube.",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
+      videoNote:"The video is on YouTube. Clicking opens YouTube (Google) in a new tab.",videoExt:"You are leaving this page: the video is on YouTube (Google).",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
 };
 
 /* ---------- Medaillen ---------- */
@@ -425,7 +427,7 @@ function learnScreen(l, fromHome){
     else st.innerHTML = f.video
       ? `<div class="ln-video"><div class="ln-vbox" id="lnV"><button class="ln-play" data-yt="${esc(f.video)}" aria-label="Play video">▶</button><p>${T.videoNote}</p></div>
           <div class="ln-body"><h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div></div>`
-      : `<div class="ln-art">${f.foto ? `<figure class="ln-foto"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f.foto)}?width=800" alt="${esc(plain(f.titel||""))}" loading="eager" onerror="this.closest('figure').outerHTML='<span>${(f.bild||"📌").replace(/'/g,"")}</span>'"><figcaption>${f.fotoText?`<span class="ln-cap">${rich(f.fotoText)}</span>`:""}<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f.foto)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a></figcaption></figure>` : `<span>${f.bild||"📌"}</span>`}</div>
+      : `<div class="ln-art">${f.foto ? `<figure class="ln-foto"><img src="${fotoLocal(f.foto)}" alt="${esc(plain(f.titel||""))}" loading="eager" onerror="this.closest('figure').outerHTML='<span>${(f.bild||"📌").replace(/'/g,"")}</span>'"><figcaption>${f.fotoText?`<span class="ln-cap">${rich(f.fotoText)}</span>`:""}<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f.foto)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a></figcaption></figure>` : `<span>${f.bild||"📌"}</span>`}</div>
          <div class="ln-body">${f.jahr?`<div class="ln-year" id="lnYear">${esc(f.jahr)}</div>`:""}<h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.hoeren?hearRow(f.hoeren, f.hoerText):""}
            ${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div>`;
     st.insertAdjacentHTML("beforeend", `<span class="ln-n">${i+1} / ${F.length}</span>`);
@@ -443,7 +445,8 @@ function learnScreen(l, fromHome){
     if(e.target.closest("#lnAuto")){ if(!auto && i===F.length-1) show(0); setAuto(!auto); return; }
     if(e.target.closest("#lnVoice")){ voice = !voice; const b=$("#lnVoice"); b.setAttribute("aria-pressed", voice); if(voice){ if(!F[i].video) say(F[i], auto ? ()=>{ tm=setTimeout(()=>{ if(auto) (i<F.length-1 ? show(i+1) : setAuto(false)); }, 900); } : null); } else { hush(); if(auto) schedule(); } return; }
     const y = e.target.closest("[data-yt]");
-    if(y){ setAuto(false); $("#lnV").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(y.dataset.yt)}?rel=0&autoplay=1&playsinline=1&modestbranding=1&iv_load_policy=3" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; return; }
+    if(y){ setAuto(false); const id = encodeURIComponent(y.dataset.yt);   // Datenschutz: kein Einbetten, erst nach bewusstem Klick öffnet sich YouTube in einem neuen Tab
+      $("#lnV").innerHTML = `<div class="ln-vbox"><p>${T.videoExt}</p><a class="ln-play" style="text-decoration:none;display:inline-grid;place-items:center" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer">▶ YouTube</a></div>`; return; }
     if(e.target.closest("#lnGo")){ stop(); if(!fromHome || ENDREACHED) S.seen[key] = 1; save(); location.hash = fromHome ? "" : "l="+encodeURIComponent(l.id); }
   };
   show(0);

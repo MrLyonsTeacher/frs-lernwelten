@@ -218,7 +218,7 @@
   // Goldkarte des geheimen Rangs: großes Bild im goldenen Rahmen mit Glanz, Name und Datum
   function godCard(k, en){
     rkStyle();
-    if(!document.getElementById("gc-font")){ const l=document.createElement("link"); l.id="gc-font"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap"; document.head.appendChild(l); }
+    if(!document.getElementById("gc-font")){ const l=document.createElement("link"); l.id="gc-font"; l.rel="stylesheet"; l.href=BASE+"fonts/fonts.css"; document.head.appendChild(l); }
     const C = XPC[k] || XPC[5], d = document.createElement("div"); d.className = "gc-bg"; d.style.cssText = `--g1:${C[1]};--g2:${C[3]};--gg:${C[4]}`;
     const date = new Date().toLocaleDateString(en===false?"de-DE":"en-GB", {day:"numeric", month:"long", year:"numeric"});
     const corner = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M4 56 V22 Q4 4 22 4 H56" fill="none" stroke="url(#gcg)" stroke-width="3.2"/><path d="M11 56 V26 Q11 11 26 11 H56" fill="none" stroke="url(#gcg)" stroke-width="1.4"/>
