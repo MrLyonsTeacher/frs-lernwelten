@@ -320,7 +320,7 @@ function freiDialog(k, ADD){
       <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${ADD ? "" : (xs.includes(t.id)?"":"checked")}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
     <div class="fd-auto"><span><b>Automatischer Reset</b><em>Fortschritt, Namen, Niveau und Trainer-Daten werden gelöscht und der Tab wird geschlossen. Die Uhr startet, wenn die Schüler den Code scannen.</em>
       <select id="fRes">${[[0,"Kein automatischer Reset"],[45,"Nach 45 Minuten"],[90,"Nach 90 Minuten"]].map(([m,t])=>`<option value="${m}" ${(selRaw(k) ? (selRaw(k).r||0) : 90)===m?"selected":""}>${t}</option>`).join("")}</select></span></div>
-    <div class="fd-row"><button class="btn" id="fMk" data-add="${ADD?1:0}">Code erzeugen</button>${ADD?"":`<button class="btn ghost" id="fAll">Alles öffnen</button>`}${closeB}</div>
+    <div class="fd-row"><button class="btn" id="fMk" data-add="${ADD?1:0}">Code erzeugen</button>${ADD?"":`<button class="btn ghost" id="fAll">Alles öffnen</button><button class="btn ghost" id="fNone">Alles abwählen</button>`}${closeB}</div>
     <div class="fd-out" id="fOut"></div>`;
   if(!dlg.open) dlg.showModal();
 }
@@ -336,6 +336,7 @@ document.addEventListener("click", async e=>{
   const pickedX = o => [...dlg.querySelectorAll("[data-t]")].filter(x=>!x.checked && o.includes(x.dataset.p)).map(x=>x.dataset.t);   // gesperrte Einzelthemen in offenen Bereichen
   const mb = e.target.closest("[data-more]"); if(mb){ const s = dlg.querySelector(`[data-sub="${mb.dataset.more}"]`); s.hidden = !s.hidden; mb.textContent = (s.hidden?"▾":"▴")+mb.textContent.slice(1); return; }
   if(e.target.matches("[data-b]")){ const s = dlg.querySelector(`[data-sub="${e.target.dataset.b}"]`); if(s && dlg.querySelector("#fMk").dataset.add!=="1") e.target.checked ? s.removeAttribute("data-off") : s.setAttribute("data-off",""); return; }
+  if(e.target.closest("#fNone")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=false); dlg.querySelectorAll("[data-sub]").forEach(s=>s.setAttribute("data-off","")); return; }
   if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=true); dlg.querySelectorAll("[data-sub]").forEach(s=>s.removeAttribute("data-off")); return; }
   if(e.target.id==="fMode"){ return; }
   if(e.target.closest("#fMk") && e.target.closest("#fMk").dataset.add==="1"){ const o = picked(), u = [...dlg.querySelectorAll("[data-t]")].filter(x=>x.checked && !o.includes(x.dataset.p)).map(x=>x.dataset.t); const r = +(dlg.querySelector("#fRes")||{}).value || 0;
