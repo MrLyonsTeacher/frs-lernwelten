@@ -4,6 +4,8 @@
    Ohne Code gilt STANDARD_GESPERRT (Klasse → gesperrte Bereiche). Hinweis: reiner Browser-Schutz ohne Server – hält Schüler fern, ist aber kein Hochsicherheitsschutz.
    Passwort ändern: neuen SHA-256 von "frs-lernwelten:<Passwort>" bei PWHASH eintragen (Claude übernimmt das). */
 (function(){
+  /* Zugangscode für die verschlüsselten Vokabeln: kommt im QR-Link nach dem # (wird nie an den Server gesendet) und wird auf dem Gerät gespeichert. */
+  try{ const m=(location.hash||"").match(/[#&]k=([^&]+)/); if(m){ localStorage.setItem("frs-vk", decodeURIComponent(m[1])); history.replaceState(null,"",location.pathname+location.search); } }catch(e){}
   const PWHASH = "87b907f06e737f1dcc420a8d7f168cdccb154c7f1fae0c772e9e9441c1305092";
   const STANDARD_GESPERRT = {};            // z. B. { 6:["vocabulary"] } – dann sind diese Bereiche ohne Code gesperrt
   const KEY = k => "frs-frei-" + k;

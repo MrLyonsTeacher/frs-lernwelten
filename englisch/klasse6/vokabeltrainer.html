@@ -94,11 +94,10 @@ input.s{font:16px Lexend;padding:10px 12px;border-radius:12px;border:2px solid v
 <body>
 <div class="top"><a class="back" id="back" href="../welt.html?k=6&a=vocabulary">← Water World</a><h1>📚 Vokabeltrainer · Klasse 6</h1></div>
 <main class="wrap" id="v"></main>
-<script src="../saetze.js"></script>
-<script src="vokabeln6.js"></script>
-<script src="gruppen6.js"></script>
 <script src="../../lernwelt/freigabe.js"></script>
+<script src="../vokgate.js"></script>
 <script>
+VOKGATE.run("../daten/vok6.enc",()=>{
 "use strict";
 const $ = s => document.querySelector(s), V = $("#v");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -400,6 +399,7 @@ function go(){ V.onkeydown = null; home(); V.onclick = e => {
   const c = e.target.closest("[data-sec]"); if(c){ const s = c.dataset.sec; if(!s) secs.clear(); else secs.has(s) ? secs.delete(s) : secs.add(s); return home(); }
   const m = e.target.closest("[data-m]"); if(m){ ({cards, quiz, type:typing, list, mock:()=>mock("test"), mix:()=>mock("mix")})[m.dataset.m](); window.scrollTo(0,0); } }; }
 go();
+});
 </script>
 </body>
 </html>
