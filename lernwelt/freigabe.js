@@ -16,11 +16,23 @@
   function locked(k, kat){ const s = state(k); return s ? !s.open.includes(kat) : (STANDARD_GESPERRT[k]||[]).includes(kat); }
   async function checkPw(pw){ try{ return (await sha("frs-lernwelten:" + String(pw).trim())) === PWHASH; }catch(e){ return false; } }
   async function makeCode(k, open, x, r){ const o = { k:+k, o:open, t:Date.now() }; if(x && x.length) o.x = x; if(r>0) o.r = +r; const payload = JSON.stringify(o); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
+  /* „Zusätzlich freischalten“: ändert nichts an dem, was schon offen ist (o = ganze Bereiche, u = einzelne Themen). a:1 im Code. */
+  async function makeAddCode(k, open, u, r){ const o = { k:+k, a:1, o:open||[], t:Date.now() }; if(u && u.length) o.u = u; if(r>0) o.r = +r; const payload = JSON.stringify(o); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
+  function mergeAdd(o){
+    const F = (typeof FRS!=="undefined" ? FRS : window.FRS), cl = (F && F.englisch && F.englisch.klassen.find(c=>c.k===o.k)) || null, th = cl ? cl.themen : [];
+    const old = state(o.k) || { open:[], x:[] };       // ohne bisherige Freigabe: alles andere bleibt gesperrt
+    const open = old.open.slice(), x = new Set(Array.isArray(old.x) ? old.x : []);
+    for(const kat of o.o){ if(!open.includes(kat)) open.push(kat); th.filter(t=>t.kat===kat).forEach(t=>x.delete(t.id)); }
+    for(const id of (o.u||[])){ const t = th.find(t=>t.id===id); if(!t) continue;
+      if(!open.includes(t.kat)){ open.push(t.kat); th.filter(z=>z.kat===t.kat && z.id!==id).forEach(z=>x.add(z.id)); }
+      x.delete(id); }
+    return { open, x:[...x], ts:o.t, r:o.r>0?o.r:0 };
+  }
   async function apply(code){
     try{ const [p, sig] = String(code).trim().split("."); const payload = unb64(p);
       if(!sig || (await sha(PWHASH + payload)).slice(0,14) !== sig) return null;
       const o = JSON.parse(payload); if(!o || !Array.isArray(o.o) || !o.k) return null;
-      localStorage.setItem(KEY(o.k), JSON.stringify({ open:o.o, x:Array.isArray(o.x)?o.x:[], ts:o.t, r:o.r>0?o.r:0 }));
+      localStorage.setItem(KEY(o.k), JSON.stringify(o.a ? mergeAdd(o) : { open:o.o, x:Array.isArray(o.x)?o.x:[], ts:o.t, r:o.r>0?o.r:0 }));
       if(o.r>0) localStorage.setItem(RKEY, String(Date.now() + o.r*60000)); else localStorage.removeItem(RKEY);   // Auto-Reset: in o.r Minuten
       return o;
     }catch(e){ return null; } }
@@ -45,5 +57,5 @@
   const tick = () => { if(sweep()) closeTab(); };
   setInterval(tick, 20000); document.addEventListener("visibilitychange", () => { if(!document.hidden) tick(); });
   const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
-  window.FREI = { wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  window.FREI = { wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, makeAddCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();

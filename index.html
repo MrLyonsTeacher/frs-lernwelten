@@ -305,21 +305,22 @@ const selGet = (k, bereiche) => { const v = selRaw(k); return v ? bereiche.filte
 const selX = (k, bereiche) => { const v = selRaw(k); return v ? v.x : []; };
 const selLocked = (k, bereiche) => { const o = selGet(k, bereiche); return bereiche.filter(b=>!o.includes(b)).concat(selX(k, bereiche).map(()=>"•")); };
 let TEACHER = false; try{ TEACHER = sessionStorage.getItem("frs-teacher")==="1"; }catch(e){}
-function freiDialog(k){
+function freiDialog(k, ADD){
   const c = FRS.englisch.klassen.find(x=>x.k===k), w = FRS.welt(k), bereiche = FRS.bereicheFuer(k), box = document.getElementById("fdBody"), dlg = document.getElementById("fdlg");
   const head = `<h2 id="fdT">🔑 Freigabe · Klasse ${k} · ${esc(w.name)}</h2>`;
   const closeB = `<button class="btn ghost" data-fclose>Schließen</button>`;
   if(!TEACHER){
     box.innerHTML = head + `<p>Passwort eingeben, um Bereiche für die Schüler freizugeben oder zu sperren.</p><div class="fd-pw"><input id="fpw" type="password" autocomplete="off" placeholder="Passwort"><button class="btn" id="fpwGo">OK</button></div><div class="fd-row">${closeB}</div>`;
     dlg.showModal(); setTimeout(()=>document.getElementById("fpw").focus(),50); return; }
-  const open = selGet(k, bereiche), xs = selX(k, bereiche);
-  box.innerHTML = head + `<p>Häkchen = offen für Schüler. Mit „Einzelne Themen“ kannst du auch einzelne Lernwelten sperren, z. B. Grammatik, die noch nicht dran war. Dann „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera und die Auswahl gilt auf ihrem Gerät.</p>
+  const open = ADD ? [] : selGet(k, bereiche), xs = ADD ? [] : selX(k, bereiche);
+  const modeBar = `<div class="fd-auto"><span><b>Modus</b><em>${ADD ? "Zusätzlich freischalten: Nur das, was du hier ankreuzt, wird auf den iPads zusätzlich geöffnet. Bereits Offenes bleibt offen, nichts wird gesperrt oder zurückgesetzt. Hat ein iPad noch keine Freigabe, bleibt alles andere gesperrt." : "Ersetzen: Die Auswahl ersetzt auf dem iPad die bisherige Freigabe."}</em><select id="fMode"><option value="rep" ${ADD?"":"selected"}>Freigabe ersetzen (wie bisher)</option><option value="add" ${ADD?"selected":""}>Zusätzlich freischalten (nichts ändert sich an alten Codes)</option></select></span></div>`;
+  box.innerHTML = head + modeBar + `<p>${ADD ? "Häkchen bei einem Bereich = ganzer Bereich wird geöffnet. Unter „Einzelne Themen“ kannst du nur einzelne Lernwelten öffnen, z. B. nur die Vorbereitung für Unit 1." : "Häkchen = offen für Schüler."} Mit „Einzelne Themen“ kannst du auch einzelne Lernwelten sperren, z. B. Grammatik, die noch nicht dran war. Dann „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera und die Auswahl gilt auf ihrem Gerät.</p>
     <div class="fd-list">${bereiche.map(b=>{ const th = c.themen.filter(t=>t.kat===b); return `<div class="fd-area"><label><input type="checkbox" data-b="${b}" ${open.includes(b)?"checked":""}><span>${FRS.kategorien[b].icon||""} ${esc(FRS.kategorien[b].name)}</span><small>${th.length} Lernwelten</small></label>
-      <button class="fd-more" type="button" data-more="${b}">▾ Einzelne Themen${th.some(t=>xs.includes(t.id))?` (${th.filter(t=>xs.includes(t.id)).length} gesperrt)`:""}</button>
-      <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${xs.includes(t.id)?"":"checked"}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
+      <button class="fd-more" type="button" data-more="${b}">▾ Einzelne Themen${ADD?"":th.some(t=>xs.includes(t.id))?` (${th.filter(t=>xs.includes(t.id)).length} gesperrt)`:""}</button>
+      <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${ADD ? "" : (xs.includes(t.id)?"":"checked")}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
     <div class="fd-auto"><span><b>Automatischer Reset</b><em>Fortschritt, Namen, Niveau und Trainer-Daten werden gelöscht und der Tab wird geschlossen. Die Uhr startet, wenn die Schüler den Code scannen.</em>
       <select id="fRes">${[[0,"Kein automatischer Reset"],[45,"Nach 45 Minuten"],[90,"Nach 90 Minuten"]].map(([m,t])=>`<option value="${m}" ${(selRaw(k) ? (selRaw(k).r||0) : 90)===m?"selected":""}>${t}</option>`).join("")}</select></span></div>
-    <div class="fd-row"><button class="btn" id="fMk">Code erzeugen</button><button class="btn ghost" id="fAll">Alles öffnen</button>${closeB}</div>
+    <div class="fd-row"><button class="btn" id="fMk" data-add="${ADD?1:0}">Code erzeugen</button>${ADD?"":`<button class="btn ghost" id="fAll">Alles öffnen</button>`}${closeB}</div>
     <div class="fd-out" id="fOut"></div>`;
   if(!dlg.open) dlg.showModal();
 }
@@ -334,13 +335,19 @@ document.addEventListener("click", async e=>{
   const picked = () => [...dlg.querySelectorAll("[data-b]")].filter(x=>x.checked).map(x=>x.dataset.b);
   const pickedX = o => [...dlg.querySelectorAll("[data-t]")].filter(x=>!x.checked && o.includes(x.dataset.p)).map(x=>x.dataset.t);   // gesperrte Einzelthemen in offenen Bereichen
   const mb = e.target.closest("[data-more]"); if(mb){ const s = dlg.querySelector(`[data-sub="${mb.dataset.more}"]`); s.hidden = !s.hidden; mb.textContent = (s.hidden?"▾":"▴")+mb.textContent.slice(1); return; }
-  if(e.target.matches("[data-b]")){ const s = dlg.querySelector(`[data-sub="${e.target.dataset.b}"]`); if(s) e.target.checked ? s.removeAttribute("data-off") : s.setAttribute("data-off",""); return; }
+  if(e.target.matches("[data-b]")){ const s = dlg.querySelector(`[data-sub="${e.target.dataset.b}"]`); if(s && dlg.querySelector("#fMk").dataset.add!=="1") e.target.checked ? s.removeAttribute("data-off") : s.setAttribute("data-off",""); return; }
   if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=true); dlg.querySelectorAll("[data-sub]").forEach(s=>s.removeAttribute("data-off")); return; }
+  if(e.target.id==="fMode"){ return; }
+  if(e.target.closest("#fMk") && e.target.closest("#fMk").dataset.add==="1"){ const o = picked(), u = [...dlg.querySelectorAll("[data-t]")].filter(x=>x.checked && !o.includes(x.dataset.p)).map(x=>x.dataset.t); const r = +(dlg.querySelector("#fRes")||{}).value || 0;
+    if(!o.length && !u.length){ document.getElementById("fOut").innerHTML = `<p>Bitte mindestens einen Bereich oder ein Thema ankreuzen.</p>`; return; }
+    const code = await FREI.makeAddCode(k, o, u, r), url = abs(`englisch/welt.html?k=${k}&frei=${code}`), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
+    document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → ${o.length?`Bereich(e) komplett offen: ${o.length}`:""}${o.length&&u.length?" · ":""}${u.length?`${u.length} einzelne Themen zusätzlich offen`:""}. Alles, was vorher offen war, bleibt offen${r?` · Auto-Reset nach ${r} Minuten`:""}.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`; return; }
   if(e.target.closest("#fMk")){ const o = picked(), x = pickedX(o); const r = +(dlg.querySelector("#fRes")||{}).value || 0; try{ localStorage.setItem(SELKEY(k), JSON.stringify({o, x, r})); }catch(err){}
     const code = await FREI.makeCode(k, o, x, r), url = abs(`englisch/welt.html?k=${k}&frei=${code}`), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
     document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt${x.length?` (dazu ${x.length} einzelne Themen gesperrt)`:""}${r?` · Auto-Reset nach ${r} Minuten`:""}.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;
     renderPanel(); }
 });
+document.addEventListener("change", e=>{ if(e.target.id==="fMode"){ const kTxt = document.getElementById("fdT").textContent.match(/Klasse (\d+)/); if(kTxt) freiDialog(+kTxt[1], e.target.value==="add"); } });
 renderTabs(); renderPanel();
 </script>
 </body>
