@@ -191,7 +191,7 @@ const TITLE = () => cur==="irr" ? "Irregular verbs" : "Unit "+cur+" · "+unit().
 function home(){
   const P = pool(), all = cur==="irr" ? IRR : unit().items, known = all.filter(i=>getBox(i)>=2).length;
   const best = store.get("vt8-best", {})[ID()];
-  const lk = id => !!(window.FREI && FREI.locked(6,"vocabulary"));   // Tests werden nie einzeln gesperrt   // von der Lehrkraft gesperrt?
+  const lk = id => !!(window.FREI && (FREI.locked(6,"vocabulary") || FREI.lockedThema(6,id)));   // von der Lehrkraft gesperrt?
   const tabs = UNITS.map(u=>`<button class="tab" data-u="${u.id}" aria-pressed="${cur===u.id}">${lk("v6t"+u.id)?"🔒 ":""}Unit ${u.id}</button>`).join("") + `<button class="tab" data-u="irr" aria-pressed="${cur==="irr"}">${lk("v6ti")?"🔒 ":""}Irregular verbs</button>`;
   if(lk(ID())){ V.innerHTML = `<div class="tabs">${tabs}</div><section class="panel" style="text-align:center"><div style="font-size:56px">🔒</div><h2>Not open yet</h2><p class="sub">Your teacher will open <b>${esc(TITLE())}</b> soon.<br>Dieser Teil ist noch gesperrt – deine Lehrkraft schaltet ihn bald frei.</p></section>`; return; }
   const chips = cur==="irr" ? "" : `<div class="chips"><button class="chip" data-sec="" aria-pressed="${!secs.size}">Alle Abschnitte</button>${unit().secs.map(s=>`<button class="chip" data-sec="${esc(s)}" aria-pressed="${secs.has(s)}">${esc(s)} (${unit().items.filter(i=>i.sec===s).length})</button>`).join("")}</div>`;

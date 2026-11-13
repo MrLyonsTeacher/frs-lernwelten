@@ -233,7 +233,7 @@ async function main(){
   document.title = `Class ${K} · ${WI.name} – FRS Lernwelten`;
   const BER = FRS.bereicheFuer(K), byKat = b => KL.themen.filter(t=>t.kat===b);
   const names = {}, counts = {}, icons = {};
-  const thLocked = t => t.grp!=="test" && !!(window.FREI && FREI.lockedThema(K,t.id));   // Testvorbereitung (grp:"test") wird nie einzeln gesperrt
+  const thLocked = t => t.grp!=="test" && !!(window.FREI && FREI.lockedThema(K,t.id));   // Testvorbereitung (grp:"test"): gesperrte Tests werden nicht ausgeblendet, sondern mit 🔒 angezeigt
   BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).filter(t=>!thLocked(t)).length; icons[b]=FRS.kategorien[b].icon; });
   const RK = () => UH.rank(K, UH.today(K));
   const FLAGQ = t => t.grp!=="test";   // grp:"test" = Testvorbereitung: keine Flaggen
@@ -273,7 +273,7 @@ async function main(){
       <span class="qt-f"><span class="q-bar"><i style="width:${pct}%"></i></span><span class="qt-p">${p?`${p.pts}/${p.max}`:"new"}</span></span></a>`; };
   // Testvorbereitung als Kachel: keine Flaggen, keine Medaille – nur der beste Test in Prozent
   const testTile = t => { let b = null; try{ b = (JSON.parse(localStorage.getItem("vt8-best")||"{}")||{})[t.id] || null; }catch(e){}
-    const lk = false;   // Testvorbereitung ist immer offen
+    const lk = !!(window.FREI && FREI.lockedThema(K, t.id));   // gesperrte Tests bleiben sichtbar (🔒, abgedunkelt), damit der Bereich nicht leer wirkt
     return `<a class="qt test${b?" played":""}${lk?" lockd":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${lk?"🔒":(t.icon||"📝")}</span>
       <b class="qt-t">${esc(t.titel.replace(/^Vocab Trainer: /,""))}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
       <span class="qt-b">${b?`Best test: ${b.pct} %`:"no test yet"}</span></a>`; };
