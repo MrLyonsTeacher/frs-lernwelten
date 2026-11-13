@@ -315,12 +315,13 @@ function freiDialog(k){
   box.innerHTML = head + `<p>Häkchen = offen für Schüler. Mit „Einzelne Themen“ kannst du auch einzelne Lernwelten sperren, z. B. Grammatik, die noch nicht dran war. Dann „Code erzeugen“ und den QR-Code zeigen – die Schüler scannen ihn mit der iPad-Kamera und die Auswahl gilt auf ihrem Gerät.</p>
     <div class="fd-list">${bereiche.map(b=>{ const th = c.themen.filter(t=>t.kat===b); return `<div class="fd-area"><label><input type="checkbox" data-b="${b}" ${open.includes(b)?"checked":""}><span>${FRS.kategorien[b].icon||""} ${esc(FRS.kategorien[b].name)}</span><small>${th.length} Lernwelten</small></label>
       <button class="fd-more" type="button" data-more="${b}">▾ Einzelne Themen${th.some(t=>xs.includes(t.id))?` (${th.filter(t=>xs.includes(t.id)).length} gesperrt)`:""}</button>
-      <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${xs.includes(t.id)?"":"checked"}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
+      <div class="fd-sub" data-sub="${b}" hidden>${th.map(t=>`<label><input type="checkbox" data-t="${esc(t.id)}" data-p="${b}" ${open.includes(b)&&!xs.includes(t.id)?"checked":""}><span>${esc(t.icon||"")} ${esc(t.titel)}<em>${esc(t.untertitel||"")}</em></span></label>`).join("")}</div></div>`; }).join("")}</div>
     <div class="fd-auto"><span><b>Zugangscode für die Vokabeln</b><em>Wird im QR-Code mitgegeben (nach dem #, nie an einen Server gesendet), damit Schüler nichts eintippen müssen. Ohne Code bleiben die Vokabeln verschlossen.</em><input type="password" id="fKey" autocomplete="off" value="${esc((()=>{try{return localStorage.getItem("frs-vk")||""}catch(e){return ""}})())}" style="padding:8px;border:2px solid #C8D2E0;border-radius:10px;font:inherit;width:100%;box-sizing:border-box"></span></div>
     <div class="fd-auto"><span><b>Automatischer Reset</b><em>Fortschritt, Namen, Niveau und Trainer-Daten werden gelöscht und der Tab wird geschlossen. Die Uhr startet, wenn die Schüler den Code scannen.</em>
       <select id="fRes">${[[0,"Kein automatischer Reset"],[45,"Nach 45 Minuten"],[90,"Nach 90 Minuten"]].map(([m,t])=>`<option value="${m}" ${(selRaw(k) ? (selRaw(k).r||0) : 90)===m?"selected":""}>${t}</option>`).join("")}</select></span></div>
     <div class="fd-row"><button class="btn" id="fMk">Code erzeugen</button><button class="btn ghost" id="fAll">Alles öffnen</button><button class="btn ghost" id="fNone">Alles abwählen</button>${closeB}</div>
     <div class="fd-out" id="fOut"></div>`;
+  dlg.querySelectorAll("[data-b]").forEach(c=>{ const ks = [...dlg.querySelectorAll(`[data-t][data-p="${c.dataset.b}"]`)]; if(!ks.length) return; const n = ks.filter(x=>x.checked).length; c.checked = n===ks.length; c.indeterminate = n>0 && n<ks.length; });
   if(!dlg.open) dlg.showModal();
 }
 document.addEventListener("click", async e=>{
@@ -331,12 +332,15 @@ document.addEventListener("click", async e=>{
   if(e.target.closest("#fpwGo")){ const i = document.getElementById("fpw");
     if(await FREI.checkPw(i.value)){ TEACHER = true; try{ sessionStorage.setItem("frs-teacher","1"); }catch(err){} freiDialog(k); }
     else { i.classList.add("shake"); setTimeout(()=>i.classList.remove("shake"),400); i.value=""; } return; }
-  const picked = () => [...dlg.querySelectorAll("[data-b]")].filter(x=>x.checked).map(x=>x.dataset.b);
+  const kids = b => [...dlg.querySelectorAll(`[data-t][data-p="${b}"]`)];
+  const sync = b => { const c = dlg.querySelector(`[data-b="${b}"]`), ks = kids(b); if(!c || !ks.length) return; const n = ks.filter(x=>x.checked).length; c.checked = n === ks.length; c.indeterminate = n > 0 && n < ks.length; };
+  const picked = () => [...dlg.querySelectorAll("[data-b]")].filter(x=>x.checked || kids(x.dataset.b).some(y=>y.checked)).map(x=>x.dataset.b);   // Bereich offen, wenn Haken gesetzt oder mind. ein Thema angehakt
   const pickedX = o => [...dlg.querySelectorAll("[data-t]")].filter(x=>!x.checked && o.includes(x.dataset.p)).map(x=>x.dataset.t);   // gesperrte Einzelthemen in offenen Bereichen
   const mb = e.target.closest("[data-more]"); if(mb){ const s = dlg.querySelector(`[data-sub="${mb.dataset.more}"]`); s.hidden = !s.hidden; mb.textContent = (s.hidden?"▾":"▴")+mb.textContent.slice(1); return; }
-  if(e.target.matches("[data-b]")){ const s = dlg.querySelector(`[data-sub="${e.target.dataset.b}"]`); if(s) e.target.checked ? s.removeAttribute("data-off") : s.setAttribute("data-off",""); return; }
-  if(e.target.closest("#fNone")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=false); dlg.querySelectorAll("[data-sub]").forEach(s=>s.setAttribute("data-off","")); return; }
-  if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>x.checked=true); dlg.querySelectorAll("[data-sub]").forEach(s=>s.removeAttribute("data-off")); return; }
+  if(e.target.matches("[data-b]")){ const b = e.target.dataset.b; kids(b).forEach(x=>x.checked = e.target.checked); e.target.indeterminate = false; return; }   // Kategorie an/aus setzt alle Themen; einzelne bleiben danach anklickbar
+  if(e.target.matches("[data-t]")){ sync(e.target.dataset.p); return; }
+  if(e.target.closest("#fNone")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>{x.checked=false; x.indeterminate=false;}); return; }
+  if(e.target.closest("#fAll")){ dlg.querySelectorAll("[data-b],[data-t]").forEach(x=>{x.checked=true; x.indeterminate=false;}); return; }
   if(e.target.closest("#fMk")){ const o = picked(), x = pickedX(o); const r = +(dlg.querySelector("#fRes")||{}).value || 0; try{ localStorage.setItem(SELKEY(k), JSON.stringify({o, x, r})); }catch(err){}
     const code = await FREI.makeCode(k, o, x, r); const zk = ((dlg.querySelector("#fKey")||{}).value||"").trim(); if(zk){ try{ localStorage.setItem("frs-vk", zk); }catch(err){} } const url = abs(`englisch/welt.html?k=${k}&frei=${code}`) + (zk ? "#k="+encodeURIComponent(zk) : ""), q = qrcode(0,"M"); q.addData(url,"Byte"); q.make();
     document.getElementById("fOut").innerHTML = `<img src="${q.createDataURL(8,2)}" alt="QR-Code"><p>Schüler scannen → die gewählten Bereiche sind offen, die anderen gesperrt${x.length?` (dazu ${x.length} einzelne Themen gesperrt)`:""}${r?` · Auto-Reset nach ${r} Minuten`:""}.</p><textarea readonly onclick="this.select()">${esc(url)}</textarea>`;

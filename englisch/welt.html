@@ -233,8 +233,9 @@ async function main(){
   document.title = `Class ${K} · ${WI.name} – FRS Lernwelten`;
   const BER = FRS.bereicheFuer(K), byKat = b => KL.themen.filter(t=>t.kat===b);
   const names = {}, counts = {}, icons = {};
-  const thLocked = t => t.grp!=="test" && !!(window.FREI && FREI.lockedThema(K,t.id));   // Testvorbereitung (grp:"test"): gesperrte Tests werden nicht ausgeblendet, sondern mit 🔒 angezeigt
-  BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).filter(t=>!thLocked(t)).length; icons[b]=FRS.kategorien[b].icon; });
+  const thLocked = t => !!(window.FREI && FREI.lockedThema(K,t.id));   // von der Lehrkraft gesperrte Themen (auch Tests) werden nicht angezeigt
+  const OPEN = BER.filter(b=>!FREI.locked(K,b));   // gesperrte Bereiche werden ausgeblendet
+  OPEN.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).filter(t=>!thLocked(t)).length; icons[b]=FRS.kategorien[b].icon; });
   const RK = () => UH.rank(K, UH.today(K));
   const FLAGQ = t => t.grp!=="test";   // grp:"test" = Testvorbereitung: keine Flaggen
   const allMax = KL.themen.filter(FLAGQ).reduce((a,t)=>a+t.max,0), sum = () => KL.themen.filter(FLAGQ).reduce((a,t)=>{ const p=prog(t); return a+(p?p.pts:0); },0);
@@ -245,7 +246,7 @@ async function main(){
     ${UH.prefsHTML()}<span class="wsp"></span><button class="wfin" id="finBtn"><span class="chk" aria-hidden="true"></span><span class="short">Finished?</span></button>`;
   $("#foot").innerHTML = `<button class="wreset" id="resetBtn" title="Reset everything / Alles zurücksetzen" aria-label="Reset everything">↺<span class="long"> Reset</span></button>
 `;
-  $("#dock").innerHTML = BER.map(b=>`<button data-kat="${b}" class="${FREI.locked(K,b)?"locked":""}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${FREI.locked(K,b)?"🔒":counts[b]}</span></button>`).join("");
+  $("#dock").innerHTML = OPEN.map(b=>`<button data-kat="${b}" aria-pressed="false"><span aria-hidden="true">${icons[b]}</span><span class="lbl-long">${esc(names[b])}</span><span class="n">${counts[b]}</span></button>`).join("");
 
   // Welt laden
   let W3 = null, spotsInfo = {};
@@ -264,6 +265,7 @@ async function main(){
   }
 
   const P = $("#panel");
+  if(!OPEN.length){ P.innerHTML = `<h2>🔒 Not open yet</h2><p class="ort">Noch nichts freigegeben</p><p>Your teacher will open the first areas soon. · Deine Lehrkraft schaltet bald die ersten Bereiche frei.</p>`; P.classList.add("on"); document.body.classList.add("area-open"); }
   // Flaggen-Spiel als Kachel (Medaille, Fortschritt)
   const tile = t => { const p=prog(t), pct=p?Math.round(p.pts/p.max*100):0, tier=p?(p.plat?4:LW.tierOf(p.pts,p.max)):0;
     const lk = !!(window.FREI && FREI.lockedThema(K, t.id));
