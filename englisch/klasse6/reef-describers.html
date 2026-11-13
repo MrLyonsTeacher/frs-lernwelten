@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Reef Describers – Adjectives &amp; Adverbs</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:6, kat:"grammar", id:"adv6", icon:"🐠", kartenSymbol:"🐠",
+  titel:"Reef Describers", untertitel:"Adjectives & adverbs",
+  text:"Describe the reef! Learn when to use an adjective (a quiet fish) and when to use an adverb (it swims quietly).",
+  lernen: {
+    adj: { titel:"Adjectives and adverbs", folien:[
+      {"bild": "🐠", "titel": "Adjectives describe things", "formel": ["Adjective | + | Noun"], "bsp": ["A **big** fish swims by.", "The water is **cold**."], "de": "Adjektive beschreiben **Nomen** (Dinge, Personen, Tiere). Sie stehen vor dem Nomen oder nach *be*. Im Plural bekommen sie **kein -s**: two big fish."},
+      {"bild": "🏊", "titel": "Adverbs describe actions", "formel": ["Verb | + | Adverb"], "bsp": ["The turtle swims **slowly**.", "She sings **beautifully**."], "de": "Adverbien sagen, **wie** man etwas tut. Meist: Adjektiv + **-ly** (slow → slowly)."},
+      {"bild": "✏️", "titel": "Spelling", "bsp": ["quiet → quiet**ly**, careful → careful**ly**", "happy → happ**ily**, easy → eas**ily**", "gentle → gent**ly**, simple → simp**ly**"], "de": "Nach Mitlaut + **y** wird es **-ily**. Endet das Adjektiv auf **-le**, wird es **-ly**."},
+      {"bild": "⚡", "titel": "Special adverbs", "bsp": ["good → **well**: She plays well.", "fast → **fast**: He runs fast.", "hard → **hard**: They work hard."], "de": "**good** wird zu **well**. *fast, hard, late, early* bleiben gleich. Achtung: *hardly* heißt **kaum**!"},
+      {"bild": "😋", "titel": "After be, look, feel, taste …", "bsp": ["The soup tastes **good**.", "She looks **happy**."], "de": "Nach *be, look, feel, smell, sound, taste* steht ein **Adjektiv**, kein Adverb. Aber Achtung: *friendly, lovely, lonely* enden auf -ly und sind trotzdem **Adjektive**."}
+    ]}
+  },
+  levels: [
+    { id:"type", lernen:"adj", typ:"swipe", icon:"🐡", titel:"Fish or Action?", art:"Adjective or adverb · swipe",
+      anleitung:"Is it an adjective or an adverb? Swipe **left for Adjective** and **right for Adverb**.",
+      anleitungDe:"Adjektiv oder Adverb? Wische nach **links für Adjective** und nach **rechts für Adverb**. Du kannst auch auf die Knöpfe tippen.",
+      tipp:"Wörter auf -ly sind meistens Adverbien – aber friendly, lovely und lonely sind Adjektive!",
+      links:{t:"Adjective", icon:"🐠"}, rechts:{t:"Adverb", icon:"🏊"},
+      karten:[
+        {t:"quickly", r:"r", e:"**quickly** = schnell (wie?) → Adverb."},
+        {t:"big", r:"l", e:"**big** beschreibt ein Nomen: a big fish → Adjektiv."},
+        {t:"carefully", r:"r", e:"**carefully** → Adverb: She dives carefully."},
+        {t:"dangerous", r:"l", e:"**dangerous** = gefährlich: a dangerous shark → Adjektiv."},
+        {t:"badly", r:"r", e:"**badly** → Adverb: He sings badly."},
+        {t:"friendly", r:"l", e:"**friendly** endet auf -ly, ist aber ein **Adjektiv**: a friendly dolphin."},
+        {t:"happily", r:"r", e:"**happily** → Adverb (happy → happily)."},
+        {t:"colourful", r:"l", e:"**colourful** = bunt → Adjektiv."},
+        {t:"loudly", r:"r", e:"**loudly** → Adverb: The seagulls shout loudly."},
+        {t:"lovely", r:"l", e:"**lovely** = schön, hübsch. Endet auf -ly, ist aber ein **Adjektiv**."},
+        {t:"easily", r:"r", e:"**easily** → Adverb (easy → easily)."},
+        {t:"quiet", r:"l", e:"**quiet** → Adjektiv. Das Adverb heißt **quietly**."}
+      ]},
+    { id:"ly", lernen:"adj", typ:"sortieren", icon:"🧪", titel:"Adverb Lab", art:"Make the adverb · sort",
+      anleitung:"How do you make the adverb? Tap the right box.",
+      anleitungDe:"Wie bildet man das Adverb? Tippe auf das richtige Kästchen.",
+      tipp:"Schau auf das Ende des Adjektivs: -y, -le oder ein ganz normales Wort?",
+      koerbe:[
+        {t:"+ ly", info:"slow → slowly", tipp:"Meistens hängt man einfach **-ly** an: quick → quickly, careful → carefully."},
+        {t:"y → ily", info:"happy → happily", tipp:"**Mitlaut + y** → **-ily**: easy → easily, angry → angrily."},
+        {t:"le → ly", info:"gentle → gently", tipp:"Endet das Adjektiv auf **-le**, fällt das e weg: simple → simply."},
+        {t:"same / well", info:"fast → fast · good → well", tipp:"**fast, hard, late, early** bleiben gleich. **good** wird zu **well**."}
+      ],
+      items:[
+        {t:"slow", k:0}, {t:"quick", k:0}, {t:"loud", k:0}, {t:"careful", k:0},
+        {t:"happy", k:1}, {t:"easy", k:1}, {t:"angry", k:1}, {t:"noisy", k:1, e:"noisy → **noisily**"},
+        {t:"gentle", k:2}, {t:"simple", k:2}, {t:"terrible", k:2, e:"terrible → **terribly**"},
+        {t:"fast", k:3}, {t:"hard", k:3}, {t:"late", k:3}, {t:"good", k:3, e:"good → **well**"}
+      ]},
+    { id:"pairs", lernen:"adj", typ:"memory", icon:"🪸", titel:"Coral Memory", art:"Adjective + adverb · memory",
+      anleitung:"Find the pairs: **adjective + adverb**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Adjektiv + Adverb**. Je weniger Züge du brauchst, desto mehr Flaggen bekommst du.",
+      tipp:"Denk an die Regeln: -ly, -ily, -ly (nach -le) und das Sonderwort good → well.",
+      paare:[
+        {a:"slow", b:"slowly"}, {a:"happy", b:"happily"}, {a:"easy", b:"easily"}, {a:"gentle", b:"gently"},
+        {a:"good", b:"well"}, {a:"loud", b:"loudly"}, {a:"careful", b:"carefully"}, {a:"angry", b:"angrily"}
+      ]},
+    { id:"rush", lernen:"adj", regel:"Adjektiv beschreibt ein Nomen (a quiet fish), Adverb beschreibt eine Handlung (swims quietly).", typ:"rush", icon:"🚀", titel:"Reef Rush", art:"Speed game · 60 seconds",
+      anleitung:"Choose the right word – fast! **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle so schnell wie möglich das richtige Wort! **Ziel: 12 richtige** in 60 Sekunden.",
+      tipp:"Frag dich: Beschreibt das Wort ein Nomen (Adjektiv) oder eine Handlung (Adverb)?",
+      zeit:60, ziel:12,
+      items:[
+        {q:"The shark swims ___. (quick)", o:["quickly","quick","quickely"], c:0}, {q:"She is a ___ diver. (careful)", o:["careful","carefully","carefuly"], c:0},
+        {q:"He sings ___. (bad)", o:["badly","bad","badley"], c:0}, {q:"The fish is ___. (colourful)", o:["colourful","colourfully","colourfuly"], c:0},
+        {q:"They played ___. (happy)", o:["happily","happy","happyly"], c:0}, {q:"I can swim ___. (good)", o:["well","good","goodly"], c:0},
+        {q:"The sea is ___ today. (calm)", o:["calm","calmly","calmely"], c:0}, {q:"She ran ___. (fast)", o:["fast","fastly","fasty"], c:0},
+        {q:"He opened the box ___. (gentle)", o:["gently","gentle","gentlely"], c:0}, {q:"We won the game ___. (easy)", o:["easily","easy","easyly"], c:0},
+        {q:"The soup smells ___. (great)", o:["great","greatly","greatily"], c:0}, {q:"It rained ___. (heavy)", o:["heavily","heavy","heavyly"], c:0},
+        {q:"Please speak ___. (quiet)", o:["quietly","quiet","quietely"], c:0}, {q:"He works very ___. (hard)", o:["hard","hardly","harded"], c:0}
+      ]},
+    { id:"choose", lernen:"adj", typ:"quiz", icon:"🐢", titel:"Which Word Fits?", art:"Adjective or adverb · quiz",
+      anleitung:"Choose the right word for each sentence.",
+      anleitungDe:"Wähle für jeden Satz das richtige Wort.",
+      tipp:"Beschreibt das Wort ein Nomen oder eine Handlung? Nach look, feel, taste folgt ein Adjektiv.",
+      fragen:[
+        {q:"The turtle swims ___.", o:["slowly","slow","slowy"], c:0, e:"Wie schwimmt sie? → Adverb: **slowly**."},
+        {q:"The water is ___.", o:["cold","coldly","coldy"], c:0, e:"Nach **be** steht ein Adjektiv: **cold**."},
+        {q:"She plays the guitar ___.", o:["well","good","goodly"], c:0, e:"Das Adverb von good ist **well**."},
+        {q:"He is a ___ driver.", o:["careful","carefully","carefuly"], c:0, e:"Beschreibt das Nomen *driver* → Adjektiv: **careful**."},
+        {q:"The soup tastes ___.", o:["delicious","deliciously","deliciousy"], c:0, e:"Nach **taste** steht ein Adjektiv."},
+        {q:"They worked ___ all day.", o:["hard","hardly","harder"], c:0, e:"**hard** = hart, fleißig. *hardly* heißt kaum!"},
+        {q:"The baby slept ___.", o:["peacefully","peaceful","peacefuly"], c:0, e:"Wie schlief es? → Adverb: **peacefully**."},
+        {q:"She looks ___ in her new dress.", o:["happy","happily","happly"], c:0, e:"Nach **look** steht ein Adjektiv: **happy**."},
+        {q:"He shouted ___.", o:["angrily","angryly","angrly"], c:0, e:"angry → **angrily** (y → ily)."},
+        {q:"Our dog is very ___.", o:["friendly","friendlily","friendlyly"], c:0, e:"**friendly** ist ein Adjektiv – obwohl es auf -ly endet."}
+      ]},
+    { id:"dive", typ:"lueckentext", icon:"🤿", titel:"Dive Day", art:"Story · fill in the gaps",
+      anleitung:"Tap a gap and choose the right word.",
+      anleitungDe:"Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Adjektiv für Nomen, Adverb für Handlungen – und good → well.",
+      ueberschrift:"A day at the reef",
+      text:"We got up [[early|earlily|earlyly]] on Saturday. The sea was [[calm|calmly|calmely]] and the sky was [[blue|bluely|bluey]]. Our guide, Mia, is a very [[friendly|friendlily|friendlyly]] woman. She spoke [[slowly|slow|slowy]] and explained everything [[carefully|careful|carefuly]].\nI can swim [[well|good|goodly]], so I jumped into the water [[happily|happy|happyly]]. The fish were [[colourful|colourfully|colourfuly]] and they swam [[quietly|quiet|quietely]] around us. Then a big wave came and my mask fell off. I swam [[quickly|quick|quickely]] to the boat. It was a [[great|greatly|greatily]] day!",
+      erklaerung:"**Adjective** = describes a noun (a calm sea). **Adverb** = describes an action (spoke slowly). good → **well**."},
+    { id:"write", typ:"eingabe", icon:"✍️", titel:"Write the Adverb", art:"Adjective → adverb · type",
+      regel:"Meist **+ ly** · happy → **happily** · gentle → **gently** · good → **well**.",
+      anleitung:"Write the **adverb** for each adjective. Check your spelling!",
+      anleitungDe:"Schreibe das **Adverb** zu jedem Adjektiv. Achte auf die Rechtschreibung!",
+      tipp:"Nach Mitlaut + y: **-ily**. Nach -le: **-ly**. good wird zu **well**.",
+      fragen:[
+        {q:"**quick** →", a:["quickly"], strict:true}, {q:"**happy** →", a:["happily"], strict:true},
+        {q:"**easy** →", a:["easily"], strict:true}, {q:"**gentle** →", a:["gently"], strict:true},
+        {q:"**careful** →", a:["carefully"], strict:true}, {q:"**angry** →", a:["angrily"], strict:true},
+        {q:"**good** →", a:["well"], strict:true}, {q:"**loud** →", a:["loudly"], strict:true}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

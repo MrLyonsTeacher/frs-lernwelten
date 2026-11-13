@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Lost &amp; Found Beach – Possessive Pronouns</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+TH.start({
+  k:6, kat:"grammar", id:"pos6", icon:"🧳", kartenSymbol:"🧳",
+  titel:"Lost & Found Beach", untertitel:"Possessive pronouns: my / mine …",
+  text:"Everything on the beach got mixed up! Find out whose things they are with my, your, his, her … and mine, yours, hers …",
+  lernen: {
+    pos: { titel:"my, your … / mine, yours …", folien:[
+      {"bild": "🧢", "titel": "my, your, his, her …", "formel": ["I | my", "you | your", "he | his", "she | her", "it | its", "we | our", "they | their"], "bsp": ["This is **my** towel.", "**Their** boat is red."], "de": "Possessivbegleiter stehen **vor einem Nomen** und zeigen, wem etwas gehört. Ohne Artikel: **my** bag (nicht: the my bag)."},
+      {"bild": "🎒", "titel": "mine, yours, hers …", "formel": ["my → mine", "your → yours", "his → his", "her → hers", "our → ours", "their → theirs"], "bsp": ["That towel is **mine**.", "Is the bag **yours**?"], "de": "Ohne Nomen benutzt man **mine, yours, his, hers, ours, theirs**. Das Nomen wurde ja schon genannt."},
+      {"bild": "🐶", "titel": "its or it’s?", "bsp": ["The dog wags **its** tail. (gehört dem Hund)", "**It’s** a nice day. (= it is)"], "de": "**its** = sein/ihr (gehört einem Tier oder einer Sache). **it’s** = **it is** oder **it has**. Mit Apostroph heißt es immer *it is*."},
+      {"bild": "❓", "titel": "Whose …? and ’s", "bsp": ["**Whose** bag is this? – It’s **Tom’s**.", "That’s my **sister’s** towel."], "de": "**Whose …?** = Wessen …? Bei einer Person hängt man **’s** an den Namen: Tom**’s** bag, my sister**’s** bike."}
+    ]}
+  },
+  levels: [
+    { id:"match", lernen:"pos", typ:"memory", icon:"🪢", titel:"Beach Memory", art:"Person + possessive · memory",
+      anleitung:"Find the pairs: **person + possessive word**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Person + Possessivbegleiter**. Je weniger Züge du brauchst, desto mehr Flaggen bekommst du.",
+      tipp:"I → my, you → your, he → his, she → her, it → its, we → our, they → their.",
+      paare:[
+        {a:"I", b:"my"}, {a:"you", b:"your"}, {a:"he", b:"his"}, {a:"she", b:"her"},
+        {a:"it", b:"its"}, {a:"we", b:"our"}, {a:"they", b:"their"}
+      ]},
+    { id:"sort", lernen:"pos", typ:"sortieren", icon:"🧺", titel:"With or Without Noun?", art:"my … or mine … · sort",
+      anleitung:"Does the word stand **before a noun** or **alone**? Tap the right box.",
+      anleitungDe:"Steht das Wort **vor einem Nomen** oder **allein**? Tippe auf das richtige Kästchen.",
+      tipp:"my book – aber: The book is **mine**. Allein steht immer mine, yours, hers, ours, theirs.",
+      koerbe:[
+        {t:"before a noun", info:"my · your · her · our · their", tipp:"**my, your, her, our, their** brauchen ein Nomen: *my towel, their boat*."},
+        {t:"alone", info:"mine · yours · hers · ours · theirs", tipp:"**mine, yours, hers, ours, theirs** stehen ohne Nomen: *The towel is mine.*"}
+      ],
+      items:[
+        {t:"my", k:0}, {t:"mine", k:1}, {t:"your", k:0}, {t:"yours", k:1},
+        {t:"her", k:0}, {t:"hers", k:1}, {t:"our", k:0}, {t:"ours", k:1},
+        {t:"their", k:0}, {t:"theirs", k:1}, {t:"my (This is ___ ball.)", k:0}, {t:"mine (The ball is ___.)", k:1}
+      ]},
+    { id:"its", lernen:"pos", typ:"swipe", icon:"🐶", titel:"its or it’s?", art:"Two small words · swipe",
+      anleitung:"Which one fits? Swipe **left for its** (gehört ihm) and **right for it’s** (= it is).",
+      anleitungDe:"Welches Wort passt? Wische nach **links für its** (gehört ihm) und nach **rechts für it’s** (= it is). Du kannst auch auf die Knöpfe tippen.",
+      tipp:"Setz zum Test *it is* ein. Passt das? Dann **it’s**. Sonst **its**.",
+      links:{t:"its", icon:"🐾"}, rechts:{t:"it’s", icon:"☀️"},
+      karten:[
+        {t:"The dog wagged ___ tail.", r:"l", e:"*The dog wagged **it is** tail* passt nicht → **its**."},
+        {t:"___ a sunny day.", r:"r", e:"*It is a sunny day* passt → **it’s**."},
+        {t:"The crab lost ___ claw.", r:"l", e:"Das Tier besitzt die Schere → **its**."},
+        {t:"___ time to go home.", r:"r", e:"*It is time to go home* → **it’s**."},
+        {t:"The boat has ___ own flag.", r:"l", e:"Die Flagge gehört dem Boot → **its**."},
+        {t:"I think ___ going to rain.", r:"r", e:"*it is going to rain* → **it’s**."},
+        {t:"The shark opened ___ mouth.", r:"l", e:"Besitz → **its**."},
+        {t:"___ my towel!", r:"r", e:"*It is my towel* → **it’s**."}
+      ]},
+    { id:"quiz", lernen:"pos", typ:"quiz", icon:"🧳", titel:"Whose Is It?", art:"Possessives · quiz",
+      anleitung:"Choose the right word for each sentence.",
+      anleitungDe:"Wähle für jeden Satz das richtige Wort.",
+      tipp:"Vor einem Nomen: my, your, his, her, its, our, their. Allein: mine, yours, his, hers, ours, theirs.",
+      fragen:[
+        {q:"This is ___ towel. (I)", o:["my","mine","me"], c:0, e:"Vor dem Nomen *towel* → **my**."},
+        {q:"That bag isn’t mine. Is it ___?", o:["yours","your","you"], c:0, e:"Ohne Nomen → **yours**."},
+        {q:"Anna has lost ___ keys. (she)", o:["her","hers","she’s"], c:0, e:"Vor dem Nomen *keys* → **her**."},
+        {q:"The red boat is ___. (we)", o:["ours","our","us"], c:0, e:"Ohne Nomen → **ours**."},
+        {q:"The boys are packing ___ bags. (they)", o:["their","theirs","they"], c:0, e:"Vor dem Nomen → **their**."},
+        {q:"– Whose ball is this? – It’s ___. (he)", o:["his","he’s","him"], c:0, e:"**his** steht vor einem Nomen *und* allein: It’s his."},
+        {q:"The cat licked ___ paw.", o:["its","it’s","it"], c:0, e:"Die Pfote gehört der Katze → **its**."},
+        {q:"– Is this your sandwich? – No, ___ is in my bag. (I)", o:["mine","my","me"], c:0, e:"Ohne Nomen → **mine**."},
+        {q:"That’s my ___ towel.", o:["sister’s","sisters","sisters’s"], c:0, e:"Eine Person → **’s**: my sister**’s** towel."},
+        {q:"___ umbrella is this?", o:["Whose","Who’s","Who"], c:0, e:"**Whose** = wessen. *Who’s* = who is."}
+      ]},
+    { id:"build", lernen:"pos", regel:"my/your/… stehen vor dem Nomen, mine/yours/… allein: This is my bag. – The bag is mine.", typ:"satzbau", icon:"🏖️", titel:"Build the Sentence", art:"Sentence builder · possessives",
+      anleitung:"Build the sentence by tapping the words in the right order.",
+      anleitungDe:"Bau den Satz, indem du die Wörter in der richtigen Reihenfolge antippst.",
+      tipp:"Vor dem Nomen: my, your, her … – ohne Nomen: mine, yours, hers …",
+      punkte:2,
+      saetze:[
+        {w:["This","is","my","towel"], hint:"🇩🇪 Das ist mein Handtuch."},
+        {w:["The","red","bag","is","hers"], hint:"🇩🇪 Die rote Tasche gehört ihr."},
+        {w:["Is","this","your","hat","?"], hint:"🇩🇪 Ist das dein Hut?"},
+        {w:["No","it","is","not","mine"], alt:[["No","it","isn't","mine"]], hint:"🇩🇪 Nein, er gehört nicht mir."},
+        {w:["Our","boat","is","bigger","than","theirs"], hint:"🇩🇪 Unser Boot ist größer als ihres."},
+        {w:["Whose","shoes","are","these","?"], hint:"🇩🇪 Wessen Schuhe sind das?"}
+      ]},
+    { id:"story", typ:"lueckentext", icon:"🔍", titel:"Lost & Found", art:"Story · fill in the gaps",
+      anleitung:"Tap a gap and choose the right word.",
+      anleitungDe:"Tippe auf eine Lücke und wähle das richtige Wort.",
+      tipp:"Steht ein Nomen dahinter? Dann my, your, her … Sonst mine, yours, hers …",
+      ueberschrift:"At the Lost & Found desk",
+      text:"“Excuse me, I’ve lost [[my|mine|me]] bag,” says Jack. “Is this bag [[yours|your|you]]?” asks the woman. “No, it isn’t [[mine|my|me]]. [[Mine|My|I]] is blue.”\nThen Lisa and Tom come in. “We’ve lost [[our|ours|us]] towels,” says Lisa. “Are these towels [[yours|your|you]]?” – “Yes! The big one is [[mine|my|me]] and the small one is [[Tom’s|Toms|Tom]].”\nA dog runs in. It has lost [[its|it’s|it]] ball. “Whose dog is this?” asks the woman. “It’s [[hers|her|she]],” says a girl. “[[Her|Hers|She]] name is Bella.”",
+      erklaerung:"Before a noun: **my, your, his, her, its, our, their**. Alone: **mine, yours, his, hers, ours, theirs**."},
+    { id:"write", typ:"eingabe", icon:"✍️", titel:"Write It!", art:"Possessive pronouns · type",
+      regel:"Allein (ohne Nomen): **mine, yours, his, hers, ours, theirs**.",
+      anleitung:"Write the missing possessive pronoun. Check your spelling!",
+      anleitungDe:"Schreibe das fehlende Possessivpronomen. Achte auf die Rechtschreibung!",
+      tipp:"Es steht kein Nomen dahinter, deshalb: mine, yours, hers, ours, theirs.",
+      fragen:[
+        {q:"That is my towel. → The towel is ___.", a:["mine"], strict:true},
+        {q:"This is your hat. → The hat is ___.", a:["yours"], strict:true},
+        {q:"That is Lisa’s bike. → The bike is ___.", a:["hers"], strict:true},
+        {q:"These are our shoes. → The shoes are ___.", a:["ours"], strict:true},
+        {q:"That is their boat. → The boat is ___.", a:["theirs"], strict:true},
+        {q:"This is Tom’s ball. → The ball is ___.", a:["his"], strict:true}
+      ]},
+    { id:"rush", lernen:"pos", regel:"Vor dem Nomen: my, your, his, her, its, our, their. Allein: mine, yours, hers, ours, theirs.", typ:"rush", icon:"🚀", titel:"Beach Rush", art:"Speed game · 60 seconds",
+      anleitung:"Choose the right word – fast! **Goal: 12** in 60 seconds.",
+      anleitungDe:"Wähle so schnell wie möglich das richtige Wort! **Ziel: 12 richtige** in 60 Sekunden.",
+      tipp:"Steht ein Nomen direkt dahinter?",
+      zeit:60, ziel:12,
+      items:[
+        {q:"___ name is Sam. (I)", o:["My","Mine","Me"], c:0}, {q:"The pen is ___. (I)", o:["mine","my","me"], c:0},
+        {q:"Is this ___ phone? (you)", o:["your","yours","you"], c:0}, {q:"The phone is ___. (you)", o:["yours","your","you"], c:0},
+        {q:"___ dad is a pilot. (he)", o:["His","He","Him"], c:0}, {q:"She loves ___ dog. (she)", o:["her","hers","she"], c:0},
+        {q:"The house is ___. (she)", o:["hers","her","she"], c:0}, {q:"___ school is big. (we)", o:["Our","Ours","We"], c:0},
+        {q:"The red car is ___. (we)", o:["ours","our","us"], c:0}, {q:"___ parents are nice. (they)", o:["Their","Theirs","They"], c:0},
+        {q:"The books are ___. (they)", o:["theirs","their","them"], c:0}, {q:"The cat likes ___ bed. (it)", o:["its","it’s","it"], c:0},
+        {q:"___ a lovely day!", o:["It’s","Its","Is"], c:0}, {q:"___ bike is that?", o:["Whose","Who’s","Who"], c:0}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

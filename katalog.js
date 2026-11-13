@@ -57,6 +57,8 @@ const FRS = {
       { k:6,  id:"e6",  themen:[
         { id:"sp6",  kat:"grammar",    titel:"Time Travel Agency",       untertitel:"Simple past: statements",           pfad:"englisch/klasse6/simple-past.html",          icon:"⏰", max:59 },
         { id:"spn6", kat:"grammar",    titel:"Shipwreck Detectives",     untertitel:"Simple past: was/were, didn’t, Did …?", pfad:"englisch/klasse6/shipwreck-detectives.html", icon:"🔎", max:56 },
+        { id:"adv6", kat:"grammar",    titel:"Reef Describers",          untertitel:"Adjectives & adverbs",              pfad:"englisch/klasse6/reef-describers.html",      icon:"🐠", max:77 },
+        { id:"pos6", kat:"grammar",    titel:"Lost & Found Beach",       untertitel:"Possessive pronouns: my / mine …",  pfad:"englisch/klasse6/lost-and-found.html",       icon:"🧳", max:78 },
         { id:"pg6",  kat:"grammar",    titel:"Reef Live Cam",            untertitel:"Present progressive",               pfad:"englisch/klasse6/reef-live-cam.html",        icon:"📹", max:61 },
         { id:"pp6",  kat:"grammar",    titel:"Treasure Collectors",      untertitel:"Present perfect",                   pfad:"englisch/klasse6/treasure-collectors.html",  icon:"💎", max:60 },
         { id:"wf6",  kat:"grammar",    titel:"Ocean Oracle",             untertitel:"will-future",                       pfad:"englisch/klasse6/ocean-oracle.html",         icon:"🔮", max:47 },
