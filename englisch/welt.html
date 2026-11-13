@@ -233,7 +233,8 @@ async function main(){
   document.title = `Class ${K} · ${WI.name} – FRS Lernwelten`;
   const BER = FRS.bereicheFuer(K), byKat = b => KL.themen.filter(t=>t.kat===b);
   const names = {}, counts = {}, icons = {};
-  BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).filter(t=>!(window.FREI&&FREI.lockedThema(K,t.id))).length; icons[b]=FRS.kategorien[b].icon; });
+  const thLocked = t => t.grp!=="test" && !!(window.FREI && FREI.lockedThema(K,t.id));   // Testvorbereitung (grp:"test") wird nie einzeln gesperrt
+  BER.forEach(b=>{ names[b]=FRS.kategorien[b].name; counts[b]=byKat(b).filter(t=>!thLocked(t)).length; icons[b]=FRS.kategorien[b].icon; });
   const RK = () => UH.rank(K, UH.today(K));
   const FLAGQ = t => t.grp!=="test";   // grp:"test" = Testvorbereitung: keine Flaggen
   const allMax = KL.themen.filter(FLAGQ).reduce((a,t)=>a+t.max,0), sum = () => KL.themen.filter(FLAGQ).reduce((a,t)=>{ const p=prog(t); return a+(p?p.pts:0); },0);
@@ -272,7 +273,7 @@ async function main(){
       <span class="qt-f"><span class="q-bar"><i style="width:${pct}%"></i></span><span class="qt-p">${p?`${p.pts}/${p.max}`:"new"}</span></span></a>`; };
   // Testvorbereitung als Kachel: keine Flaggen, keine Medaille – nur der beste Test in Prozent
   const testTile = t => { let b = null; try{ b = (JSON.parse(localStorage.getItem("vt8-best")||"{}")||{})[t.id] || null; }catch(e){}
-    const lk = !!(window.FREI && FREI.lockedThema(K, t.id));
+    const lk = false;   // Testvorbereitung ist immer offen
     return `<a class="qt test${b?" played":""}${lk?" lockd":""}" href="../${esc(t.pfad)}"><span class="qt-ic" aria-hidden="true">${lk?"🔒":(t.icon||"📝")}</span>
       <b class="qt-t">${esc(t.titel.replace(/^Vocab Trainer: /,""))}</b><small class="qt-s">${esc(t.untertitel||"")}</small>
       <span class="qt-b">${b?`Best test: ${b.pct} %`:"no test yet"}</span></a>`; };
@@ -283,7 +284,7 @@ async function main(){
       + `<p class="qsec">📝 Test preparation<small>Practise for the vocabulary test – no flags here · Vorbereitung auf den Vokabeltest – hier gibt es keine Flaggen</small></p><div class="qgrid">${tl.map(testTile).join("")}</div>`;
   }
   function openArea(k){
-    const kat = FRS.kategorien[k], all = byKat(k), list = all.filter(t=>!FREI.lockedThema(K,t.id)), ort = spotsInfo[k] && spotsInfo[k].ort || kat.ort;
+    const kat = FRS.kategorien[k], all = byKat(k), list = all.filter(t=>!thLocked(t)), ort = spotsInfo[k] && spotsInfo[k].ort || kat.ort;
     if(FREI.locked(K,k)){   // von der Lehrkraft gesperrt: nur Hinweis, keine Aufgaben
       if(W3) W3.focus(k);
       document.querySelectorAll("#dock button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.kat===k));
