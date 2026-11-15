@@ -180,19 +180,19 @@ const noteOf = p => NOTEN.find(n=>p>=n[0]);
 
 /* ---------- Zustand ---------- */
 const params = new URLSearchParams(location.search);
-let cur = params.get("u")==="irr" ? "irr" : (params.get("u")!==null && +params.get("u")>=0 && +params.get("u")<=7 ? +params.get("u") : 1);
+let cur = params.get("u")==="irr" ? "irr" : (params.get("u")!==null && +params.get("u")>=0 && +params.get("u")<=8 ? +params.get("u") : 1);
 let secs = new Set();
 const unit = () => UNITS.find(u=>u.id===cur);
 const pool = () => cur==="irr" ? IRR : unit().items.filter(i=>!secs.size || secs.has(i.sec));
 const ID = () => cur==="irr" ? "v5ti" : "v5t"+cur;
-const TITLE = () => cur==="irr" ? "Irregular verbs" : (cur===0||cur===7 ? unit().titel : "Unit "+cur+" · "+unit().titel);
+const TITLE = () => cur==="irr" ? "Irregular verbs" : (cur===0||cur>=7 ? unit().titel : "Unit "+cur+" · "+unit().titel);
 
 /* ---------- Startseite ---------- */
 function home(){
   const P = pool(), all = cur==="irr" ? IRR : unit().items, known = all.filter(i=>getBox(i)>=2).length;
   const best = store.get("vt8-best", {})[ID()];
   const lk = id => !!(window.FREI && (FREI.locked(5,"vocabulary") || FREI.lockedThema(5,id)));   // von der Lehrkraft gesperrt?
-  const tabs = UNITS.map(u=>`<button class="tab" data-u="${u.id}" aria-pressed="${cur===u.id}">${lk("v5t"+u.id)?"🔒 ":""}${u.id===0?"Welcome":u.id===7?"Irregular verbs":"Unit "+u.id}</button>`).join("");
+  const tabs = UNITS.map(u=>`<button class="tab" data-u="${u.id}" aria-pressed="${cur===u.id}">${lk("v5t"+u.id)?"🔒 ":""}${u.id===0?"Welcome":u.id===7?"Irregular verbs":u.id===8?"Classroom phrases":"Unit "+u.id}</button>`).join("");
   if(lk(ID())){ V.innerHTML = `<div class="tabs">${tabs}</div><section class="panel" style="text-align:center"><div style="font-size:56px">🔒</div><h2>Not open yet</h2><p class="sub">Your teacher will open <b>${esc(TITLE())}</b> soon.<br>Dieser Teil ist noch gesperrt – deine Lehrkraft schaltet ihn bald frei.</p></section>`; return; }
   const chips = cur==="irr" ? "" : `<div class="chips"><button class="chip" data-sec="" aria-pressed="${!secs.size}">Alle Abschnitte</button>${unit().secs.map(s=>`<button class="chip" data-sec="${esc(s)}" aria-pressed="${secs.has(s)}">${esc(s)} (${unit().items.filter(i=>i.sec===s).length})</button>`).join("")}</div>`;
   V.innerHTML = `<div class="tabs">${tabs}</div>

@@ -57,6 +57,7 @@ const FRS = {
         { id:"v5t5", kat:"vocabulary", titel:"Vocab Trainer: Unit 5", untertitel:"Where I live · Mock Test", grp:"test", pfad:"englisch/klasse5/vokabeltrainer.html?u=5", icon:"🚆", max:40 },
         { id:"v5t6", kat:"vocabulary", titel:"Vocab Trainer: Unit 6", untertitel:"A trip to the country · Mock Test", grp:"test", pfad:"englisch/klasse5/vokabeltrainer.html?u=6", icon:"🚜", max:40 },
         { id:"v5t7", kat:"vocabulary", titel:"Vocab Trainer: Irregular verbs", untertitel:"Past forms · Mock Test", grp:"test", pfad:"englisch/klasse5/vokabeltrainer.html?u=7", icon:"🔀", max:32 },
+        { id:"v5t8", kat:"vocabulary", titel:"Vocab Trainer: Classroom phrases", untertitel:"Useful phrases · Mock Test", grp:"test", pfad:"englisch/klasse5/vokabeltrainer.html?u=8", icon:"🗣️", max:40 },
         { id:"gre5", kat:"country", titel:"Hello Greenwich!", untertitel:"Greenwich, London & the UK", pfad:"englisch/klasse5/greenwich-london.html", icon:"🕰️", max:29 },
         { id:"sch5", kat:"country", titel:"School in England", untertitel:"Uniforms, tutor groups, school days", pfad:"englisch/klasse5/school-in-england.html", icon:"👔", max:38 },
         { id:"fest5", kat:"country", titel:"Special Days in Britain", untertitel:"Halloween, Bonfire Night, Christmas", pfad:"englisch/klasse5/special-days.html", icon:"🎃", max:39 },
