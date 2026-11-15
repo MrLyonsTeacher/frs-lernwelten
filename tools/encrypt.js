@@ -3,7 +3,7 @@
 const fs=require('fs'),c=require('crypto'),path=require('path');
 const pass=process.env.ZUGANG; if(!pass||pass.length<8){console.error('ZUGANG (min. 8 Zeichen) fehlt');process.exit(1)}
 const R=path.join(__dirname,'..'), Q=f=>fs.readFileSync(path.join(R,'quelle',f),'utf8');
-const bundles={ 'vok6.enc':['saetze.js','vokabeln6.js','gruppen6.js'], 'vok8.enc':['saetze.js','vokabeln8a.js','vokabeln8b.js','gruppen8.js'] };
+const bundles={ 'vok5.enc':['saetze.js','vokabeln5.js','gruppen5.js'], 'vok6.enc':['saetze.js','vokabeln6.js','gruppen6.js'], 'vok8.enc':['saetze.js','vokabeln8a.js','vokabeln8b.js','gruppen8.js'] };
 fs.mkdirSync(path.join(R,'englisch/daten'),{recursive:true});
 for(const [out,files] of Object.entries(bundles)){
   const salt=c.randomBytes(16), iv=c.randomBytes(12), it=200000;
