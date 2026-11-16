@@ -249,7 +249,7 @@ function sportTab(l){
     const K = 100 + w.k, list = mats.filter(m=>m.welt===w.k), open = OPEN.has(K), ids = w.orte.map(o=>o.id), off = selGet(K, ids), gesp = selLocked(K, ids).length;
     return `<article class="cls${open?" open":""}" style="--c:${WFARBE[w.k]||"#2A8DD5"}" data-k="${K}">
       <a class="cls-map" href="${esc(w.pfad)}" target="_blank" rel="noopener" aria-label="${esc(w.name)} öffnen"><img src="${esc(w.bild)}" alt="" loading="lazy">
-        <span class="cls-cap"><span><b>${esc(w.name)}</b><small>${esc(w.info)}</small></span><span class="k">Klasse ${w.k}</span></span></a>
+        <span class="cls-cap"><span><b>${esc(w.name)}</b><small>${esc(w.info)}</small></span></span></a>
       <div class="cls-body">
         <div class="stats">${w.orte.map(o=>`<span${off.includes(o.id)?"":' class="off"'} style="--d:var(--c)" title="${esc(o.e)}"><i></i>${o.icon} ${esc(o.name)}</span>`).join("")}</div>
         <div class="cls-act"><button class="btn" data-qr="${esc(w.pfad)}" data-t="Klasse ${w.k} · ${esc(w.name)}" data-s="Sport">${SVG.qr} QR-Code Klasse ${w.k}</button>

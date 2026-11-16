@@ -75,6 +75,9 @@ function drawOver(){
 /* ---------- Ort und Gebäude ---------- */
 let cur = null, sub = null, busy = false;
 const org = o => `${pct(o.x,W)} ${pct(o.y,H)}`;
+/* Kameraflug in einen Ausschnitt crop=[x,y,b,h]: Skalierung s und Ursprung so, dass der Ausschnitt am Ende genau das Bild füllt */
+function zoomZu(o){ if(!o.crop) return { origin: org(o), s: null };
+  const [x, y, w] = o.crop, s = W / w; return { origin: `${pct(s*x/(s-1), W)} ${pct(s*o.crop[1]/(s-1), H)}`, s }; }
 function drawDet(o){
   const spots = o.themen.filter(t => t.x);
   $("#dDet").innerHTML = img(o.bild || o.id, o.name) +
@@ -90,31 +93,32 @@ function cardSub(t){
     (t.pfad ? `<button class="th go" data-go="1"><span class="i">▶</span><span><b>Lernwelt starten</b><span class="s">Infokarten und Spiele</span></span></button>` : `<div class="th zu"><span class="i">🔒</span><span><b>Kommt bald</b><span class="s">Diese Lernwelt wird noch gebaut.</span></span></div>`);
 }
 function head(back, ttl, subt){ $("#back").hidden = !back; $("#back").textContent = back ? "← " + back : ""; $("#home").hidden = !!back; $("#ttl").textContent = ttl; $("#sub").textContent = subt; }
-function anim(el, cls, origin){ const c = el.querySelector(".cam"); c.style.transformOrigin = origin || "50% 50%"; c.classList.remove("fly-out","fly-in","back-out","back-in"); void c.offsetWidth; c.classList.add(cls); return c; }
-function flug(von, nach, origin, instant, fertig){
-  nach.hidden = false; zeige(nach, null); const done = () => { von.hidden = true; busy = false; fertig(); };
-  if(instant || reduced){ done(); return; } busy = true; anim(von, "fly-out", origin); anim(nach, "fly-in"); setTimeout(done, 700);
+function anim(el, cls, origin, sc){ const c = el.querySelector(".cam"); c.style.transformOrigin = origin || "50% 50%"; if(sc) c.style.setProperty("--s", sc.toFixed(3)); else c.style.removeProperty("--s"); c.classList.remove("fly-out","fly-in","back-out","back-in","exact"); void c.offsetWidth; c.classList.add(...cls.split(" ")); return c; }
+function flug(von, nach, z, instant, fertig){
+  nach.hidden = false; const p = POS.get(von); if(z.s && p) setPan(nach, p[0], p[1]); else zeige(nach, null);   // gleicher Ausschnitt wie vorher → nahtlos
+  const done = () => { von.hidden = true; busy = false; fertig(); };
+  if(instant || reduced){ done(); return; } busy = true; anim(von, z.s ? "fly-out exact" : "fly-out", z.origin, z.s); anim(nach, z.s ? "fly-in exact" : "fly-in"); setTimeout(done, 760);
 }
-function rueck(von, nach, origin, fertig){
-  nach.hidden = false; const done = () => { von.hidden = true; busy = false; nach.querySelector(".cam").classList.remove("back-in","fly-out"); };
-  fertig(); if(reduced){ nach.querySelector(".cam").classList.remove("fly-out"); done(); return; } busy = true; anim(von, "back-out"); anim(nach, "back-in", origin); setTimeout(done, 680);
+function rueck(von, nach, z, fertig){
+  nach.hidden = false; const done = () => { von.hidden = true; busy = false; nach.querySelector(".cam").classList.remove("back-in","fly-out","exact"); };
+  fertig(); if(reduced){ nach.querySelector(".cam").classList.remove("fly-out","exact"); done(); return; } busy = true; anim(von, z.s ? "back-out exact" : "back-out"); anim(nach, z.s ? "back-in exact" : "back-in", z.origin, z.s); setTimeout(done, 720);
 }
 function enter(o, instant){
   if(busy) return; if(!offen(o)){ toast(`🔒 ${o.name} ist noch gesperrt – kommt bald!`); return; }
   cur = o; drawDet(o);
-  flug($("#fOver"), $("#fDet"), org(o), instant, () => { cardDet(o); $("#card").hidden = false; $("#dock").hidden = true; head(C.zurueck, o.name, o.einheit || ""); history.replaceState(null, "", location.pathname + location.search + "#o=" + o.id); });
+  flug($("#fOver"), $("#fDet"), zoomZu(o), instant, () => { cardDet(o); $("#card").hidden = false; $("#dock").hidden = true; head(C.zurueck, o.name, o.einheit || ""); history.replaceState(null, "", location.pathname + location.search + "#o=" + o.id); });
 }
 function enterSub(t, instant){
   sub = t; $("#dSub").innerHTML = img(t.bild, t.s) + fxSVG(t.fx || [], []);
   $("#card").hidden = true;
-  flug($("#fDet"), $("#fSub"), org(t), instant, () => { cardSub(t); $("#card").hidden = false; head(cur.name, t.s, t.t); history.replaceState(null, "", location.pathname + location.search + "#o=" + cur.id + "&t=" + cur.themen.indexOf(t)); });
+  flug($("#fDet"), $("#fSub"), zoomZu(t), instant, () => { cardSub(t); $("#card").hidden = false; head(cur.name, t.s, t.t); history.replaceState(null, "", location.pathname + location.search + "#o=" + cur.id + "&t=" + cur.themen.indexOf(t)); });
 }
 function leave(){
   if(busy || !cur) return;
   if(sub){ const t = sub; sub = null; $("#card").hidden = true;
-    rueck($("#fSub"), $("#fDet"), org(t), () => { cardDet(cur); $("#card").hidden = false; head(C.zurueck, cur.name, cur.einheit || ""); history.replaceState(null, "", location.pathname + location.search + "#o=" + cur.id); }); return; }
+    rueck($("#fSub"), $("#fDet"), zoomZu(t), () => { cardDet(cur); $("#card").hidden = false; head(C.zurueck, cur.name, cur.einheit || ""); history.replaceState(null, "", location.pathname + location.search + "#o=" + cur.id); }); return; }
   const o = cur; cur = null;
-  rueck($("#fDet"), $("#fOver"), org(o), () => { $("#card").hidden = true; $("#dock").hidden = false; head("", C.name, START()); history.replaceState(null, "", location.pathname + location.search); });
+  rueck($("#fDet"), $("#fOver"), zoomZu(o), () => { $("#card").hidden = true; $("#dock").hidden = false; head("", C.name, START()); history.replaceState(null, "", location.pathname + location.search); });
 }
 function openThema(i){
   const t = cur.themen[i]; if(!t || busy) return;

@@ -180,13 +180,14 @@ const FRS = {
   // Sport-Klassenwelten (gemalte Welten, sport/klasseN.html). Freigabe-Schlüssel = 100 + Klasse.
   // orte = Orte der Welt (gleiche ids wie in der Welt-Datei!), offen = ohne Freigabe sichtbar. Lernwelten: Material mit welt:N und Thema-id.
   sport: { welten: [
-    { k:8, name:"Camp Start", pfad:"sport/klasse8.html", bild:"sport/welt8/vorschau.jpg", info:"Sport-Camp am See · ein Ort je Theoriethema (T1–T7)",
+    { k:8, name:"Camp Start", pfad:"sport/klasse8.html", bild:"sport/welt8/vorschau.jpg", info:"Klasse 8 · Profil Sport",
       orte:[ {id:"feuer", name:"Lagerfeuer", icon:"🔥", e:"T1 Was ist Sport?", offen:true}, {id:"spielfeld", name:"Schiri-Turm", icon:"🧑‍⚖️", e:"T5 Spielregeln & Fairness", offen:true, themen:["bb2"]},
              {id:"wiese", name:"Sonnen-Wiese", icon:"🌅", e:"T3 Aufwärmen & Stretching"}, {id:"muehle", name:"Muskel-Mühle", icon:"⚙️", e:"T4 Muskeln & Gegenspieler"},
              {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"T2 Motorische Fähigkeiten"}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"T6 Fair Play & Emotionen"},
              {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio"} ] },
-    { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Stadt in Form eines Athleten · ein Viertel je Einheit (E1–E6)",
-      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie"}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Bewegungsapparat & Verletzungen", offen:true, themen:["kn9","ge9"]},
+    { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
+      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie"}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
+             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen"}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen"},
              {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness"}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung"},
              {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping"}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn"} ] }
   ]},

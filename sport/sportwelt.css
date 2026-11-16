@@ -110,3 +110,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media (prefers-reduced-motion: no-preference){ .fx .beam{animation:beam 6s ease-in-out infinite} @keyframes beam{0%,100%{transform:rotate(-55deg);opacity:.15}50%{transform:rotate(55deg);opacity:.7}} }
 .fx .ember{opacity:0}
 @media (prefers-reduced-motion: no-preference){ .fx .ember{animation:ember 2.4s ease-out infinite} @keyframes ember{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}100%{opacity:0;transform:translate(10px,-70px)}} }
+
+/* Exakter Flug in einen Ausschnitt (crop): Übersicht zoomt genau auf den Ausschnitt, das Nahbild blendet darüber ein */
+@media (prefers-reduced-motion: no-preference){
+  .cam.fly-out.exact{animation:flyOutX .7s cubic-bezier(.55,0,.35,1) forwards}
+  .cam.fly-in.exact{animation:flyInX .7s ease-out both}
+  .cam.back-out.exact{animation:backOutX .66s ease-in forwards}
+  .cam.back-in.exact{animation:backInX .68s cubic-bezier(.55,0,.35,1) both}
+  @keyframes flyOutX{0%{transform:none;filter:none}70%{filter:blur(1.5px)}100%{transform:scale(var(--s));filter:blur(3px)}}
+  @keyframes flyInX{0%,45%{opacity:0;filter:blur(6px)}100%{opacity:1;filter:none}}
+  @keyframes backOutX{0%{opacity:1;filter:none}55%,100%{opacity:0;filter:blur(6px)}}
+  @keyframes backInX{0%{transform:scale(var(--s));filter:blur(3px)}100%{transform:none;filter:none}}
+}
+#fDet{z-index:1} #fSub{z-index:1}
+/* Ortsschilder während des Flugs ausblenden (sie würden sonst mit hineingezoomt) */
+.cam.fly-out .spot,.cam.back-out .spot{opacity:0;transition:opacity .12s}
+.cam.back-in .spot{animation:spotIn .3s ease .45s both}
+@keyframes spotIn{from{opacity:0}to{opacity:1}}
