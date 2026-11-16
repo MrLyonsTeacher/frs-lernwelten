@@ -187,7 +187,7 @@ const FRS = {
              {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio"} ] },
     { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
       orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie"}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
-             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen"}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen"},
+             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen"},
              {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness"}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung"},
              {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping"}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn"} ] }
   ]},
@@ -200,7 +200,9 @@ const FRS = {
       { id:"kn9", welt:9, titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Skelett-Werft, Röntgen-Klinik (E2) · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",
         stationen:["Röntgen-Scan","Wer leuchtet?","Reime","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Mythos","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,11,8,13,14,10,12,11,12,14,6,9] },
       { id:"ge9", welt:9, titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Skelett-Werft, Robo-Werkstatt (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",
-        stationen:["Labor","Scanner","Reime","Memory","Lager","Knie","Band/Sehne","Quiz","Analyse","Mythos","Zahlen","Profi"], stationenMax:[16,8,6,8,12,16,12,10,14,10,8,8] }
+        stationen:["Labor","Scanner","Reime","Memory","Lager","Knie","Band/Sehne","Quiz","Analyse","Mythos","Zahlen","Profi"], stationenMax:[16,8,6,8,12,16,12,10,14,10,8,8] },
+      { id:"vl9", welt:9, titel:"Verletzungs-Lernwelt: Sportverletzungen & ihre Ursachen", info:"Profil Sport Kl. 9 · Flutlicht-Stadion (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 10 Spiele", pfad:"sport/verletzungen.html",
+        stationen:["Tatort","Was ist das?","Akut/Überlastung","Memory","Innen/Außen","Detektiv","Reime","Mythos","Zahlen","Profi"], stationenMax:[8,10,12,7,12,14,6,10,8,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" },

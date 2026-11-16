@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#101A33">
+<title>Verletzungs-Lernwelt</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#EEF1F6; --surface:#FFFFFF; --surface-2:#F3F5FA; --ink:#14203A; --muted:#58637A; --line:#CCD3E0;
+  --accent:#D63A2F; --accent-ink:#FFFFFF; --accent-2:#FFD34D; --mid-bg:#FFF1CC;
+  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
+  --xray:#101A33; --glow:#FFD34D;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #D2D9E5; --shadow:0 3px 0 #C6CEDC; --border-opt:2px solid #D2D9E5;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#FFE1DC; --card-back:#101A33; --tile-bg:#FFE9B8; --tile-ink:#14203A;
+  --chip-bg:#101A33; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #D2D9E5;
+  --track:#DCE2EC; --star:#D63A2F; --star-off:#D2D9E5;
+}
+body{background:var(--bg) radial-gradient(circle at 0 0,rgba(255,211,77,.14),transparent 40%)}
+.chip{border:0}
+/* Startbild: Stadion bei Flutlicht */
+.flut-hero{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(180deg,#0B1226 0,#14244A 70%,#1B5E3A 70%,#1F6B42 100%);color:#fff;padding:clamp(1.4rem,4vw,2.4rem);min-height:270px;isolation:isolate}
+.flut-hero .kicker{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--accent-2);margin:0;letter-spacing:.04em}
+.flut-hero h1{font-family:var(--font-display);font-weight:800;text-transform:uppercase;font-size:clamp(2.4rem,8.5vw,4.6rem);line-height:.92;margin:.3rem 0 .7rem;max-width:12ch;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.flut-hero p{margin:0 0 .6rem;max-width:36ch;color:#D7E0F0;font-size:1.06rem}
+.flut-hero .hero-art{position:absolute;right:0;top:0;height:100%;width:60%;z-index:-1}
+@media (max-width:640px){ .flut-hero .hero-art{opacity:.35;width:100%} }
+.beamL,.beamR{transform-box:fill-box;transform-origin:50% 0}
+@media (prefers-reduced-motion: no-preference){ .beamL{animation:sweep 5s ease-in-out infinite} .beamR{animation:sweep 6s ease-in-out infinite reverse} @keyframes sweep{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}} }
+.sk g.jm.z-hl .jr{fill:rgba(255,211,77,.6); stroke:#FFD34D; stroke-width:3.4}
+.zg .ztarget{font-size:clamp(1.6rem,4.6vw,2.6rem)}
+</style>
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script>
+/* =========================================================
+   Grafiken
+   ========================================================= */
+const artSk = s => s.replace('<svg class="sk"', '<svg class="sk lnsvg"');
+const G = hl => artSk(skel([], {gelenke:true}).replace(/class="jm" data-z="([a-z-]+)"/g, (m, id) => hl.includes(id) ? `class="jm z-hl" data-z="${id}"` : m));
+const T = (x, y, t, c="#D7E0F0", s=14) => `<text x="${x}" y="${y}" fill="${c}" font-size="${s}" text-anchor="middle" font-family="sans-serif" font-weight="700">${t}</text>`;
+const ICON = {
+  muskel: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#101A33"/>
+    <g fill="none" stroke-linecap="round" stroke-width="7">
+      <path d="M30 70 C80 46 140 46 190 70" stroke="#E0575A"/><path d="M30 86 C80 64 140 64 190 86" stroke="#E0575A"/><path d="M30 102 C80 82 140 82 190 102" stroke="#E0575A"/></g>
+    ${T(110,36,"gesunde Muskelfasern","#FFD34D",15)}
+    <g fill="none" stroke-linecap="round" stroke-width="7"><path d="M30 150 C70 136 92 134 104 134" stroke="#E0575A"/><path d="M120 134 C134 134 156 138 190 150" stroke="#E0575A"/><path d="M30 166 C80 150 140 150 190 166" stroke="#E0575A" stroke-dasharray="2 0"/></g>
+    <path d="M104 126 L112 142 L120 126" stroke="#FFD34D" stroke-width="3" fill="none"/>${T(110,192,"Faser gerissen","#FFD34D",14)}`),
+  zerrung: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#101A33"/>
+    <path d="M20 100 C70 70 150 70 200 100" stroke="#E0575A" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M20 100 l-12 0 M200 100 l12 0" stroke="#F4E9D2" stroke-width="10" stroke-linecap="round"/>
+    <path d="M60 44 L20 44 M160 44 L200 44" stroke="#FFD34D" stroke-width="5" stroke-linecap="round"/><path d="M20 44 l12 -8 M20 44 l12 8 M200 44 l-12 -8 M200 44 l-12 8" stroke="#FFD34D" stroke-width="5" stroke-linecap="round"/>
+    ${T(110,50,"überdehnt","#FFD34D",16)}${T(110,160,"Zerrung: nichts gerissen")}`),
+  prellung: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#101A33"/>
+    <ellipse cx="100" cy="112" rx="66" ry="46" fill="#F2C9A6"/><ellipse cx="100" cy="112" rx="34" ry="24" fill="#7B4FA0" opacity=".85"/><ellipse cx="100" cy="112" rx="20" ry="14" fill="#4F2D7A" opacity=".8"/>
+    <circle cx="150" cy="44" r="22" fill="#FFFFFF"/><path d="M134 38 h32 M138 50 h24" stroke="#14203A" stroke-width="3"/><path d="M132 62 L114 84" stroke="#FFD34D" stroke-width="5" stroke-linecap="round"/>
+    ${T(100,186,"Schlag → Bluterguss")}`),
+  knoechel: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#101A33"/>
+    <rect x="86" y="14" width="30" height="96" rx="12" fill="#F2C9A6"/>
+    <g transform="rotate(-24 100 120)"><path d="M84 104 h40 l46 40 a10 10 0 0 1 -6 18 h-74 a12 12 0 0 1 -12 -12z" fill="#F2C9A6"/></g>
+    <path d="M128 98 q16 6 18 24" stroke="#FF5A4F" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="138" cy="110" r="22" fill="#FF5A4F" opacity=".35"/>
+    ${T(100,192,"Fuß knickt nach innen")}`),
+  ausgekugelt: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#101A33"/>
+    <path d="M40 120 A44 44 0 0 1 120 120" fill="none" stroke="#F4E9D2" stroke-width="14"/>
+    <circle cx="132" cy="72" r="26" fill="#FFD34D"/><rect x="146" y="80" width="16" height="90" rx="8" fill="#FFD34D" transform="rotate(-20 154 125)"/>
+    <path d="M82 104 l24 -14" stroke="#FF5A4F" stroke-width="4" stroke-dasharray="5 5"/>${T(100,190,"Kopf aus der Pfanne")}`),
+  brennt: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#101A33"/>
+    ${[0,1,2,3,4,5].map(i=>`<rect x="${26+i*30}" y="${150-i*20}" width="22" height="${20+i*20}" rx="4" fill="${i<4?"#4FC38A":"#FF5A4F"}"/>`).join("")}
+    ${T(110,30,"zu viel, zu schnell","#FFD34D",16)}${T(110,190,"Überlastung")}`),
+  innen: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#101A33"/>
+    <circle cx="110" cy="64" r="26" fill="#F2C9A6"/><rect x="80" y="94" width="60" height="70" rx="22" fill="#3B6FD6"/>
+    <path d="M100 58 q4 4 8 0 M116 58 q4 4 8 0" stroke="#14203A" stroke-width="3" fill="none"/><path d="M102 76 q8 -5 16 0" stroke="#14203A" stroke-width="3" fill="none"/>
+    <text x="150" y="50" fill="#9FD8FF" font-size="20" font-weight="800" font-family="sans-serif">z z</text>${T(110,190,"innere Ursachen: bei mir selbst")}`),
+  aussen: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#101A33"/>
+    <rect x="18" y="130" width="184" height="16" rx="4" fill="#3A7A4E"/><circle cx="60" cy="138" r="7" fill="#7A5A3A"/><circle cx="140" cy="140" r="9" fill="#7A5A3A"/>
+    <path d="M150 60 q30 10 30 40" stroke="#9FD8FF" stroke-width="4" fill="none"/>${[0,1,2,3].map(i=>`<path d="M${40+i*40} 30 l-6 16" stroke="#9FD8FF" stroke-width="3"/>`).join("")}
+    <path d="M70 120 l36 -36 l10 10 l-36 36 z" fill="#E0575A"/>${T(110,190,"äußere Ursachen: Umwelt & andere")}`),
+  warm: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#101A33"/>
+    <rect x="84" y="24" width="32" height="130" rx="16" fill="#E8EEF7"/><rect x="92" y="64" width="16" height="84" rx="8" fill="#FF5A4F"/><circle cx="100" cy="158" r="22" fill="#FF5A4F"/>
+    ${T(150,70,"10+","#FFD34D",22)}${T(150,92,"Minuten","#FFD34D",13)}${T(100,196,"Aufwärmen")}`)
+};
+
+/* =========================================================
+   Inhalte
+   ========================================================= */
+const TATORT = [
+  {id:"g-sprung", name:"Umgeknickt beim Basketball", e:"Am **Sprunggelenk**: Der Fuß knickt nach innen um, meist werden die **Außenbänder** gedehnt oder reißen. Bandverletzungen am Sprunggelenk machen etwa **ein Viertel aller Sportverletzungen** aus."},
+  {id:"g-knie", name:"Verdreht im Fußball-Zweikampf", e:"Am **Knie**: Beim Verdrehen mit festem Fuß können **Kreuzband** oder **Meniskus** reißen – eine typische Verletzung bei schnellen Richtungswechseln."},
+  {id:"g-hand", name:"Sturz auf die ausgestreckte Hand", e:"Am **Handgelenk**: Wer sich im Fallen abstützt, verstaucht oder bricht sich oft das Handgelenk (z. B. Speiche). Darum gibt es beim Inlinern Handgelenkschoner."},
+  {id:"g-daumen", name:"Daumen verdreht beim Skifahren", e:"Am **Daumen**: Bleibt der Daumen am Skistock hängen, reißt oft ein Seitenband – der sogenannte „Skidaumen“."},
+  {id:"g-schulter", name:"Schulter ausgekugelt beim Wurf", e:"An der **Schulter**: Das Kugelgelenk ist sehr beweglich, aber wenig gesichert. Bei einem starken Schlag oder Sturz springt der Kopf aus der Pfanne – eine **Verrenkung (Luxation)**."},
+  {id:"g-ellenbogen", name:"Tennisarm nach zu viel Training", e:"Am **Ellenbogen**: Zu viele gleiche Schläge reizen die Sehnenansätze – eine **Überlastung**, keine Unfallverletzung."},
+  {id:"g-huefte", name:"Zerrung in der Leiste beim Grätschen", e:"An der **Hüfte/Leiste**: Bei einer weiten Grätsche werden die Muskeln innen am Oberschenkel überdehnt – eine **Zerrung**."},
+  {id:"g-kopf", name:"Schleudertrauma nach Zusammenprall", e:"Am **Hals**: Bei einem heftigen Zusammenprall wird der Kopf ruckartig hin und her geschleudert. Kopf- und Halsverletzungen sind immer ein Fall für den Arzt."}
+];
+
+const LERNEN = {
+  arten: { titel:"Welche Verletzungen gibt es?", folien:[
+    {bild:G(["g-sprung","g-knie","g-hand","g-schulter"]), titel:"Akut oder Überlastung?", text:"**Akute Verletzungen** passieren plötzlich – durch Sturz, Schlag, Umknicken oder Verdrehen. **Überlastungsschäden** entstehen langsam, wenn der Körper immer wieder zu viel abbekommt, z. B. Sehnenreizung oder Ermüdungsbruch."},
+    {bild:ICON.prellung, titel:"Prellung", text:"Ein **Schlag oder Stoß** (z. B. Tritt, Ball, Zusammenprall) quetscht Muskeln und Haut. Kleine Blutgefäße platzen – es entsteht ein **Bluterguss** (blauer Fleck). Fachwort: **Kontusion**."},
+    {bild:ICON.zerrung, titel:"Zerrung", text:"Ein Muskel wird **überdehnt**, aber nichts reißt. Der Schmerz zieht und wird langsam stärker. Typisch beim Sprint oder abrupten Abstoppen, oft in Oberschenkel oder Wade."},
+    {bild:ICON.muskel, titel:"Muskelfaserriss", text:"Hier **reißen Muskelfasern**. Der Schmerz kommt **schlagartig und stechend**, oft muss man sofort aufhören. Die Heilung dauert meist **3 bis 6 Wochen**, bei großen Rissen länger."},
+    {bild:ICON.knoechel, titel:"Verstauchung & Bänderriss", text:"Beim **Umknicken** wird das Gelenk über das normale Maß hinaus bewegt. Bänder werden **gedehnt (Verstauchung, Fachwort Distorsion)** oder **reißen (Bänderriss)**. Am häufigsten trifft es die **Außenbänder am Sprunggelenk**."},
+    {bild:ICON.ausgekugelt, titel:"Verrenkung", text:"Der Gelenkkopf springt **aus der Pfanne** – das Gelenk ist „ausgekugelt“. Fachwort: **Luxation**. Häufig an Schulter und Fingern. Nie selbst einrenken!"},
+    {bild:art(skel(["speiche","elle"])), titel:"Knochenbruch", text:"Wenn die Kraft zu groß ist, **bricht der Knochen** (Fraktur). Anzeichen: starker Schmerz, Schwellung, Fehlstellung. Mehr dazu in der Röntgen-Klinik (Knochen-Lernwelt)."},
+    {bild:ICON.brennt, titel:"Überlastungsschäden", text:"Zu viel, zu oft, zu schnell gesteigert: **Sehnenreizung** (z. B. Tennisarm, Achillessehne), **Ermüdungsbruch** oder Knieschmerzen beim Springen. Warnsignal: Schmerzen, die bei jedem Training wiederkommen."},
+    {bild:G(["g-hand","g-sprung"]), titel:"Typisch im Schulsport", text:"Bei Ballspielen wie Basketball, Handball und Volleyball werden besonders oft die **Finger** verletzt (Ball auf die Fingerspitzen). Beim Laufen und Springen trifft es vor allem **Knöchel und Fuß**."}
+  ]},
+  ursachen: { titel:"Warum passiert das?", folien:[
+    {bild:ICON.innen, titel:"Innere Ursachen", text:"Sie liegen **bei dir selbst**: kein oder zu kurzes **Aufwärmen**, **Müdigkeit** am Ende des Spiels, zu wenig Kraft oder Ausdauer, **schlechte Technik**, eine **nicht ausgeheilte Verletzung**, Selbstüberschätzung, zu wenig getrunken."},
+    {bild:ICON.aussen, titel:"Äußere Ursachen", text:"Sie kommen **von außen**: **Foul** oder Zusammenprall mit anderen, rutschiger oder unebener **Boden**, falsche **Schuhe**, fehlende **Schutzausrüstung** (Schoner, Helm), Kälte oder Nässe, kaputte **Geräte**."},
+    {bild:ICON.warm, titel:"Kaltstart vermeiden", text:"Kalte Muskeln reißen leichter. **Aufwärmen** macht Muskeln, Sehnen, Bänder und Knorpel belastbarer. Es sollte **mindestens 10 Minuten** dauern und direkt in den Sport übergehen."},
+    {bild:ICON.brennt, titel:"Müdigkeit ist gefährlich", text:"Viele Verletzungen passieren **gegen Ende** eines Spiels oder Trainings: Die Muskeln sind müde, die Konzentration lässt nach, die Gelenke werden schlechter stabilisiert."},
+    {bild:ICON.muskel, titel:"Alte Verletzungen", text:"Ein nicht richtig ausgeheilter Muskel oder ein lockeres Band ist eine **Schwachstelle**. Wer zu früh wieder voll einsteigt, verletzt sich oft an derselben Stelle erneut."},
+    {bild:G(["g-sprung","g-knie"]), titel:"Vorbeugen", text:"**Aufwärmen**, Training **langsam steigern**, **Pausen** machen, **Technik** üben, passende **Schuhe** und Schutzausrüstung tragen, Kraft und Gleichgewicht trainieren – und **fair spielen**."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:ICON.prellung, titel:"Prellung", text:"**„Ein Schlag, ein Stoß, ein blauer Fleck – die Prellung geht von selber weg.“**"},
+    {bild:ICON.zerrung, titel:"Zerrung oder Riss?", text:"**„Gezerrt ist nur zu weit gedehnt, beim Faserriss es plötzlich brennt.“**"},
+    {bild:ICON.knoechel, titel:"Umknicken", text:"**„Knickt der Fuß nach innen ein, leidet meist das Außenband allein.“**"},
+    {bild:ICON.ausgekugelt, titel:"Verrenkung", text:"**„Ist das Gelenk aus der Pfanne raus, renkt es der Arzt ein – nicht du zu Haus!“**"},
+    {bild:ICON.warm, titel:"Aufwärmen", text:"**„Kalter Muskel reißt geschwind, drum wärm dich auf, mein liebes Kind!“**"},
+    {bild:ICON.innen, titel:"Ursachen", text:"**„Innen liegt’s an mir allein, außen können Boden, Schuh und Gegner sein.“**"}
+  ]}
+};
+
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const HERO = `
+<div class="flut-hero">
+  <a class="welt-back" href="klasse9.html#o=stadion">🏙️ Athletopolis</a>
+  <svg class="hero-art" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <defs><linearGradient id="bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C8" stop-opacity=".7"/><stop offset="1" stop-color="#FFF6C8" stop-opacity="0"/></linearGradient></defs>
+    <path class="beamL" d="M110 40 L40 300 L190 300 Z" fill="url(#bm)"/><path class="beamR" d="M320 40 L230 300 L390 300 Z" fill="url(#bm)"/>
+    <rect x="104" y="40" width="12" height="190" fill="#3A4664"/><rect x="314" y="40" width="12" height="190" fill="#3A4664"/>
+    <rect x="86" y="18" width="48" height="26" rx="4" fill="#FFF6C8"/><rect x="296" y="18" width="48" height="26" rx="4" fill="#FFF6C8"/>
+    ${[0,1,2,3].map(i=>`<circle cx="${96+i*10}" cy="31" r="3.5" fill="#FFD34D"/><circle cx="${306+i*10}" cy="31" r="3.5" fill="#FFD34D"/>`).join("")}
+    <rect x="160" y="150" width="70" height="46" rx="6" fill="#FFFFFF"/><rect x="186" y="158" width="18" height="30" rx="2" fill="#D63A2F"/><rect x="180" y="164" width="30" height="18" rx="2" fill="#D63A2F"/>
+  </svg>
+  <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
+  <h1>Sport&shy;verletzungen &amp; ihre Ursachen</h1>
+  <p>Flutlicht an! Im Stadion wirst du zum Verletzungs-Detektiv: Was ist passiert, wo tut’s weh – und warum? Sammle Pflaster 🩹 und erstelle am Ende deinen Ergebnis-Code.</p>
+</div>`;
+
+const BS = ["🔍 Innere Ursache","🌧️ Äußere Ursache"];
+LW.start({
+  id: "vl9",
+  titel: "Verletzungs-Lernwelt",
+  sprache: "de",
+  hero: HERO,
+  sammel: "🩹",
+  kartenSymbol: "🩹",
+  konfetti: ["#D63A2F","#FFD34D","#101A33","#4FC38A","#FFFFFF"],
+  lob: {3:"Top-Detektiv! Drei Sterne.", 2:"Gut ermittelt! Schaffst du drei Sterne?", 1:"Die Spur ist heiß – schau dir die Infokarten an und versuch es nochmal.", 0:"Fall noch offen: Lies die Erklärungen und probier es nochmal."},
+  lernen: LERNEN,
+  levels: [
+    { id:"tatort", typ:"zeigen", bild:"gelenke", lernen:"arten", icon:"📍", titel:"Tatort Körper", art:"Antippen · 8 Fälle",
+      anleitung:"Ein Unfall wird gemeldet. **Tippe auf die Stelle im Körper**, an der es passiert ist (orange Kreise). Jeder Treffer = **1 Punkt**.",
+      frage:"Wo hat es gekracht?", ziele:TATORT, richtigText:"Richtig erkannt!" },
+    { id:"erkennen", typ:"quiz", lernen:"arten", icon:"🩺", titel:"Was ist das?", art:"Quiz · 10 Verletzungen",
+      anleitung:"Lies die Beschreibung: Welche Verletzung ist das? Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Nach einem Tritt gegen den Oberschenkel ist die Stelle geschwollen und wird blau.", o:["Prellung","Muskelfaserriss","Bänderriss","Verrenkung"], c:0, e:"Ein Schlag quetscht das Gewebe, kleine Blutgefäße platzen: **Prellung** mit Bluterguss."},
+        {q:"Beim Sprint zieht es plötzlich hinten im Oberschenkel. Laufen geht noch, aber der Schmerz wird langsam stärker.", o:["Knochenbruch","Zerrung","Verrenkung","Prellung"], c:1, e:"Der Muskel wurde überdehnt, aber nichts ist gerissen: **Zerrung**."},
+        {q:"Beim Antritt spürt Mia einen stechenden Schmerz in der Wade, wie ein Messerstich. Sie muss sofort aufhören.", o:["Muskelkater","Zerrung","Muskelfaserriss","Prellung"], c:2, e:"Schlagartiger, stechender Schmerz: Muskelfasern sind gerissen – **Muskelfaserriss**."},
+        {q:"Tom knickt beim Basketball mit dem Fuß nach innen um. Der Knöchel schwillt außen stark an, er kann kaum auftreten.", o:["Muskelfaserriss","Prellung","Verrenkung der Schulter","Bänderverletzung am Sprunggelenk"], c:3, e:"Typisch: Umknicken nach innen verletzt die **Außenbänder** am Sprunggelenk (gedehnt oder gerissen)."},
+        {q:"Nach einem Sturz steht die Schulter seltsam ab und lässt sich nicht mehr bewegen. Der Gelenkkopf ist aus der Pfanne gesprungen.", o:["Verrenkung (Luxation)","Zerrung","Prellung","Sehnenreizung"], c:0, e:"Der Gelenkkopf ist ausgekugelt: **Verrenkung (Luxation)**. Nie selbst einrenken!"},
+        {q:"Nach einem Sturz ist der Unterarm verbogen und tut extrem weh.", o:["Zerrung","Knochenbruch","Muskelkater","Bänderdehnung"], c:1, e:"Eine **Fehlstellung** ist ein klares Zeichen für einen **Knochenbruch**."},
+        {q:"Lena hat ihr Lauftraining stark gesteigert. Seit Wochen schmerzt die Achillessehne bei jedem Training.", o:["Prellung","Verrenkung","Überlastung der Sehne","Knochenbruch"], c:2, e:"Kein Unfall, sondern **zu viel, zu schnell**: eine **Überlastung** (Sehnenreizung)."},
+        {q:"Ein Volleyball prallt auf die Fingerspitzen. Der Finger schwillt an und lässt sich schwer bewegen.", o:["Verstauchung des Fingers","Zerrung","Muskelfaserriss","Ermüdungsbruch"], c:0, e:"Der Finger wurde gestaucht: eine **Verstauchung** – sehr häufig bei Ballspielen. Kühlen und vom Arzt anschauen lassen."},
+        {q:"Am Tag nach dem ersten Fitnesstraining tun die Beine beim Treppensteigen weh. Nach drei Tagen ist alles wieder gut.", o:["Muskelfaserriss","Muskelkater","Bänderriss","Prellung"], c:1, e:"Das ist **Muskelkater**: winzige Risse durch ungewohnte Belastung – keine echte Verletzung."},
+        {q:"Im Fußballspiel verdreht Jonas mit festem Fuß das Knie. Es knackt, das Knie wird dick und fühlt sich wackelig an.", o:["Zerrung in der Wade","Kreuzbandriss","Prellung am Schienbein","Muskelkater"], c:1, e:"Verdrehen mit festem Fuß + Knacken + wackeliges Knie: Verdacht auf **Kreuzbandriss**."}
+      ]},
+    { id:"akut", typ:"sortieren", lernen:"arten", icon:"⚡", titel:"Plötzlich oder schleichend?", art:"Sortieren · 12 Karten",
+      anleitung:"Ist das eine **akute Verletzung** (plötzlich) oder ein **Überlastungsschaden** (schleichend)? Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"Akute Verletzung", info:"plötzlich, durch einen Unfall", tipp:"Akute Verletzungen passieren in einem Moment: Sturz, Schlag, Umknicken, Verdrehen."},
+        {t:"Überlastungsschaden", info:"schleichend, durch zu viel", tipp:"Überlastungsschäden entstehen nach und nach durch immer wieder zu hohe Belastung."}
+      ],
+      items:[
+        {t:"Umknicken beim Basketball", k:0},
+        {t:"Tennisarm", k:1, e:"Viele gleiche Schläge reizen die Sehnenansätze am Ellenbogen."},
+        {t:"Prellung nach einem Tritt", k:0},
+        {t:"Ermüdungsbruch im Fuß", k:1, e:"Viele kleine Überlastungen → feine Risse im Knochen."},
+        {t:"Muskelfaserriss beim Sprint", k:0},
+        {t:"Schmerzende Achillessehne nach Wochen mit zu viel Training", k:1},
+        {t:"Ausgekugelte Schulter nach Sturz", k:0},
+        {t:"Knieschmerzen nach vielen Sprüngen ohne Pause", k:1},
+        {t:"Fingerverstauchung durch den Ball", k:0},
+        {t:"Rückenschmerzen durch dauernd falsche Technik beim Heben", k:1},
+        {t:"Kreuzbandriss beim Verdrehen", k:0},
+        {t:"Schienbeinschmerzen nach zu schnell gesteigertem Lauftraining", k:1}
+      ]},
+    { id:"memory", typ:"memory", icon:"🧠", titel:"Fachwort-Memory", art:"Memory · 7 Paare",
+      anleitung:"Finde die Paare: **Fachwort + deutsches Wort**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Kontusion", b:"Prellung"},
+        {a:"Distorsion", b:"Verstauchung"},
+        {a:"Luxation", b:"Verrenkung"},
+        {a:"Fraktur", b:"Knochenbruch"},
+        {a:"Ruptur", b:"Riss"},
+        {a:"Hämatom", b:"Bluterguss"},
+        {a:"Stressfraktur", b:"Ermüdungsbruch"}
+      ]},
+    { id:"ursachen", typ:"rush", lernen:"ursachen", icon:"🔦", titel:"Innen oder außen?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Liegt die Ursache **bei der Person selbst** (innen, linker Knopf) oder **kommt sie von außen** (rechter Knopf)? **Ziel: 12 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:12, fest:true,
+      items:[
+        {q:"Nicht aufgewärmt", o:BS, c:0},
+        {q:"Rutschiger Hallenboden", o:BS, c:1},
+        {q:"Total müde am Ende des Spiels", o:BS, c:0},
+        {q:"Foul vom Gegenspieler", o:BS, c:1},
+        {q:"Schlechte Technik beim Landen", o:BS, c:0},
+        {q:"Kaputte Turnmatte", o:BS, c:1},
+        {q:"Alte Verletzung nicht ausgeheilt", o:BS, c:0},
+        {q:"Falsche Schuhe ohne Halt", o:BS, c:1},
+        {q:"Selbstüberschätzung", o:BS, c:0},
+        {q:"Kein Schienbeinschoner", o:BS, c:1},
+        {q:"Zu wenig getrunken", o:BS, c:0},
+        {q:"Nasser Rasen", o:BS, c:1},
+        {q:"Zu wenig Kraft in den Beinen", o:BS, c:0},
+        {q:"Zusammenprall mit einem Mitspieler", o:BS, c:1},
+        {q:"Unkonzentriert und abgelenkt", o:BS, c:0},
+        {q:"Eiskaltes Wetter", o:BS, c:1},
+        {q:"Training zu schnell gesteigert", o:BS, c:0},
+        {q:"Loch im Fußballplatz", o:BS, c:1},
+        {q:"Zu wenig geschlafen", o:BS, c:0},
+        {q:"Ball fliegt unerwartet ins Gesicht", o:BS, c:1}
+      ]},
+    { id:"detektiv", typ:"quiz", lernen:"ursachen", icon:"🕵️", titel:"Verletzungs-Detektiv", art:"Fälle lösen · 7 Fälle",
+      anleitung:"Lies den Fall: **Was war die wichtigste Ursache?** Jede richtige Antwort = **2 Punkte**.",
+      punkte:2, szenenLabel:"Fall",
+      fragen:[
+        {szene:"Ben kommt zu spät zum Training und steigt sofort ins Sprinttraining ein. Beim zweiten Sprint zieht es im Oberschenkel.", q:"Was war die Hauptursache?", o:["Kein Aufwärmen","Falsche Schuhe","Foul","Nasser Boden"], c:0, e:"Kalte Muskeln reißen leichter. **Aufwärmen** hätte die Zerrung wahrscheinlich verhindert."},
+        {szene:"In der 85. Minute eines Fußballspiels knickt Elif beim Abspiel um. Vorher ist ihr den ganzen Tag nichts passiert.", q:"Welche innere Ursache spielt hier vermutlich mit?", o:["Zu viel Kraft","Müdigkeit am Spielende","Zu langes Aufwärmen","Zu viel getrunken"], c:1, e:"Gegen Spielende sind Muskeln **müde**, die Gelenke werden schlechter stabilisiert – viele Verletzungen passieren genau dann."},
+        {szene:"Beim Hallenfußball in normalen Straßenschuhen rutscht Kai bei einem Richtungswechsel weg und verdreht sich das Knie.", q:"Was war die äußere Ursache?", o:["Müdigkeit","Selbstüberschätzung","Ungeeignete Schuhe","Fehlendes Aufwärmen"], c:2, e:"Straßenschuhe haben in der Halle keinen Halt. Passende **Hallenschuhe** beugen vor."},
+        {szene:"Nils hatte vor zwei Wochen eine Zerrung. Weil das Turnier ansteht, spielt er trotz leichter Schmerzen voll mit – und verletzt sich an derselben Stelle.", q:"Was ist hier passiert?", o:["Zu früh voll belastet – die Verletzung war nicht ausgeheilt","Zu viel Aufwärmen","Ein Foul","Zu wenig gegessen"], c:0, e:"Ein nicht ausgeheilter Muskel ist eine **Schwachstelle**. Erst wieder voll einsteigen, wenn alles ausgeheilt ist."},
+        {szene:"Sara will bis zum Stadtlauf fit sein und läuft plötzlich jeden Tag doppelt so weit wie vorher. Nach drei Wochen schmerzt der Fuß bei jedem Schritt.", q:"Welche Ursache steckt dahinter?", o:["Ein Foul","Zu schnell gesteigertes Training (Überlastung)","Zu langes Aufwärmen","Zu warme Kleidung"], c:1, e:"Zu viel, zu schnell: Verdacht auf **Ermüdungsbruch**. Training immer **langsam steigern**."},
+        {szene:"Beim Hockey bekommt Lukas den Schläger eines Gegners gegen das Schienbein. Er trägt keine Schoner.", q:"Wie hätte man die Verletzung am ehesten verhindern können?", o:["Mit Schienbeinschonern","Mit mehr Ausdauertraining","Mit längerem Dehnen","Mit mehr Essen"], c:0, e:"**Schutzausrüstung** fängt äußere Einwirkungen wie Schläge und Tritte ab."},
+        {szene:"Nach dem Regen ist der Kunstrasen rutschig. Trotzdem wird mit vollem Tempo weitergespielt. Zwei Spieler rutschen weg und verletzen sich.", q:"Welche Art von Ursache ist der rutschige Platz?", o:["Innere Ursache","Äußere Ursache","Gar keine Ursache","Überlastung"], c:1, e:"Der Boden ist eine **äußere Ursache**. Vorbeugen: Tempo anpassen oder Spiel unterbrechen."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 6 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut – so bleibt er hängen. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Ein Schlag, ein Stoß, ein blauer Fleck – die ______ geht von selber weg.“", o:["Prellung","Fraktur","Luxation"], c:0, e:"Die **Prellung** heilt meist von allein."},
+        {q:"„Gezerrt ist nur zu weit ______, beim Faserriss es plötzlich brennt.“", o:["gedehnt","gebrochen","gekühlt"], c:0, e:"Bei der Zerrung wird der Muskel nur **überdehnt**."},
+        {q:"„Knickt der Fuß nach innen ein, leidet meist das ______ allein.“", o:["Außenband","Kreuzband","Schienbein"], c:0, e:"Beim Umknicken nach innen trifft es meist das **Außenband**."},
+        {q:"„Ist das Gelenk aus der Pfanne raus, renkt es der ______ ein – nicht du zu Haus!“", o:["Arzt","Trainer","Nachbar"], c:0, e:"Eine Verrenkung gehört immer zum **Arzt**."},
+        {q:"„Kalter ______ reißt geschwind, drum wärm dich auf, mein liebes Kind!“", o:["Muskel","Knochen","Schuh"], c:0, e:"Kalte **Muskeln** sind weniger dehnbar und reißen leichter."},
+        {q:"„Innen liegt’s an mir allein, außen können Boden, ______ und Gegner sein.“", o:["Schuh","Müdigkeit","Technik"], c:0, e:"**Schuhe** sind eine äußere Ursache – Müdigkeit und Technik liegen bei dir selbst."}
+      ]},
+    { id:"mythos", typ:"swipe", icon:"🧐", titel:"Mythos oder Fakt?", art:"Wischen · 10 Karten",
+      anleitung:"Wische nach **rechts = Fakt**, nach **links = Mythos** – oder tippe auf die Knöpfe.",
+      links:{t:"Mythos", icon:"❌"}, rechts:{t:"Fakt", icon:"✅"},
+      karten:[
+        {t:"Umknicken ist harmlos – einfach weiterspielen.", r:"l", e:"Umknicken ist keine Kleinigkeit: Oft sind Bänder verletzt. Pause, kühlen und abklären lassen."},
+        {t:"Verletzungen am Sprunggelenk gehören zu den häufigsten Sportverletzungen.", r:"r", e:"Bandverletzungen am Sprunggelenk machen etwa ein Viertel aller Sportverletzungen aus."},
+        {t:"Eine Zerrung und ein Muskelfaserriss sind dasselbe.", r:"l", e:"Bei der Zerrung ist der Muskel nur überdehnt, beim Faserriss reißen Fasern."},
+        {t:"Viele Verletzungen passieren, wenn man schon müde ist.", r:"r", e:"Müde Muskeln stabilisieren schlechter – darum passiert viel gegen Spielende."},
+        {t:"Eine ausgekugelte Schulter kann man selbst wieder einrenken.", r:"l", e:"Nie selbst einrenken – dabei können Nerven, Gefäße oder Knochen verletzt werden."},
+        {t:"Wer sich aufwärmt, senkt sein Verletzungsrisiko.", r:"r", e:"Aufwärmen macht Muskeln, Sehnen und Bänder belastbarer."},
+        {t:"Muskelkater ist eine schwere Verletzung.", r:"l", e:"Muskelkater ist unangenehm, aber harmlos und nach wenigen Tagen weg."},
+        {t:"Bei Ballspielen in der Schule werden oft die Finger verletzt.", r:"r", e:"Bei Basketball, Volleyball und Handball sind Fingerverletzungen besonders häufig."},
+        {t:"Mit Schmerzen weitertrainieren macht hart und hilft beim Heilen.", r:"l", e:"Schmerz ist ein Warnsignal. Wer trotzdem weitermacht, riskiert eine schlimmere Verletzung."},
+        {t:"Überlastungsschäden entstehen ganz plötzlich bei einem Unfall.", r:"l", e:"Überlastungsschäden entstehen schleichend durch zu viel Belastung über längere Zeit."}
+      ]},
+    { id:"zahlen", typ:"schaetzen", icon:"📏", titel:"Verletzungs-Zahlen", art:"Schätzen mit dem Regler",
+      anleitung:"Schieb den Regler auf deine Schätzung. Volltreffer = **2 Punkte**, knapp daneben = 1 Punkt.",
+      fragen:[
+        {q:"Wie viel Prozent aller Sportverletzungen sind Bandverletzungen am Sprunggelenk?", min:0, max:100, step:1, start:60, unit:"%", dec:0, ans:25, tol:5, e:"Etwa **25 %** – ein Viertel aller Sportverletzungen."},
+        {q:"Bei wie viel Prozent der Umknick-Verletzungen sind die Außenbänder betroffen?", min:0, max:100, step:1, start:40, unit:"%", dec:0, ans:85, tol:5, e:"In etwa **85 %** der Fälle."},
+        {q:"Wie viele Minuten sollte Aufwärmen mindestens dauern?", min:0, max:45, step:1, start:3, unit:"Minuten", dec:0, ans:10, tol:2, e:"**Mindestens 10 Minuten** – und dann direkt mit dem Sport weitermachen."},
+        {q:"Wie viele Wochen braucht ein kleinerer Muskelfaserriss ungefähr zum Heilen?", min:0, max:20, step:1, start:12, unit:"Wochen", dec:0, ans:4, tol:1, e:"Meist **3 bis 6 Wochen**, bei großen Rissen auch länger."}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 8 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie heißt der blaue Fleck nach einem Schlag (deutsches Wort)?", hilfe:"💡 B…", a:["Bluterguss"], re:["^(ein |der )?(bluterguss|bluterguß)$","^hämatom$"], e:"**Bluterguss** (Fachwort: Hämatom)."},
+        {q:"Wie heißt die Verletzung, bei der ein Muskel nur überdehnt wird?", hilfe:"💡 Z…", a:["Zerrung"], re:["^(eine |die )?(muskel)?zerrung$"], e:"**Zerrung**."},
+        {q:"Welches Band verletzt man beim Umknicken nach innen am häufigsten?", hilfe:"💡 A…", a:["Außenband"], re:["^(das )?(außen|aussen)b(a|ä)nd(er)?$"], e:"Das **Außenband** am Sprunggelenk."},
+        {q:"Wie heißt das Fachwort für eine Verrenkung?", hilfe:"💡 L…", a:["Luxation"], re:["^(eine |die )?luxation$"], e:"**Luxation**."},
+        {q:"Wie heißt das Fachwort für einen Knochenbruch?", hilfe:"💡 F…", a:["Fraktur"], re:["^(eine |die )?fraktur$"], e:"**Fraktur**."},
+        {q:"Wie nennt man Schäden, die durch zu viel Belastung über längere Zeit entstehen?", hilfe:"💡 Ü…", a:["Überlastungsschaden"], re:["^(ein |der )?(überlastungs|ueberlastungs)(schaden|schäden|schaeden)$","^(die )?(überlastung|ueberlastung)$"], e:"**Überlastungsschäden**."},
+        {q:"Was sollte man vor jedem Training mindestens 10 Minuten machen?", hilfe:"💡 A…", a:["Aufwärmen"], re:["^(sich )?(aufwärmen|aufwaermen|warm machen|warmmachen)$"], e:"**Aufwärmen**."},
+        {q:"Ist ein Foul eine innere oder äußere Ursache?", hilfe:"💡 i… oder ä…", a:["äußere"], re:["^(eine )?(äußere|aeussere|äussere|außen|aussen)( ursache)?$"], e:"Eine **äußere** Ursache – sie kommt von anderen."}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>
