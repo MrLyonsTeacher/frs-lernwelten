@@ -77,3 +77,7 @@
 @media (prefers-reduced-motion: no-preference){ .sk g.jm .jr{animation:jmpulse 2.2s ease-in-out infinite} @keyframes jmpulse{50%{stroke-opacity:.45}} }
 .sk.ruhig g[data-z]:not(.jm){filter:none}
 
+
+/* Zurück zur Sport-Welt (im Startbild der Lernwelt) */
+.welt-back{display:inline-flex;align-items:center;gap:.35rem;margin:0 0 .7rem;padding:.4rem .8rem;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:700;text-decoration:none;font-size:.95rem;min-height:40px}
+.welt-back:hover{background:rgba(255,255,255,.26)}

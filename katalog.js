@@ -182,6 +182,7 @@ const FRS = {
     { id:"sport", name:"Sport", icon:"🏀", materialien:[
       { id:"bb2", titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 9 · 8 Spiele", pfad:"sport/basketball.html",
         stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] },
+      { id:"s9welt", titel:"Athletopolis – Sport-Welt Klasse 9", info:"Profil Sport Kl. 9 · Stadt mit 6 Vierteln (ein Viertel je Einheit) · offen: Skelett-Werft mit Knochen und Gelenke", pfad:"sport/klasse9.html", stationen:[], stationenMax:[] },
       { id:"kn9", titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Sporttheorie · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",
         stationen:["Röntgen-Scan","Wer leuchtet?","Reime","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Mythos","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,11,8,13,14,10,12,11,12,14,6,9] },
       { id:"ge9", titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Sporttheorie · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",

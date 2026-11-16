@@ -230,6 +230,7 @@ const GEAR = (cx, cy, r, n, col, cls) => { let d = ""; for(let i=0;i<n*2;i++){ c
   return `<g class="gear-spin ${cls||""}"><path d="${d}Z" fill="${col}" stroke="#121A26" stroke-width="2" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${r*.42}" fill="#1B2433"/></g>`; };
 const HERO = `
 <div class="robo-hero">
+  <a class="welt-back" href="klasse9.html#o=werft&t=1">🏙️ Athletopolis</a>
   <svg class="hero-art" viewBox="0 0 320 300" aria-hidden="true">
     ${GEAR(250,70,42,10,"#3A4A63")} ${GEAR(186,128,26,8,"#4A5D7A","rev")} ${GEAR(268,210,30,9,"#3A4A63","rev")}
     <rect x="60" y="250" width="110" height="22" rx="6" fill="#4A5D7A"/>
