@@ -177,15 +177,28 @@ const FRS = {
     ]
   },
 
+  // Sport-Klassenwelten (gemalte Welten, sport/klasseN.html). Freigabe-Schlüssel = 100 + Klasse.
+  // orte = Orte der Welt (gleiche ids wie in der Welt-Datei!), offen = ohne Freigabe sichtbar. Lernwelten: Material mit welt:N und Thema-id.
+  sport: { welten: [
+    { k:8, name:"Camp Start", pfad:"sport/klasse8.html", bild:"sport/welt8/vorschau.jpg", info:"Sport-Camp am See · ein Ort je Theoriethema (T1–T7)",
+      orte:[ {id:"feuer", name:"Lagerfeuer", icon:"🔥", e:"T1 Was ist Sport?", offen:true}, {id:"spielfeld", name:"Schiri-Turm", icon:"🧑‍⚖️", e:"T5 Spielregeln & Fairness", offen:true, themen:["bb2"]},
+             {id:"wiese", name:"Sonnen-Wiese", icon:"🌅", e:"T3 Aufwärmen & Stretching"}, {id:"muehle", name:"Muskel-Mühle", icon:"⚙️", e:"T4 Muskeln & Gegenspieler"},
+             {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"T2 Motorische Fähigkeiten"}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"T6 Fair Play & Emotionen"},
+             {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio"} ] },
+    { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Stadt in Form eines Athleten · ein Viertel je Einheit (E1–E6)",
+      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie"}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Bewegungsapparat & Verletzungen", offen:true, themen:["kn9","ge9"]},
+             {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness"}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung"},
+             {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping"}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn"} ] }
+  ]},
+
   // Fächer ohne Inseln: einfache Liste
   listen: [
     { id:"sport", name:"Sport", icon:"🏀", materialien:[
-      { id:"bb2", titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 9 · 8 Spiele", pfad:"sport/basketball.html",
+      { id:"bb2", welt:8, titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 8 · Schiri-Turm (T5) · 8 Spiele", pfad:"sport/basketball.html",
         stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] },
-      { id:"s9welt", titel:"Athletopolis – Sport-Welt Klasse 9", info:"Profil Sport Kl. 9 · Stadt mit 6 Vierteln (ein Viertel je Einheit) · offen: Skelett-Werft mit Knochen und Gelenke", pfad:"sport/klasse9.html", stationen:[], stationenMax:[] },
-      { id:"kn9", titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Sporttheorie · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",
+      { id:"kn9", welt:9, titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Skelett-Werft, Röntgen-Klinik (E2) · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",
         stationen:["Röntgen-Scan","Wer leuchtet?","Reime","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Mythos","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,11,8,13,14,10,12,11,12,14,6,9] },
-      { id:"ge9", titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Sporttheorie · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",
+      { id:"ge9", welt:9, titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Skelett-Werft, Robo-Werkstatt (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",
         stationen:["Labor","Scanner","Reime","Memory","Lager","Knie","Band/Sehne","Quiz","Analyse","Mythos","Zahlen","Profi"], stationenMax:[16,8,6,8,12,16,12,10,14,10,8,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
