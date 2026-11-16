@@ -14,7 +14,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cam,.drift{position:absolute;inset:0}
 .cam{will-change:transform,filter,opacity}
 .drift img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
-.drift svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.drift svg,.drift canvas.live{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @media (prefers-reduced-motion: no-preference){
   .fly-out{animation:flyOut .55s cubic-bezier(.5,0,.9,.5) forwards}
   .fly-in{animation:flyIn .55s cubic-bezier(.1,.6,.3,1) .12s both}
