@@ -1,6 +1,7 @@
 /* Entschlüsselt die Vokabel-Daten im Browser (AES-GCM, Schlüssel aus Zugangscode). */
 (function(){
 const KEY="frs-vk";
+const OFFEN="pqv3-je23-ggr7"; /* TEMPORÄR: offener Zugang, Zeile auf "" setzen = wieder geschützt */
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const getPass=()=>{ try{ return localStorage.getItem(KEY)||""; }catch(e){ return window.__vk||""; } };
 const setPass=p=>{ try{ localStorage.setItem(KEY,p); }catch(e){ window.__vk=p; } };
@@ -19,6 +20,7 @@ window.VOKGATE={
   async run(file,cb){
     let o; try{ o=await (await fetch(file,{cache:"no-cache"})).json(); }catch(e){ document.body.insertAdjacentHTML("beforeend","<p style='padding:20px'>Daten konnten nicht geladen werden.</p>"); return; }
     let pass=getPass(), msg="";
+    if(OFFEN){ try{ const t=await dec(OFFEN,o); (0,eval)(t); return cb(); }catch(e){} }
     for(;;){
       if(pass){ try{ const t=await dec(pass,o); setPass(pass); (0,eval)(t); return cb(); }catch(e){ msg="Code stimmt nicht."; try{localStorage.removeItem(KEY);}catch(_){} } }
       pass=await ask(msg);
