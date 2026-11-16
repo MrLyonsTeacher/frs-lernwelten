@@ -59,7 +59,7 @@ precision mediump float;
 #endif
 uniform sampler2D img, msk, rau; uniform float t; uniform vec3 herz; uniform vec2 sonne; varying vec2 uv;
 float n(vec2 p){ return texture2D(rau, (p + 0.5) / 256.0).r; }
-float schlag(float ph){ return exp(-pow((ph-0.06)*22.0, 2.0)) + 0.6*exp(-pow((ph-0.24)*22.0, 2.0)); }
+float schlag(float s){ return exp(-pow((s-0.10)*13.0, 2.0)) + 0.6*exp(-pow((s-0.40)*13.0, 2.0)); }   // s = Sekunden seit dem Schlag
 void main(){
   vec2 R = vec2(1536.0, 1024.0), px = uv * R; vec4 m = texture2D(msk, uv);
   float tief = clamp((px.y - sonne.y) / 900.0, 0.06, 1.0);
@@ -68,14 +68,13 @@ void main(){
   d += m.r * vec2((w1 - 0.5) * 3.2, (w2 - 0.5) * 1.6) * (0.35 + tief);
   d.x += m.b * (n(vec2(px.x/260.0 + t*0.03, px.y/26.0 - t*0.02)) - 0.5) * 7.0;
   d.y += m.b * (n(vec2(px.x/180.0 - t*0.02, px.y/40.0)) - 0.5) * 2.5;
-  float ph = fract(t * 0.6), b = schlag(ph), hr = length(px - herz.xy), hin = smoothstep(herz.z, herz.z*0.4, hr);
+  float TAKT = 6.0, ph = mod(t, TAKT), b = schlag(ph), hr = length(px - herz.xy), hin = 1.0 - smoothstep(herz.z*0.4, herz.z, hr);
   vec2 q = px + d; q = herz.xy + (q - herz.xy) * (1.0 - 0.045 * b * hin);
   vec3 c = texture2D(img, q / R).rgb;
   float sp = smoothstep(0.78, 0.96, n(vec2(px.x/8.0 + t*1.3, px.y/2.8 - t*2.2))) * smoothstep(0.45, 0.7, n(vec2(px.x/60.0 - t*0.4, px.y/20.0))) * 0.5;
   float sonnenbahn = 0.25 + 1.6 * exp(-abs(px.x - sonne.x) / (70.0 + 140.0*tief));
   c += m.r * sp * sonnenbahn * vec3(1.0, 0.86, 0.62);
-  c += m.b * 0.10 * exp(-length((px - sonne) / vec2(260.0, 90.0))) * (0.6 + 0.4*sin(t*0.8)) * vec3(1.0, 0.7, 0.45);
-  float dd = hr, wl = fract(dd/240.0 - t*0.6), puls = smoothstep(0.0, 0.05, wl) * smoothstep(0.22, 0.05, wl) * exp(-dd/900.0);
+  float vorne = (ph - 0.1) * 150.0, wl = (vorne - hr) / 90.0, puls = smoothstep(0.0, 0.25, wl) * (1.0 - smoothstep(0.25, 1.0, wl)) * exp(-hr/900.0);   // eine Welle pro Schlag, ~150 px/s
   c += m.g * puls * vec3(1.0, 0.5, 0.42) * 0.75;
   c += hin * b * 0.16 * vec3(1.0, 0.35, 0.3);
   gl_FragColor = vec4(c, 1.0);
@@ -119,7 +118,7 @@ function liveEbene(box, frame, L){
 }
 const spotHTML = (id, x, y, icon, name, sub, zu) => `<button class="spot${zu?" zu":""}" data-id="${id}" style="left:${pct(x,W)};top:${pct(y,H)}"><span class="pin" aria-hidden="true">${zu?"🔒":icon}</span><span class="lbl">${esc(name)}${sub?`<small>${esc(sub)}</small>`:""}</span></button>`;
 function toast(t, ms){ const el = $("#toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("on"), ms || 2200); }
-const img = (n, alt) => `<img src="${C.dir}/${n}.webp" alt="${esc(alt)}" draggable="false">`;
+const img = (n, alt) => `<div class="fill" style="background-image:url(${C.dir}/${n}.webp)"></div><img src="${C.dir}/${n}.webp" alt="${esc(alt)}" draggable="false">`;
 
 /* ---------- Gerüst ---------- */
 function geruest(){
@@ -140,7 +139,7 @@ function geruest(){
 <div class="toast" id="toast" role="status"></div>
 <div class="fade" id="fade"></div>`;
 }
-const START = () => `${C.untertitel} · Ziehen = umschauen · Tippen = hinfliegen`;
+const START = () => `${C.untertitel} · Tippen = hinfliegen`;
 
 /* ---------- Übersicht ---------- */
 function drawOver(){

@@ -208,9 +208,9 @@ const FRS = {
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       // raum:true = Escape Room mit Karte (bild, farbe, chips); sonst Werkzeug/Vorschau in der Liste darunter
-      { id:"esc-vulkan", raum:true, titel:"Der Vulkan", info:"Der Vulkan grollt: Gemeinsam durch die Kammern bis zum Kern und den Ausbruch stoppen.", pfad:"escape/vulkan.html",
+      { id:"esc-vulkan", raum:true, titel:"Der Vulkan", info:"Der Vulkan bebt: Gemeinsam durch die Kammern bis zum Kern und den Ausbruch stoppen.", pfad:"escape/vulkan.html",
         bild:"escape/vorschau-vulkan.jpg", farbe:"#D9472F", chips:["👥 1–6","⏱️ 35 / 70 Min.","🚪 7 Kammern","3D"] },
-      { id:"esc-woodlands", raum:true, titel:"Die Woodlands", info:"Im Elbenwald schwindet das Licht: Runensteine lösen und den Weltenbaum wecken.", pfad:"escape/woodlands.html",
+      { id:"esc-woodlands", raum:true, titel:"Finlorién", info:"Im Elbenwald schwindet das Licht: Runensteine lösen und den Weltenbaum wecken.", pfad:"escape/woodlands.html",
         bild:"escape/vorschau-woodlands.jpg", farbe:"#1F9E7A", chips:["👥 1–6","⏱️ 35 / 70 Min.","🪨 6 Runensteine","2D"] },
       { id:"esc-wrack", raum:true, titel:"Das Wrack", info:"Tief unter den Wellen: Raum für Raum durch die Schott-Türen bis zur Schatzkammer.", pfad:"escape/wrack.html",
         bild:"escape/vorschau-wrack.jpg", farbe:"#1689B5", chips:["👥 1–6","⏱️ 35 / 70 Min.","🚪 3 Räume + Schatz"] },
