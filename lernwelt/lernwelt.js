@@ -33,7 +33,7 @@ const TXT = {
       platHint:"Platin gibt es nur, wenn jedes Spiel beim ersten Versuch fehlerfrei war.",platGame:"Platin: beim ersten Versuch fehlerfrei!",
       rankNew:"Neuer Rang!",allRanks:"Alle Ränge",rankNext:(n,name)=>`noch ${n} bis ${name}`,rankTop:"Höchster Rang!",today:"heute",rankOk:"Weiter!",
       review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",cardsHow:"Lies die Infokarten in Ruhe durch. Tipp: Tippe auf **Abspielen** und **Vorlesen**.",cardsHead:"Infokarten",gamesHead:"Spiele",cardsN:n=>`${n} Karten`,cardsDone:"✓ Fertig",cardsRead:"gelesen",cardsNew:"noch nicht gelesen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
-      capHint:"🔠 **Achte auf Groß- und Kleinschreibung!** Sie zählt hier.",capMiss:"Fast! Die Großschreibung zählt – so ist es richtig:",
+      capHint:"🔠 **Achte auf Groß- und Kleinschreibung!** Sie zählt hier.",capMiss:"Fast! Die Großschreibung zählt – so ist es richtig:",almost:"Fast richtig – achte auf die Rechtschreibung! Kein Punkt. Richtig ist:",
       videoNote:"Das Video liegt bei YouTube. Mit dem Klick öffnet sich YouTube (Google) in einem neuen Tab.",videoExt:"Du verlässt jetzt diese Seite: Das Video liegt bei YouTube (Google).",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
   en:{map:"Games",pts:"points",stars:"stars",next:"Next",check:"Check",again:"Play again",nextLvl:"Next game",
       toMap:"All games",right:"Correct!",wrong:"Not quite.",correctIs:"Correct answer:",forExample:"For example:",timeUp:"Time’s up!",
@@ -60,7 +60,7 @@ const TXT = {
       platHint:"Platinum only if every game was perfect on the first try.",platGame:"Platinum: perfect on the first try!",
       rankNew:"New rank!",allRanks:"All ranks",rankNext:(n,name)=>`${n} more to ${name}`,rankTop:"Top rank!",today:"today",rankOk:"Keep going!",
       review:"Learn from your mistakes",gap:"Gap",learn:"Learn first",learnAgain:"Learn again",cardsHow:"Read the cards in your own time. Tip: tap **Play** and **Read aloud**.",cardsHead:"Learn the facts",gamesHead:"Games",cardsN:n=>`${n} cards`,cardsDone:"✓ Done",cardsRead:"read",cardsNew:"not read yet",startGame:"Start the game ▸",read:"Read aloud",auto:"Play",pause:"Pause",prev:"Back",
-      capHint:"🔠 **Capital letters count here!** · Achte auf Groß- und Kleinschreibung.",capMiss:"Almost! Capital letters count – it is written:",
+      capHint:"🔠 **Capital letters count here!** · Achte auf Groß- und Kleinschreibung.",capMiss:"Almost! Capital letters count – it is written:",almost:"Almost! Check your spelling – no point this time. Correct:",
       videoNote:"The video is on YouTube. Clicking opens YouTube (Google) in a new tab.",videoExt:"You are leaving this page: the video is on YouTube (Google).",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
 };
 
@@ -486,7 +486,7 @@ function medalPop(t){
   const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && W.insel && W.insel.k) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en", {reveal:true}); };
 }
 
-function progressBar(arr, cur){ return `<div class="progress" aria-hidden="true">${arr.map((v,i)=>`<i class="${v===true?"ok":v===false?"no":i===cur?"cur":""}"></i>`).join("")}</div>`; }
+function progressBar(arr, cur){ return `<div class="progress" aria-hidden="true">${arr.map((v,i)=>`<i class="${v===true?"ok":v===false?"no":v==="mid"?"mid":i===cur?"cur":""}"></i>`).join("")}</div>`; }
 const fill = (res, n) => res.concat(Array(Math.max(0,n-res.length)).fill(null));
 
 /* ---------- Spiele ---------- */
@@ -762,6 +762,12 @@ const normA = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").repla
   .replace(/can not/g,"cannot").replace(/[.,!?;:"“”()–—…-]/g," ").replace(/\s+/g," ").trim();
 const normS = v => String(v??"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/[.,!?;:"“”()]/g," ").replace(/\s+/g," ").trim(),
   noArt = v => v.replace(/^(at |in |to |on )?(the |a |an )/,"").replace(/^to /,"");
+/* Tippfehler-Erkennung: „fast richtig“ (kleiner Rechtschreibfehler), gibt aber keinen Punkt */
+function lev(a, b){ const m=a.length, n=b.length; if(!m) return n; if(!n) return m; let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1)); prev=cur; } return prev[n]; }
+const nearly = (v, ans) => { const x = noArt(normA(v)); if(!x) return false;
+  return [].concat(ans).some(a => { const y = noArt(normA(a)); if(y.length < 4 || /^[\d\s.,]+$/.test(y)) return false;
+    const d = lev(x, y), tol = y.length >= 10 ? 2 : 1; return d > 0 && d <= tol; }); };
 const same = (v, ans, strict) => v!==null && v!==undefined && [].concat(ans).some(a => strict ? normS(a)===normS(v) : (normA(a)===normA(v) || noArt(normA(a))===noArt(normA(v))));
 
 // Groß-/Kleinschreibung: zählt nur bei Aufgaben mit gross:true (Eigennamen, Nationalitäten, Länder …). Der Text stimmt, die Buchstabengröße nicht → „Fast!“, kein Punkt.
@@ -779,10 +785,11 @@ GAMES.eingabe = (l, A, done) => {
     const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } });
   }
   A.onclick = e => { if(!e.target.closest("#chk") || locked) return; const q=qs[i], v=$("#ans").value.trim(); if(!v){ $("#ans").classList.add("shake"); setTimeout(()=>$("#ans").classList.remove("shake"),400); return; }
-    locked=true; $("#ans").disabled=true; let ok = (q.re && [].concat(q.re).some(r=>new RegExp(r).test(normA(v)))) || same(v, q.a, q.strict); const capMiss = !!(ok && q.gross && !q.re && !capOk(v, q.a)); if(capMiss) ok = false; res.push(ok);
-    if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e||l.regel); }
-    sheet(ok?"ok":"no", esc(ok ? T.right+" +"+P : capMiss ? `${T.capMiss} „${[].concat(q.a)[0]}“` : `${T.wrong} ${q.re?(T.forExample||"e.g."):T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result,
-      ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+qs.length); }); };
+    locked=true; $("#ans").disabled=true; let ok = (q.re && [].concat(q.re).some(r=>new RegExp(r).test(normA(v)))) || same(v, q.a, q.strict); const capMiss = !!(ok && q.gross && !q.re && !capOk(v, q.a)); if(capMiss) ok = false;
+    const near = !ok && !capMiss && !q.keinFast && nearly(v, [].concat(q.a, q.alt||[])), almost = capMiss || near; res.push(ok ? true : almost ? "mid" : false);
+    if(ok){ pts+=P; award([["t"+l.fragen.indexOf(q), P]], $("#ans")); } else { if(!almost) A.querySelector(".qpanel").classList.add("shake"); miss(q.q, [].concat(q.a)[0], q.e||l.regel); }
+    sheet(ok?"ok":almost?"mid":"no", esc(ok ? T.right+" +"+P : capMiss ? `${T.capMiss} „${[].concat(q.a)[0]}“` : near ? `${T.almost} „${[].concat(q.a)[0]}“` : `${T.wrong} ${q.re?(T.forExample||"e.g."):T.correctIs} „${[].concat(q.a)[0]}“`), rich(q.e||l.regel||""), i<qs.length-1?T.next:T.result,
+      ()=>{ i++; if(i<qs.length) show(); else done(pts, T.correctN(res.filter(x=>x===true).length)+" / "+qs.length); }); };
   show();
 };
 
@@ -793,7 +800,7 @@ GAMES.lueckentext = (l, A, done) => {
   function story(){
     let g=-1;
     const html = parts.map(p=>{ if(!/^\[\[/.test(p)) return rich(p).replace(/\n/g,"<br>"); g++;
-      const v=pick[g], st = checked ? (same(v,gaps[g].ans)?" ok":" no") : (g===act?" act":"");
+      const v=pick[g], st = checked ? (same(v,gaps[g].ans)?" ok":(l.tippen && nearly(v,gaps[g].ans))?" mid":" no") : (g===act?" act":"");
       return `<button class="gap${v!==null?" filled":""}${st}" data-g="${g}" ${checked?"disabled":""} aria-label="Lücke ${g+1}">${checked&&!same(v,gaps[g].ans)?`<span class="fix">${esc(gaps[g].ans)}</span>`:""}${v!==null?esc(v):"&nbsp;"+(g+1)+"&nbsp;"}</button>`; }).join("");
     A.innerHTML = `<div class="panel">${l.ueberschrift?`<h2 class="disp story-h">${esc(l.ueberschrift)}</h2>`:""}<div class="story">${html}</div></div>`;
   }
