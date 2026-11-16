@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1B2433">
+<title>Gelenke-Lernwelt</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#ECEFF3; --surface:#FFFFFF; --surface-2:#F3F5F8; --ink:#1B2433; --muted:#5A6577; --line:#CBD2DC;
+  --accent:#E8650F; --accent-ink:#FFFFFF; --accent-2:#FFC94D; --mid-bg:#FFF1CC;
+  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
+  --xray:#1B2433; --glow:#FFB054;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #D3D9E2; --shadow:0 3px 0 #C7CED8; --border-opt:2px solid #D3D9E2;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#FFE3CC; --card-back:#1B2433; --tile-bg:#FFE3CC; --tile-ink:#1B2433;
+  --chip-bg:#1B2433; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #D3D9E2;
+  --track:#DCE1E8; --star:#E8650F; --star-off:#D3D9E2;
+}
+body{background:var(--bg) repeating-linear-gradient(45deg,rgba(27,36,51,.025) 0 12px,transparent 12px 24px)}
+.chip{border:0}
+
+/* Startbild: Robo-Werkstatt */
+.robo-hero{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(160deg,#28354A 0,#1B2433 60%);color:#fff;padding:clamp(1.4rem,4vw,2.4rem);min-height:260px;isolation:isolate}
+.robo-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background:repeating-linear-gradient(135deg,#FFC94D 0 16px,#1B2433 16px 32px);opacity:.9}
+.robo-hero .kicker{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--accent-2);margin:0;letter-spacing:.04em}
+.robo-hero h1{font-family:var(--font-display);font-weight:800;text-transform:uppercase;font-size:clamp(2.4rem,8.5vw,4.6rem);line-height:.92;margin:.3rem 0 .7rem;max-width:11ch}
+.robo-hero p{margin:0 0 .6rem;max-width:34ch;color:#D5DDE8;font-size:1.06rem}
+.robo-hero .hero-art{position:absolute;right:clamp(-30px,2vw,40px);top:50%;transform:translateY(-50%);height:112%;z-index:-1;opacity:.95}
+@media (max-width:640px){ .robo-hero .hero-art{opacity:.3;right:-60px} }
+@media (prefers-reduced-motion: reduce){ .robo-hero .hero-art *{animation:none!important} }
+.gear-spin{transform-box:fill-box;transform-origin:center;animation:gspin 9s linear infinite}
+.gear-spin.rev{animation-direction:reverse;animation-duration:6s}
+@keyframes gspin{to{transform:rotate(360deg)}}
+
+/* farbige Schnittbilder (Gelenk, Knie) */
+.rk .bone{fill:#F4E9D2;stroke:#C9B48A;stroke-width:1.5}
+.rk .tag{font-size:12.5px}
+</style>
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script>
+/* =========================================================
+   Grafiken (selbst gezeichnet)
+   ========================================================= */
+const grp = (hl, id, inner, tag) => `<g data-z="${id}"${hl.includes(id)?' class="z-hl"':''}>${inner}${tag?`${tag[4]!==undefined?`<path class="tagl" d="M${tag[4]} ${tag[5]} L${tag[6]} ${tag[7]}"/>`:""}<text class="tag" x="${tag[0]}" y="${tag[1]}" text-anchor="${tag[2]||"start"}">${tag[3]}</text>`:""}</g>`;
+// Kreisring-Ausschnitt (unten offen) um (cx,cy) zwischen r1 und r2, von Winkel a0 bis a1 (Grad, 0 = rechts, 90 = unten)
+function arcBand(cx, cy, r1, r2, a0, a1){
+  const P = (r,a) => [(cx + r*Math.cos(a*Math.PI/180)).toFixed(1), (cy + r*Math.sin(a*Math.PI/180)).toFixed(1)];
+  const [x1,y1] = P(r2,a0), [x2,y2] = P(r2,a1), [x3,y3] = P(r1,a1), [x4,y4] = P(r1,a0), big = (a1-a0) > 180 ? 1 : 0;
+  return `M${x1} ${y1} A${r2} ${r2} 0 ${big} 1 ${x2} ${y2} L${x3} ${y3} A${r1} ${r1} 0 ${big} 0 ${x4} ${y4} Z`;
+}
+const arcLine = (cx, cy, r, a0, a1) => { const P = a => [(cx + r*Math.cos(a*Math.PI/180)).toFixed(1), (cy + r*Math.sin(a*Math.PI/180)).toFixed(1)]; const [x1,y1]=P(a0),[x2,y2]=P(a1); return `M${x1} ${y1} A${r} ${r} 0 ${(a1-a0)>180?1:0} 1 ${x2} ${y2}`; };
+
+/* Aufbau eines Gelenks (Schema) */
+function gelenk(hl){
+  hl = hl || []; const C = [150,200];
+  return `<svg class="rk" viewBox="0 0 330 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aufbau eines Gelenks">
+    <rect width="330" height="470" rx="18" fill="#1B2433"/>
+    <path d="M150 112 C96 120 78 168 82 212 C86 262 110 292 128 304 L172 304 C190 292 214 262 218 212 C222 168 204 120 150 112 Z" fill="#2E4566" opacity=".55"/>
+    <rect class="bone" x="122" y="0" width="56" height="170"/>
+    <rect class="bone" x="120" y="290" width="60" height="180"/>
+    ${grp(hl,"kopf", `<circle class="bone" cx="150" cy="200" r="46"/><rect x="123" y="150" width="54" height="22" fill="#F4E9D2"/>`, [36,150,"start","Gelenkkopf",88,158,112,178])}
+    ${grp(hl,"pfanne", `<path class="bone" d="M216 196 L211 211 A62 62 0 0 1 89 211 L84 196 L94 300 L206 300 Z"/>`, [36,330,"start","Gelenkpfanne",88,326,110,288])}
+    ${grp(hl,"knorpel", `<path d="${arcBand(150,200,46,52,8,172)}" fill="#BDE7FF"/><path d="${arcBand(150,200,56,62,8,172)}" fill="#BDE7FF"/><path class="h" d="${arcLine(150,200,49,10,170)}" stroke-width="10"/><path class="h" d="${arcLine(150,200,59,10,170)}" stroke-width="10"/>`, [36,252,"start","Gelenkknorpel",80,248,96,236])}
+    ${grp(hl,"spalt", `<path d="${arcBand(150,200,52,56,8,172)}" fill="#FFE27A"/><path class="h" d="${arcLine(150,200,54,20,160)}" stroke-width="9"/>`, [150,282,"middle","Gelenkspalt mit Gelenkschmiere"])}
+    ${grp(hl,"kapsel", `<path d="M124 118 C80 128 66 170 70 212 C74 262 100 296 124 308 M176 118 C220 128 234 170 230 212 C226 262 200 296 176 308" fill="none" stroke="#B48CFF" stroke-width="5" stroke-linecap="round"/><path class="h" d="M124 118 C80 128 66 170 70 212 C74 262 100 296 124 308 M176 118 C220 128 234 170 230 212 C226 262 200 296 176 308" stroke-width="14"/>`, [236,120,"start","Gelenkkapsel",234,124,214,140])}
+    ${grp(hl,"band", `<path d="M118 92 C40 150 40 262 112 344" fill="none" stroke="#D8DEE9" stroke-width="10" stroke-linecap="round"/><path d="M118 92 C40 150 40 262 112 344" fill="none" stroke="#9AA6B8" stroke-width="2" stroke-dasharray="6 5"/><path class="h" d="M118 92 C40 150 40 262 112 344" stroke-width="18"/>`, [8,420,"start","Band (Knochen – Knochen)",40,410,82,320])}
+    ${grp(hl,"muskel", `<path d="M262 18 C292 30 298 90 284 132 C276 150 258 150 252 132 C240 90 238 30 262 18 Z" fill="#D8484A" stroke="#9E2A2C" stroke-width="2"/><path d="M256 40 C262 70 262 100 258 128 M270 34 C276 70 276 104 272 134" stroke="#F07B7D" stroke-width="2" fill="none"/>`, [298,70,"end","Muskel"])}
+    ${grp(hl,"sehne", `<path d="M268 140 C278 220 262 300 186 340" fill="none" stroke="#F2F4F7" stroke-width="7" stroke-linecap="round"/><path class="h" d="M268 140 C278 220 262 300 186 340" stroke-width="18"/>`, [322,250,"end","Sehne (Muskel – Knochen)",276,244,272,232])}
+  </svg>`;
+}
+
+/* Kniegelenk von vorn (Kniescheibe hochgeklappt) */
+function knie(hl){
+  hl = hl || [];
+  const kreuz = `<path d="M140 206 L166 258" stroke="#FF8A3D" stroke-width="7" stroke-linecap="round"/><path d="M162 204 L136 258" stroke="#45C4B0" stroke-width="7" stroke-linecap="round"/>`;
+  return `<svg class="rk" viewBox="0 0 300 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kniegelenk von vorn">
+    <rect width="300" height="470" rx="18" fill="#1B2433"/>
+    ${grp(hl,"oberschenkel", `<path class="bone" d="M122 0 L178 0 L182 150 C200 162 216 180 214 204 C212 222 196 226 184 220 C172 214 162 208 150 208 C138 208 128 214 116 220 C104 226 88 222 86 204 C84 180 100 162 118 150 Z"/>`, [24,40,"start","Oberschenkel-",0,0,0,0])}
+    ${grp(hl,"schienbein", `<path class="bone" d="M90 256 C92 246 104 242 150 242 C196 242 206 246 208 256 L204 276 C192 286 180 292 176 304 L172 470 L128 470 L124 304 C120 292 108 286 96 276 Z"/>`, [24,400,"start","Schienbein",60,396,126,390])}
+    ${grp(hl,"wadenbein", `<path class="bone" d="M214 276 C224 276 230 284 226 296 L218 312 L214 470 L200 470 L202 312 L198 292 C198 282 204 276 214 276 Z"/>`, [290,400,"end","Wadenbein",250,396,214,390])}
+    ${grp(hl,"meniskus", `<path d="M96 246 C100 236 118 232 140 234 L144 242 C126 242 112 244 104 250 Z" fill="#9FD8FF"/><path d="M204 246 C200 236 182 232 160 234 L156 242 C174 242 188 244 196 250 Z" fill="#9FD8FF"/><path class="h" d="M98 244 C110 236 130 236 142 238 M202 244 C190 236 170 236 158 238" stroke-width="12"/>`, [24,300,"start","Menisken",70,296,104,252])}
+    ${grp(hl,"kreuzband", kreuz + `<path class="h" d="M140 206 L166 258 M162 204 L136 258" stroke-width="16"/>`, [290,250,"end","Kreuzbänder",246,246,170,236])}
+    ${grp(hl,"seitenband", `<path d="M88 186 C80 220 84 262 98 300" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path d="M212 186 C222 220 222 256 214 284" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path class="h" d="M88 186 C80 220 84 262 98 300 M212 186 C222 220 222 256 214 284" stroke-width="18"/>`, [290,170,"end","Seitenbänder",250,174,218,190])}
+    ${grp(hl,"kniescheibe", `<ellipse cx="150" cy="96" rx="27" ry="32" fill="#F4E9D2" stroke="#C9B48A" stroke-width="1.5" opacity=".95"/>`, [24,104,"start","Kniescheibe",56,100,122,98])}
+    ${grp(hl,"sehne", `<path d="M136 0 L164 0 L162 64 L138 64 Z" fill="#F2F4F7" opacity=".95"/><path class="h" d="M150 2 L150 62" stroke-width="30"/>`, [290,40,"end","Quadrizepssehne",222,36,166,30])}
+  </svg>`;
+}
+
+/* animierte Gelenkmodelle (Infokarten) */
+const MODEL = {
+  kugel: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
+    <path d="M58 130 A44 44 0 0 0 142 130 L150 130 L150 170 L50 170 L50 130 Z" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
+    <g><circle cx="100" cy="112" r="30" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/><rect x="92" y="20" width="16" height="80" rx="8" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/>
+      <animateTransform attributeName="transform" type="rotate" values="-35 100 112; 35 100 112; 0 100 112; -35 100 112" dur="4s" repeatCount="indefinite"/></g>
+    <ellipse cx="100" cy="30" rx="44" ry="12" fill="none" stroke="#7FE7FF" stroke-width="2.5" stroke-dasharray="6 5"><animate attributeName="stroke-dashoffset" values="0;22" dur="1s" repeatCount="indefinite"/></ellipse>
+    <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">alle Richtungen</text>`),
+  scharnier: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
+    <rect x="30" y="86" width="74" height="22" rx="10" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
+    <g><rect x="100" y="86" width="74" height="22" rx="10" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 104 97; -100 104 97; 0 104 97" dur="3s" repeatCount="indefinite"/></g>
+    <circle cx="104" cy="97" r="13" fill="#E8650F" stroke="#9E4209" stroke-width="2"/><circle cx="104" cy="97" r="4" fill="#1B2433"/>
+    <text x="100" y="180" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">beugen &amp; strecken</text>`),
+  sattel: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
+    <path d="M44 150 Q100 112 156 150 L156 172 L44 172 Z" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
+    <g><path d="M60 120 Q100 150 140 120 L140 96 Q100 120 60 96 Z" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/><rect x="92" y="34" width="16" height="70" rx="8" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/>
+      <animateTransform attributeName="transform" type="rotate" values="-14 100 132; 14 100 132; -14 100 132" dur="2.6s" repeatCount="indefinite"/></g>
+    <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">wie ein Pferdesattel</text>`),
+  dreh: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
+    <rect x="88" y="60" width="24" height="110" rx="10" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
+    <ellipse cx="100" cy="84" rx="44" ry="16" fill="none" stroke="#FFC94D" stroke-width="12"/>
+    <circle cx="100" cy="100" r="7" fill="#E8650F"><animate attributeName="cx" values="60;100;140;100;60" dur="3s" repeatCount="indefinite"/><animate attributeName="cy" values="84;99;84;69;84" dur="3s" repeatCount="indefinite"/></circle>
+    <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">drehen wie eine Schraube</text>`),
+  ei: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
+    <path d="M48 128 Q100 176 152 128 L152 168 L48 168 Z" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
+    <g><ellipse cx="100" cy="122" rx="44" ry="24" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/><rect x="92" y="40" width="16" height="70" rx="8" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/>
+      <animateTransform attributeName="transform" type="rotate" values="-16 100 130; 16 100 130; -16 100 130" dur="3.2s" repeatCount="indefinite"/></g>
+    <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">eiförmig: 4 Richtungen</text>`),
+  schwamm: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#1B2433"/>
+    <rect x="40" y="20" width="140" height="40" rx="8" fill="#F4E9D2"><animate attributeName="y" values="20;40;20" dur="2.4s" repeatCount="indefinite"/></rect>
+    <rect x="40" y="70" width="140" height="56" rx="12" fill="#9FD8FF"><animate attributeName="height" values="56;36;56" dur="2.4s" repeatCount="indefinite"/><animate attributeName="y" values="70;90;70" dur="2.4s" repeatCount="indefinite"/></rect>
+    <rect x="40" y="132" width="140" height="30" rx="8" fill="#F4E9D2"/>
+    <g fill="#FFE27A"><circle cx="30" cy="100" r="5"><animate attributeName="cx" values="56;20;56" dur="2.4s" repeatCount="indefinite"/></circle><circle cx="190" cy="100" r="5"><animate attributeName="cx" values="164;200;164" dur="2.4s" repeatCount="indefinite"/></circle></g>
+    <text x="110" y="186" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">drücken – loslassen – auftanken</text>`),
+  muskel: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#1B2433"/>
+    <rect x="40" y="40" width="20" height="100" rx="10" fill="#F4E9D2" transform="rotate(-10 50 90)"/>
+    <g><rect x="44" y="132" width="110" height="18" rx="9" fill="#F4E9D2"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 52 140; -55 52 140; 0 52 140" dur="3s" repeatCount="indefinite"/></g>
+    <ellipse cx="74" cy="92" rx="16" ry="34" fill="#D8484A"><animate attributeName="rx" values="14;22;14" dur="3s" repeatCount="indefinite"/></ellipse>
+    <circle cx="52" cy="140" r="9" fill="#E8650F"/>
+    <text x="150" y="60" fill="#FFC94D" font-size="14" text-anchor="middle" font-family="sans-serif">Beuger zieht</text>
+    <text x="110" y="188" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">Muskel + Sehne = Motor</text>`)
+};
+const artR = s => s.replace('<svg class="rk"', '<svg class="rk lnsvg"');
+const artSk = s => s.replace('<svg class="sk"', '<svg class="sk lnsvg"');
+
+/* =========================================================
+   Inhalte
+   ========================================================= */
+const TEILE = [
+  {id:"kopf", name:"Gelenkkopf", e:"Das gewölbte Ende des einen Knochens. Es passt genau in die Gelenkpfanne des anderen Knochens."},
+  {id:"pfanne", name:"Gelenkpfanne", e:"Die Mulde im anderen Knochen, in der sich der Gelenkkopf bewegt."},
+  {id:"knorpel", name:"Gelenkknorpel", tipp:"Gemeint ist die **glatte, blaue Schicht** auf beiden Knochenenden.", e:"Glatter, elastischer Überzug auf den Knochenenden. Er lässt die Knochen fast ohne Reibung gleiten und federt Stöße ab."},
+  {id:"spalt", name:"Gelenkspalt mit Gelenkschmiere", tipp:"Der **schmale gelbe Spalt** zwischen den Knorpelschichten.", e:"Der schmale Raum zwischen den Knorpeln ist mit **Gelenkschmiere (Gelenkflüssigkeit)** gefüllt – wie Öl in einer Maschine. Sie ernährt auch den Knorpel."},
+  {id:"kapsel", name:"Gelenkkapsel", e:"Eine feste Hülle aus Bindegewebe umschließt das ganze Gelenk. Innen bildet sie die Gelenkschmiere."},
+  {id:"band", name:"Band", e:"Bänder verbinden **Knochen mit Knochen**. Sie halten das Gelenk stabil und begrenzen die Bewegung."},
+  {id:"muskel", name:"Muskel", e:"Der Muskel ist der **Motor**: Er zieht sich zusammen und bewegt so den Knochen."},
+  {id:"sehne", name:"Sehne", e:"Die Sehne verbindet den **Muskel mit dem Knochen** und überträgt seine Zugkraft – wie ein Stahlseil."}
+];
+const KNIE = [
+  {id:"oberschenkel", name:"Oberschenkelknochen", e:"Er bildet mit seinen zwei Gelenkrollen den oberen Teil des Kniegelenks."},
+  {id:"schienbein", name:"Schienbein", e:"Auf dem flachen Schienbeinkopf rollt und gleitet der Oberschenkelknochen."},
+  {id:"wadenbein", name:"Wadenbein", e:"Der dünne Knochen außen. Am Wadenbeinkopf setzt das äußere Seitenband an."},
+  {id:"meniskus", name:"Menisken", tipp:"Die zwei **halbmondförmigen** Scheiben auf dem Schienbein.", e:"Zwei halbmondförmige Knorpelscheiben (Innen- und Außenmeniskus). Sie gleichen die Form der Knochen aus und **federn Stöße ab** – die Stoßdämpfer im Knie."},
+  {id:"kreuzband", name:"Kreuzbänder", tipp:"Die beiden Bänder, die sich in der Mitte **kreuzen**.", e:"Vorderes und hinteres Kreuzband liegen mitten im Gelenk und kreuzen sich. Sie verhindern, dass Ober- und Unterschenkel nach vorn oder hinten wegrutschen."},
+  {id:"seitenband", name:"Seitenbänder", e:"Innen- und Außenband sichern das Knie seitlich – vor allem, wenn das Bein gestreckt ist."},
+  {id:"kniescheibe", name:"Kniescheibe", e:"Sie liegt eingebettet in der Sehne des großen Oberschenkelmuskels und schützt das Gelenk. Hier ist sie **hochgeklappt** gezeichnet, damit man die Kreuzbänder sieht."},
+  {id:"sehne", name:"Quadrizepssehne", tipp:"Die **Sehne** über der Kniescheibe.", e:"Die Sehne des großen Oberschenkelmuskels (Quadrizeps). Sie zieht über die Kniescheibe zum Schienbein und streckt so das Knie."}
+];
+const TYPEN = [
+  {id:"kugel", name:"Kugelgelenk"}, {id:"scharnier", name:"Scharniergelenk"}, {id:"sattel", name:"Sattelgelenk"}, {id:"dreh", name:"Drehgelenk"}, {id:"ei", name:"Eigelenk"}
+];
+const GELENKE = [
+  {id:"g-schulter", name:"Schultergelenk", typ:"kugel", e:"Die Schulter ist ein **Kugelgelenk**: Der Arm kann in alle Richtungen kreisen – z. B. beim Kraulschwimmen."},
+  {id:"g-huefte", name:"Hüftgelenk", typ:"kugel", e:"Auch die Hüfte ist ein **Kugelgelenk**. Der Kugelkopf des Oberschenkels sitzt tief in der Beckenpfanne – sehr beweglich und trotzdem stabil."},
+  {id:"g-ellenbogen", name:"Ellenbogengelenk", typ:"scharnier", e:"Zwischen Oberarm und Elle arbeitet ein **Scharniergelenk**: beugen und strecken, wie eine Tür."},
+  {id:"g-knie", name:"Kniegelenk", typ:"scharnier", e:"Das Knie ist ein **Scharniergelenk** (genauer: Dreh-Scharniergelenk). Es beugt und streckt, im gebeugten Zustand kann es sich auch etwas drehen."},
+  {id:"g-sprung", name:"Oberes Sprunggelenk", typ:"scharnier", e:"Das obere Sprunggelenk arbeitet wie ein **Scharnier**: Fußspitze hoch und runter."},
+  {id:"g-daumen", name:"Daumensattelgelenk", typ:"sattel", e:"Am Daumen sitzt ein **Sattelgelenk**. Darum kannst du den Daumen den anderen Fingern gegenüberstellen und einen Ball fest greifen."},
+  {id:"g-hand", name:"Handgelenk", typ:"ei", e:"Das Handgelenk ist ein **Eigelenk**: vor, zurück und zur Seite – aber nicht ganz im Kreis wie eine Kugel."},
+  {id:"g-kopf", name:"Gelenk zwischen 1. und 2. Halswirbel", typ:"dreh", e:"Hier sitzt ein **Drehgelenk**: Damit drehst du den Kopf, z. B. beim Schulterblick auf dem Fahrrad."}
+];
+
+const LERNEN = {
+  werkstatt: { titel:"So ist ein Gelenk gebaut", folien:[
+    {bild:artR(gelenk()), titel:"Was ist ein Gelenk?", text:"Ein Gelenk ist eine **bewegliche Verbindung zwischen zwei Knochen**. Ohne Gelenke wäre dein Skelett starr wie eine Statue – kein Sprung, kein Wurf, kein Schritt."},
+    {bild:artR(gelenk(["kopf","pfanne"])), titel:"Kopf und Pfanne", text:"Meist passt ein gewölbter **Gelenkkopf** in eine **Gelenkpfanne** – wie zwei Puzzleteile. Die Form entscheidet, wie sich das Gelenk bewegen kann."},
+    {bild:artR(gelenk(["knorpel"])), titel:"Gelenkknorpel", text:"Beide Knochenenden sind mit glattem **Knorpel** überzogen. Er ist rutschiger als Eis auf Eis, federt Stöße ab und schützt die Knochen."},
+    {bild:artR(gelenk(["kapsel","spalt"])), titel:"Kapsel und Gelenkschmiere", text:"Die **Gelenkkapsel** umhüllt das Gelenk. Innen bildet sie die **Gelenkschmiere** – wie Öl in einer Maschine. Sie füllt den schmalen **Gelenkspalt** und ernährt den Knorpel."},
+    {bild:artR(gelenk(["band"])), titel:"Bänder", text:"**Bänder verbinden Knochen mit Knochen.** Sie halten das Gelenk zusammen, führen die Bewegung und bremsen, wenn es zu weit geht. Sie sind kaum dehnbar und schlecht durchblutet – darum heilen sie langsam."},
+    {bild:artR(gelenk(["muskel","sehne"])), titel:"Sehnen", text:"**Sehnen verbinden Muskeln mit Knochen.** Sie übertragen die Kraft des Muskels. Die stärkste ist die **Achillessehne** an der Ferse – sie hält Zugkräfte von über 800 kg aus."},
+    {bild:MODEL.muskel, titel:"Muskeln sind die Motoren", text:"Ein Muskel kann nur **ziehen**, nicht drücken. Darum arbeiten Muskeln als Gegenspieler: Der **Bizeps beugt** den Arm, der **Trizeps streckt** ihn wieder."},
+    {bild:MODEL.schwamm, titel:"Knorpel ist ein Schwamm", text:"Knorpel hat **keine Blutgefäße**. Er bekommt seine Nährstoffe aus der Gelenkschmiere: Bei Belastung wird er zusammengedrückt, beim Entlasten saugt er sich wieder voll. **Ohne Bewegung hungert der Knorpel.**"},
+    {bild:MODEL.schwamm, titel:"Aufwärmen schützt", text:"Beim Aufwärmen bildet sich mehr Gelenkschmiere. Der Knorpel saugt sich voll und wird **in 10 bis 15 Minuten bis zu 12 % dicker** – ein besserer Stoßdämpfer. Darum: erst aufwärmen, dann Vollgas!"},
+    {bild:artR(gelenk(["knorpel"])), titel:"Knorpel heilt kaum", text:"Weil Knorpel nicht durchblutet ist, kann er sich kaum erneuern. Ist er abgenutzt, reiben die Knochen aufeinander – das nennt man **Arthrose**. Regelmäßige, maßvolle Bewegung hält ihn gesund."}
+  ]},
+  arten: { titel:"Gelenkarten & das Knie", folien:[
+    {bild:artSk(skel([], {gelenke:true})), titel:"Verschiedene Gelenke", text:"Nicht jedes Gelenk bewegt sich gleich. Die Form von Kopf und Pfanne entscheidet: kreisen, klappen, kippen oder drehen? Probier es an dir aus: Schulter, Ellenbogen, Daumen, Kopf."},
+    {bild:MODEL.kugel, titel:"Kugelgelenk", text:"Eine Kugel in einer Pfanne – das **beweglichste** Gelenk. Bewegung in **alle Richtungen**, auch kreisen. Beispiele: **Schulter** und **Hüfte**. Vergleich: Anhängerkupplung."},
+    {bild:MODEL.scharnier, titel:"Scharniergelenk", text:"Funktioniert wie eine **Tür**: nur **beugen und strecken**. Beispiele: **Ellenbogen**, **Finger**, **Knie** und oberes **Sprunggelenk**."},
+    {bild:MODEL.sattel, titel:"Sattelgelenk", text:"Zwei Flächen wie ein **Pferdesattel** und ein Reiter: vor, zurück und zur Seite. Beispiel: das **Daumensattelgelenk** – darum kannst du greifen."},
+    {bild:MODEL.ei, titel:"Eigelenk", text:"Ein eiförmiger Kopf in einer passenden Mulde: vor, zurück und zur Seite – aber nicht ganz im Kreis. Beispiel: das **Handgelenk**."},
+    {bild:MODEL.dreh, titel:"Drehgelenk", text:"Ein Knochen dreht sich um den anderen – wie eine **Schraube in der Mutter**. Beispiel: zwischen **1. und 2. Halswirbel** (Kopf drehen) und zwischen Elle und Speiche (Hand drehen)."},
+    {bild:artR(knie()), titel:"Das Knie: das größte Gelenk", text:"Im Knie treffen Oberschenkelknochen, Schienbein und Kniescheibe zusammen. Es ist ein **Dreh-Scharniergelenk**: Es beugt und streckt und kann sich im gebeugten Zustand etwas drehen."},
+    {bild:artR(knie(["kreuzband","seitenband"])), titel:"Bänder im Knie", text:"Zwei **Seitenbänder** (innen und außen) und zwei **Kreuzbänder** halten das Knie stabil. Die Kreuzbänder liegen mitten im Gelenk und verhindern, dass der Unterschenkel nach vorn oder hinten rutscht."},
+    {bild:artR(knie(["meniskus"])), titel:"Menisken – die Stoßdämpfer", text:"Zwei halbmondförmige **Menisken** aus Faserknorpel liegen auf dem Schienbein. Sie gleichen die Form der Knochen aus und federn bei jedem Sprung ab. Ähnliche Puffer sind die **Bandscheiben** zwischen den Wirbeln."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:artR(gelenk(["band","sehne"])), titel:"Band oder Sehne?", text:"**„Das Band hält Knochen an Knochen fest, die Sehne zieht – der Muskel macht den Rest.“**"},
+    {bild:MODEL.kugel, titel:"Kugel und Scharnier", text:"**„Die Kugel dreht sich, wie sie will – das Scharnier klappt, sonst bleibt es still.“**"},
+    {bild:artSk(skel(["hand"], {gelenke:true})), titel:"Sattel, Ei und Dreh", text:"**„Sattel am Daumen, Ei an der Hand, Dreh im Hals – jetzt hast du’s erkannt!“**"},
+    {bild:MODEL.schwamm, titel:"Knorpel braucht Bewegung", text:"**„Knorpel ist ein Schwamm, ganz klar: Bewegung macht ihn satt – wunderbar!“**"},
+    {bild:MODEL.schwamm, titel:"Aufwärmen", text:"**„Wer sich gut aufwärmt, schont sein Knie – der Knorpel quillt und schützt wie nie.“**"},
+    {bild:artR(knie(["kreuzband","meniskus"])), titel:"Im Knie", text:"**„Zwei Kreuzbänder kreuzen sich im Knie, zwei Menisken federn – vergiss das nie!“**"}
+  ]}
+};
+
+FIG.gelenk = () => gelenk();
+FIG.knie = () => knie();
+
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const GEAR = (cx, cy, r, n, col, cls) => { let d = ""; for(let i=0;i<n*2;i++){ const a = i*Math.PI/n, rr = i%2 ? r : r*1.18; d += (i?"L":"M") + (cx+rr*Math.cos(a)).toFixed(1) + " " + (cy+rr*Math.sin(a)).toFixed(1) + " "; }
+  return `<g class="gear-spin ${cls||""}"><path d="${d}Z" fill="${col}" stroke="#121A26" stroke-width="2" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${r*.42}" fill="#1B2433"/></g>`; };
+const HERO = `
+<div class="robo-hero">
+  <svg class="hero-art" viewBox="0 0 320 300" aria-hidden="true">
+    ${GEAR(250,70,42,10,"#3A4A63")} ${GEAR(186,128,26,8,"#4A5D7A","rev")} ${GEAR(268,210,30,9,"#3A4A63","rev")}
+    <rect x="60" y="250" width="110" height="22" rx="6" fill="#4A5D7A"/>
+    <rect x="102" y="150" width="26" height="104" rx="12" fill="#C9D3E2"/>
+    <g><rect x="102" y="70" width="26" height="92" rx="12" fill="#FF8A3D"/><circle cx="115" cy="70" r="15" fill="#FFC94D" stroke="#121A26" stroke-width="2"/>
+      <g><rect x="108" y="10" width="14" height="60" rx="7" fill="#FFC94D" transform="rotate(0)"/></g>
+      <animateTransform attributeName="transform" type="rotate" values="0 115 156; -38 115 156; 0 115 156" dur="3.4s" repeatCount="indefinite"/></g>
+    <circle cx="115" cy="156" r="17" fill="#FFC94D" stroke="#121A26" stroke-width="3"/><circle cx="115" cy="156" r="6" fill="#121A26"/>
+  </svg>
+  <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
+  <h1>Gelenke, Bänder, Sehnen &amp; Knorpel</h1>
+  <p>Willkommen in der Robo-Werkstatt! Hier baust du einen Körper wie eine Maschine: Gelenke als Scharniere, Bänder und Sehnen als Seile, Knorpel als Stoßdämpfer. Sammle Zahnräder ⚙️ – am Ende erstellst du deinen Ergebnis-Code.</p>
+</div>`;
+
+LW.start({
+  id: "ge9",
+  titel: "Gelenke-Lernwelt",
+  sprache: "de",
+  hero: HERO,
+  sammel: "⚙️",
+  kartenSymbol: "⚙️",
+  konfetti: ["#E8650F","#FFC94D","#1B2433","#9FD8FF","#F4E9D2"],
+  lob: {3:"Perfekt geölt! Drei Sterne.", 2:"Läuft rund! Schaffst du drei Sterne?", 1:"Die Maschine stottert noch – schau dir die Infokarten an und versuch es nochmal.", 0:"Schraube locker? Lies die Erklärungen und probier es nochmal."},
+  lernen: LERNEN,
+  levels: [
+    { id:"labor", typ:"zeigen", bild:"gelenk", lernen:"werkstatt", icon:"🔩", titel:"Gelenk-Labor", art:"Bauteile antippen · 8 Teile",
+      anleitung:"Tippe im **Bauplan des Gelenks** auf das gesuchte Teil. Jeder Treffer = **2 Punkte**.",
+      ziele: TEILE, punkte:2, frage:"Finde im Gelenk:", richtigText:"Eingebaut!" },
+    { id:"scanner", typ:"zeigen", bild:"gelenke", modus:"typ", lernen:"arten", icon:"🦾", titel:"Gelenk-Scanner", art:"Gelenkarten erkennen · 8 Gelenke",
+      anleitung:"Ein Gelenk im Skelett **leuchtet**. Welche Gelenkart ist das? Probier die Bewegung an deinem eigenen Körper aus!",
+      ziele: GELENKE, typen: TYPEN },
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 6 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut – so bleibt er hängen. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Das Band hält Knochen an ______ fest, die Sehne zieht – der Muskel macht den Rest.“", o:["Knochen","Muskel","Haut"], c:0, e:"Bänder verbinden **Knochen mit Knochen**."},
+        {q:"„Das Band hält Knochen an Knochen fest, die ______ zieht – der Muskel macht den Rest.“", o:["Sehne","Kapsel","Rippe"], c:0, e:"Die **Sehne** überträgt die Kraft des Muskels auf den Knochen."},
+        {q:"„Die ______ dreht sich, wie sie will – das Scharnier klappt, sonst bleibt es still.“", o:["Kugel","Elle","Pfanne"], c:0, e:"Das **Kugelgelenk** bewegt sich in alle Richtungen."},
+        {q:"„Sattel am ______, Ei an der Hand, Dreh im Hals – jetzt hast du’s erkannt!“", o:["Daumen","Knie","Fuß"], c:0, e:"Das **Daumensattelgelenk** – darum kannst du greifen."},
+        {q:"„Knorpel ist ein ______, ganz klar: Bewegung macht ihn satt – wunderbar!“", o:["Schwamm","Stein","Motor"], c:0, e:"Wie ein **Schwamm** saugt sich Knorpel bei Bewegung mit Gelenkschmiere voll."},
+        {q:"„Zwei ______ kreuzen sich im Knie, zwei Menisken federn – vergiss das nie!“", o:["Kreuzbänder","Seitenbänder","Sehnen"], c:0, e:"Die **Kreuzbänder** liegen mitten im Knie und kreuzen sich."}
+      ]},
+    { id:"memory", typ:"memory", icon:"🧠", titel:"Werkstatt-Memory", art:"Memory · 8 Paare",
+      anleitung:"Finde die Paare: **Gelenkart oder Bauteil + Beispiel oder Aufgabe**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Kugelgelenk", b:"Schulter & Hüfte"},
+        {a:"Scharniergelenk", b:"Ellenbogen & Finger"},
+        {a:"Sattelgelenk", b:"Daumen"},
+        {a:"Eigelenk", b:"Handgelenk"},
+        {a:"Drehgelenk", b:"Kopf drehen"},
+        {a:"Band", b:"verbindet Knochen mit Knochen"},
+        {a:"Sehne", b:"verbindet Muskel mit Knochen"},
+        {a:"Gelenkschmiere", b:"wie Öl in der Maschine"}
+      ]},
+    { id:"sortieren", typ:"sortieren", lernen:"werkstatt", icon:"🗃️", titel:"Ersatzteil-Lager", art:"Sortieren · Band, Sehne oder Knorpel?",
+      anleitung:"Ins richtige Regal damit: **Band, Sehne oder Knorpel?** Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"Band", info:"Knochen ↔ Knochen", tipp:"Bänder verbinden Knochen mit Knochen und sichern das Gelenk."},
+        {t:"Sehne", info:"Muskel ↔ Knochen", tipp:"Sehnen verbinden Muskeln mit Knochen und übertragen die Kraft."},
+        {t:"Knorpel", info:"glatter Puffer", tipp:"Knorpel ist glatt, elastisch und federt Stöße ab – ohne eigene Blutgefäße."}
+      ],
+      items:[
+        {t:"Achillessehne", k:1, e:"Die stärkste Sehne: Sie verbindet den Wadenmuskel mit dem Fersenbein."},
+        {t:"Kreuzband", k:0},
+        {t:"Meniskus", k:2, e:"Die Menisken sind Stoßdämpfer aus Faserknorpel im Knie."},
+        {t:"überträgt die Kraft des Muskels", k:1},
+        {t:"Außenband am Sprunggelenk", k:0, e:"Beim Umknicken wird oft das Außenband am Sprunggelenk verletzt."},
+        {t:"hat keine Blutgefäße", k:2},
+        {t:"begrenzt, wie weit sich ein Gelenk bewegt", k:0},
+        {t:"Bizepssehne", k:1},
+        {t:"wird beim Aufwärmen dicker", k:2, e:"Der Gelenkknorpel saugt sich beim Aufwärmen voll und wird bis zu 12 % dicker."},
+        {t:"Bandscheibe", k:2, e:"Bandscheiben sind Puffer aus Faserknorpel zwischen den Wirbeln – trotz des Namens kein Band."},
+        {t:"Seitenband am Knie", k:0},
+        {t:"hält über 800 kg Zugkraft aus", k:1}
+      ]},
+    { id:"knie", typ:"zeigen", bild:"knie", lernen:"arten", icon:"🦵", titel:"Knie-Check", art:"Bauteile antippen · 8 Teile",
+      anleitung:"Das **Kniegelenk von vorn** – die Kniescheibe ist hochgeklappt. Tippe auf das gesuchte Teil. Jeder Treffer = **2 Punkte**.",
+      ziele: KNIE, punkte:2, frage:"Finde im Knie:", richtigText:"Gefunden!" },
+    { id:"blitz", typ:"rush", icon:"⚡", titel:"Band oder Sehne?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"**Band** (links) oder **Sehne** (rechts)? Ordne so schnell du kannst zu. **Ziel: 12 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:12, fest:true,
+      items:[
+        {q:"Achillessehne", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"Kreuzband", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"verbindet Knochen mit Knochen", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"verbindet Muskel mit Knochen", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"Bizepssehne", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"Innenband am Knie", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"überträgt die Muskelkraft", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"sichert das Gelenk", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"Quadrizepssehne", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"Außenband am Sprunggelenk", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"Trizepssehne", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"Seitenband", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"zieht die Ferse hoch, wenn die Wade arbeitet", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"bremst, wenn das Gelenk zu weit geht", o:["🔗 Band","🪢 Sehne"], c:0},
+        {q:"am Ende eines Muskels", o:["🔗 Band","🪢 Sehne"], c:1},
+        {q:"hinteres Kreuzband", o:["🔗 Band","🪢 Sehne"], c:0}
+      ]},
+    { id:"quiz", typ:"quiz", lernen:"werkstatt", icon:"🔧", titel:"Werkstatt-Quiz", art:"Quiz · 10 Fragen",
+      anleitung:"Teste dein Wissen über Gelenke, Bänder, Sehnen und Knorpel. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Was ist ein Gelenk?", o:["Eine bewegliche Verbindung zwischen zwei Knochen","Ein besonders harter Knochen","Ein Muskel am Knochen","Eine Sehne im Knie"], c:0, e:"Gelenke verbinden Knochen beweglich miteinander."},
+        {q:"Wozu dient die Gelenkschmiere?", o:["Sie macht die Knochen härter","Sie schmiert das Gelenk und ernährt den Knorpel","Sie bildet Blutzellen","Sie verbindet Muskel und Knochen"], c:1, e:"Die Gelenkschmiere wirkt wie Öl und versorgt den Knorpel mit Nährstoffen."},
+        {q:"Warum braucht Knorpel Bewegung?", o:["Weil er sonst zu schnell wächst","Weil er nur durch Druck und Entlastung Nährstoffe aufnimmt","Weil er dann Blutgefäße bildet","Er braucht keine Bewegung"], c:1, e:"Knorpel hat keine Blutgefäße – er wird wie ein Schwamm durch Bewegung mit Gelenkschmiere versorgt."},
+        {q:"Welches Gelenk ist am **beweglichsten**?", o:["Scharniergelenk","Drehgelenk","Kugelgelenk","Sattelgelenk"], c:2, e:"Das Kugelgelenk erlaubt Bewegungen in alle Richtungen."},
+        {q:"Welche Struktur hält das Kniegelenk **in der Mitte** zusammen?", o:["Die Seitenbänder","Die Kreuzbänder","Die Achillessehne","Die Kniescheibe"], c:1, e:"Die zwei Kreuzbänder liegen mitten im Knie und kreuzen sich."},
+        {q:"Warum heilen Bänder und Sehnen langsamer als Muskeln?", o:["Sie sind schlecht durchblutet","Sie sind zu dick","Sie haben zu viele Nerven","Sie heilen gar nicht"], c:0, e:"Bänder und Sehnen sind schlechter durchblutet als Muskeln – darum dauert die Heilung länger."},
+        {q:"Was passiert mit dem Knorpel beim Aufwärmen?", o:["Er wird dünner","Er saugt sich voll und wird dicker","Er wird hart wie Knochen","Nichts"], c:1, e:"In 10 bis 15 Minuten wird der Knorpel bis zu 12 % dicker – ein besserer Stoßdämpfer."},
+        {q:"Wie nennt man es, wenn der Knorpel abgenutzt ist und die Knochen aufeinander reiben?", o:["Arthrose","Zerrung","Prellung","Grünholzbruch"], c:0, e:"Bei Arthrose ist der schützende Knorpel verschlissen."},
+        {q:"Ein Muskel kann nur …", o:["drücken","ziehen","drehen","wachsen"], c:1, e:"Muskeln können nur ziehen. Darum gibt es Gegenspieler: Beuger und Strecker."},
+        {q:"Welche Aufgabe haben die Menisken im Knie?", o:["Sie beugen das Knie","Sie federn Stöße ab und gleichen die Form der Knochen aus","Sie bilden die Gelenkschmiere","Sie verbinden Muskeln mit dem Knochen"], c:1, e:"Die Menisken sind die Stoßdämpfer des Knies."}
+      ]},
+    { id:"analyse", typ:"quiz", icon:"🎥", titel:"Sport-Analyse", art:"Bewegungen analysieren · 7 Szenen",
+      anleitung:"Sieh dir die Szene aus dem Sport an: Welches Gelenk oder welche Struktur arbeitet hier? Jede richtige Antwort = **2 Punkte**.",
+      punkte:2, szenenLabel:"Szene",
+      fragen:[
+        {szene:"Beim Kraulschwimmen kreist dein Arm in einem großen Kreis.", q:"Welche Gelenkart macht das möglich?", o:["Kugelgelenk","Scharniergelenk","Sattelgelenk","Drehgelenk"], c:0, e:"Nur ein **Kugelgelenk** (Schulter) erlaubt solche Kreisbewegungen."},
+        {szene:"Du fängst einen Handball und schließt den Daumen fest um den Ball.", q:"Welches Gelenk hilft dir dabei?", o:["Eigelenk am Handgelenk","Sattelgelenk am Daumen","Kugelgelenk an der Schulter","Drehgelenk im Hals"], c:1, e:"Mit dem **Daumensattelgelenk** stellst du den Daumen den Fingern gegenüber."},
+        {szene:"Auf dem Fahrrad machst du vor dem Abbiegen den Schulterblick.", q:"Welches Gelenk dreht deinen Kopf?", o:["Drehgelenk zwischen 1. und 2. Halswirbel","Kugelgelenk der Schulter","Scharniergelenk im Kiefer","Eigelenk"], c:0, e:"Das **Drehgelenk** zwischen den ersten beiden Halswirbeln dreht den Kopf."},
+        {szene:"Bei Kniebeugen im Fitness beugst und streckst du die Knie.", q:"Welche Gelenkart arbeitet hauptsächlich?", o:["Kugelgelenk","Sattelgelenk","Scharniergelenk","Drehgelenk"], c:2, e:"Das Knie ist ein (Dreh-)**Scharniergelenk**: beugen und strecken."},
+        {szene:"Beim Sprint drückt die Wadenmuskulatur die Ferse kräftig nach oben.", q:"Welche Struktur überträgt diese Kraft auf den Fuß?", o:["Das Kreuzband","Die Achillessehne","Der Meniskus","Die Gelenkkapsel"], c:1, e:"Die **Achillessehne** verbindet den Wadenmuskel mit dem Fersenbein."},
+        {szene:"Beim Pritschen im Volleyball klappst du die Hände im Handgelenk nach hinten.", q:"Welche Gelenkart ist das Handgelenk?", o:["Scharniergelenk","Eigelenk","Drehgelenk","Kugelgelenk"], c:1, e:"Das Handgelenk ist ein **Eigelenk**: vor, zurück und zur Seite."},
+        {szene:"Nach einem Basketballspiel ohne Aufwärmen tun Lena die Knie weh. Ihre Trainerin sagt: „Dein Knorpel war nicht bereit.“", q:"Was meint die Trainerin?", o:["Der Knorpel war noch nicht vollgesaugt und hat schlechter gefedert","Der Knorpel war gebrochen","Der Knorpel hatte zu viel Blut","Der Knorpel war zu dick"], c:0, e:"Ohne Aufwärmen ist der Knorpel dünner und federt schlechter. Aufwärmen macht ihn dicker und belastbarer."}
+      ]},
+    { id:"mythos", typ:"swipe", icon:"🕵️", titel:"Mythos oder Fakt?", art:"Wischen · 10 Karten",
+      anleitung:"Wische nach **rechts = Fakt**, nach **links = Mythos** – oder tippe auf die Knöpfe.",
+      links:{t:"Mythos", icon:"❌"}, rechts:{t:"Fakt", icon:"✅"},
+      karten:[
+        {t:"Knorpel wird über Blutgefäße ernährt.", r:"l", e:"Knorpel hat **keine** Blutgefäße – er wird über die Gelenkschmiere versorgt."},
+        {t:"Aufwärmen macht den Gelenkknorpel dicker.", r:"r", e:"Bis zu 12 % in 10 bis 15 Minuten – ein besserer Stoßdämpfer."},
+        {t:"Bänder heilen schneller als Muskeln.", r:"l", e:"Bänder sind schlecht durchblutet und heilen deshalb **langsamer**."},
+        {t:"Die Achillessehne ist die stärkste Sehne des Körpers.", r:"r", e:"Sie hält Zugkräfte von über 800 kg aus."},
+        {t:"Ein Kugelgelenk kann nur beugen und strecken.", r:"l", e:"Das kann das Scharniergelenk. Das Kugelgelenk bewegt sich in alle Richtungen."},
+        {t:"Das Knie ist das größte Gelenk des Menschen.", r:"r", e:"Hier treffen Oberschenkelknochen, Schienbein und Kniescheibe zusammen."},
+        {t:"Knorpel braucht regelmäßige Bewegung, um gesund zu bleiben.", r:"r", e:"Druck und Entlastung pumpen Nährstoffe hinein – ohne Bewegung baut er ab."},
+        {t:"Sehnen verbinden Knochen mit Knochen.", r:"l", e:"Das machen Bänder. Sehnen verbinden **Muskeln mit Knochen**."},
+        {t:"Die Kreuzbänder liegen mitten im Kniegelenk.", r:"r", e:"Sie kreuzen sich in der Mitte des Knies."},
+        {t:"Kaputter Knorpel wächst schnell wieder nach.", r:"l", e:"Knorpel kann sich kaum erneuern, weil er nicht durchblutet ist."}
+      ]},
+    { id:"zahlen", typ:"schaetzen", icon:"📏", titel:"Werkstatt-Zahlen", art:"Schätzen mit dem Regler",
+      anleitung:"Schieb den Regler auf deine Schätzung. Volltreffer = **2 Punkte**, knapp daneben = 1 Punkt.",
+      fragen:[
+        {q:"Um wie viel Prozent wird der Gelenkknorpel beim Aufwärmen dicker?", min:0, max:50, step:1, start:30, unit:"%", dec:0, ans:12, tol:3, e:"Um **bis zu 12 %**."},
+        {q:"Wie viele Minuten Aufwärmen braucht der Knorpel dafür ungefähr?", min:1, max:60, step:1, start:30, unit:"Minuten", dec:0, ans:12, tol:3, e:"Etwa **10 bis 15 Minuten**."},
+        {q:"Welche Zugkraft hält die Achillessehne mindestens aus?", min:50, max:2000, step:50, start:300, unit:"kg", dec:0, ans:800, tol:100, e:"**Über 800 kg** – das Gewicht eines kleinen Autos."},
+        {q:"Wie dick ist das vordere Kreuzband ungefähr?", min:1, max:40, step:1, start:20, unit:"mm", dec:0, ans:8, tol:2, e:"Nur etwa **8 mm** – und trotzdem hält es das Knie stabil."}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 8 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Was verbindet Knochen mit Knochen?", hilfe:"💡 B…", a:["Band"], re:["^(das |ein )?(band|bänder|baender)$"], e:"**Bänder** verbinden Knochen mit Knochen."},
+        {q:"Was verbindet Muskel mit Knochen?", hilfe:"💡 S…", a:["Sehne"], re:["^(die |eine )?sehnen?$"], e:"**Sehnen** verbinden Muskeln mit Knochen."},
+        {q:"Wie heißt die stärkste Sehne des Körpers?", hilfe:"💡 A…", a:["Achillessehne"], re:["^(die )?achilles ?sehne$"], e:"Die **Achillessehne** an der Ferse."},
+        {q:"Welche Gelenkart hat die Schulter?", hilfe:"💡 K…", a:["Kugelgelenk"], re:["^(ein )?kugel ?gelenk$"], e:"Die Schulter ist ein **Kugelgelenk**."},
+        {q:"Welche Gelenkart hat der Ellenbogen?", hilfe:"💡 S…", a:["Scharniergelenk"], re:["^(ein )?scharnier ?gelenk$","^(ein )?(dreh ?)?scharnier$"], e:"Der Ellenbogen ist ein **Scharniergelenk**."},
+        {q:"Wie heißt die Flüssigkeit, die das Gelenk schmiert?", hilfe:"💡 G…", a:["Gelenkschmiere"], re:["^(die )?gelenk(schmiere|flüssigkeit|fluessigkeit)$","^synovia$"], e:"**Gelenkschmiere** (Gelenkflüssigkeit)."},
+        {q:"Wie heißen die zwei Stoßdämpfer im Knie?", hilfe:"💡 M…", a:["Menisken"], re:["^(die )?(menisken|meniskus|menisci)$"], e:"Die **Menisken** (Einzahl: Meniskus)."},
+        {q:"Wie heißt der Verschleiß des Gelenkknorpels?", hilfe:"💡 A…", a:["Arthrose"], re:["^(die |eine )?arthrose$"], e:"**Arthrose** – Knorpel ist abgenutzt."}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

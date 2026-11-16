@@ -1,0 +1,79 @@
+/* FRS Lernwelten – Sport: gemeinsame Grafiken (Skelett, Schnittbilder) und das Antipp-Spiel „zeigen“ */
+/* Skelett-Grafik (Röntgen-Stil) */
+.sk .sk-bg{fill:var(--xray)}
+.sk g[data-z]{--bc:#E4EEF8; cursor:pointer; transition:filter .2s}
+.sk g[data-z].nz{pointer-events:none; cursor:default}
+.sk g[data-z] .f{fill:var(--bc); stroke:var(--bc); stroke-width:1; transition:fill .25s, stroke .25s}
+.sk g[data-z] .s{fill:none; stroke:var(--bc); transition:stroke .25s}
+.sk g[data-z] .d{fill:var(--xray); stroke:none; pointer-events:none}
+.sk g[data-z] .h{fill:none; stroke:transparent; pointer-events:stroke}
+.sk g[data-z] .hf{fill:transparent; stroke:none; pointer-events:all}
+.sk g[data-z]{filter:drop-shadow(0 0 2px rgba(127,231,255,.55))}
+.sk g[data-z].z-done{--bc:#8FE3C8}
+.sk g[data-z].z-ok{--bc:#5BE38C; filter:drop-shadow(0 0 6px rgba(91,227,140,.95))}
+.sk g[data-z].z-no{--bc:#FF6B6B; filter:drop-shadow(0 0 6px rgba(255,107,107,.95))}
+.sk g[data-z].z-show,.sk g[data-z].z-hl{--bc:#FFD34D; filter:drop-shadow(0 0 7px rgba(255,211,77,.95))}
+.sk g[data-z].z-glow{--bc:#7FE7FF; filter:drop-shadow(0 0 8px rgba(127,231,255,1))}
+@media (prefers-reduced-motion: no-preference){
+  .sk g[data-z].z-glow{animation:zglow 1.1s ease-in-out infinite}
+  .sk g[data-z].z-show{animation:zglow 1s ease-in-out 3}
+}
+@keyframes zglow{50%{filter:drop-shadow(0 0 2px rgba(127,231,255,.3))}}
+@media (hover:hover){ .zfig .sk g[data-z]:not(.z-ok):not(.z-no):not(.z-show):not(.z-glow):hover{--bc:#BFF3FF} }
+/* Röhrenknochen: eigene Farben je Teil */
+.rk g[data-z]{cursor:pointer;transition:filter .2s}
+.rk g[data-z] .h{fill:none;stroke:transparent;pointer-events:stroke}
+.rk g[data-z].z-done{filter:drop-shadow(0 0 3px rgba(91,227,140,.9))}
+.rk g[data-z].z-ok{filter:drop-shadow(0 0 7px rgba(91,227,140,1))}
+.rk g[data-z].z-no{filter:drop-shadow(0 0 7px rgba(255,80,80,1))}
+.rk g[data-z].z-show,.rk g[data-z].z-hl{filter:drop-shadow(0 0 10px rgba(255,211,77,1))}
+.rk g[data-z].z-show > :not(.h):not(.tag):not(.tagl),.rk g[data-z].z-hl > :not(.h):not(.tag):not(.tagl){stroke:#FFD34D;stroke-width:5px}
+.rk g[data-z].z-no > :not(.h):not(.tag):not(.tagl){stroke:#FF5A5A;stroke-width:3px}
+.rk g[data-z].z-ok > :not(.h):not(.tag):not(.tagl){stroke:#5BE38C;stroke-width:4px}
+.rk .z-show .tag,.rk .z-hl .tag{opacity:1;fill:#FFD34D;font-size:15px}
+.rk .z-show .tagl,.rk .z-hl .tagl{opacity:1;stroke:#FFD34D;stroke-width:2.5}
+.rk .z-no .tag{opacity:1;fill:#FF8A8A}
+.rk .z-no .tagl{opacity:1;stroke:#FF8A8A}
+@media (prefers-reduced-motion: no-preference){ .rk g[data-z].z-show{animation:rkpulse 1s ease-in-out infinite} }
+@keyframes rkpulse{50%{filter:drop-shadow(0 0 2px rgba(255,211,77,.5))}}
+.rk .z-ok .tag,.rk .z-done .tag{opacity:1}
+.rk .tagl{opacity:0;transition:opacity .3s;stroke:#E9F6FF;stroke-width:1.5;stroke-dasharray:3 3;pointer-events:none}
+.rk .z-ok .tagl,.rk .z-done .tagl,.rk .z-hl .tagl{opacity:1}
+.rk .z-hl .tag{opacity:1}
+.rk .tag{opacity:0;transition:opacity .3s;font:700 13px var(--font-body);fill:#E9F6FF;pointer-events:none}
+
+/* Spiel „Zeigen“ */
+.zg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:.8rem;align-items:start}
+.zq{display:flex;flex-direction:column;gap:.35rem}
+.zk{margin:0;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:.9rem}
+.ztarget{margin:0;font-family:var(--font-display);font-weight:800;text-transform:uppercase;font-size:clamp(2rem,6vw,3.2rem);line-height:1;color:var(--accent)}
+.zq .hint{margin:.2rem 0 0}
+.zfig{background:var(--xray);border-radius:var(--radius);padding:.4rem;display:flex;justify-content:center;align-items:flex-start;box-shadow:0 3px 0 #07101D}
+.zfig svg{display:block;height:440px;width:auto;max-width:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.zopts{grid-template-columns:1fr 1fr}
+.zfound{margin-top:.5rem;padding-top:.6rem;border-top:1px dashed var(--line)}
+.zchips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
+.zchips span{background:var(--ok-bg);color:var(--ok);font-weight:700;font-size:.85rem;padding:.2rem .55rem;border-radius:999px}
+.zopts .opt{text-align:center}
+@media (max-width:720px){
+  .zfound{display:none}
+  .zg{grid-template-columns:1fr;gap:.5rem}
+  .zq{padding:.6rem .8rem}
+  .ztarget{font-size:clamp(1.7rem,8vw,2.4rem)}
+  .zopts .opt{min-height:48px;padding:.45rem .6rem}
+}
+
+/* Infokarten mit eigener Grafik */
+.ln-art .lnsvg{display:block;height:min(2.5em,46vh);width:auto;max-width:100%;margin:0 auto}
+@media (max-width:760px){ .ln-art .lnsvg{height:min(2.3em,30vh)} }
+/* Gelenk-Marker im Skelett */
+.sk g.jm{cursor:pointer}
+.sk g.jm .jr{fill:rgba(255,138,40,.45); stroke:#FF9A3D; stroke-width:3; transition:all .25s}
+.sk g.jm .jh{fill:transparent; stroke:none; pointer-events:all}
+.sk g.jm.z-glow .jr,.sk g.jm.z-show .jr{fill:rgba(255,211,77,.55); stroke:#FFD34D; stroke-width:3.2}
+.sk g.jm.z-ok .jr{fill:rgba(91,227,140,.55); stroke:#5BE38C}
+.sk g.jm.z-no .jr{fill:rgba(255,107,107,.5); stroke:#FF6B6B}
+.sk g.jm.z-done .jr{fill:rgba(91,227,140,.3); stroke:#8FE3C8}
+@media (prefers-reduced-motion: no-preference){ .sk g.jm .jr{animation:jmpulse 2.2s ease-in-out infinite} @keyframes jmpulse{50%{stroke-opacity:.45}} }
+.sk.ruhig g[data-z]:not(.jm){filter:none}
+
