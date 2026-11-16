@@ -114,6 +114,7 @@ const fmt = (v,d) => Number(v).toLocaleString(W.sprache==="en"?"en-GB":"de-DE",{
 const reduced = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- Punkte ---------- */
+const EXTMAX = {};   // Höchstpunktzahl für eigene Spieltypen (LW.addGame)
 function maxOf(lv){
   switch(lv.typ){
     case "memory": return lv.paare.length;
@@ -127,6 +128,7 @@ function maxOf(lv){
     case "lueckentext": return (lv.text.match(/\[\[/g)||[]).length;
     case "eingabe": return lv.fragen.length*(lv.punkte||1);
   }
+  if(EXTMAX[lv.typ]) return EXTMAX[lv.typ](lv);
   return 0;
 }
 // Punkte pro Aufgabe: S.lv[id].it = {aufgabe: punkte}. Eine Aufgabe zählt nur einmal – Wiederholen bringt nur Flaggen für vorher falsche Aufgaben.
@@ -916,6 +918,10 @@ function autoNiveau(l, nv, world){
   return c;
 }
 
+/* ---------- Werkzeugkasten für eigene Spieltypen ---------- */
+const KIT = { award:(list, el)=>award(list, el), sheet:(...a)=>sheet(...a), miss:(...a)=>miss(...a), closeSheet:()=>closeSheet(),
+  shuffle, orderFor, noRuns, esc, rich, progressBar, fill, confetti:n=>confetti(n), pop:(el,t)=>pop(el,t), $, T:()=>T, onCleanup:f=>cleanups.push(f) };
+
 /* ---------- Start ---------- */
 const LW = {
   start(world){
@@ -953,6 +959,8 @@ const LW = {
     render();
   },
   maxima(world){ return world.levels.map(maxOf); },
+  // Eigene Spieltypen für einzelne Lernwelten (z. B. Skelett zum Antippen): fn(l, A, done, kit), max(l) = Höchstpunktzahl
+  addGame(typ, fn, max){ GAMES[typ] = (l, A, done) => fn(l, A, done, KIT); EXTMAX[typ] = max; },
   medal: medalSvg, tierOf, confetti: n => { if(!W) W = {}; confetti(n); }
 };
 window.LW = LW;

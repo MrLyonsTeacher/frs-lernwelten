@@ -181,7 +181,9 @@ const FRS = {
   listen: [
     { id:"sport", name:"Sport", icon:"🏀", materialien:[
       { id:"bb2", titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 9 · 8 Spiele", pfad:"sport/basketball.html",
-        stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] }
+        stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] },
+      { id:"kn9", titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Sporttheorie · 3 Infokarten-Stapel · 12 Spiele", pfad:"sport/knochen.html",
+        stationen:["Röntgen-Scan","Wer leuchtet?","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Mythos","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,8,13,14,10,12,11,12,14,6,9] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" },
