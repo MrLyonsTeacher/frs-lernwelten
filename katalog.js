@@ -207,13 +207,19 @@ const FRS = {
         stationen:["Rettungskette","Notruf","PECH","Einsatz","Blitz-Check","112?","Memory","Vorbeugen","Reime","Mythos","Zahlen","Profi"], stationenMax:[5,5,4,10,12,10,7,12,6,10,10,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
-      { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" },
-      { id:"esc-vulkan", titel:"Der Vulkan", info:"Kooperativer 3D-Escape-Room für 1–6 Personen, 35 oder 70 Minuten", pfad:"escape/vulkan.html" },
-      { id:"esc-woodlands", titel:"Die Woodlands", info:"Kooperativer 2D-Escape-Room im Elbenwald für 1–6 Personen, 35 oder 70 Minuten", pfad:"escape/woodlands.html" },
-      { id:"esc-wrack", titel:"Das Wrack", info:"Kooperativer Escape-Room im versunkenen Schiff: Raum für Raum durch die Schott-Türen bis zur Schatzkammer", pfad:"escape/wrack.html" },
-      { id:"esc-bibliothek", titel:"Die Bibliothek der Tinte (Ablauf-Test)", info:"Kooperativer Escape-Room in der gemalten Himmelsbibliothek, erster Ablauf mit 4 Räumen und Finale", pfad:"escape/bibliothek.html" },
-      { id:"esc-wrack-vorschau", titel:"Das Wrack (Vorschau)", info:"Erste 3D-Vorschau des versunkenen Schiffs, noch ohne Rätsel", pfad:"escape/wrack-preview.html" }
+      // raum:true = Escape Room mit Karte (bild, farbe, chips); sonst Werkzeug/Vorschau in der Liste darunter
+      { id:"esc-vulkan", raum:true, titel:"Der Vulkan", info:"Der Vulkan grollt: Gemeinsam durch die Kammern bis zum Kern und den Ausbruch stoppen.", pfad:"escape/vulkan.html",
+        bild:"escape/vorschau-vulkan.jpg", farbe:"#D9472F", chips:["👥 1–6","⏱️ 35 / 70 Min.","🚪 7 Kammern","3D"] },
+      { id:"esc-woodlands", raum:true, titel:"Die Woodlands", info:"Im Elbenwald schwindet das Licht: Runensteine lösen und den Weltenbaum wecken.", pfad:"escape/woodlands.html",
+        bild:"escape/vorschau-woodlands.jpg", farbe:"#1F9E7A", chips:["👥 1–6","⏱️ 35 / 70 Min.","🪨 6 Runensteine","2D"] },
+      { id:"esc-wrack", raum:true, titel:"Das Wrack", info:"Tief unter den Wellen: Raum für Raum durch die Schott-Türen bis zur Schatzkammer.", pfad:"escape/wrack.html",
+        bild:"escape/vorschau-wrack.jpg", farbe:"#1689B5", chips:["👥 1–6","⏱️ 35 / 70 Min.","🚪 3 Räume + Schatz"] },
+      { id:"esc-bibliothek", raum:true, titel:"Die Bibliothek der Tinte", info:"In der Himmelsbibliothek versiegt die Tinte: Durch die Säle bis zum Buch der Bücher.", pfad:"escape/bibliothek.html",
+        bild:"escape/vorschau-bibliothek.jpg", farbe:"#C9A23A", chips:["👥 1–6","⏱️ 35 / 70 Min.","📚 3 Säle + Finale"], neu:"Testlauf" },
+      { id:"esc-test", titel:"iPad-Verbindungstest", info:"Vor der Stunde: prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html", icon:"📶" },
+      { id:"esc-wrack-vorschau", titel:"Das Wrack (3D-Vorschau)", info:"Erste 3D-Vorschau des versunkenen Schiffs, noch ohne Rätsel", pfad:"escape/wrack-preview.html", icon:"🧪" }
     ]},
+
     { id:"sonstiges", name:"Sonstiges", icon:"🧩", materialien:[] }
   ]
 };

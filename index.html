@@ -48,8 +48,8 @@ svg{flex:0 0 auto}
 .btn.ghost:hover{background:var(--bg)}
 .btn.icon{padding:.4rem;width:40px}
 .btn.accent{background:var(--coral)} .btn.accent:hover{background:#D2462E}
-@media (max-width:860px){ .search{flex:1 1 100%;order:5} .seg{order:4;flex:1 1 auto} .seg button{flex:1;justify-content:center} }
-@media (max-width:480px){ .bar .btn.accent span{display:none} .seg button{padding:.4rem .4rem;font-size:.86rem} .seg svg{display:none} }
+@media (max-width:860px){ .search{flex:1 1 100%;order:5} .seg{order:4;flex:1 1 auto;min-width:0;max-width:100%;overflow-x:auto;scrollbar-width:none} .seg button{flex:1;justify-content:center} }
+@media (max-width:480px){ .bar .btn.accent span{display:none} .seg button{padding:.4rem .4rem;font-size:.86rem;flex:0 0 auto} .seg .n{display:none} .seg svg{display:none} }
 
 main{max-width:1240px;margin:0 auto;padding:1.2rem 1.2rem 2.5rem}
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:.3rem 1rem;flex-wrap:wrap;margin:0 0 .8rem}
@@ -80,6 +80,11 @@ main{max-width:1240px;margin:0 auto;padding:1.2rem 1.2rem 2.5rem}
 .tog[aria-expanded="true"] svg{transform:rotate(180deg)}
 .topics{list-style:none;margin:0;padding:.35rem 0 0;border-top:1px solid var(--line);display:none}
 .cls.open .topics{display:block}
+.esc .cls-map{aspect-ratio:16/8}
+.esc+.sec-h{margin-top:1.6rem}
+.esc-info{margin:0;font-size:.92rem;color:var(--ink2);line-height:1.4}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chips span{font-size:.78rem;font-weight:600;padding:.18rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--c) 35%,transparent);white-space:nowrap}
 .tgrp{display:flex;align-items:center;gap:.4rem;margin:.55rem 0 .25rem;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .tgrp i{width:7px;height:7px;border-radius:50%;background:var(--d)}
 .row{display:flex;align-items:center;gap:.6rem;padding:.35rem .4rem;border-radius:9px;min-width:0}
@@ -260,8 +265,23 @@ function sportTab(l){
       </div></article>`; }).join("")}</div>
   ${frei.length ? `<div class="sec-h"><h2>Weitere Sport-Lernwelten</h2></div><div class="list">${frei.map(m=>row(l.icon, m.titel, m.info, "", m.pfad, l.name)).join("")}</div>` : ""}`;
 }
+function escapeTab(l){
+  const raeume = l.materialien.filter(m=>m.raum), rest = l.materialien.filter(m=>!m.raum);
+  return `<div class="sec-h"><h2>Escape Rooms</h2><p>Kooperativ auf den iPads: 1 bis 6 Personen pro Gruppe, jede Person sieht andere Hinweise. Ein QR-Code pro Raum, die Gruppe gibt dann denselben Gruppencode ein.</p></div>
+  <div class="classes esc">${raeume.map(m=>`<article class="cls" style="--c:${m.farbe||"#2A8DD5"}">
+      <a class="cls-map" href="${esc(m.pfad)}" target="_blank" rel="noopener" aria-label="${esc(m.titel)} öffnen"><img src="${esc(m.bild)}" alt="" loading="lazy">
+        <span class="cls-cap"><span><b>${esc(m.titel)}</b><small>Escape Room</small></span>${m.neu?`<span class="k">${esc(m.neu)}</span>`:""}</span></a>
+      <div class="cls-body">
+        <p class="esc-info">${esc(m.info)}</p>
+        <div class="chips">${(m.chips||[]).map(c=>`<span>${esc(c)}</span>`).join("")}</div>
+        <div class="cls-act"><button class="btn" data-qr="${esc(m.pfad)}" data-t="${esc(m.titel)}" data-s="Escape Room">${SVG.qr} QR-Code</button>
+          <a class="btn ghost icon" href="${esc(m.pfad)}" target="_blank" rel="noopener" aria-label="Raum öffnen" title="Raum öffnen">${SVG.out}</a></div>
+      </div></article>`).join("")}</div>
+  ${rest.length ? `<div class="sec-h"><h2>Vor der Stunde & Vorschauen</h2></div><div class="list">${rest.map(m=>row(m.icon||l.icon, m.titel, m.info, "", m.pfad, l.name)).join("")}</div>` : ""}`;
+}
 function liste(l){
   if(l.id==="sport" && FRS.sport) return sportTab(l);
+  if(l.id==="escape") return escapeTab(l);
   return `<div class="sec-h"><h2>${esc(l.name)}</h2><p>${l.materialien.length?"Jede Lernwelt hat ihren eigenen QR-Code.":""}</p></div>
   ${l.materialien.length ? `<div class="list">${l.materialien.map(m=>row(l.icon, m.titel, m.info, "", m.pfad, l.name)).join("")}</div>`
     : `<div class="blank">Hier ist noch nichts. Sag Claude, welche Lernwelt du brauchst – sie erscheint dann hier.</div>`}`;
