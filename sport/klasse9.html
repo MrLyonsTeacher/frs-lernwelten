@@ -16,12 +16,12 @@
 /* Athletopolis – Sport-Welt Klasse 9. Koordinaten = Bildpunkte im 1536 × 1024-Bild.
    offen:true = ohne Freigabe-Code sichtbar. Themen: pfad = fertige Lernwelt, sonst „kommt bald“. */
 const ORTE = [
-  { id:"herz", name:"Herz-Kraftwerk", icon:"❤️", einheit:"E1 · Herz-Kreislauf & Energie", x:965, y:262, crop:[770,115,350,233], veil:[165,115], offen:false,
+  { id:"herz", name:"Herz-Kraftwerk", icon:"❤️", einheit:"E1 · Herz-Kreislauf & Energie", x:964, y:350, crop:[791,205,321,214], veil:[165,115], offen:false,
     text:"Hier schlägt das Herz der Stadt: Es pumpt Blut und Sauerstoff durch alle Adern-Bahnen.",
     themen:[{t:"Herz, Lungen- & Körperkreislauf", i:"🫀"},{t:"Energiewege & Herzfrequenz-Zonen", i:"⚡"},{t:"Was meine Pulskurve verrät", i:"📈"},{t:"Ausdauer macht das Herz stark", i:"🏃"}],
     fx:[["glow",900,600,330,"#FF5A3C","beat"],["glow",900,560,90,"#FFF0C0","beat"],["smoke",220,340,26],["smoke",480,165,30],["smoke",640,95,18],["smoke",750,95,18],
         ["water",[1230,190,1500,370],10],["water",[1270,910,1530,1020],6],["flies",[60,600,1480,1000],10]] },
-  { id:"werft", name:"Skelett-Werft", icon:"🦴", einheit:"E2 · Knochen & Gelenke", x:420, y:700, crop:[20,480,780,520], veil:[0,0], offen:true,
+  { id:"werft", name:"Skelett-Werft", icon:"🦴", einheit:"E2 · Knochen & Gelenke", x:420, y:733, crop:[27,505,776,517], veil:[0,0], offen:true,
     text:"In der Werft wird das Skelett gebaut: Röntgen-Klinik und Robo-Werkstatt. Tippe auf ein Gebäude.",
     themen:[
       {id:"kn9", t:"Knochen & Skelett", s:"Röntgen-Klinik", i:"🩻", pfad:"knochen.html", x:964, y:420, bild:"klinik",
@@ -32,41 +32,38 @@ const ORTE = [
         fx:[["sparks",[925,395,1025,475],14,"#FFF0A8"],["glow",975,432,60,"#FFE08A","flick"],["glow",860,520,240,"#FFA53C","pulse"],["smoke",765,90],["smoke",860,70],["smoke",945,125],["sun",190,95],["clouds",85],["water",[0,125,700,180],12],["flies",[60,700,1480,1000],8]]} ],
     fx:[["glow",964,400,120,"#5FE9FF","flick"],["glow",1300,330,110,"#FFA53C","pulse"],["sparks",[1240,250,1380,390],10,"#FFE08A"],["smoke",1150,150,16],
         ["water",[0,0,660,480],22],["water",[780,720,1536,1024],18],["water",[170,790,320,950],6],["flies",[300,250,1400,700],8]] },
-  { id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", einheit:"E2 · Sportverletzungen & Ursachen", x:945, y:545, crop:[785,420,330,220], veil:[150,90], offen:false,
+  { id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", einheit:"E2 · Sportverletzungen & Ursachen", x:943, y:594, crop:[785,471,329,220], veil:[150,90], offen:false,
     text:"Im Stadion passiert’s: Umknicken, Zerrung, Prellung. Hier ermittelst du, was verletzt ist und warum.",
     themen:[{id:"vl9", t:"Sportverletzungen & ihre Ursachen", s:"Lernwelt öffnen", i:"🩹", pfad:"verletzungen.html"}],
     fx:[["glow",390,300,150,"#FFF3C4","flick"],["glow",770,236,150,"#FFF3C4","flick"],["glow",1090,300,150,"#FFF3C4","flick"],["glow",760,580,260,"#FFF3C4","pulse"],["flies",[60,700,1480,1000],8]] },
-  { id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", einheit:"E2 · Erste Hilfe & Vorbeugen", x:1185, y:605, crop:[1000,460,360,240], veil:[150,95], offen:false,
+  { id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", einheit:"E2 · Erste Hilfe & Vorbeugen", x:1185, y:653, crop:[1000,510,360,240], veil:[150,95], offen:false,
     text:"Die Bergwacht ist zur Stelle: Erste Hilfe bei Sportverletzungen und wie du mit Aufwärmen vorbeugst.",
     themen:[{t:"Erste Hilfe & Vorbeugen", i:"⛑️"}],
     fx:[["blink",784,40],["blink",800,120],["glow",74,90,140,"#FFF3C4","flick"],["glow",624,740,120,"#FFC65A","pulse"],["glow",944,560,80,"#FFC65A","pulse"],
         ["water",[1300,0,1536,250],10],["water",[1380,640,1536,960],8],["flies",[60,500,1300,1000],10]] },
-  { id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", einheit:"E3 · Training & Fitness", x:590, y:195, crop:[400,50,390,260], veil:[200,95], offen:false,
+  { id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", einheit:"E3 · Training & Fitness", x:588, y:283, crop:[398,140,389,260], veil:[200,95], offen:false,
     text:"Im Fitnesscenter wird trainiert: Belastung, Erholung und der eigene Trainingsplan.",
     themen:[{t:"Was ist Training? – Fitness messen", i:"⏱️"},{t:"Superkompensation", i:"📊"},{t:"Trainingsprinzipien & -methoden", i:"🧩"},{t:"Mein Trainingsplan", i:"📝"},{t:"Hat mein Training gewirkt?", i:"🔁"}],
     fx:[["clouds",200],["glow",1224,376,160,"#FFC65A","pulse"],["glow",700,800,180,"#FFC65A","pulse"],["water",[600,940,760,1024],6],["flies",[60,300,1480,1000],10]] },
-  { id:"markt", name:"Markthalle", icon:"🍎", einheit:"E4 · Ernährung", x:880, y:378, crop:[680,290,330,220], veil:[140,80], offen:false,
+  { id:"markt", name:"Markthalle", icon:"🍎", einheit:"E4 · Ernährung", x:877, y:451, crop:[699,364,299,199], veil:[140,80], offen:false,
     text:"In der Markthalle gibt es alles, was ein Sportlerkörper braucht: Energie, Nährstoffe, Wasser.",
     themen:[{t:"Energie: Was mein Körper verbraucht", i:"⚡"},{t:"Nährstoffe – was steckt im Essen?", i:"🥗"},{t:"Trinken – Wasser für Leistung", i:"💧"},{t:"Essen rund ums Training", i:"🍝"},{t:"Meine Ernährungsanalyse", i:"📋"}],
     fx:[["glow",780,330,280,"#FFC65A","pulse"],["glow",1400,56,120,"#FF5A3C","beat"],["glow",860,940,150,"#FFF3C4","flick"],["flies",[60,600,1480,1000],8]] },
-  { id:"labor", name:"Doping-Labor", icon:"🧪", einheit:"E5 · Doping", x:612, y:452, crop:[480,350,300,200], veil:[100,85], offen:false,
+  { id:"labor", name:"Doping-Labor", icon:"🧪", einheit:"E5 · Doping", x:609, y:512, crop:[477,407,299,199], veil:[100,85], offen:false,
     text:"In der dunklen Seitengasse wird getrickst. Was ist Doping, und warum ist es so gefährlich?",
     themen:[{t:"Was ist Doping?", i:"❓"},{t:"Wirkung & Risiken", i:"⚠️"},{t:"Kontrollen, Fair Play & Grauzonen", i:"🔍"},{t:"Debatte: Doping freigeben?", i:"🗣️"}],
     fx:[["glow",784,380,110,"#8CFF4A","pulse"],["glow",894,340,80,"#D56BFF","pulse"],["glow",994,340,60,"#8CFF4A","pulse"],["glow",1044,740,140,"#8CFF4A","flick"],
         ["sparks",[740,320,830,420],8,"#D8FFB0"],["sparks",[870,300,920,380],6,"#F0C8FF"],["smoke",1024,440,14],["flies",[60,600,900,1000],8]] },
-  { id:"gehirn", name:"Gehirn-Arena", icon:"🧠", einheit:"E6 · Emotionen, Fair Play & Sinn", x:1075, y:128, crop:[930,0,300,200], veil:[120,95], offen:false,
+  { id:"gehirn", name:"Gehirn-Arena", icon:"🧠", einheit:"E6 · Emotionen, Fair Play & Sinn", x:1075, y:231, crop:[928,106,298,199], veil:[120,95], offen:false,
     text:"In der Arena im Kopf geht es um Gefühle im Sport, Fair Play und die Frage: Warum treibe ich Sport?",
     themen:[{t:"Wettkampf & Fair Play", i:"🤝"},{t:"Emotionen im Sport", i:"😤"},{t:"Emotionen steuern & Mut", i:"🧘"},{t:"Warum treiben wir Sport?", i:"🧭"},{t:"Meine Sport-Biografie & Motive", i:"📖"}],
     fx:[["glow",740,360,320,"#FF9EC4","pulse"],["glow",380,140,110,"#FFF3C4","flick"],["glow",1090,160,110,"#FFF3C4","flick"],["clouds",80],
         ["water",[1200,120,1530,1000],22],["water",[640,850,1100,1000],8],["flies",[60,300,700,1000],10]] }
 ];
-const STADT_FX = [["sun",236,74,false],["clouds",55],["glow",955,255,95,"#FF5A3C","beat"],["glow",1075,80,85,"#FF9EC4","pulse"],["glow",655,400,55,"#8CFF4A","pulse"],["glow",520,665,42,"#5FE9FF","flick"],
-  ["glow",650,650,60,"#FFA53C","pulse"],["smoke",868,148],["smoke",905,190],["blink",1196,468],["glow",930,540,80,"#FFF3C4","flick"],
-  ["water",[170,95,320,230],12],["water",[0,100,560,200],8],["water",[1260,100,1536,200],10],["water",[0,330,120,620],6],["water",[1300,420,1536,560],8],
-  ["water",[1350,640,1536,900],8],["water",[200,880,900,1024],12],["water",[1100,950,1536,1024],6],["flies",[420,150,1300,900],12]];
+const STADT_FX = [["sun", 232, 80, false], ["clouds", 70], ["glow", 957, 341, 95, "#FF5A3C", "beat"], ["glow", 1074, 182, 85, "#FF9EC4", "pulse"], ["glow", 656, 470, 55, "#8CFF4A", "pulse"], ["glow", 521, 700, 42, "#5FE9FF", "flick"], ["glow", 650, 690, 60, "#FFA53C", "pulse"], ["smoke", 867, 243], ["smoke", 905, 286], ["blink", 1196, 524], ["glow", 929, 589, 80, "#FFF3C4", "flick"], ["water", [150, 100, 330, 330], 16], ["water", [0, 110, 1536, 200], 14], ["water", [1250, 120, 1536, 300], 10], ["water", [0, 330, 130, 560], 6], ["water", [1330, 450, 1536, 620], 8], ["water", [1300, 700, 1536, 960], 8], ["water", [150, 900, 880, 1024], 12], ["water", [1150, 960, 1536, 1024], 6], ["flies", [420, 250, 1300, 950], 12]];
 
 SPORTWELT.start({ k:9, name:"Athletopolis", untertitel:"Profil Sport · Klasse 9", dir:"welt9", uebersicht:"stadt", zurueck:"Stadt",
-  startBlick:{x:768, y:560}, fx:STADT_FX, orte:ORTE });
+  startBlick:{x:767, y:612}, fx:STADT_FX, orte:ORTE });
 </script>
 </body>
 </html>
