@@ -187,7 +187,7 @@ const FRS = {
              {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio"} ] },
     { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
       orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie"}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
-             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen"},
+             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen", themen:["eh9"]},
              {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness"}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung"},
              {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping"}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn"} ] }
   ]},
@@ -202,7 +202,9 @@ const FRS = {
       { id:"ge9", welt:9, titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Skelett-Werft, Robo-Werkstatt (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",
         stationen:["Labor","Scanner","Reime","Memory","Lager","Knie","Band/Sehne","Quiz","Analyse","Mythos","Zahlen","Profi"], stationenMax:[16,8,6,8,12,16,12,10,14,10,8,8] },
       { id:"vl9", welt:9, titel:"Verletzungs-Lernwelt: Sportverletzungen & ihre Ursachen", info:"Profil Sport Kl. 9 · Flutlicht-Stadion (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 10 Spiele", pfad:"sport/verletzungen.html",
-        stationen:["Tatort","Was ist das?","Akut/Überlastung","Memory","Innen/Außen","Detektiv","Reime","Mythos","Zahlen","Profi"], stationenMax:[8,10,12,7,12,14,6,10,8,8] }
+        stationen:["Tatort","Was ist das?","Akut/Überlastung","Memory","Innen/Außen","Detektiv","Reime","Mythos","Zahlen","Profi"], stationenMax:[8,10,12,7,12,14,6,10,8,8] },
+      { id:"eh9", welt:9, titel:"Erste-Hilfe-Lernwelt: Erste Hilfe & Vorbeugen", info:"Profil Sport Kl. 9 · Bergwacht-Station (E2) · 5 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/erstehilfe.html",
+        stationen:["Rettungskette","Notruf","PECH","Einsatz","Blitz-Check","112?","Memory","Vorbeugen","Reime","Mythos","Zahlen","Profi"], stationenMax:[5,5,4,10,12,10,7,12,6,10,10,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       { id:"esc-test", titel:"iPad-Verbindungstest", info:"Prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html" },
