@@ -627,7 +627,7 @@ GAMES.rush = (l, A, done) => {
   A.innerHTML = `<div class="panel rush-start"><p class="q">${T.rushGoal(l.ziel, dur)}</p><button class="btn big" id="go">${T.start}</button></div>`;
   function next(){
     if(over || !$("#rq")) return;
-    if(!pool.length) pool = shuffle(l.items);
+    if(!pool.length) pool = l.fest ? noRuns(l.items, x=>x.c, 3) : shuffle(l.items);  // feste Knöpfe: Antworten wechseln trotzdem ab (max. 3 gleiche hintereinander)
     cur = pool.pop(); const order = l.fest ? cur.o.map((_,j)=>j) : orderFor(cur.o.length, cur.c, hist);
     $("#rq").innerHTML = rich(cur.q);
     if(l.tippen){ const inp=$("#rin"); inp.value=""; inp.disabled=false; inp.classList.remove("ok","no"); $("#rfix").textContent=""; { const rc=$("#rcap"); if(rc){ rc.hidden=!cur.gross; rc.innerHTML = cur.gross ? rich(T.capHint) : ""; } } setTimeout(()=>inp.focus({preventScroll:true}),20); }

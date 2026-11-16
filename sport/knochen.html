@@ -66,8 +66,15 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(14,154,167,.10),
 .rk g[data-z].z-done{filter:drop-shadow(0 0 3px rgba(91,227,140,.9))}
 .rk g[data-z].z-ok{filter:drop-shadow(0 0 7px rgba(91,227,140,1))}
 .rk g[data-z].z-no{filter:drop-shadow(0 0 7px rgba(255,80,80,1))}
-.rk g[data-z].z-show,.rk g[data-z].z-hl{filter:drop-shadow(0 0 8px rgba(255,211,77,1)) brightness(1.12)}
-@media (prefers-reduced-motion: no-preference){ .rk g[data-z].z-show,.rk g[data-z].z-hl{animation:rkpulse 1s ease-in-out infinite} }
+.rk g[data-z].z-show,.rk g[data-z].z-hl{filter:drop-shadow(0 0 10px rgba(255,211,77,1))}
+.rk g[data-z].z-show > :not(.h):not(.tag):not(.tagl),.rk g[data-z].z-hl > :not(.h):not(.tag):not(.tagl){stroke:#FFD34D;stroke-width:5px}
+.rk g[data-z].z-no > :not(.h):not(.tag):not(.tagl){stroke:#FF5A5A;stroke-width:3px}
+.rk g[data-z].z-ok > :not(.h):not(.tag):not(.tagl){stroke:#5BE38C;stroke-width:4px}
+.rk .z-show .tag,.rk .z-hl .tag{opacity:1;fill:#FFD34D;font-size:15px}
+.rk .z-show .tagl,.rk .z-hl .tagl{opacity:1;stroke:#FFD34D;stroke-width:2.5}
+.rk .z-no .tag{opacity:1;fill:#FF8A8A}
+.rk .z-no .tagl{opacity:1;stroke:#FF8A8A}
+@media (prefers-reduced-motion: no-preference){ .rk g[data-z].z-show{animation:rkpulse 1s ease-in-out infinite} }
 @keyframes rkpulse{50%{filter:drop-shadow(0 0 2px rgba(255,211,77,.5))}}
 .rk .z-ok .tag,.rk .z-done .tag{opacity:1}
 .rk .tagl{opacity:0;transition:opacity .3s;stroke:#E9F6FF;stroke-width:1.5;stroke-dasharray:3 3;pointer-events:none}
@@ -98,7 +105,7 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(14,154,167,.10),
 
 /* Infokarten mit eigener Grafik */
 .ln-art .lnsvg{display:block;height:min(2.5em,46vh);width:auto;max-width:100%;margin:0 auto}
-@media (max-width:760px){ .ln-art .lnsvg{height:min(1.7em,24vh)} }
+@media (max-width:760px){ .ln-art .lnsvg{height:min(2.3em,30vh)} }
 </style>
 </head>
 <body>
@@ -132,8 +139,7 @@ function skel(hl){
   const brustbein = `<rect class="f" x="115.5" y="119" width="9" height="52" rx="4"/><rect class="h" x="113" y="117" width="14" height="56" stroke-width="3"/>`;
   const schluessel = both(X => { const p = `M${X(114)} 118 Q${X(90)} 108 ${X(65)} 115`; return `<path class="s" d="${p}" stroke-width="5" stroke-linecap="round"/><path class="h" d="${p}" stroke-width="12"/>`; });
   const schaedel = `<path class="f" d="M120 8 C150 8 152 34 151 50 C150 62 146 66 144 68 L96 68 C94 66 90 62 89 50 C88 34 90 8 120 8 Z"/>`
-    + el(107,46,7.5,6.5,"d") + el(133,46,7.5,6.5,"d") + `<path class="d" d="M120 51 L115.5 60 L124.5 60 Z"/>`
-    + `<rect class="d" x="104" y="63" width="32" height="2" rx="1"/>`;
+    + el(107,46,7.5,6.5,"d") + el(133,46,7.5,6.5,"d") + `<path class="d" d="M120 51 L115.5 60 L124.5 60 Z"/>`;
   const kiefer = `<rect class="hf" x="99" y="68" width="42" height="26" rx="8"/><path class="f" d="M96 66 C97 90 108 95 120 95 C132 95 143 90 144 66 L137 68 C135 84 128 86 120 86 C112 86 105 84 103 68 Z"/>`
     + `<path class="d" d="M106 70 L134 70" stroke="#0C1B30" stroke-width="1.4" stroke-dasharray="2.4 1.6"/>`;
   const oberarm = both(X => ln(X(61),132,X(47),204,8) + ci(X(63),127,6.5) + ci(X(47),207,6) + ln(X(61),132,X(47),204,14,"h"));
@@ -307,6 +313,19 @@ const LERNEN = {
     {bild:ICON.versuch, titel:"Hart UND elastisch", text:"Knochen bestehen aus **Kalksalzen** (vor allem Kalzium) – die machen sie **hart** – und aus **Kollagen**, einem Eiweiß – das macht sie **elastisch**. Versuch: In Essig lösen sich die Kalksalze, der Knochen wird biegsam wie Gummi. Im Feuer verbrennt das Kollagen, der Knochen wird spröde und zerbröselt."},
     {bild:ICON.leben, titel:"Knochen leben!", text:"Knochen sind kein toter Stein. Spezielle Zellen **bauen ständig Knochen ab und wieder auf**. Wo du deine Knochen oft belastest, werden sie dichter und stärker."}
   ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:art(skel(["wirbelsaeule","rippen","oberschenkel","oberarm"])), titel:"Die 5 Aufgaben", text:"**„Stützen, schützen, sich bewegen, Blut erzeugen, Kalk anlegen.“** – „Kalk anlegen“ heißt: Knochen speichern Kalzium."},
+    {bild:art(skel(["schaedel","rippen","wirbelsaeule"])), titel:"Wer schützt was?", text:"**„Schädel fürs Gehirn, Rippen fürs Herz – die Wirbelsäule schützt das Mark, das ist kein Scherz.“** – Gemeint ist das Rückenmark."},
+    {bild:art(skel(["elle","speiche"])), titel:"Elle oder Speiche?", text:"**„Die Elle führt zum Ellenbogen, zum Daumen ist die Speiche gezogen.“** – Ertaste es: Die Spitze deines Ellenbogens gehört zur Elle, die Speiche endet am Handgelenk auf der Daumenseite."},
+    {bild:art(skel(["schienbein","wadenbein"])), titel:"Schienbein oder Wadenbein?", text:"**„Dick und vorn – das Schienbein spürt den Tritt, dünn und außen – das Wadenbein läuft mit.“** – Ertaste die harte Kante vorn an deinem Unterschenkel: Das ist das Schienbein."},
+    {bild:art(skel()), titel:"Wie viele Knochen?", text:"**„Zweihundertsechs Knochen hat der Große – beim Baby sind’s mehr, noch weich und lose.“** – Viele Babyknochen wachsen später zusammen."},
+    {bild:art(roehre(["haut","kompakta","mark"])), titel:"Der Röhrenknochen", text:"**„Haut, dann Wand, dann Mark im Rohr – so stellst du dir den Knochen vor.“** – Von außen nach innen: Knochenhaut, kompakter Knochen, Markhöhle mit Knochenmark."},
+    {bild:art(roehre(["haut"])), titel:"Warum das Schienbein so wehtut", text:"**„Knochenhaut voll Nerven fein – darum schmerzt das Schienbein so gemein!“**"},
+    {bild:ICON.versuch, titel:"Kalk und Kollagen", text:"**„Kalk macht hart, Kollagen macht elastisch – zusammen sind die Knochen fantastisch!“** und zum Versuch: **„Im Essig wird er weich, im Feuer bricht er gleich.“**"},
+    {bild:art(roehre(["fuge"])), titel:"Die Wachstumsfuge", text:"**„Wachstumsfuge offen – auf Zentimeter hoffen!“** – Solange die Fugen offen sind, wächst du noch."},
+    {bild:ICON.sprung, titel:"Starke Knochen", text:"**„Springen, laufen, Milch und Sonne – für die Knochen eine Wonne!“**"},
+    {bild:ICON.hilfe, titel:"Erste Hilfe", text:"**„Nicht bewegen, nicht einrenken – kühlen, polstern, an die 112 denken!“**"}
+  ]},
   stark: { titel:"Starke Knochen & Brüche", folien:[
     {bild:ICON.sprung, titel:"Belastung macht stark", text:"Knochen werden stärker, wenn sie **Stöße** abbekommen: Springen, Laufen, Ball- und Sprungsportarten, Tanzen. Auch Krafttraining hilft. Schwimmen und Radfahren sind super fürs Herz, belasten die Knochen aber wenig."},
     {bild:ICON.konto, titel:"Jetzt ist die beste Zeit", text:"In **Kindheit und Jugend** bauen sich Knochen am stärksten auf. Ihre größte Dichte erreichen sie mit etwa **25 bis 30 Jahren**. Was du jetzt tust, ist wie ein **Sparkonto** für dein ganzes Leben."},
@@ -328,7 +347,7 @@ LW.addGame("zeigen", (l, A, done, K) => {
   const T = K.T(), P = l.punkte || 1, Z = l.ziele, POOL = l.pool || Z, qs = l.mischen === false ? Z.slice() : K.shuffle(Z), res = [], hist = [], found = new Set();
   let i = 0, pts = 0, locked = false;
   const nameMode = l.modus === "name";
-  function fitFig(){ const s = A.querySelector(".zfig svg"); if(!s) return; const top = s.getBoundingClientRect().top; s.style.height = Math.max(260, Math.min(760, innerHeight - top - 18)) + "px"; }
+  function fitFig(){ const s = A.querySelector(".zfig svg"); if(!s) return; const top = s.getBoundingClientRect().top; s.style.height = Math.max(260, Math.min(760, innerHeight - top - 26)) + "px"; }
   function options(q){
     const near = (q.nah || []).map(id => POOL.find(b => b.id === id)).filter(Boolean).slice(0, 1);
     const rest = K.shuffle(POOL.filter(b => b.id !== q.id && !near.includes(b))).slice(0, 3 - near.length);
@@ -400,6 +419,21 @@ LW.start({
     { id:"werbinich", typ:"zeigen", bild:"skelett", modus:"name", lernen:"skelett", icon:"🔦", titel:"Wer leuchtet da?", art:"Benennen · 10 Knochen",
       anleitung:"Ein Knochen **leuchtet** im Röntgenbild. Wie heißt er? Tippe auf den richtigen Namen.",
       ziele: pick(["schulterblatt","rippen","brustbein","speiche","elle","hand","becken","kniescheibe","wadenbein","fuss"]), pool: BONES },
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 11 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies den Reim laut – dann merkst du ihn dir besser. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Stützen, schützen, sich bewegen, Blut erzeugen, Kalk ______.“", o:["anlegen","abgeben","zerlegen"], c:0, e:"„Kalk anlegen“ heißt: Knochen **speichern Kalzium**."},
+        {q:"„Schädel fürs Gehirn, ______ fürs Herz – die Wirbelsäule schützt das Mark, das ist kein Scherz.“", o:["Rippen","Wirbel","Elle"], c:0, e:"Die **Rippen** bilden mit dem Brustbein den Brustkorb um Herz und Lunge."},
+        {q:"„Die Elle führt zum Ellenbogen, zum Daumen ist die ______ gezogen.“", o:["Speiche","Elle","Rippe"], c:0, e:"Die **Speiche** liegt auf der Daumenseite, die Elle bildet die Spitze des Ellenbogens."},
+        {q:"„Dick und vorn – das ______ spürt den Tritt, dünn und außen – das Wadenbein läuft mit.“", o:["Schienbein","Wadenbein","Becken"], c:0, e:"Das **Schienbein** ist der dicke Knochen vorn/innen am Unterschenkel."},
+        {q:"„Zweihundertsechs Knochen hat der Große – beim ______ sind’s mehr, noch weich und lose.“", o:["Baby","Opa","Hund"], c:0, e:"Babys haben **über 300** Knochen und Knorpelteile, viele wachsen später zusammen."},
+        {q:"„Haut, dann Wand, dann ______ im Rohr – so stellst du dir den Knochen vor.“", o:["Mark","Kalk","Blut"], c:0, e:"Von außen nach innen: Knochenhaut, kompakter Knochen, Markhöhle mit **Knochenmark**."},
+        {q:"„Knochenhaut voll ______ fein – darum schmerzt das Schienbein so gemein!“", o:["Nerven","Fett","Knorpel"], c:0, e:"In der Knochenhaut liegen viele **Nerven** – darum tut ein Tritt ans Schienbein so weh."},
+        {q:"„______ macht hart, Kollagen macht elastisch – zusammen sind die Knochen fantastisch!“", o:["Kalk","Kollagen","Mark"], c:0, e:"**Kalk** (Kalzium) macht Knochen hart, Kollagen macht sie biegsam."},
+        {q:"„Im Essig wird er weich, im ______ bricht er gleich.“", o:["Feuer","Wasser","Kühlschrank"], c:0, e:"Im **Feuer** verbrennt das Kollagen – übrig bleibt spröder Kalk."},
+        {q:"„Springen, laufen, Milch und ______ – für die Knochen eine Wonne!“", o:["Sonne","Sofa","Chips"], c:0, e:"Mit **Sonne** bildet deine Haut Vitamin D – das hilft, Kalzium in die Knochen zu bringen."},
+        {q:"„Nicht bewegen, nicht einrenken – kühlen, polstern, an die ______ denken!“", o:["112","110","115"], c:0, e:"Die **112** ist der Notruf für Rettungsdienst und Feuerwehr (110 = Polizei)."}
+      ]},
     { id:"memory", typ:"memory", icon:"🧠", titel:"Knochen-Memory", art:"Memory · 8 Paare",
       anleitung:"Finde die Paare: **Knochen oder Bauteil + seine Aufgabe**. Jedes Paar = 1 Punkt.",
       paare:[
@@ -479,21 +513,18 @@ LW.start({
         {t:"Im Winter bildet deine Haut in Deutschland kaum Vitamin D.", r:"r", e:"Die Wintersonne ist zu schwach. Darum ist es gut, im Sommer viel draußen zu sein."}
       ]},
     { id:"booster", typ:"rush", lernen:"stark", icon:"💪", titel:"Knochen-Booster", art:"Speed-Game · 60 Sekunden",
-      anleitung:"Ist das gut für deine Knochen (**Booster**) oder schlecht (**Bremse**)? Ordne so schnell du kannst zu. **Ziel: 12 Treffer** in 60 Sekunden.",
-      zeit:60, ziel:12,
+      anleitung:"Gut für die Knochen = **Booster** (links), schlecht = **Bremse** (rechts). **Ziel: 12 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:12, fest:true,
       items:[
         {q:"Seilspringen", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Basketball spielen", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Joggen im Park", o:["💪 Booster","🛑 Bremse"], c:0},
-        {q:"Fußball im Verein", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Treppe statt Aufzug", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Tanzen", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Krafttraining mit sauberer Technik", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Ein Glas Milch", o:["💪 Booster","🛑 Bremse"], c:0},
-        {q:"Joghurt mit Obst", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Käsebrot", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Brokkoli", o:["💪 Booster","🛑 Bremse"], c:0},
-        {q:"Mineralwasser mit viel Kalzium", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Draußen in der Sonne spielen", o:["💪 Booster","🛑 Bremse"], c:0},
         {q:"Den ganzen Tag auf dem Sofa", o:["💪 Booster","🛑 Bremse"], c:1},
         {q:"Rauchen", o:["💪 Booster","🛑 Bremse"], c:1},
@@ -501,7 +532,10 @@ LW.start({
         {q:"Stundenlang zocken ohne Bewegung", o:["💪 Booster","🛑 Bremse"], c:1},
         {q:"Alkohol", o:["💪 Booster","🛑 Bremse"], c:1},
         {q:"Im Winter nur drinnen sein", o:["💪 Booster","🛑 Bremse"], c:1},
-        {q:"Mit dem Auto zur Schule statt zu Fuß", o:["💪 Booster","🛑 Bremse"], c:1}
+        {q:"Mit dem Auto zur Schule statt zu Fuß", o:["💪 Booster","🛑 Bremse"], c:1},
+        {q:"Jeden Weg mit dem E-Scooter", o:["💪 Booster","🛑 Bremse"], c:1},
+        {q:"Im Sportunterricht nur auf der Bank sitzen", o:["💪 Booster","🛑 Bremse"], c:1},
+        {q:"Ganzen Nachmittag Serien schauen", o:["💪 Booster","🛑 Bremse"], c:1}
       ]},
     { id:"sani", typ:"quiz", lernen:"stark", icon:"🚑", titel:"Sani-Einsatz", art:"Fälle lösen · 7 Einsätze",
       anleitung:"Du bist Schulsanitäter:in. Lies den Fall und entscheide. Jede richtige Antwort = **2 Punkte**.",
@@ -516,14 +550,14 @@ LW.start({
         {szene:"Leonie (14) will mit Krafttraining anfangen. Ihre Oma meint, das sei schlecht für die Knochen und mache die Wachstumsfugen kaputt.", q:"Was stimmt?", o:["Oma hat recht – erst ab 18","Altersgerecht und mit sauberer Technik ist es sicher und stärkt die Knochen","Nur Jungen dürfen Krafttraining machen","Nur mit sehr schweren Gewichten wirkt es"], c:1, e:"Mit Anleitung, sauberer Technik und passenden Gewichten (oder dem eigenen Körpergewicht) ist Krafttraining für Jugendliche sicher – und gut für Muskeln **und** Knochen."}
       ]},
     { id:"heilung", typ:"zeitstrahl", lernen:"stark", icon:"🩹", titel:"Ein Bruch heilt", art:"Ordnen · 6 Schritte",
-      anleitung:"Was passiert nach einem Knochenbruch? Tippe die Schritte in der richtigen Reihenfolge an – **der erste zuerst**. Jeder richtige Platz = 1 Punkt.",
+      anleitung:"Was passiert nach einem Bruch? Tippe die Schritte der Reihe nach an – **der erste zuerst**. Jeder richtige Platz = 1 Punkt.",
       items:[
-        {j:"Sekunden", t:"Der Knochen bricht, zum Beispiel bei einem Sturz.", e:"Am Anfang steht die Verletzung."},
-        {j:"Minuten bis Stunden", t:"Ein Bluterguss bildet sich, die Stelle schwillt an und tut weh.", e:"Aus verletzten Blutgefäßen fließt Blut ins Gewebe."},
-        {j:"Tag 1", t:"Im Krankenhaus wird geröntgt und der Bruch mit Gips oder Schiene ruhiggestellt.", e:"Ruhigstellen ist wichtig, damit die Teile richtig zusammenwachsen."},
-        {j:"ca. 1.–3. Woche", t:"Zellen bauen eine weiche Brücke aus neuem Gewebe zwischen den Bruchstücken (Kallus).", e:"Der Kallus ist zuerst noch weich."},
-        {j:"ca. 3.–6. Woche", t:"Kalk wird eingelagert, die Brücke wird hart – meist kann der Gips ab.", e:"Durch Kalzium wird der Kallus fest."},
-        {j:"Monate", t:"Der Knochen wird umgebaut und wieder so stark wie vorher – das Training langsam steigern.", e:"Der Umbau dauert lange. Wer zu früh voll belastet, riskiert eine neue Verletzung."}
+        {j:"Sekunden", t:"Der Knochen bricht – z. B. bei einem Sturz.", e:"Am Anfang steht die Verletzung."},
+        {j:"Minuten bis Stunden", t:"Ein Bluterguss bildet sich, die Stelle schwillt an.", e:"Aus verletzten Blutgefäßen fließt Blut ins Gewebe."},
+        {j:"Tag 1", t:"Röntgen im Krankenhaus, dann Gips oder Schiene.", e:"Ruhigstellen ist wichtig, damit die Teile richtig zusammenwachsen."},
+        {j:"ca. 1.–3. Woche", t:"Zellen bauen eine weiche Brücke (Kallus).", e:"Der Kallus ist zuerst noch weich."},
+        {j:"ca. 3.–6. Woche", t:"Kalk macht die Brücke hart – der Gips kann ab.", e:"Durch Kalzium wird der Kallus fest."},
+        {j:"Monate", t:"Umbau: Der Knochen wird wieder so stark wie vorher.", e:"Der Umbau dauert lange. Darum das Training langsam steigern – wer zu früh voll belastet, riskiert eine neue Verletzung."}
       ]},
     { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 9 Fragen",
       anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Achte auf die Rechtschreibung. Jede richtige Antwort = **1 Punkt**.",
