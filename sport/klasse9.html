@@ -24,8 +24,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 .drift img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
 .drift svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @media (prefers-reduced-motion: no-preference){
-  .drift{animation:drift 18s ease-in-out infinite alternate}
-  @keyframes drift{from{transform:scale(1)}to{transform:scale(1.035) translate(-.4%,.3%)}}
   .fly-out{animation:flyOut .55s cubic-bezier(.5,0,.9,.5) forwards}
   .fly-in{animation:flyIn .55s cubic-bezier(.1,.6,.3,1) .12s both}
   .back-out{animation:backOut .5s cubic-bezier(.5,0,.9,.5) forwards}
@@ -40,6 +38,9 @@ button{font:inherit;color:inherit;cursor:pointer}
   .fx .blink{animation:blink 1.6s steps(1) infinite}
   .fx .puff{animation:puff 5s linear infinite}
   .fx .tw{animation:tw 2.6s ease-in-out infinite}
+  .fx .gl{animation:gl 4s ease-in-out infinite}
+  .fx .cl{animation:cl 40s ease-in-out infinite alternate}
+  .fx .sunr{animation:sunr 7s ease-in-out infinite}
   .fx .fly{animation:ff 9s ease-in-out infinite}
   .veil .fog{animation:fog 9s ease-in-out infinite alternate}
   @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.8}}
@@ -48,6 +49,9 @@ button{font:inherit;color:inherit;cursor:pointer}
   @keyframes blink{0%,100%{opacity:0}50%{opacity:1}}
   @keyframes puff{0%{opacity:0;transform:translate(0,0) scale(.5)}15%{opacity:.5}100%{opacity:0;transform:translate(26px,-110px) scale(2.2)}}
   @keyframes tw{0%,100%{opacity:0}50%{opacity:.95}}
+  @keyframes gl{0%{opacity:0;transform:translateX(-14px) scaleX(.6)}50%{opacity:.9}100%{opacity:0;transform:translateX(14px) scaleX(1.2)}}
+  @keyframes cl{from{transform:translateX(-90px)}to{transform:translateX(90px)}}
+  @keyframes sunr{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:.9;transform:scale(1.1)}}
   @keyframes ff{0%,100%{opacity:0;transform:translate(0,0)}30%{opacity:.9}50%{transform:translate(18px,-22px)}70%{opacity:.7}}
   @keyframes fog{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
   .spot .pin{animation:pin 2.4s ease-in-out infinite}
@@ -55,8 +59,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 }
 .fx *{transform-box:fill-box;transform-origin:center}
 .fx .pulse,.fx .beat,.fx .flick{opacity:.55}
-.fx .puff,.fx .tw,.fx .fly,.fx .blink{opacity:0}
-@media (prefers-reduced-motion: reduce){ .fx .puff,.fx .tw,.fx .fly{display:none} .fx .blink{opacity:1} }
+.fx .puff,.fx .tw,.fx .gl,.fx .fly,.fx .blink{opacity:0}
+.fx .cl{opacity:.5}
+@media (prefers-reduced-motion: reduce){ .fx .puff,.fx .tw,.fx .gl,.fx .fly{display:none} .fx .blink{opacity:1} }
 
 /* Orte */
 .spot{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.3rem;background:none;border:0;padding:.4rem;z-index:2}
@@ -134,42 +139,42 @@ const ORTE = [
   { id:"herz", name:"Herz-Kraftwerk", icon:"❤️", einheit:"E1 · Herz-Kreislauf & Energie", x:965, y:262, veil:[165,115], offen:false,
     text:"Hier schlägt das Herz der Stadt: Es pumpt Blut und Sauerstoff durch alle Adern-Bahnen.",
     themen:[{t:"Herz, Lungen- & Körperkreislauf", i:"🫀"},{t:"Energiewege & Herzfrequenz-Zonen", i:"⚡"},{t:"Was meine Pulskurve verrät", i:"📈"},{t:"Ausdauer macht das Herz stark", i:"🏃"}],
-    fx:[["glow",830,350,250,"#FF5A3C","beat"],["smoke",440,165],["smoke",580,85],["sun",215,95],["flies",[60,620,1480,980],10]] },
+    fx:[["glow",830,350,250,"#FF5A3C","beat"],["smoke",440,165],["smoke",580,85],["sun",215,95],["clouds",85],["water",[0,125,330,200],8],["water",[950,115,1500,210],12],["flies",[60,620,1480,980],10]] },
   { id:"werft", name:"Skelett-Werft", icon:"🦴", einheit:"E2 · Bewegungsapparat & Verletzungen", x:585, y:655, veil:[0,0], offen:true,
     text:"In der Werft wird der Bewegungsapparat gebaut und repariert. Tippe auf ein Gebäude.",
     themen:[
       {t:"Knochen & Skelett", s:"Röntgen-Klinik", i:"🩻", pfad:"knochen.html", x:835, y:455, bild:"klinik",
         text:"In der Röntgen-Klinik schaust du durch die Haut: Skelett, Aufbau der Knochen und wie sie stark bleiben.",
-        fx:[["glow",860,410,150,"#5FE9FF","flick"],["glow",1150,500,60,"#5FE9FF","flick"],["sun",150,80],["water",[0,800,600,1000],10],["flies",[300,560,1500,980],8]]},
+        fx:[["glow",860,410,150,"#5FE9FF","flick"],["glow",1150,500,60,"#5FE9FF","flick"],["sun",150,80],["clouds",70],["water",[0,115,720,200],14],["water",[1000,115,1250,220],6],["water",[0,870,380,1000],8],["flies",[300,560,1500,980],8]]},
       {t:"Gelenke, Bänder, Sehnen & Knorpel", s:"Robo-Werkstatt", i:"🦾", pfad:"gelenke.html", x:1115, y:500, bild:"werkstatt",
         text:"In der Robo-Werkstatt wird ein Athlet gebaut: Gelenke als Scharniere und Kugellager, Bänder und Sehnen als Stahlseile.",
-        fx:[["sparks",[925,395,1025,475],14,"#FFF0A8"],["glow",975,432,60,"#FFE08A","flick"],["glow",860,520,240,"#FFA53C","pulse"],["smoke",765,90],["smoke",860,70],["smoke",945,125],["sun",190,95],["flies",[60,700,1480,1000],8]]},
+        fx:[["sparks",[925,395,1025,475],14,"#FFF0A8"],["glow",975,432,60,"#FFE08A","flick"],["glow",860,520,240,"#FFA53C","pulse"],["smoke",765,90],["smoke",860,70],["smoke",945,125],["sun",190,95],["clouds",85],["water",[0,125,700,180],12],["flies",[60,700,1480,1000],8]]},
       {t:"Sportverletzungen & ihre Ursachen", s:"Flutlicht-Stadion", i:"🏟️", x:810, y:235, veil:[170,105], bild:"stadion",
         text:"Im Stadion passiert’s: Umknicken, Zerrung, Prellung. Hier ermittelst du, was verletzt ist und warum.",
-        fx:[["glow",635,180,80,"#FFF3C4","flick"],["glow",980,170,80,"#FFF3C4","flick"],["glow",520,235,70,"#FFF3C4","flick"],["glow",1065,240,70,"#FFF3C4","flick"],["smoke",1362,255],["sun",172,75],["water",[0,820,420,1000],8]]},
+        fx:[["glow",635,180,80,"#FFF3C4","flick"],["glow",980,170,80,"#FFF3C4","flick"],["glow",520,235,70,"#FFF3C4","flick"],["glow",1065,240,70,"#FFF3C4","flick"],["smoke",1362,255],["sun",172,75],["clouds",65],["water",[0,110,480,250],12],["water",[1090,105,1500,170],8],["water",[0,820,420,1000],8]]},
       {t:"Erste Hilfe & Vorbeugen", s:"Bergwacht-Station", i:"🚁", x:1320, y:265, veil:[180,125], bild:"bergwacht",
         text:"Die Bergwacht ist zur Stelle: Erste Hilfe bei Sportverletzungen und wie du mit Aufwärmen vorbeugst.",
-        fx:[["blink",893,35],["blink",925,80],["glow",1070,430,130,"#FFC65A","pulse"],["glow",180,520,60,"#FFF3C4","flick"],["glow",300,485,60,"#FFF3C4","flick"],["sun",195,95],["flies",[60,600,1480,1000],8]]} ],
+        fx:[["blink",893,35],["blink",925,80],["glow",1070,430,130,"#FFC65A","pulse"],["glow",180,520,60,"#FFF3C4","flick"],["glow",300,485,60,"#FFF3C4","flick"],["sun",195,95],["clouds",80],["water",[0,125,420,250],12],["water",[1180,135,1500,220],8],["flies",[60,600,1480,1000],8]]} ],
     fx:[["glow",832,470,70,"#5FE9FF","flick"],["glow",1110,520,110,"#FFA53C","pulse"],["sparks",[1040,470,1190,590],9,"#FFE08A"],["smoke",975,325],["smoke",1080,315],
-        ["blink",1356,100],["sun",172,70],["water",[40,780,700,990],12],["flies",[200,300,1450,700],8]] },
+        ["blink",1356,100],["sun",172,70],["clouds",60],["water",[0,110,520,230],10],["water",[40,780,700,990],12],["flies",[200,300,1450,700],8]] },
   { id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", einheit:"E3 · Training & Fitness", x:590, y:195, veil:[200,95], offen:false,
     text:"Im Fitnesscenter wird trainiert: Belastung, Erholung und der eigene Trainingsplan.",
     themen:[{t:"Was ist Training? – Fitness messen", i:"⏱️"},{t:"Superkompensation", i:"📊"},{t:"Trainingsprinzipien & -methoden", i:"🧩"},{t:"Mein Trainingsplan", i:"📝"},{t:"Hat mein Training gewirkt?", i:"🔁"}],
-    fx:[["glow",810,520,260,"#FFC65A","pulse"],["sun",228,85],["flies",[60,560,1480,980],10]] },
+    fx:[["glow",810,520,260,"#FFC65A","pulse"],["sun",228,85],["clouds",80],["water",[0,125,250,400],10],["water",[320,112,900,165],8],["flies",[60,560,1480,980],10]] },
   { id:"markt", name:"Markthalle", icon:"🍎", einheit:"E4 · Ernährung", x:880, y:378, veil:[140,80], offen:false,
     text:"In der Markthalle gibt es alles, was ein Sportlerkörper braucht: Energie, Nährstoffe, Wasser.",
     themen:[{t:"Energie: Was mein Körper verbraucht", i:"⚡"},{t:"Nährstoffe – was steckt im Essen?", i:"🥗"},{t:"Trinken – Wasser für Leistung", i:"💧"},{t:"Essen rund ums Training", i:"🍝"},{t:"Meine Ernährungsanalyse", i:"📋"}],
-    fx:[["glow",800,330,280,"#FFC65A","pulse"],["sparks",[620,540,760,640],8,"#CFF3FF"],["sparks",[1210,560,1300,620],4,"#CFF3FF"],["sparks",[230,440,320,500],4,"#CFF3FF"],["flies",[60,700,1480,1000],8]] },
+    fx:[["glow",800,330,280,"#FFC65A","pulse"],["sparks",[620,540,760,640],8,"#CFF3FF"],["sparks",[1210,560,1300,620],4,"#CFF3FF"],["sparks",[230,440,320,500],4,"#CFF3FF"],["sun",165,68],["clouds",60],["water",[0,100,330,165],8],["water",[1020,95,1500,185],10],["flies",[60,700,1480,1000],8]] },
   { id:"labor", name:"Doping-Labor", icon:"🧪", einheit:"E5 · Doping", x:612, y:452, veil:[100,85], offen:false,
     text:"In der dunklen Seitengasse wird getrickst. Was ist Doping, und warum ist es so gefährlich?",
     themen:[{t:"Was ist Doping?", i:"❓"},{t:"Wirkung & Risiken", i:"⚠️"},{t:"Kontrollen, Fair Play & Grauzonen", i:"🔍"},{t:"Debatte: Doping freigeben?", i:"🗣️"}],
-    fx:[["glow",705,330,90,"#8CFF4A","pulse"],["glow",800,340,60,"#D56BFF","pulse"],["glow",880,600,130,"#8CFF4A","flick"],["smoke",890,235],["sun",185,88]] },
+    fx:[["glow",705,330,90,"#8CFF4A","pulse"],["glow",800,340,60,"#D56BFF","pulse"],["glow",880,600,130,"#8CFF4A","flick"],["smoke",890,235],["sun",185,88],["clouds",80],["water",[0,125,600,200],12],["water",[0,200,190,320],6]] },
   { id:"gehirn", name:"Gehirn-Arena", icon:"🧠", einheit:"E6 · Emotionen, Fair Play & Sinn", x:1075, y:128, veil:[120,95], offen:false,
     text:"In der Arena im Kopf geht es um Gefühle im Sport, Fair Play und die Frage: Warum treibe ich Sport?",
     themen:[{t:"Wettkampf & Fair Play", i:"🤝"},{t:"Emotionen im Sport", i:"😤"},{t:"Emotionen steuern & Mut", i:"🧘"},{t:"Warum treiben wir Sport?", i:"🧭"},{t:"Meine Sport-Biografie & Motive", i:"📖"}],
-    fx:[["glow",835,300,260,"#FF9EC4","pulse"],["glow",590,185,90,"#FFF3C4","flick"],["glow",1065,178,90,"#FFF3C4","flick"],["sun",128,178],["flies",[60,620,1480,980],10]] }
+    fx:[["glow",835,300,260,"#FF9EC4","pulse"],["glow",590,185,90,"#FFF3C4","flick"],["glow",1065,178,90,"#FFF3C4","flick"],["sun",128,178],["clouds",150],["water",[0,215,280,330],8],["water",[1190,235,1520,330],8],["water",[1390,330,1520,700],8],["flies",[60,620,1480,980],10]] }
 ];
-const STADT_FX = [["sun",228,88],["glow",955,255,95,"#FF5A3C","beat"],["glow",1075,80,85,"#FF9EC4","pulse"],["glow",655,400,55,"#8CFF4A","pulse"],["glow",520,665,42,"#5FE9FF","flick"],
+const STADT_FX = [["sun",228,88],["clouds",45],["water",[40,120,420,280],10],["water",[900,880,1500,1010],8],["water",[1250,480,1520,700],8],["glow",955,255,95,"#FF5A3C","beat"],["glow",1075,80,85,"#FF9EC4","pulse"],["glow",655,400,55,"#8CFF4A","pulse"],["glow",520,665,42,"#5FE9FF","flick"],
   ["glow",650,650,60,"#FFA53C","pulse"],["smoke",868,148],["smoke",905,190],["blink",1196,468],["glow",930,540,80,"#FFF3C4","flick"],
   ["water",[20,300,330,560],8],["water",[1180,180,1520,420],8],["water",[330,930,900,1010],6],["flies",[420,150,1300,900],12]];
 
@@ -183,11 +188,13 @@ function fxSVG(list, veils){
   const grad = (col, o=1) => { const id = "g" + (++gid); defs += `<radialGradient id="${id}"><stop offset="0" stop-color="${col}" stop-opacity="${o}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`; return id; };
   list.forEach(f => { const k = f[0];
     if(k === "glow") out += `<circle class="${f[5]}" cx="${f[1]}" cy="${f[2]}" r="${f[3]}" fill="url(#${grad(f[4],.9)})"/>`;
-    if(k === "sun") out += `<circle class="pulse" cx="${f[1]}" cy="${f[2]}" r="150" fill="url(#${grad("#FFD9A0",.8)})" style="animation-duration:6s"/>`;
+    if(k === "sun"){ out += `<circle class="sunr" cx="${f[1]}" cy="${f[2]}" r="170" fill="url(#${grad("#FFD9A0",.85)})"/><circle class="sunr" cx="${f[1]}" cy="${f[2]}" r="60" fill="url(#${grad("#FFF4D6",.9)})" style="animation-duration:4s"/>`;
+      for(let i=0;i<9;i++) out += `<ellipse class="gl" cx="${(f[1]+rnd(-30,30)).toFixed(0)}" cy="${(f[2]+24+i*17+rnd(-4,4)).toFixed(0)}" rx="${rnd(14,34).toFixed(0)}" ry="2.6" fill="#FFE2B0" style="animation-delay:${rnd(0,4).toFixed(2)}s;animation-duration:${rnd(2.6,4.2).toFixed(2)}s"/>`; }
+    if(k === "clouds") for(let i=0;i<5;i++) out += `<ellipse class="cl" cx="${rnd(150,1400).toFixed(0)}" cy="${rnd(14,f[1]).toFixed(0)}" rx="${rnd(120,230).toFixed(0)}" ry="${rnd(14,26).toFixed(0)}" fill="url(#${grad(i%2?"#FFB8C8":"#C9A6FF",.55)})" style="animation-duration:${rnd(30,55).toFixed(0)}s;animation-delay:-${rnd(0,30).toFixed(0)}s"/>`;
     if(k === "smoke") for(let i=0;i<4;i++) out += `<circle class="puff" cx="${f[1]}" cy="${f[2]}" r="18" fill="url(#${grad("#FFFFFF",.75)})" style="animation-delay:${(i*1.25).toFixed(2)}s"/>`;
     if(k === "blink") out += `<circle class="blink" cx="${f[1]}" cy="${f[2]}" r="7" fill="#FF3B3B"/><circle class="blink" cx="${f[1]}" cy="${f[2]}" r="26" fill="url(#${grad("#FF3B3B",.8)})"/>`;
     if(k === "sparks") for(let i=0;i<f[2];i++) out += `<circle class="tw" cx="${rnd(f[1][0],f[1][2]).toFixed(0)}" cy="${rnd(f[1][1],f[1][3]).toFixed(0)}" r="${rnd(2,4.5).toFixed(1)}" fill="${f[3]}" style="animation-delay:${rnd(0,2.6).toFixed(2)}s;animation-duration:${rnd(.7,1.6).toFixed(2)}s"/>`;
-    if(k === "water") for(let i=0;i<f[2];i++) out += `<ellipse class="tw" cx="${rnd(f[1][0],f[1][2]).toFixed(0)}" cy="${rnd(f[1][1],f[1][3]).toFixed(0)}" rx="${rnd(8,18).toFixed(0)}" ry="2.2" fill="#FFE9C9" style="animation-delay:${rnd(0,4).toFixed(2)}s;animation-duration:${rnd(2.4,4.5).toFixed(2)}s"/>`;
+    if(k === "water") for(let i=0;i<f[2];i++) out += `<ellipse class="gl" cx="${rnd(f[1][0],f[1][2]).toFixed(0)}" cy="${rnd(f[1][1],f[1][3]).toFixed(0)}" rx="${rnd(9,22).toFixed(0)}" ry="2.2" fill="#FFE9C9" style="animation-delay:${rnd(0,4).toFixed(2)}s;animation-duration:${rnd(2.4,4.5).toFixed(2)}s"/>`;
     if(k === "flies") for(let i=0;i<f[2];i++) out += `<circle class="fly" cx="${rnd(f[1][0],f[1][2]).toFixed(0)}" cy="${rnd(f[1][1],f[1][3]).toFixed(0)}" r="3" fill="#FFF2B0" style="animation-delay:${rnd(0,9).toFixed(2)}s;animation-duration:${rnd(6,11).toFixed(2)}s"/>`;
   });
   let v = "";
