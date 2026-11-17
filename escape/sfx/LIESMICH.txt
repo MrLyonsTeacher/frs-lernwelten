@@ -1,0 +1,1 @@
+Optionale Atmosphären-Aufnahmen der Escape Rooms: <raum>-amb.mp3 (vulkan, wrack, bibliothek, woodlands). In sound.js unter FILES freischalten.

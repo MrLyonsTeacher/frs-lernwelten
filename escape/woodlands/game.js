@@ -84,10 +84,11 @@ function img(i){return '<img alt="" src="'+shapeURL(i)+'">'}
 const AU={ctx:null,on:false};
 function initAudio(){
   if(AU.ctx){if(AU.ctx.resume)AU.ctx.resume();return}
-  try{const C=window.AudioContext||window.webkitAudioContext;if(C)AU.ctx=new C()}catch(e){}
+  try{const C=window.AudioContext||window.webkitAudioContext;if(C){AU.ctx=new C();window.__snd=window.FRSSound?FRSSound(AU,{room:'woodlands',phase:()=>G.phase,progress:()=>progress()}):null;}}catch(e){}
 }
 function beep(f,d,type,v){
   if(!AU.ctx||!AU.on)return;
+  if(window.__snd){try{window.__snd.beep(f,d,type,v)}catch(e){}return}
   try{
     const o=AU.ctx.createOscillator(),g=AU.ctx.createGain(),t=AU.ctx.currentTime;
     o.type=type||'sine';o.frequency.value=f;

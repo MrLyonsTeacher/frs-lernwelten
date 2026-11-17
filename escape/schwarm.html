@@ -253,6 +253,7 @@ input[type=text]{flex:1 1 180px;min-width:0;min-height:48px;padding:0 14px;borde
 
 <script src="config.js"></script>
 <script src="net.js"></script>
+<script src="sound.js"></script>
 <script src="pool.js"></script>
 <script>
 (function(){
@@ -419,11 +420,12 @@ function initAudio(){
     const src=AU.ctx.createBufferSource();src.buffer=buf;src.loop=true;
     const lp=AU.ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=140;
     AU.gain=AU.ctx.createGain();AU.gain.gain.value=0;
-    src.connect(lp);lp.connect(AU.gain);AU.gain.connect(AU.ctx.destination);src.start();sfxInit();
+    src.connect(lp);lp.connect(AU.gain);AU.gain.connect(AU.ctx.destination);src.start();sfxInit();window.__snd=window.FRSSound?FRSSound(AU,{room:'schwarm',phase:()=>G.phase,progress:()=>progress()}):null;
   }catch(e){AU.ctx=null}
 }
 function beep(f,d,type,v){
   if(!AU.ctx||!AU.on)return;
+  if(window.__snd){try{window.__snd.beep(f,d,type,v)}catch(e){}return}
   try{
     const o=AU.ctx.createOscillator(),g=AU.ctx.createGain(),t=AU.ctx.currentTime;
     o.type=type||'sine';o.frequency.value=f;
