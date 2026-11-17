@@ -4,7 +4,7 @@
 // Optionale Aufnahmen: Datei als escape/sfx/<raum>-amb.mp3 ablegen und den Raum unten in FILES eintragen.
 (function(root){
 'use strict';
-const FILES={vulkan:false,wrack:false,bibliothek:false,woodlands:false};
+const FILES={vulkan:true,wrack:true,bibliothek:true,woodlands:true};
 root.FRSSound=function(AU,o){
   const a=AU.ctx;if(!a)return null;
   const S={amb:null,next:0};
@@ -34,7 +34,7 @@ root.FRSSound=function(AU,o){
   /* Atmosphäre je Raum */
   function stopAmb(){if(!S.amb)return;const x=S.amb;x.g.gain.setTargetAtTime(0,a.currentTime,.7);setTimeout(()=>x.nodes.forEach(n=>{try{n.stop()}catch(e){}}),3500);S.amb=null}
   function startAmb(){if(S.amb)return;const t=a.currentTime,g=a.createGain(),nodes=[];g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+3);send(g,1,.25);S.amb={g:g,nodes:nodes};
-    if(S.file){const s=a.createBufferSource();s.buffer=S.file;s.loop=true;s.loopStart=.06;s.loopEnd=S.file.duration-.06;const v=a.createGain();v.gain.value=.7;s.connect(v);v.connect(g);s.start(t,.06);nodes.push(s);S.amb.file=true;return}
+    if(S.file){const s=a.createBufferSource();s.buffer=S.file;s.loop=true;s.loopStart=.06;s.loopEnd=S.file.duration-.06;const v=a.createGain();v.gain.value=1.8;s.connect(v);v.connect(g);s.start(t,.06);nodes.push(s);S.amb.file=true;return}
     const lfo=(rate,depth,target)=>{const os=a.createOscillator(),d=a.createGain();os.frequency.value=rate;d.gain.value=depth;os.connect(d);d.connect(target);os.start();nodes.push(os)};
     const band=(fc,q,v,lr,ld,b)=>{const n=noise(b!==false),bp=a.createBiquadFilter(),vg=a.createGain();bp.type='bandpass';bp.frequency.value=fc;bp.Q.value=q;vg.gain.value=v;n.connect(bp);bp.connect(vg);vg.connect(g);n.start();nodes.push(n);if(lr){lfo(lr,ld,bp.frequency);lfo(lr*.7,v*.5,vg.gain)}};
     const drone=(f,ty,v,lp)=>{const os=a.createOscillator(),fl=a.createBiquadFilter(),vg=a.createGain();os.type=ty;os.frequency.value=f;fl.type='lowpass';fl.frequency.value=lp||400;vg.gain.value=v;os.connect(fl);fl.connect(vg);vg.connect(g);os.start();nodes.push(os)};

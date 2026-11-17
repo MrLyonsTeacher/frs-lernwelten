@@ -618,6 +618,7 @@ function drawAnchored(dt,t){
 /* ---------- Klangwelt: Hall, Atmosphären je Planet, Schwarm-Summen, Lichtsprung ---------- */
 /* Optionale Klangdateien (z. B. von ElevenLabs oder Pixabay): Namen hier eintragen, Dateien als schwarm/assets/sfx-<name>.mp3 ablegen.
    Mögliche Namen: warp, portal, amb-mars, amb-europa, amb-saturn, amb-titan, amb-neptun, amb-tor, swarm. Fehlt eine Datei, wird synthetisiert. */
+const WARP_PEAK=.95;
 const SFX_FILES=['warp','portal','swarm','amb-mars','amb-europa','amb-saturn','amb-titan','amb-neptun','amb-tor'];
 const SFX={bus:null,rev:null,noise:null,amb:null,ambKey:null,swarm:null,buf:{},next:0};
 function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
@@ -673,8 +674,8 @@ function sfxTick(){if(!AU.ctx||!SFX.bus)return;const a=AU.ctx,on=AU.on&&G.phase=
 setInterval(sfxTick,300);
 /* Lichtsprung: Aufladen, Rauschen, Knall beim Blitz, glitzernder Nachhall */
 function sfxWarp(lead){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();
-  if(SFX.buf.warp){/* der Knall in der Aufnahme liegt bei 3,1 s und soll genau mit dem weißen Blitz zusammenfallen */
-    const d=(lead||1.95)-3.1,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf.warp;g.gain.value=.95;s.connect(g);send(g,1,.12);if(d>=0)s.start(t+d);else s.start(t,-d);return}
+  if(SFX.buf.warp){/* der Höhepunkt der Aufnahme (bei 0,95 s) soll genau mit dem weißen Blitz zusammenfallen */
+    const d=(lead||1.95)-WARP_PEAK,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf.warp;g.gain.value=.95;s.connect(g);send(g,1,.12);if(d>=0)s.start(t+d);else s.start(t,-d);return}
   const o=a.createOscillator(),lp=a.createBiquadFilter(),g=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(880,t+1.85);lp.type='lowpass';lp.frequency.setValueAtTime(300,t);lp.frequency.exponentialRampToValueAtTime(5000,t+1.85);lp.Q.value=6;env(g,t,1.7,.16,.1,.2);o.connect(lp);lp.connect(g);send(g,1,.3);o.start(t);o.stop(t+2.2);
   const n=noiseSrc(),bp=a.createBiquadFilter(),ng=a.createGain();bp.type='bandpass';bp.Q.value=1.1;bp.frequency.setValueAtTime(150,t);bp.frequency.exponentialRampToValueAtTime(3500,t+1.9);bp.frequency.exponentialRampToValueAtTime(220,t+3.6);env(ng,t,1.8,.45,.15,1.6);n.connect(bp);bp.connect(ng);send(ng,1,.25);n.start(t);n.stop(t+4);
   const tb=t+1.95,b=a.createOscillator(),bg=a.createGain();b.type='sine';b.frequency.setValueAtTime(120,tb);b.frequency.exponentialRampToValueAtTime(26,tb+1.3);env(bg,tb,.005,.9,.05,1.4);b.connect(bg);send(bg,1,.5);b.start(tb);b.stop(tb+1.6);
