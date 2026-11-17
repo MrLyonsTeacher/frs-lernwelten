@@ -91,20 +91,24 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fade{position:fixed;inset:0;background:var(--night);opacity:0;pointer-events:none;transition:opacity .35s;z-index:20}
 .fade.on{opacity:1}
 
-/* Hochformat (Handy): Bild oben, Orte als Liste darunter */
+/* Hochformat (Handy): Bild füllt den oberen Teil (seitlich verschiebbar), unten eine feste Leiste mit Orten bzw. Aufgaben */
 @media (orientation:portrait){
-  body{overflow:auto}
-  .stage{position:relative;inset:auto;height:auto;min-height:100%;padding-top:var(--top)}
-  .frame{position:relative;inset:auto;width:100vw;height:66.667vw}
-  .pan{width:100vw;height:66.667vw}
-  .frame[hidden]{display:none}
+  :root{ --pnl:min(30svh, 230px); }
+  .stage{inset:var(--top) 0 var(--pnl) 0}
+  .pan{width:max(100vw, calc((100svh - var(--top) - var(--pnl)) * 1.5));height:max(66.667vw, calc(100svh - var(--top) - var(--pnl)))}
   .spot .lbl{display:none} .spot .pin{width:30px;height:30px;font-size:.9rem;border-width:2px} .spot{padding:.1rem}
-  .top{position:fixed;background:var(--night)} .top .sub{display:none}
-  .dock{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:.7rem}
-  .dock[hidden]{display:none}
-  .dock .th{margin:0}
-  .card{position:relative;left:auto;bottom:auto;width:auto;margin:.7rem;backdrop-filter:none}
-  .toast{bottom:8%;white-space:normal;width:max-content;max-width:92vw;text-align:center;border-radius:16px}
+  .top{background:var(--night)} .top .sub{display:none}
+  /* feste untere Leiste: bleibt beim Hineinfliegen stehen, nur der Inhalt wechselt */
+  body{background:var(--night)} .stage{border-bottom:1px solid rgba(255,255,255,.14)}
+  .dock,.card{position:fixed;left:0;right:0;bottom:0;width:auto;height:var(--pnl);margin:0;overflow-y:auto;z-index:4;
+    background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:.5rem .6rem calc(.5rem + env(safe-area-inset-bottom))}
+  .dock{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;align-content:start}
+  .dock[hidden],.card[hidden]{display:none}
+  .th{min-height:40px;padding:.3rem .5rem;margin-top:.3rem;gap:.45rem;border-radius:10px}
+  .dock .th{margin:0} .dock .th span.s{display:none}
+  .th .i{font-size:1.1rem;width:1.4rem} .th b{font-size:.88rem} .th span.s{font-size:.72rem}
+  .card h2{font-size:1.25rem} .card .e{font-size:.78rem;margin-bottom:.2rem} .card p{font-size:.85rem;margin:.1rem 0 .3rem}
+  .toast{bottom:calc(var(--pnl) + .6rem);white-space:normal;width:max-content;max-width:92vw;text-align:center;border-radius:16px}
 }
 
 /* Leuchtturm-Lichtkegel */

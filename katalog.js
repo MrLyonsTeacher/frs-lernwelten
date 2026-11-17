@@ -182,14 +182,14 @@ const FRS = {
   sport: { welten: [
     { k:8, name:"Camp Start", pfad:"sport/klasse8.html", bild:"sport/welt8/vorschau.jpg", info:"Klasse 8 · Profil Sport",
       orte:[ {id:"feuer", name:"Lagerfeuer", icon:"🔥", e:"T1 Was ist Sport?", offen:true}, {id:"spielfeld", name:"Schiri-Turm", icon:"🧑‍⚖️", e:"T5 Spielregeln & Fairness", offen:true, themen:["bb2"]},
-             {id:"wiese", name:"Sonnen-Wiese", icon:"🌅", e:"T3 Aufwärmen & Stretching"}, {id:"muehle", name:"Muskel-Mühle", icon:"⚙️", e:"T4 Muskeln & Gegenspieler"},
-             {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"T2 Motorische Fähigkeiten"}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"T6 Fair Play & Emotionen"},
-             {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio"} ] },
+             {id:"wiese", name:"Sonnen-Wiese", icon:"🌅", e:"T3 Aufwärmen & Stretching", offen:true}, {id:"muehle", name:"Muskel-Mühle", icon:"⚙️", e:"T4 Muskeln & Gegenspieler", offen:true},
+             {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"T2 Motorische Fähigkeiten", offen:true}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"T6 Fair Play & Emotionen", offen:true},
+             {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio", offen:true} ] },
     { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
-      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie"}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
-             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen", themen:["eh9"]},
-             {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness"}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung"},
-             {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping"}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn"} ] }
+      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie", offen:true}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
+             {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", offen:true, themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen", offen:true, themen:["eh9"]},
+             {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness", offen:true}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung", offen:true},
+             {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping", offen:true}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn", offen:true} ] }
   ]},
 
   // Fächer ohne Inseln: einfache Liste
