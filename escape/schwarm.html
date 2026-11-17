@@ -448,7 +448,7 @@ const PL={
   tor:{name:'Pluto',sub:'Das uralte Sprungtor',fx:'portal'}
 };
 const ROUTE={short:['mars','europa','saturn'],long:['mars','europa','saturn','titan','neptun'],test:['mars']};
-const PORTAL_IMG={u:.498,v:.4316,r:.1787};
+
 function roomIdx(){const m=MODES[G.mode]||MODES.short,r=m.roomOf[G.ci];return Math.max(0,r)}
 function roomFrac(){const m=MODES[G.mode]||MODES.short,r=m.roomOf[G.ci];if(r<0)return 0;let n=0,f=0;m.roomOf.forEach((q,i)=>{if(q===r){n++;if(G.found[i])f++}});return n?f/n:0}
 function sameRoomNext(k){const m=MODES[G.mode]||MODES.short;return m.roomOf[k+1]>=0&&m.roomOf[k+1]===m.roomOf[k]}
@@ -481,7 +481,42 @@ async function setStation(key,showBanner){
   if(showBanner)banner(PL[key].name.toUpperCase(),PL[key].sub);
 }
 function banner(t,s){const b=$('#banner');b.querySelector('.t').textContent=t;b.querySelector('.s').textContent=s;b.classList.remove('show');void b.offsetWidth;b.classList.add('show')}
-function portalGeom(){if(curImg&&curKey==='tor'){const iw=curImg.naturalWidth,ih=curImg.naturalHeight,sc=Math.max(W/iw,H/ih),dw=iw*sc,dh=ih*sc,ox=(W-dw)/2,oy=(H-dh)/2;return {x:ox+PORTAL_IMG.u*dw,y:oy+PORTAL_IMG.v*dh,r:PORTAL_IMG.r*dh}}const m=Math.min(W,H);return {x:W*.5,y:H*.46,r:m*.21}}
+function portalGeom(){const m=gateMap();if(m&&curKey==='tor')return {x:m.ox+GATE.u*m.iw*m.sc,y:m.oy+GATE.v*m.ih*m.sc,r:GATE.r*m.ih*m.sc,m:m};const q=Math.min(W,H);return {x:W*.5,y:H*.46,r:q*.21,m:null}}
+
+/* Sprungtor: Effekt genau auf die Öffnung im Bild zugeschnitten */
+const GATE={u:759.5/1536,v:460.1/1024,r:179.3/1024,lx:500,ly:220};
+const GATE_LIGHTS=new Image();GATE_LIGHTS.src=ASSET+'gate-lights.png';
+function gateMap(){if(!curImg)return null;const iw=curImg.naturalWidth,ih=curImg.naturalHeight,sc=Math.max(W/iw,H/ih);return {sc:sc,iw:iw,ih:ih,ox:(W-iw*sc)/2,oy:(H-ih*sc)/2}}
+function drawPortal(c,t,pw,parts,k){
+  const g=portalGeom(),x=g.x,y=g.y,r=g.r,m=g.m;let gr;
+  c.save();c.beginPath();c.arc(x,y,r*.985,0,7);c.clip();
+  // Membran
+  gr=c.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(230,220,255,'+(.08+pw*.55)+')');gr.addColorStop(.45,'rgba(120,90,255,'+(.10+pw*.4)+')');gr.addColorStop(.85,'rgba(40,110,255,'+(.08+pw*.3)+')');gr.addColorStop(1,'rgba(170,140,255,'+(.3+pw*.5)+')');
+  c.fillStyle=gr;c.fillRect(x-r,y-r,2*r,2*r);c.globalCompositeOperation='lighter';
+  // Wellen, die nach innen laufen
+  for(let i=0;i<6;i++){const f=1-((t*.00012*(1+pw*2)+i/6)%1);c.strokeStyle='rgba(190,170,255,'+((.05+pw*.18)*Math.sin(f*Math.PI))+')';c.lineWidth=r*.03;c.beginPath();c.arc(x,y,r*f*.98,0,7);c.stroke()}
+  // Spiralarme
+  const arms=4,rot=t*.0006*(1+pw*3);
+  for(let a=0;a<arms;a++)for(let s=0;s<36;s++){const q=s/36,ang=rot+a*Math.PI*2/arms+q*4.2,rr=r*(.08+q*.9);c.fillStyle='rgba('+(a%2?'120,220,255':'200,160,255')+','+((.03+pw*.15)*(1-q*.6))+')';c.beginPath();c.arc(x+Math.cos(ang)*rr,y+Math.sin(ang)*rr,r*(.03+.07*q),0,7);c.fill()}
+  // Kern
+  gr=c.createRadialGradient(x,y,0,x,y,r*.38);gr.addColorStop(0,'rgba(255,255,255,'+(.1+pw*.7)+')');gr.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=gr;c.fillRect(x-r,y-r,2*r,2*r);
+  // Teilchen, die eingesogen werden
+  for(const p of parts){p.a+=p.v*(1+pw*3)*k;p.d-=.0025*(1+pw*4)*k;if(p.d<.12){p.d=.95+Math.random()*.1;p.a=Math.random()*6.283}
+    c.fillStyle='rgba(220,200,255,'+Math.min(1,p.d*1.2)*(.4+pw*.6)+')';c.beginPath();c.arc(x+Math.cos(p.a)*r*p.d,y+Math.sin(p.a)*r*p.d,p.r*(.5+p.d*.6),0,7);c.fill()}
+  // Innenkante (Ereignishorizont)
+  gr=c.createRadialGradient(x,y,r*.8,x,y,r*.99);gr.addColorStop(0,'rgba(160,130,255,0)');gr.addColorStop(1,'rgba(225,205,255,'+(.1+pw*.7+.08*Math.sin(t*.004))+')');c.fillStyle=gr;c.fillRect(x-r,y-r,2*r,2*r);
+  // Blitze bei voller Energie
+  if(pw>.8){c.strokeStyle='rgba(235,225,255,.85)';c.lineWidth=1.6;for(let n=0;n<2;n++){if(Math.random()>.35)continue;const a0=Math.random()*6.283;let px=x+Math.cos(a0)*r,py=y+Math.sin(a0)*r;c.beginPath();c.moveTo(px,py);for(let s=1;s<=8;s++){const f=1-s/8;px=x+Math.cos(a0+(Math.random()-.5)*.5)*r*f;py=y+Math.sin(a0+(Math.random()-.5)*.5)*r*f;c.lineTo(px,py)}c.stroke()}}
+  c.restore();
+  // Lichter am Ring: pulsieren und Lauflicht
+  if(m&&GATE_LIGHTS.complete&&GATE_LIGHTS.naturalWidth){const lx=m.ox+GATE.lx*m.sc,ly=m.oy+GATE.ly*m.sc,lw=GATE_LIGHTS.naturalWidth*m.sc,lh=GATE_LIGHTS.naturalHeight*m.sc;
+    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=Math.min(1,.2+pw*.6+.15*Math.sin(t*.003));c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);
+    const sa=t*.0015*(1+pw*2);c.beginPath();c.moveTo(x,y);c.arc(x,y,r*1.7,sa,sa+.8);c.closePath();c.clip();c.globalAlpha=.7+pw*.3;c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.restore()}
+  // Außenglühen und Spiegelung auf dem Eis
+  c.save();c.globalCompositeOperation='lighter';
+  gr=c.createRadialGradient(x,y,r*.95,x,y,r*1.55);gr.addColorStop(0,'rgba(150,120,255,'+(.05+pw*.22)+')');gr.addColorStop(1,'rgba(150,120,255,0)');c.fillStyle=gr;c.beginPath();c.arc(x,y,r*1.55,0,7);c.arc(x,y,r*.97,0,7,true);c.fill();
+  c.translate(x,y+r*1.15);c.scale(1,.16);gr=c.createRadialGradient(0,0,0,0,0,r*1.4);gr.addColorStop(0,'rgba(170,140,255,'+(.04+pw*.3)+')');gr.addColorStop(1,'rgba(170,140,255,0)');c.fillStyle=gr;c.beginPath();c.arc(0,0,r*1.4,0,7);c.fill();c.restore();
+}
 
 /* Wetter und Effekte je Planet */
 const FX={type:null,parts:[],extra:[],t:0,swarm:[],portalPower:.35};
@@ -492,10 +527,10 @@ function newPart(type,init){const p={x:Math.random()*W,y:Math.random()*H,s:Math.
     case 'rings':p.r=1.5+p.s*p.s*7;p.vx=(.08+p.s*.45)*(Math.random()<.5?-1:1);p.vy=(Math.random()-.5)*.1;p.rot=Math.random()*6;p.vr=(Math.random()-.5)*.012;p.y=Math.random()*H*.62;p.pts=Array.from({length:7},()=>.65+Math.random()*.45);break;
     case 'haze':p.len=10+p.s*22;p.v=7+p.s*9;if(!init)p.y=-30;break;
     case 'diamonds':p.v=1.6+p.s*4.5;p.r=1+p.s*2.6;p.ph=Math.random()*6;if(!init)p.y=-10;break;
-    case 'portal':p.a=Math.random()*6.283;p.d=1.05+Math.random()*1.6;p.v=.004+Math.random()*.012;p.r=.6+Math.random()*2;break;
+    case 'portal':p.a=Math.random()*6.283;p.d=.15+Math.random()*.85;p.v=.004+Math.random()*.012;p.r=.6+Math.random()*2;break;
   }return p}
 function setFx(type){FX.type=type;const n={dust:170,ice:150,rings:30,haze:240,diamonds:150,portal:220}[type]||0;FX.parts=Array.from({length:REDUCED?Math.round(n/4):n},()=>newPart(type,true));
-  FX.extra=Array.from({length:6},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random(),ph:Math.random()*6}));FX.portalPower=G.phase==='won'?1:.35}
+  FX.extra=Array.from({length:6},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random(),ph:Math.random()*6}));FX.portalPower=G.phase==='won'?1:.18}
 FX.swarm=Array.from({length:420},()=>{const a=Math.random()*6.283,r=Math.pow(Math.random(),.7);return{a,r,sp:(.2+Math.random()*.8)*(Math.random()<.5?-1:1),ph:Math.random()*6,red:Math.random()<.06,sz:.8+Math.random()*2.2}});
 function swarmLevel(){if(G.phase==='lobby'||G.phase==='won')return 0;if(G.phase==='lost')return 1;return Math.max(.12,Math.min(1,progress()))}
 function drawFx(dt){const c=fxC,t=FX.t;c.clearRect(0,0,W,H);const k=dt*60,m=Math.min(W,H);
@@ -511,11 +546,7 @@ function drawFx(dt){const c=fxC,t=FX.t;c.clearRect(0,0,W,H);const k=dt*60,m=Math
     case 'diamonds':{c.strokeStyle='rgba(160,200,255,.1)';c.lineWidth=1;c.beginPath();for(const e of FX.extra){e.x+=(14+e.s*10)*k;if(e.x>W+200)e.x=-200;const y=H*(.1+e.s*.5);c.moveTo(e.x,y);c.lineTo(e.x-160,y+4)}c.stroke();
       for(const p of FX.parts){p.y+=p.v*k;p.x+=.6*k;if(p.y>H+10)Object.assign(p,newPart('diamonds'));const tw=Math.abs(Math.sin(t*.006+p.ph));c.fillStyle='rgba(220,240,255,'+(.5+tw*.5)+')';c.save();c.translate(p.x,p.y);c.rotate(.785);c.fillRect(-p.r/2,-p.r/2,p.r,p.r);c.restore();
         if(tw>.97){c.strokeStyle='rgba(255,255,255,.9)';c.beginPath();c.moveTo(p.x-p.r*4,p.y);c.lineTo(p.x+p.r*4,p.y);c.moveTo(p.x,p.y-p.r*4);c.lineTo(p.x,p.y+p.r*4);c.stroke()}}break}
-    case 'portal':{const pg=portalGeom(),px=pg.x,py=pg.y,pr=pg.r;FX.portalPower+=((G.phase==='won'?1:.35+.35*roomFrac())-FX.portalPower)*.02;const pw=FX.portalPower;c.save();c.beginPath();c.arc(px,py,pr*.93,0,7);c.clip();
-      let g=c.createRadialGradient(px,py,0,px,py,pr);g.addColorStop(0,'rgba(255,255,255,'+(.25+pw*.6)+')');g.addColorStop(.35,'rgba(160,120,255,'+(.25+pw*.45)+')');g.addColorStop(1,'rgba(40,120,255,'+(.1+pw*.35)+')');c.fillStyle=g;c.fillRect(px-pr,py-pr,2*pr,2*pr);
-      for(let i=0;i<6;i++){c.strokeStyle='rgba(220,200,255,'+(.12+pw*.3)+')';c.lineWidth=pr*.04;const a0=t*.001*(1+pw*3)*(i%2?1:-1)+i;c.beginPath();c.arc(px,py,pr*(.2+i*.13),a0,a0+2.2);c.stroke()}c.restore();
-      for(const p of FX.parts){p.a+=p.v*(1+pw*3)*k;p.d-=.0025*(1+pw*4)*k;if(p.d<.15)Object.assign(p,newPart('portal'));const x=px+Math.cos(p.a)*pr*p.d,y=py+Math.sin(p.a)*pr*p.d;c.fillStyle='rgba(200,180,255,'+Math.max(0,Math.min(1,p.d<1?p.d:1.6-p.d*.4))+')';c.beginPath();c.arc(x,y,p.r,0,7);c.fill()}
-      g=c.createRadialGradient(px,py,pr*.9,px,py,pr*1.6);g.addColorStop(0,'rgba(150,120,255,'+(.15+pw*.35)+')');g.addColorStop(1,'rgba(150,120,255,0)');c.fillStyle=g;c.fillRect(0,0,W,H);break}
+    case 'portal':{FX.portalPower+=((G.phase==='won'?1:.18)-FX.portalPower)*.02;drawPortal(c,t,FX.portalPower,FX.parts,k);break}
   }
   const L=swarmLevel();if(L>0){const cx=W*(-.1+.5*L),cy=H*(.6-.1*L),R=m*(.16+.36*L);
     const g=c.createRadialGradient(cx,cy,0,cx,cy,R*1.5);g.addColorStop(0,'rgba(4,4,10,.75)');g.addColorStop(.6,'rgba(4,4,10,.35)');g.addColorStop(1,'rgba(4,4,10,0)');c.fillStyle=g;c.fillRect(0,0,W,H);
