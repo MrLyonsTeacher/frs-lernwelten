@@ -616,7 +616,7 @@ function drawAnchored(dt,t){
 /* ---------- Klangwelt: Hall, Atmosphären je Planet, Schwarm-Summen, Lichtsprung ---------- */
 /* Optionale Klangdateien (z. B. von ElevenLabs oder Pixabay): Namen hier eintragen, Dateien als schwarm/assets/sfx-<name>.mp3 ablegen.
    Mögliche Namen: warp, portal, amb-mars, amb-europa, amb-saturn, amb-titan, amb-neptun, amb-tor, swarm. Fehlt eine Datei, wird synthetisiert. */
-const SFX_FILES=['warp','portal','swarm'];
+const SFX_FILES=['warp','portal','swarm','amb-mars','amb-europa','amb-saturn','amb-titan','amb-neptun','amb-tor'];
 const SFX={bus:null,rev:null,noise:null,amb:null,ambKey:null,swarm:null,buf:{},next:0};
 function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
   const comp=a.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=4;comp.connect(a.destination);
@@ -625,7 +625,7 @@ function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
   SFX.rev=a.createConvolver();SFX.rev.buffer=ir;const rg=a.createGain();rg.gain.value=.5;SFX.rev.connect(rg);rg.connect(comp);
   const nl=a.sampleRate*4,nb=a.createBuffer(1,nl,a.sampleRate),nd=nb.getChannelData(0);let last=0;for(let i=0;i<nl;i++){const w=Math.random()*2-1;nd[i]=w}SFX.noise=nb;
   const bb=a.createBuffer(1,nl,a.sampleRate),bd=bb.getChannelData(0);for(let i=0;i<nl;i++){last=(last+.02*(Math.random()*2-1))/1.02;bd[i]=last*3.5}SFX.brown=bb;
-  SFX_FILES.forEach(n=>{fetch(ASSET+'sfx-'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&new Promise((ok,no)=>a.decodeAudioData(b,ok,no))).then(buf=>{if(buf){SFX.buf[n]=buf;if(n==='swarm')swarmFile()}}).catch(()=>{})});
+  SFX_FILES.forEach(n=>{fetch(ASSET+'sfx-'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&new Promise((ok,no)=>a.decodeAudioData(b,ok,no))).then(buf=>{if(buf){SFX.buf[n]=buf;if(n==='swarm')swarmFile();if(n==='amb-'+SFX.ambKey&&!SFX.amb.file){stopAmb()}}}).catch(()=>{})});
   swarmSound();
 }
 const sfxOn=()=>AU.ctx&&AU.on&&SFX.bus;
@@ -638,7 +638,7 @@ function playBuf(n,v,loop){if(!SFX.buf[n])return null;const a=AU.ctx,s=a.createB
 /* Atmosphäre je Planet */
 function stopAmb(){if(!SFX.amb)return;const a=AU.ctx,o=SFX.amb;o.g.gain.setTargetAtTime(0,a.currentTime,.6);setTimeout(()=>o.nodes.forEach(n=>{try{n.stop()}catch(e){}}),3000);SFX.amb=null;SFX.ambKey=null}
 function startAmb(key){if(!sfxOn()||SFX.ambKey===key)return;stopAmb();SFX.ambKey=key;const a=AU.ctx,t=a.currentTime,g=a.createGain(),nodes=[];g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+3);send(g,1,.25);
-  const f=SFX.buf['amb-'+key];if(f){const s=a.createBufferSource();s.buffer=f;s.loop=true;const v=a.createGain();v.gain.value=.5;s.connect(v);v.connect(g);s.start();nodes.push(s);SFX.amb={g:g,nodes:nodes};return}
+  const f=SFX.buf['amb-'+key];if(f){const s=a.createBufferSource();s.buffer=f;s.loop=true;s.loopStart=.06;s.loopEnd=f.duration-.06;const v=a.createGain();v.gain.value=.7;s.connect(v);v.connect(g);s.start(t,.06);nodes.push(s);SFX.amb={g:g,nodes:nodes,file:true};return}
   const lfo=(rate,depth,target)=>{const o=a.createOscillator(),d=a.createGain();o.frequency.value=rate;d.gain.value=depth;o.connect(d);d.connect(target);o.start();nodes.push(o)};
   const wind=(fc,q,v,lr,ld)=>{const n=noiseSrc(true),bp=a.createBiquadFilter(),v1=a.createGain();bp.type='bandpass';bp.frequency.value=fc;bp.Q.value=q;v1.gain.value=v;n.connect(bp);bp.connect(v1);v1.connect(g);n.start();nodes.push(n);lfo(lr,ld,bp.frequency);lfo(lr*.7,v*.5,v1.gain)};
   const drone=(fq,type,v,lp)=>{const o=a.createOscillator(),f1=a.createBiquadFilter(),v1=a.createGain();o.type=type;o.frequency.value=fq;f1.type='lowpass';f1.frequency.value=lp||400;v1.gain.value=v;o.connect(f1);f1.connect(v1);v1.connect(g);o.start();nodes.push(o)};
@@ -651,7 +651,7 @@ function startAmb(key){if(!sfxOn()||SFX.ambKey===key)return;stopAmb();SFX.ambKey
   if(key==='tor'){drone(41.2,'sawtooth',.06,180);drone(61.7,'sawtooth',.04,200);drone(220,'sine',.012);wind(300,.6,.08,.03,100)}
   SFX.amb={g:g,nodes:nodes}}
 /* zufällige Einzelgeräusche je Planet */
-function ambEvents(){if(!sfxOn()||G.phase!=='play'||warping)return;const a=AU.ctx,t=a.currentTime,k=SFX.ambKey;if(t<SFX.next)return;
+function ambEvents(){if(!sfxOn()||G.phase!=='play'||warping||(SFX.amb&&SFX.amb.file))return;const a=AU.ctx,t=a.currentTime,k=SFX.ambKey;if(t<SFX.next)return;
   if(k==='europa'||k==='saturn'||k==='tor'){const b=[1568,1760,2093,2349,2637,3136];for(let i=0;i<1+Math.floor(Math.random()*3);i++)tone2(b[Math.floor(Math.random()*b.length)],t+i*.12,1.6,'sine',.025,.6);SFX.next=t+2.5+Math.random()*4}
   else if(k==='titan'){const n=noiseSrc(true),lp=a.createBiquadFilter(),g=a.createGain();lp.type='lowpass';lp.frequency.value=90;env(g,t,.8,.5,.4,3);n.connect(lp);lp.connect(g);send(g,1,.4);n.start(t);n.stop(t+5);SFX.next=t+8+Math.random()*8}
   else if(k==='neptun'){const n=noiseSrc(),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.value=2500;bp.Q.value=.8;env(g,t,.3,.07,1.2,1.5);n.connect(bp);bp.connect(g);send(g,1,.3);n.start(t);n.stop(t+3.2);SFX.next=t+4+Math.random()*5}
