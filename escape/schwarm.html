@@ -616,7 +616,7 @@ function drawAnchored(dt,t){
 /* ---------- Klangwelt: Hall, Atmosphären je Planet, Schwarm-Summen, Lichtsprung ---------- */
 /* Optionale Klangdateien (z. B. von ElevenLabs oder Pixabay): Namen hier eintragen, Dateien als schwarm/assets/sfx-<name>.mp3 ablegen.
    Mögliche Namen: warp, portal, amb-mars, amb-europa, amb-saturn, amb-titan, amb-neptun, amb-tor, swarm. Fehlt eine Datei, wird synthetisiert. */
-const SFX_FILES=[];
+const SFX_FILES=['warp','portal','swarm'];
 const SFX={bus:null,rev:null,noise:null,amb:null,ambKey:null,swarm:null,buf:{},next:0};
 function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
   const comp=a.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=4;comp.connect(a.destination);
@@ -625,7 +625,7 @@ function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
   SFX.rev=a.createConvolver();SFX.rev.buffer=ir;const rg=a.createGain();rg.gain.value=.5;SFX.rev.connect(rg);rg.connect(comp);
   const nl=a.sampleRate*4,nb=a.createBuffer(1,nl,a.sampleRate),nd=nb.getChannelData(0);let last=0;for(let i=0;i<nl;i++){const w=Math.random()*2-1;nd[i]=w}SFX.noise=nb;
   const bb=a.createBuffer(1,nl,a.sampleRate),bd=bb.getChannelData(0);for(let i=0;i<nl;i++){last=(last+.02*(Math.random()*2-1))/1.02;bd[i]=last*3.5}SFX.brown=bb;
-  SFX_FILES.forEach(n=>{fetch(ASSET+'sfx-'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&a.decodeAudioData(b)).then(buf=>{if(buf)SFX.buf[n]=buf}).catch(()=>{})});
+  SFX_FILES.forEach(n=>{fetch(ASSET+'sfx-'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&new Promise((ok,no)=>a.decodeAudioData(b,ok,no))).then(buf=>{if(buf){SFX.buf[n]=buf;if(n==='swarm')swarmFile()}}).catch(()=>{})});
   swarmSound();
 }
 const sfxOn=()=>AU.ctx&&AU.on&&SFX.bus;
@@ -659,23 +659,26 @@ function ambEvents(){if(!sfxOn()||G.phase!=='play'||warping)return;const a=AU.ct
 }
 setInterval(ambEvents,400);
 /* Schwarm: unheimliches Summen und Klicken, wird mit der Zeit lauter */
-function swarmSound(){const a=AU.ctx,g=a.createGain();g.gain.value=0;const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=1.8;bp.connect(g);send(g,1,.2);
+function swarmSound(){const a=AU.ctx,g=a.createGain();g.gain.value=0;const syn=a.createGain();syn.gain.value=1;syn.connect(g);SFX.swSyn=syn;const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=1.8;bp.connect(syn);send(g,1,.2);
   [92,95.5,98,101.3,104,110.7].forEach(f=>{const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;const v=a.createGain();v.gain.value=.16;o.connect(v);v.connect(bp);o.start();const l=a.createOscillator(),ld=a.createGain();l.frequency.value=3+Math.random()*5;ld.gain.value=f*.03;l.connect(ld);ld.connect(o.frequency);l.start()});
-  const am=a.createOscillator(),ad=a.createGain();am.frequency.value=17;ad.gain.value=.4;am.connect(ad);ad.connect(g.gain);am.start();
+  const am=a.createOscillator(),ad=a.createGain();am.frequency.value=17;ad.gain.value=.4;am.connect(ad);ad.connect(syn.gain);am.start();
   SFX.swarm=g}
+/* echte Schwarm-Aufnahme ersetzt das synthetische Summen */
+function swarmFile(){if(!SFX.swarm||SFX.swFile)return;const a=AU.ctx,src=a.createBufferSource();src.buffer=SFX.buf.swarm;src.loop=true;src.connect(SFX.swarm);src.start();SFX.swFile=true;SFX.swSyn.gain.value=0}
 function sfxTick(){if(!AU.ctx||!SFX.bus)return;const a=AU.ctx,on=AU.on&&G.phase==='play';
-  if(SFX.swarm){const L=on?swarmLevel():0;SFX.swarm.gain.setTargetAtTime(on&&!warping?.01+.09*L*L:0,a.currentTime,.5)}
+  if(SFX.swarm){const L=on?swarmLevel():0,v=SFX.swFile?.08+.55*L*L:.01+.09*L*L;SFX.swarm.gain.setTargetAtTime(on&&!warping?v:0,a.currentTime,.5)}
   if(on&&curKey&&SFX.ambKey!==curKey&&!warping)startAmb(curKey);if(!on&&SFX.amb)stopAmb()}
 setInterval(sfxTick,300);
 /* Lichtsprung: Aufladen, Rauschen, Knall beim Blitz, glitzernder Nachhall */
-function sfxWarp(){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();
-  if(playBuf('warp',.9))return;
+function sfxWarp(lead){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();
+  if(SFX.buf.warp){/* der Knall in der Aufnahme liegt bei 3,1 s und soll genau mit dem weißen Blitz zusammenfallen */
+    const d=(lead||1.95)-3.1,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf.warp;g.gain.value=.95;s.connect(g);send(g,1,.12);if(d>=0)s.start(t+d);else s.start(t,-d);return}
   const o=a.createOscillator(),lp=a.createBiquadFilter(),g=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(880,t+1.85);lp.type='lowpass';lp.frequency.setValueAtTime(300,t);lp.frequency.exponentialRampToValueAtTime(5000,t+1.85);lp.Q.value=6;env(g,t,1.7,.16,.1,.2);o.connect(lp);lp.connect(g);send(g,1,.3);o.start(t);o.stop(t+2.2);
   const n=noiseSrc(),bp=a.createBiquadFilter(),ng=a.createGain();bp.type='bandpass';bp.Q.value=1.1;bp.frequency.setValueAtTime(150,t);bp.frequency.exponentialRampToValueAtTime(3500,t+1.9);bp.frequency.exponentialRampToValueAtTime(220,t+3.6);env(ng,t,1.8,.45,.15,1.6);n.connect(bp);bp.connect(ng);send(ng,1,.25);n.start(t);n.stop(t+4);
   const tb=t+1.95,b=a.createOscillator(),bg=a.createGain();b.type='sine';b.frequency.setValueAtTime(120,tb);b.frequency.exponentialRampToValueAtTime(26,tb+1.3);env(bg,tb,.005,.9,.05,1.4);b.connect(bg);send(bg,1,.5);b.start(tb);b.stop(tb+1.6);
   [1318.5,1760,2637,3520].forEach((f,i)=>tone2(f,tb+.05+i*.06,2.4,'sine',.03,.9));
 }
-function sfxPortal(){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;if(playBuf('portal',.9))return;[220,277.2,329.6,440,554.4].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;env(g,t+i*.15,.8,.05,.6,2.2);o.connect(g);send(g,.7,.7);o.start(t+i*.15);o.stop(t+4.5)})}
+function sfxPortal(){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();if(playBuf('portal',.95))return;[220,277.2,329.6,440,554.4].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;env(g,t+i*.15,.8,.05,.6,2.2);o.connect(g);send(g,.7,.7);o.start(t+i*.15);o.stop(t+4.5)})}
 function sfxArrive(){if(!sfxOn())return;const t=AU.ctx.currentTime;tone2(392,t,1.4,'triangle',.05,.6);tone2(587.3,t+.12,1.6,'triangle',.04,.7)}
 
 /* Lichtsprung */
@@ -702,8 +705,9 @@ async function doWarp(tx,ty,switchFn){
   world.style.transition='none';world.style.transformOrigin='0 0';world.style.transform='translate(0px,0px) scale(1)';void world.offsetWidth;
   const s1=(Math.abs(tx-W/2)>20||Math.abs(ty-H/2)>20)?1.2:1,cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
   const dx=cl(W/2-s1*tx,W-s1*W,0),dy=cl(H/2-s1*ty,H-s1*H,H*.7),px=dx+s1*tx,py=dy+s1*ty;
+  sfxWarp(s1>1?3.35:1.95);
   if(s1>1){world.style.transition='transform 1.3s cubic-bezier(.45,0,.25,1)';world.style.transform='translate('+dx+'px,'+dy+'px) scale('+s1+')';await sleep(1400)}
-  const s2=s1*4.5;sfxWarp();
+  const s2=s1*4.5;
   world.style.transition='transform 1.7s cubic-bezier(.55,0,.85,.3), filter 1.7s ease-in';world.style.transform='translate('+(px-s2*tx)+'px,'+(py-s2*ty)+'px) scale('+s2+')';world.style.filter='blur(7px) brightness(1.7)';
   fxCv.style.opacity=0;WP.on=true;WP.cx=px;WP.cy=py;WP.speed=0;WP.target=.003;WP.talpha=1;
   await sleep(450);WP.target=.05;app.classList.add('shake');
