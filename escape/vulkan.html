@@ -350,8 +350,11 @@ function existing(list){return list.filter(r=>G.sets.some(s=>s.indexOf(r)>=0))}
 function rolePieces(r,n,list){
   const ex=existing(list),k=ex.indexOf(r);
   if(k<0)return [];
-  const per=Math.ceil(n/ex.length),out=[];
-  for(let i=k*per;i<Math.min(n,(k+1)*per);i++)out.push(i);
+  /* gleichmäßig verteilen: jede Rolle bekommt etwas; gibt es weniger Teile als Rollen, teilen sich Rollen ein Teil */
+  const m=ex.length;if(n<=0)return [];
+  if(n<m)return [k%n];
+  const out=[],a=Math.floor(k*n/m),b=Math.floor((k+1)*n/m);
+  for(let i=a;i<b;i++)out.push(i);
   return out;
 }
 
