@@ -209,13 +209,15 @@ const FRS = {
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       // raum:true = Escape Room mit Karte (bild, farbe, chips); sonst Werkzeug/Vorschau in der Liste darunter
       { id:"esc-vulkan", raum:true, titel:"Der Vulkan", info:"Der Vulkan bebt: Gemeinsam durch die Kammern bis zum Kern und den Ausbruch stoppen.", pfad:"escape/vulkan.html",
-        bild:"escape/vorschau-vulkan.jpg", farbe:"#D9472F", chips:["👥 1–6","⏱️ 35 / 70 Min.","🚪 7 Kammern","3D"] },
+        bild:"escape/vorschau-vulkan.jpg", farbe:"#D9472F", chips:["👥 1–6","⏱️ 35 / 70 Min.","🔢 Zahlen & Codes","3D"] },
       { id:"esc-woodlands", raum:true, titel:"Finlorién", info:"Im Elbenwald schwindet das Licht: Runensteine lösen und den Weltenbaum wecken.", pfad:"escape/woodlands.html",
-        bild:"escape/vorschau-woodlands.jpg", farbe:"#1F9E7A", chips:["👥 1–6","⏱️ 35 / 70 Min.","🪨 6 Runensteine","2D"] },
+        bild:"escape/vorschau-woodlands.jpg", farbe:"#1F9E7A", chips:["👥 1–6","⏱️ 35 / 70 Min.","👂 Team & Sinne","2D"] },
       { id:"esc-wrack", raum:true, titel:"Das Wrack", info:"Tief unter den Wellen: Raum für Raum durch die Schott-Türen bis zur Schatzkammer.", pfad:"escape/wrack.html",
-        bild:"escape/vorschau-wrack.jpg", farbe:"#1689B5", chips:["👥 1–6","⏱️ 35 / 70 Min.","🚪 3 Räume + Schatz"] },
+        bild:"escape/vorschau-wrack.jpg", farbe:"#1689B5", chips:["👥 1–6","⏱️ 35 / 70 Min.","🧭 Sehen & Raum"] },
       { id:"esc-bibliothek", raum:true, titel:"Die Bibliothek der Tinte", info:"In der Himmelsbibliothek versiegt die Tinte: Durch die Säle bis zum Buch der Bücher.", pfad:"escape/bibliothek.html",
-        bild:"escape/vorschau-bibliothek.jpg", farbe:"#C9A23A", chips:["👥 1–6","⏱️ 35 / 70 Min.","📚 3 Säle + Finale"], neu:"Testlauf" },
+        bild:"escape/vorschau-bibliothek.jpg", farbe:"#C9A23A", chips:["👥 1–6","⏱️ 35 / 70 Min.","🧠 Logik & Detektiv"], neu:"Testlauf" },
+      { id:"esc-schwarm", raum:true, titel:"Der Schwarm", info:"Flucht durchs Sonnensystem: per Lichtsprung von Planet zu Planet bis zum uralten Sprungtor.", pfad:"escape/schwarm.html",
+        bild:"escape/vorschau-schwarm.jpg", farbe:"#3A7BFF", chips:["👥 1–6","⏱️ 35 / 70 Min.","🔢 Zahlen & Codes","🪐 Planeten"], neu:"Neu" },
       { id:"esc-test", titel:"iPad-Verbindungstest", info:"Vor der Stunde: prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html", icon:"📶" },
       { id:"esc-wrack-vorschau", titel:"Das Wrack (3D-Vorschau)", info:"Erste 3D-Vorschau des versunkenen Schiffs, noch ohne Rätsel", pfad:"escape/wrack-preview.html", icon:"🧪" }
     ]},
