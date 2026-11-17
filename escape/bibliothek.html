@@ -258,11 +258,11 @@ const STAGES=[null,
   {pt:18,ph:35,gate:5,lava:7,cry:5,tm:1.0},
   {pt:20,ph:40,gate:6,lava:8,cry:6,tm:.95},
   {pt:25,ph:45,gate:6,lava:8,cry:6,tm:.9}];
-const DIFFS=[{id:1,label:'Einfach',stage:1,info:'Mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal',stage:3,info:'Die Standardstufe für eine gute Gruppe.'},{id:3,label:'Schwer',stage:5,info:'Längere Rätsel, weniger Zeit, härtere Strafen.'},{id:4,label:'Sehr schwer',stage:6,info:'Die größte Herausforderung, knappe Zeit.'}];
+const DIFFS=[{id:1,label:'Einfach · Kl. 5–6',stage:1,info:'Für Klasse 5 und 6: mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal · Kl. 7–8',stage:3,info:'Für Klasse 7 und 8: die Standardstufe.'},{id:3,label:'Schwer · Kl. 9–10',stage:5,info:'Für Klasse 9 und 10: längere Rätsel, weniger Zeit, härtere Strafen.'}];
 function stageFor(d){const x=DIFFS.find(q=>q.id===(d|0));return x?x.stage:3}
 function applyStage(st){PEN_TRY=STAGES[st].pt;PEN_HINT=STAGES[st].ph}
 const QS=new URLSearchParams(location.search);
-window.__FRS_D=(function(){const d=parseInt(QS.get('d'),10);return(d>=1&&d<=4)?d:2})();
+window.__FRS_D=(function(){const d=parseInt(QS.get('d'),10);return(d>=1&&d<=3)?d:2})();
 
 /* ---------- Daten ---------- */
 const COLORS=[
@@ -1112,7 +1112,7 @@ function beginGame(sp){
   G.rot=sp.rot===undefined?1:(sp.rot|0);
   clearTimeout(endTimer);clearTimeout(advT);stopSeq();
   const mode=MODES[sp.mode]?sp.mode:'short';
-  G.mode=mode;G.order=expandOrder(MODES[mode].order,sp.seed);
+  G.mode=mode;G.order=expandOrder(MODES[mode].order,sp.seed,'logik');
   const P=sp.roster?Math.min(6,Math.max(1,sp.roster.length)):1;
   G.P=P;G.epoch=sp.epoch;G.seed=sp.seed;G.total=sp.total;G.roster=sp.roster||[];G.solo=!sp.roster;G.hostPeer=sp.host||null;
   G.sets=ROLE_SETS[P];G.stage=Math.max(1,Math.min(6,sp.stage|0||1));applyStage(G.stage);G.genP=(sp.genP|0)||P;G.data=gen(sp.seed,G.genP,G.order,G.stage);G.digits=G.data.digits;

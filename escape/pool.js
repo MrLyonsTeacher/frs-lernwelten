@@ -1,4 +1,4 @@
-// FRS Escape Rooms: gemeinsamer Rätsel-Pool (wird vom Vulkan und von den Woodlands benutzt).
+// FRS Escape Rooms: gemeinsamer Rätsel-Pool für alle Räume, eingeteilt in vier Rätselfamilien (siehe FAMILIES unten).
 // Aufruf: const POOL = FRSPool({ esc, rolePieces, existing, fb, img, SHAPES, shuffled, rngFor, beep, nums, penTry });
 (function (root) {
 "use strict";
@@ -565,8 +565,268 @@ PZ.grid={name:'Das Buchstabengitter',atm:'crystal',
   act(d,u,a){return wordSub(d.word)(d,u,a)}
 };
 
+/* ================= Neue Rätsel (Rätselfamilien) ================= */
+const PNAMES=['Ada','Bo','Cem','Dana','Elif','Finn'];
+
+/* 16. Wer lügt? (Logik) */
+PZ.truth={name:'Wer lügt?',atm:'meta',
+  gen(rnd,st){
+    const N=st<=2?3:(st<=4?4:5),L=st<=4?1:2,names=shuffled(PNAMES,rnd).slice(0,N);
+    for(let t=0;t<400;t++){
+      const c=Math.floor(rnd()*N),stm=[];
+      for(let s=0;s<N;s++){
+        const opts=[];
+        opts.push({t:'Ich war es nicht.',f:x=>x!==s});
+        for(let o=0;o<N;o++){if(o===s)continue;opts.push({t:names[o]+' war es.',f:x=>x===o});opts.push({t:names[o]+' war es nicht.',f:x=>x!==o})}
+        if(st>=3)for(let o=0;o<N;o++)for(let q=o+1;q<N;q++){if(o===s||q===s)continue;opts.push({t:'Es war '+names[o]+' oder '+names[q]+'.',f:x=>x===o||x===q})}
+        stm.push(pick(opts,rnd));
+      }
+      const fits=[];for(let x=0;x<N;x++){const lies=stm.filter(z=>!z.f(x)).length;if(lies===L)fits.push(x)}
+      if(fits.length===1&&fits[0]===c)return {N,L,names,c,stm:stm.map(z=>z.t)};
+    }
+    return {N:3,L:1,names:names.slice(0,3),c:1,stm:[names[1]+' war es.','Ich war es nicht.',names[1]+' war es nicht.']};
+  },
+  init(d){return {sel:null}},
+  role(r,d,u){
+    const Q='<p class="lead">Jemand hat den Schlüssel versteckt. Wer war es?</p>';
+    if(r==='mechanic')return Q+'<p>Deine Gruppe kennt die Aussagen. Wähle die Person und melde sie.</p><div class="keys" style="grid-template-columns:repeat(3,1fr)">'+d.names.map((n,i)=>'<button class="key" data-act="xpick" data-i="'+i+'" aria-pressed="'+(u.sel===i)+'"'+(u.sel===i?' style="border-color:var(--lava)"':'')+'>'+esc(n)+'</button>').join('')+'</div><div><button class="btn primary" data-act="xsubsel"'+(u.sel==null?' disabled':'')+'>'+(u.sel==null?'Wähle eine Person':esc(d.names[u.sel])+' melden')+'</button></div>'+fb();
+    const p=rolePieces(r,d.N,INFO),rule=r==='decode'?'<div class="hint">Die Regel: Genau <b>'+(d.L===1?'eine Person lügt':'zwei Personen lügen')+'</b>. Alle anderen sagen die Wahrheit. Nur eine Person war es.</div>':'';
+    if(!p.length&&!rule)return Q+noPiece();
+    return Q+(p.length?'<ul class="list">'+p.map(i=>'<li><span class="k">'+esc(d.names[i]).toUpperCase()+' SAGT</span><span>„'+esc(d.stm[i])+'“</span></li>').join('')+'</ul>':'')+rule;
+  },
+  explain(d){return ['Eine von '+d.N+' Personen hat den Schlüssel versteckt. Jede Person sagt einen Satz dazu.','Die Aussagen sind auf euch verteilt. Die Entschlüsseler/in kennt die Regel: '+(d.L===1?'Genau eine Person lügt.':'Genau zwei Personen lügen.'),'Probiert der Reihe nach: Wenn Person X es war, welche Sätze wären dann gelogen? Nur bei einer Person passt die Anzahl der Lügen.','Die Mechaniker/in meldet die Person.']},
+  hint(d,n){const o=(d.c+1)%d.N;if(n===1)return 'Nehmt an, '+d.names[0]+' war es. Zählt, wie viele Sätze dann falsch wären. Macht das für jede Person.';if(n===2)return d.names[o]+' war es nicht.';return 'Es war weder '+d.names[o]+' noch '+d.names[(d.c+2)%d.N]+'.'},
+  act(d,u,a){if(a.op!=='sub'||typeof a.i!=='number')return null;return a.i===d.c?{ok:true}:{wrong:'Das war die falsche Person.'}}
+};
+
+/* 17. Spurensuche (Logik): Ausschluss über Eigenschaften */
+const SCOL=[{n:'rot',d:'roten',c:'#ff5468'},{n:'blau',d:'blauen',c:'#5aa0ff'},{n:'grün',d:'grünen',c:'#4be39a'},{n:'gelb',d:'gelben',c:'#ffd23c'},{n:'lila',d:'lila',c:'#b57bff'},{n:'orange',d:'orangen',c:'#ff9a3c'}];
+PZ.suspects={name:'Die Spurensuche',atm:'side',
+  gen(rnd,st){
+    const n=st<=2?4:(st<=4?5:6),kinds=st<=2?['direct','color','edge']:(st<=4?['color','edge','parity','rel']:['rel','parity','edge']);
+    let best=null;
+    for(let t=0;t<300;t++){
+      const cols=shuffled(SCOL,rnd).slice(0,n),nums=shuffled([1,2,3,4,5,6,7,8,9],rnd).slice(0,n);
+      const it=cols.map((c,i)=>({pos:i,L:ALPHA[i],c,num:nums[i]})),S=it[Math.floor(rnd()*n)],pool=[];
+      const add=(text,test,kind)=>{if(kinds.indexOf(kind)>=0&&test(S))pool.push({text,test})};
+      const edge=q=>q.pos===0||q.pos===n-1;
+      it.forEach(p=>{if(p===S)return;add('Kiste '+p.L+' ist leer.',q=>q!==p,'direct');add('Die gesuchte Kiste ist nicht '+p.c.n+'.',q=>q!==p,'color');
+        if(Math.abs(p.pos-S.pos)===1)add('Die gesuchte Kiste steht direkt neben der '+p.c.d+' Kiste.',q=>Math.abs(q.pos-p.pos)===1,'rel');
+        add('Die gesuchte Kiste steht '+(S.pos<p.pos?'links':'rechts')+' von der '+p.c.d+' Kiste.',q=>S.pos<p.pos?q.pos<p.pos:q.pos>p.pos,'rel');
+        add('Die Zahl auf der gesuchten Kiste ist '+(S.num>p.num?'größer':'kleiner')+' als die auf der '+p.c.d+' Kiste.',q=>S.num>p.num?q.num>p.num:q.num<p.num,'rel')});
+      add(edge(S)?'Die gesuchte Kiste steht ganz außen.':'Die gesuchte Kiste steht nicht ganz außen.',q=>edge(q)===edge(S),'edge');
+      add('Die Zahl auf der gesuchten Kiste ist '+(S.num%2?'ungerade':'gerade')+'.',q=>q.num%2===S.num%2,'parity');
+      let left=it.slice();const used=[];
+      shuffled(pool,rnd).forEach(s=>{if(left.length<=1)return;const nl=left.filter(s.test);if(nl.length<left.length){used.push(s.text);left=nl}});
+      if(left.length===1&&used.length>=3&&used.length<=7){best={n,it:it.map(q=>({L:q.L,c:q.c,num:q.num})),s:S.pos,clues:shuffled(used,rnd)};break}
+    }
+    return best||{n:4,it:[0,1,2,3].map(i=>({L:ALPHA[i],c:SCOL[i],num:i+2})),s:2,clues:['Kiste A ist leer.','Kiste B ist leer.','Kiste D ist leer.']};
+  },
+  init(d){return {sel:null}},
+  row(d,u,pickable){return '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0">'+d.it.map((q,i)=>{const s=u&&u.sel===i;const box='<span style="display:grid;place-items:center;width:52px;height:46px;border-radius:8px;background:'+q.c.c+';color:#111;font-weight:900;font-size:20px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.25)">'+q.num+'</span><span style="font-weight:800">'+q.L+'</span>';
+    return pickable?'<button class="key" data-act="xpick" data-i="'+i+'" aria-pressed="'+s+'" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;'+(s?'border-color:var(--lava)':'')+'">'+box+'</button>':'<span style="display:flex;flex-direction:column;align-items:center;gap:4px">'+box+'</span>'}).join('')+'</div>'},
+  role(r,d,u){
+    const Q='<p class="lead">In genau einer der '+d.n+' Kisten liegt der Schlüssel. Welche ist es?</p>';
+    if(r==='mechanic')return Q+PZ.suspects.row(d,u,true)+'<div><button class="btn primary" data-act="xsubsel"'+(u.sel==null?' disabled':'')+'>'+(u.sel==null?'Wähle eine Kiste':'Kiste '+d.it[u.sel].L+' öffnen')+'</button></div>'+fb();
+    const p=rolePieces(r,d.clues.length,INFO);
+    return Q+PZ.suspects.row(d,null,false)+(p.length?'<ul class="list">'+p.map(i=>'<li><span>'+esc(d.clues[i])+'</span></li>').join('')+'</ul>':noPiece());
+  },
+  explain(d){return ['In einer von '+d.n+' Kisten liegt der Schlüssel. Alle sehen die Kisten mit Farbe, Zahl und Buchstabe.','Die Hinweise sind auf euch verteilt. Jeder Hinweis streicht eine oder mehrere Kisten.','Streicht so lange, bis nur noch eine Kiste übrig ist. Die Mechaniker/in öffnet sie.']},
+  hint(d,n){const o=(d.s+1)%d.n,o2=(d.s+2)%d.n;if(n===1)return 'Nehmt jeden Hinweis einzeln und streicht alle Kisten, die nicht dazu passen.';if(n===2)return 'Kiste '+d.it[o].L+' ist es nicht.';return 'Kiste '+d.it[o].L+' und Kiste '+d.it[o2].L+' sind es nicht.'},
+  act(d,u,a){if(a.op!=='sub'||typeof a.i!=='number')return null;return a.i===d.s?{ok:true}:{wrong:'Diese Kiste ist leer.'}}
+};
+
+/* 18. Zahlenquadrat (Logik, Mini-Sudoku) */
+function sdSolve(g,N,bw,bh,limit){let cnt=0,sol=null;const a=g.slice();
+  (function rec(){if(cnt>=limit)return;const k=a.indexOf(0);if(k<0){cnt++;if(!sol)sol=a.slice();return}
+    const x=k%N,y=(k/N)|0;for(let v=1;v<=N;v++){let ok=true;for(let i=0;i<N&&ok;i++){if(a[y*N+i]===v||a[i*N+x]===v)ok=false}
+      const bx=x-x%bw,by=y-y%bh;for(let yy=by;yy<by+bh&&ok;yy++)for(let xx=bx;xx<bx+bw&&ok;xx++)if(a[yy*N+xx]===v)ok=false;
+      if(ok){a[k]=v;rec();a[k]=0}}})();return {cnt,sol}}
+PZ.sudoku={name:'Das Zahlenquadrat',atm:'crystal',
+  gen(rnd,st){
+    const N=st<=4?4:6,bw=N===4?2:3,bh=2;
+    // gefülltes Quadrat: aus Muster + Zufallsumbenennung
+    const base=[];for(let y=0;y<N;y++)for(let x=0;x<N;x++)base.push(((y%bh)*bw+((y/bh)|0)+x)%N+1);
+    const map=shuffled(Array.from({length:N},(_,i)=>i+1),rnd);let full=base.map(v=>map[v-1]);
+    const g=full.slice(),cells=shuffled(Array.from({length:N*N},(_,i)=>i),rnd),keep=st<=2?8:(st<=4?6:14);
+    for(const c of cells){if(g.filter(Boolean).length<=keep)break;const v=g[c];g[c]=0;if(sdSolve(g,N,bw,bh,2).cnt!==1)g[c]=v}
+    const row=Math.floor(rnd()*N);
+    const givens=[];g.forEach((v,i)=>{if(v)givens.push(i)});
+    // die gesuchte Zeile soll nicht schon vollständig bekannt sein
+    return {N,bw,bh,full,g,row,givens:shuffled(givens,rnd)};
+  },
+  init(d){return {vals:new Array(d.N).fill(0),mods:new Array(d.N).fill(d.N),show:(i,v)=>String(v+1),labels:Array.from({length:d.N},(_,i)=>'Spalte '+ALPHA[i])}},
+  view(d,mine){const N=d.N;let h='<table class="map" style="margin:8px auto"><tr><th></th>'+Array.from({length:N},(_,i)=>'<th>'+ALPHA[i]+'</th>').join('')+'</tr>';
+    for(let y=0;y<N;y++){h+='<tr><th>'+(y+1)+'</th>';for(let x=0;x<N;x++){const c=y*N+x,k=mine.indexOf(c)>=0;
+      h+='<td style="font-weight:800;font-size:18px;'+(x%d.bw===d.bw-1&&x<N-1?'border-right:3px solid var(--line);':'')+(y%d.bh===d.bh-1&&y<N-1?'border-bottom:3px solid var(--line);':'')+(y===d.row?'background:rgba(255,200,80,.12);':'')+'">'+(k?d.g[c]:'')+'</td>'}h+='</tr>'}
+    return h+'</table>'},
+  role(r,d,u){
+    const Q='<p class="lead">Gesucht ist die komplette <b>Zeile '+(d.row+1)+'</b> des Zahlenquadrats.</p>';
+    if(r==='mechanic')return Q+mechWord(u,'Du stellst die Zahlen der Zeile '+(d.row+1)+' von links nach rechts ein.','Zeile prüfen');
+    const p=rolePieces(r,d.givens.length,INFO),mine=p.map(i=>d.givens[i]),rule=r==='decode'?'<div class="hint">Die Regel: In jeder Zeile, jeder Spalte und jedem dick umrandeten Kasten kommt jede Zahl von 1 bis '+d.N+' genau einmal vor.</div>':'';
+    if(!p.length&&!rule)return Q+noPiece();
+    return Q+'<p>Diese Felder kennst du. Die anderen kennen weitere. Tragt alles zusammen ein.</p>'+PZ.sudoku.view(d,mine)+rule;
+  },
+  explain(d){return ['Ein Zahlenquadrat mit '+d.N+' mal '+d.N+' Feldern. In jeder Zeile, jeder Spalte und jedem dick umrandeten Kasten steht jede Zahl von 1 bis '+d.N+' genau einmal.','Die bekannten Zahlen sind auf euch verteilt. Zeichnet das Quadrat auf und tragt sie zusammen ein.','Füllt die Lücken mit der Regel. Die Mechaniker/in stellt die gesuchte Zeile ein.']},
+  hint(d,n){const N=d.N,r=d.row;if(n===1)return 'Sucht eine Zeile, Spalte oder einen Kasten, in dem nur noch ein Feld fehlt. Dort ist die Zahl klar.';if(n===2)return 'In Zeile '+(r+1)+', Spalte A steht '+d.full[r*N]+'.';return 'Zeile '+(r+1)+' beginnt mit '+d.full[r*N]+' '+d.full[r*N+1]+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,d.N))return null;let ok=0;for(let i=0;i<d.N;i++)if(a.vals[i]+1===d.full[d.row*d.N+i])ok++;return ok===d.N?{ok:true}:{wrong:ok+' von '+d.N+' Zahlen stimmen.'}}
+};
+
+/* 19. Drehringe (Raum) */
+const RSYM=['✦','☾','◆','✚','●','▲','★','◐'];
+const RNAME=['äußere','mittlere','innere'];
+function ringTop(d,k,r){const n=d.n;return d.rings[k][((n-(r%n))%n+n)%n]}
+function ringSvg(d,u){const step=360/d.n,rad=[128,94,60],col=['#5fd4ff','#c49bff','#ffd85a'];
+  return '<svg id="rsvg" viewBox="0 0 300 300" style="width:min(300px,80vw);height:auto;display:block;margin:6px auto"><circle cx="150" cy="150" r="24" fill="#c9a24a"/>'+rad.map((r,k)=>'<g style="transition:transform .45s cubic-bezier(.3,1.4,.5,1);transform-origin:150px 150px;transform:rotate('+(u.rot[k]*step)+'deg)"><circle cx="150" cy="150" r="'+r+'" fill="none" stroke="'+col[k]+'" stroke-opacity=".45" stroke-width="28"/>'+d.rings[k].map((s,i)=>{const a=(i*step-90)*Math.PI/180;return '<text x="'+(150+Math.cos(a)*r)+'" y="'+(150+Math.sin(a)*r)+'" style="transform-box:fill-box;transform-origin:center;transition:transform .45s;transform:rotate('+(-u.rot[k]*step)+'deg)" font-size="18" text-anchor="middle" dominant-baseline="central" fill="#fff">'+s+'</text>'}).join('')+'</g>').join('')+'<polygon points="138,0 162,0 150,16" fill="#fff"/></svg>'}
+PZ.rings={name:'Die Drehringe',atm:'gate',
+  gen(rnd,st){const n=st<=2?6:8,rings=[0,1,2].map(()=>shuffled(RSYM.slice(0,n),rnd)),tg=rings.map(r=>pick(r,rnd));
+    const couple=st<=2?[[],[],[]]:(st<=4?[[],[[2,1]],[]]:[[[1,1]],[[2,-1]],[]]);
+    let start;do{start=[0,1,2].map(()=>Math.floor(rnd()*n))}while([0,1,2].every(k=>rings[k][((n-start[k]%n)%n)]===tg[k]));
+    return {n,rings,tg,couple,start}},
+  init(d){return {rot:d.start.slice(),vals:d.start.slice(),n:d.n,couple:d.couple}},
+  role(r,d,u){
+    if(r==='mechanic'){window.__ru=u;window.__rd=d;return '<p class="lead">Du drehst die drei Ringe. Oben (▼) muss bei jedem Ring das richtige Zeichen stehen. Welches, weiß deine Gruppe.</p><div id="rwrap">'+ringSvg(d,u)+'</div><div class="keys" style="grid-template-columns:repeat(3,1fr)">'+RNAME.map((nm,k)=>'<button class="key" data-act="rrot" data-k="'+k+'">⟳ '+nm[0].toUpperCase()+nm.slice(1)+'r</button>').join('')+'</div><div><button class="btn primary" data-act="xsub">Ringe prüfen</button></div>'+fb()+'<p class="small">Ein Fehlversuch kostet '+penTry()+' Sekunden.</p>'}
+    const n=3+(d.couple.some(c=>c.length)?1:0),p=rolePieces(r,n,INFO);if(!p.length)return noPiece();
+    const note=d.couple[0].length?'Getriebeschaden: Dreht man den äußeren Ring, dreht sich der mittlere einen Schritt mit. Dreht man den mittleren, dreht sich der innere einen Schritt zurück.':'Getriebeschaden: Dreht man den mittleren Ring, dreht sich der innere einen Schritt mit.';
+    return '<p class="lead">Das weißt du über die Drehringe:</p><ul class="list">'+p.map(i=>i<3?'<li><span class="k">'+(RNAME[i]+'r').toUpperCase()+' RING</span><span>muss oben <b style="font-size:22px">'+d.tg[i]+'</b> zeigen</span></li>':'<li><span>'+note+'</span></li>').join('')+'</ul>';
+  },
+  explain(d){return ['Drei Ringe mit Zeichen müssen so gedreht werden, dass oben bei jedem Ring das richtige Zeichen steht.','Welches Zeichen das ist, ist auf euch verteilt'+(d.couple.some(c=>c.length)?'. Achtung: Ein Hinweis verrät, dass sich manche Ringe gegenseitig mitdrehen':'')+'.','Die Mechaniker/in dreht und prüft.']},
+  hint(d,n){if(n===1)return d.couple.some(c=>c.length)?'Stellt zuerst den Ring ein, der andere mitdreht. Den mitgedrehten Ring korrigiert ihr zum Schluss.':'Dreht jeden Ring einzeln, bis sein Zeichen unter dem Pfeil steht.';if(n===2)return 'Der äußere Ring muss oben '+d.tg[0]+' zeigen.';return 'Außen '+d.tg[0]+', in der Mitte '+d.tg[1]+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,3))return null;let ok=0;for(let k=0;k<3;k++)if(ringTop(d,k,a.vals[k])===d.tg[k])ok++;return ok===3?{ok:true}:{wrong:ok+' von 3 Ringen stimmen.'}}
+};
+document.addEventListener('click',function(e){
+  const b=e.target.closest&&e.target.closest('[data-act=rrot]');if(!b)return;const u=window.__ru,d=window.__rd;if(!u||!d)return;
+  const k=Number(b.dataset.k);u.rot[k]++;(d.couple[k]||[]).forEach(c=>{u.rot[c[0]]+=c[1]});u.vals=u.rot.map(x=>((x%d.n)+d.n)%d.n);
+  try{beep(300+k*120,.1,'triangle',.06)}catch(x){}
+  const w=document.getElementById('rwrap');if(w){const svg=w.querySelector('svg');const tmp=document.createElement('div');tmp.innerHTML=ringSvg(d,u);const ns=tmp.firstChild;
+    // sanft drehen: nur die transform-Werte übernehmen
+    const g1=svg.querySelectorAll('g'),g2=ns.querySelectorAll('g');g1.forEach((g,i)=>{g.style.transform=g2[i].style.transform;const t1=g.querySelectorAll('text'),t2=g2[i].querySelectorAll('text');t1.forEach((t,j)=>{t.style.transform=t2[j].style.transform})})}
+});
+
+/* 20. Lichtstrahl (Raum) */
+PZ.mirror={name:'Der Lichtstrahl',atm:'crystal',
+  SIDES:['Oben','Rechts','Unten','Links'],
+  run(d,ori){const N=d.N;let x=-1,y=d.entry,dx=1,dy=0,hits=0;for(let s=0;s<200;s++){x+=dx;y+=dy;if(x<0)return {side:3,pos:y,hits};if(x>=N)return {side:1,pos:y,hits};if(y<0)return {side:0,pos:x,hits};if(y>=N)return {side:2,pos:x,hits};
+    const m=d.mir.indexOf(y*N+x);if(m>=0){hits++;if(ori[m]==='/'){const t=dx;dx=-dy;dy=-t}else{const t=dx;dx=dy;dy=t}}}return {side:1,pos:0,hits}},
+  gen(rnd,st){const N=st<=2?4:(st<=4?5:6),M=st<=2?3:(st<=4?5:7),minH=st<=2?2:(st<=4?3:4);
+    for(let t=0;t<500;t++){const mir=shuffled(Array.from({length:N*N},(_,i)=>i),rnd).slice(0,M),ori=mir.map(()=>rnd()<.5?'/':'\\'),entry=Math.floor(rnd()*N);
+      const d={N,mir,ori,entry},res=PZ.mirror.run(d,ori);if(res.hits<minH)continue;
+      // ohne die Ausrichtungen darf man es nicht raten können: mind. eine andere Ausrichtung ergibt einen anderen Ausgang
+      d.ans=[res.side,res.pos];return d}
+    return {N:4,mir:[1,5,9],ori:['\\','/','\\'],entry:0,ans:[2,1]}},
+  init(d){return {vals:[0,0],mods:[4,d.N],show:(i,v)=>i===0?PZ.mirror.SIDES[v]:(v+1)+' ('+ALPHA[v]+')',labels:['Seite','Stelle']}},
+  view(d,show){const N=d.N;let h='<table class="map" style="margin:8px auto"><tr><th></th>'+Array.from({length:N},(_,i)=>'<th>'+ALPHA[i]+'</th>').join('')+'</tr>';
+    for(let y=0;y<N;y++){h+='<tr><th>'+(y===d.entry?'➤ ':'')+(y+1)+'</th>';for(let x=0;x<N;x++){const m=d.mir.indexOf(y*N+x);h+='<td style="font-size:22px;font-weight:900;color:#9ff3ff">'+(m>=0?(show?d.ori[m]:'◇'):'')+'</td>'}h+='</tr>'}
+    return h+'</table>'},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Ein Lichtstrahl wird von links in Zeile '+(d.entry+1)+' in das Feld geschickt. Du gibst ein, wo er das Feld wieder verlässt: Seite und Stelle (Spalte bei oben/unten, Zeile bei links/rechts).','Ausgang melden');
+    if(r==='research')return '<p class="lead">Du hast den Plan: Der Strahl kommt bei ➤ von links herein. In den Feldern mit ◇ stehen Spiegel. Wie sie schräg stehen, wissen die anderen.</p>'+PZ.mirror.view(d,false);
+    const p=rolePieces(r,d.mir.length,['decode','cartographer','radio','guard']);if(!p.length)return noPiece();
+    const rule=r==='decode'?'<div class="hint">So lenken die Spiegel: Bei / wird ein Strahl von links nach oben gelenkt, von unten nach rechts. Bei \\ wird ein Strahl von links nach unten gelenkt, von oben nach rechts. Ohne Spiegel geht er geradeaus.</div>':'';
+    return '<p class="lead">Du weißt, wie einige Spiegel stehen:</p><ul class="list">'+p.map(i=>{const c=d.mir[i];return '<li><span class="k">FELD '+ALPHA[c%d.N]+((c/d.N|0)+1)+'</span><span style="font-size:22px;font-weight:900">'+d.ori[i]+'</span></li>'}).join('')+'</ul>'+rule;
+  },
+  explain(d){return ['Ein Lichtstrahl läuft durch ein Feld mit '+d.N+' mal '+d.N+' Kästchen und wird von Spiegeln umgelenkt.','Die Forscher/in hat den Plan mit den Spiegel-Feldern. Wie jeder Spiegel steht (/ oder \\), ist auf die anderen verteilt.','Verfolgt den Strahl Feld für Feld mit dem Finger. Die Mechaniker/in meldet, wo er herauskommt.']},
+  hint(d,n){if(n===1)return 'Zeichnet den Plan ab und tragt die Spiegel ein. Dann Feld für Feld weiter, bei jedem Spiegel die Richtung ändern.';if(n===2)return 'Der Strahl verlässt das Feld '+(['oben','rechts','unten','links'][d.ans[0]])+'.';return 'Der Strahl kommt '+(['oben','rechts','unten','links'][d.ans[0]])+' bei Stelle '+(d.ans[1]+1)+' heraus.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,2))return null;return a.vals[0]===d.ans[0]&&a.vals[1]===d.ans[1]?{ok:true}:{wrong:'Dort kommt der Strahl nicht heraus.'}}
+};
+
+/* 21. Musterbild beschreiben (Team & Sinne) */
+PZ.describe={name:'Das Musterbild',atm:'side',
+  gen(rnd,st){const W=st<=2?2:3,H=st<=2?2:(st<=4?3:4),cells=Array.from({length:W*H},()=>Math.floor(rnd()*SHAPES.length));return {W,H,cells}},
+  init(d){return {vals:new Array(d.W*d.H).fill(0),mods:new Array(d.W*d.H).fill(SHAPES.length),show:(i,v)=>SHAPES[v],labels:Array.from({length:d.W*d.H},(_,i)=>ALPHA[i%d.W]+((i/d.W|0)+1))}},
+  pic(d,mine){let h='<div style="display:grid;grid-template-columns:repeat('+d.W+',64px);gap:6px;justify-content:center;margin:10px 0">';
+    d.cells.forEach((s,i)=>{const k=mine.indexOf(i)>=0;h+='<span style="width:64px;height:64px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;background:'+(k?'var(--raise)':'transparent')+'">'+(k?img(s).replace('<img ','<img style="width:46px;height:46px;object-fit:contain" '):'<span style="opacity:.35">?</span>')+'</span>'});return h+'</div>'},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Deine Gruppe sieht ein Musterbild aus Zeichen. Du siehst es nicht! Lass es dir genau beschreiben und stelle jedes Feld ein (A1 ist oben links).','Bild prüfen');
+    const p=rolePieces(r,d.cells.length,INFO);if(!p.length)return noPiece();
+    return '<p class="lead">Du siehst einen Teil des Musterbilds. Beschreibe es der Mechaniker/in, ohne das iPad zu zeigen! Spalten sind Buchstaben, Zeilen sind Zahlen.</p>'+PZ.describe.pic(d,p);
+  },
+  explain(d){return ['Ein Musterbild aus '+(d.W*d.H)+' Zeichen muss nachgebaut werden. Nur die anderen sehen Teile davon, die Mechaniker/in sieht nichts.','Beschreibt eure Felder genau, zum Beispiel: „In A1 ist ein Stern.“ Zeigen gilt nicht!','Die Mechaniker/in stellt jedes Feld ein und prüft.']},
+  hint(d,n){if(n===1)return 'Geht Feld für Feld vor: erst Spalte A von oben nach unten, dann B.';if(n===2)return 'In A1 ist '+SHAPES[d.cells[0]]+'.';return 'In A1 ist '+SHAPES[d.cells[0]]+', in B1 ist '+SHAPES[d.cells[1]]+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,d.cells.length))return null;let ok=0;d.cells.forEach((s,i)=>{if(a.vals[i]===s)ok++});return ok===d.cells.length?{ok:true}:{wrong:ok+' von '+d.cells.length+' Feldern stimmen.'}}
+};
+
+/* 22. Tonfolge (Team & Sinne) */
+const TFREQ=[262,330,392,494,587];
+PZ.tones={name:'Die Tonfolge',atm:'gate',
+  gen(rnd,st){const K=st<=2?3:(st<=4?4:5),L=st<=2?4:(st<=4?5:6),sy=shuffled([0,1,2,3,4,5],rnd).slice(0,K),fr=shuffled(TFREQ.slice(0,K),rnd);let seq;do{seq=Array.from({length:L},()=>Math.floor(rnd()*K))}while(new Set(seq).size<Math.min(K,3));return {K,L,sy,fr,seq}},
+  init(d){return {inp:[]}},
+  role(r,d,u){
+    if(r==='mechanic')return '<p class="lead">Deine Gruppe hört eine Tonfolge mit '+d.L+' Tönen. Jeder Ton gehört zu einem Zeichen. Drücke die Zeichen in der richtigen Reihenfolge. Ein falsches Zeichen setzt die Eingabe zurück.</p><p class="small">Eingegeben: '+u.inp.length+' von '+d.L+'</p><div class="keys" style="grid-template-columns:repeat('+Math.min(d.K,3)+',1fr)">'+d.sy.map((s,i)=>'<button class="key" data-act="xpress" data-i="'+i+'" style="display:flex;flex-direction:column;align-items:center;gap:4px">'+img(s).replace('<img ','<img style="width:40px;height:40px;object-fit:contain" ')+'<span>'+SHAPES[s]+'</span></button>').join('')+'</div>'+fb();
+    let h='';
+    if(r==='research')h+='<p class="lead">Du hast die Tonfolge. Spielt sie ab und hört genau hin, so oft ihr wollt.</p><div><button class="btn primary" data-tplay="'+d.seq.map(i=>d.fr[i]).join(',')+'">▶ Tonfolge abspielen</button></div>';
+    const p=rolePieces(r,d.K,['decode','cartographer','radio','guard']);
+    if(p.length)h+='<p class="lead">Das sind deine Vergleichstöne. Spielt sie ab und vergleicht sie mit der Tonfolge.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'+p.map(i=>'<button class="btn" data-tone="'+d.fr[i]+'" style="display:flex;align-items:center;gap:8px">'+img(d.sy[i]).replace('<img ','<img style="width:32px;height:32px;object-fit:contain" ')+' '+SHAPES[d.sy[i]]+' ♪</button>').join('')+'</div>';
+    return h||noPiece();
+  },
+  explain(d){return ['Eine Tonfolge aus '+d.L+' Tönen öffnet das Schloss. Die Forscher/in kann sie abspielen.','Jeder Ton gehört zu einem Zeichen. Die Vergleichstöne mit den Zeichen sind auf die anderen verteilt.','Hört genau hin und vergleicht. Tipp: Hoch oder tief? Die Mechaniker/in drückt die Zeichen in der richtigen Reihenfolge.']},
+  hint(d,n){if(n===1)return 'Spielt alle Vergleichstöne nacheinander ab und ordnet sie von tief nach hoch.';if(n===2)return 'Der erste Ton ist '+SHAPES[d.sy[d.seq[0]]]+'.';return 'Die Folge beginnt mit '+SHAPES[d.sy[d.seq[0]]]+', '+SHAPES[d.sy[d.seq[1]]]+'.'},
+  act(d,u,a){if(a.op!=='press'||typeof a.i!=='number'||a.i<0||a.i>=d.K)return null;
+    if(a.i!==d.seq[u.inp.length]){u.inp=[];return {wrong:'Falsches Zeichen. Die Eingabe beginnt von vorn.'}}
+    u.inp.push(a.i);try{beep(d.fr[a.i],.18,'sine',.08)}catch(x){}return u.inp.length===d.L?{ok:true}:{render:true}}
+};
+document.addEventListener('click',function(e){
+  const t=e.target.closest&&e.target.closest('[data-tone],[data-tplay]');if(!t)return;
+  if(t.dataset.tone){try{beep(Number(t.dataset.tone),.6,'sine',.12)}catch(x){}return}
+  const fs=t.dataset.tplay.split(',').map(Number);t.disabled=true;fs.forEach((f,i)=>setTimeout(()=>{try{beep(f,.45,'sine',.12)}catch(x){}},i*650));setTimeout(()=>{t.disabled=false},fs.length*650+200);
+});
+
+/* 23. Suchbild (Team & Sinne) */
+const SB_COL=[{n:'rote',c:'#ff5468'},{n:'blaue',c:'#5aa0ff'},{n:'grüne',c:'#4be39a'},{n:'gelbe',c:'#ffd23c'}];
+const SB_FORM=[{n:'Kreise',p:'c'},{n:'Dreiecke',p:'t'},{n:'Quadrate',p:'s'},{n:'Sterne',p:'x'}];
+function sbShape(o){const x=o.x,y=o.y,r=o.r,c=o.c;
+  if(o.f==='c')return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+c+'"/>';
+  if(o.f==='s')return '<rect x="'+(x-r)+'" y="'+(y-r)+'" width="'+2*r+'" height="'+2*r+'" fill="'+c+'" transform="rotate('+o.a+' '+x+' '+y+')"/>';
+  if(o.f==='t')return '<polygon points="'+x+','+(y-r)+' '+(x+r)+','+(y+r*.8)+' '+(x-r)+','+(y+r*.8)+'" fill="'+c+'" transform="rotate('+o.a+' '+x+' '+y+')"/>';
+  let p='';for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;p+=(x+Math.cos(a)*rr).toFixed(1)+','+(y+Math.sin(a)*rr).toFixed(1)+' '}return '<polygon points="'+p+'" fill="'+c+'"/>'}
+PZ.spot={name:'Das Suchbild',atm:'side',
+  gen(rnd,st){const Q=st<=2?3:4,tot=st<=2?26:(st<=4?40:55),objs=[],G=st<=2?6:8;const cells=shuffled(Array.from({length:G*G},(_,i)=>i),rnd).slice(0,tot);
+    cells.forEach(c=>{objs.push({x:(c%G+.5)*(400/G)+(rnd()-.5)*18,y:((c/G|0)+.5)*(300/G)+(rnd()-.5)*14,r:st<=2?13:10,a:Math.floor(rnd()*60),ci:Math.floor(rnd()*4),fi:Math.floor(rnd()*4)})});
+    const qs=[],seen={};
+    for(let t=0;t<60&&qs.length<Q;t++){const ci=Math.floor(rnd()*4),fi=Math.floor(rnd()*4),k=ci+'-'+fi;if(seen[k])continue;
+      const n=objs.filter(o=>o.ci===ci&&o.fi===fi).length;if(n<1||n>9)continue;seen[k]=1;qs.push({t:'Wie viele '+SB_COL[ci].n+' '+SB_FORM[fi].n+'?',n})}
+    while(qs.length<Q){const fi=qs.length%4,n=Math.min(9,objs.filter(o=>o.fi===fi&&o.ci===0).length);qs.push({t:'Wie viele '+SB_COL[0].n+' '+SB_FORM[fi].n+'?',n})}
+    return {objs:objs.map(o=>({x:+o.x.toFixed(1),y:+o.y.toFixed(1),r:o.r,a:o.a,c:SB_COL[o.ci].c,f:SB_FORM[o.fi].p})),qs,secs:st<=2?25:(st<=4?20:15)}},
+  init(d){return {vals:new Array(d.qs.length).fill(0),mods:new Array(d.qs.length).fill(10),show:(i,v)=>String(v),labels:d.qs.map((q,i)=>'Frage '+(i+1))}},
+  pic(d){return '<svg viewBox="0 0 400 300" style="width:100%;max-width:520px;display:block;margin:0 auto;background:rgba(255,255,255,.05);border-radius:12px">'+d.objs.map(sbShape).join('')+'</svg>'},
+  role(r,d,u){
+    if(r==='mechanic')return mechWord(u,'Deine Gruppe zählt im Suchbild und beantwortet '+d.qs.length+' Fragen. Jede Antwort ist eine Ziffer. Stelle sie in der Reihenfolge der Fragen ein.','Antworten prüfen');
+    const p=rolePieces(r,d.qs.length,INFO);
+    return '<p class="lead">Das Suchbild erscheint nur <b>'+d.secs+' Sekunden</b> lang, ihr könnt es aber mehrmals öffnen. Teilt euch das Zählen auf!</p><div style="text-align:center"><button class="btn primary" data-sbshow="'+d.secs+'">Suchbild zeigen</button><div class="sbpic" style="display:none;margin-top:8px">'+PZ.spot.pic(d)+'</div></div>'
+      +(p.length?'<ul class="list">'+p.map(i=>'<li><span class="k">FRAGE '+(i+1)+'</span><span>'+esc(d.qs[i].t)+'</span></li>').join('')+'</ul>':'');
+  },
+  explain(d){return ['Im Suchbild sind viele bunte Formen. Es erscheint nur kurz, kann aber wieder geöffnet werden.','Die '+d.qs.length+' Fragen sind auf euch verteilt. Jede Antwort ist eine Zahl von 0 bis 9.','Teilt das Zählen auf (z. B. eine Person zählt links, eine rechts). Die Mechaniker/in stellt die Antworten in der Reihenfolge der Fragen ein.']},
+  hint(d,n){if(n===1)return 'Teilt das Bild in Hälften auf und zählt jede Hälfte getrennt.';if(n===2)return 'Antwort auf Frage 1: '+d.qs[0].n+'.';return 'Frage 1: '+d.qs[0].n+', Frage 2: '+d.qs[1].n+'.'},
+  act(d,u,a){if(a.op!=='sub'||!nums(a.vals,d.qs.length))return null;let ok=0;d.qs.forEach((q,i)=>{if(a.vals[i]===q.n)ok++});return ok===d.qs.length?{ok:true}:{wrong:ok+' von '+d.qs.length+' Antworten stimmen.'}}
+};
+document.addEventListener('click',function(e){
+  const b=e.target.closest&&e.target.closest('[data-sbshow]');if(!b)return;const el=b.parentNode.querySelector('.sbpic');if(!el)return;
+  el.style.display='block';b.disabled=true;let t=Number(b.dataset.sbshow);const lb=b.textContent;b.textContent='Noch '+t+' s';
+  const iv=setInterval(()=>{t--;if(t<=0){clearInterval(iv);el.style.display='none';b.disabled=false;b.textContent=lb}else b.textContent='Noch '+t+' s'},1000);
+});
+
+/* ================= Rätselfamilien =================
+   Jeder Escape Room gehört zu einer Familie und zieht seine Rätsel vor allem daraus.
+   Zahlen & Codes: Vulkan, Der Schwarm · Logik & Detektiv: Bibliothek, Eiswelt
+   Sehen & Raum: Wrack, Drachenhöhle · Team & Sinne: Finlorién, neuer Raum */
+const FAMILIES={
+  zahlen:['symbols','pyramid','sequence','lock','scales','cipher'],
+  logik:['logic','wires','switches','truth','suspects','sudoku'],
+  raum:['map','maze','grid','rings','mirror'],
+  team:['morse','memory','syllables','describe','tones','spot']
+};
+
 function px(id){return typeof id==='string'&&id.indexOf('x:')===0?id.slice(2):null}
-function expandOrder(tpl,seed){const types=shuffled(Object.keys(PZ),rngFor(seed,500));let k=0;return tpl.map(id=>id==='X'?'x:'+types[(k++)%types.length]:id)}
-return {PZ:PZ,px:px,expandOrder:expandOrder,morseHtml:morseHtml,alphaStrip:alphaStrip};
+function expandOrder(tpl,seed,fam){
+  const R=rngFor(seed,500);
+  if(!fam||!FAMILIES[fam]){const types=shuffled(Object.keys(PZ),R);let k=0;return tpl.map(id=>id==='X'?'x:'+types[(k++)%types.length]:id)}
+  /* etwa drei Viertel aus der eigenen Familie, jedes vierte Rätsel als Abwechslung aus einer anderen Familie */
+  const own=shuffled(FAMILIES[fam].filter(t=>PZ[t]),R),other=shuffled(Object.keys(PZ).filter(t=>own.indexOf(t)<0),rngFor(seed,600+Object.keys(FAMILIES).indexOf(fam)*37));
+  let k=0,a=0,b=0,last='';
+  return tpl.map(id=>{if(id!=='X')return id;let t;
+    if(k%4===3)t=other[(b++)%other.length];else{t=own[(a++)%own.length];if(t===last&&own.length>1)t=own[(a++)%own.length]}
+    k++;last=t;return 'x:'+t});
+}
+return {PZ:PZ,px:px,expandOrder:expandOrder,morseHtml:morseHtml,alphaStrip:alphaStrip,FAMILIES:FAMILIES};
 };
 })(window);
