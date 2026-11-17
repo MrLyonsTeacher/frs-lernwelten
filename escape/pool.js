@@ -5,7 +5,7 @@
 root.FRSPool=function(c){
 const esc=c.esc,rolePieces=c.rolePieces,existing=c.existing,fb=c.fb,img=c.img,SHAPES=c.SHAPES,shuffled=c.shuffled,rngFor=c.rngFor,beep=c.beep,nums=c.nums,penTry=c.penTry;
 /* ---------- Rätsel-Pool: abwechslungsreiche Kammern ---------- */
-const INFO=['research','decode','cartographer','radio'];
+const INFO=['research','decode','cartographer','radio','guard'];
 const WORDS={
   3:['ARM', 'BAD', 'BUS', 'EIS', 'FEE', 'HUT', 'KUH', 'MUT', 'OHR', 'SEE', 'TAG', 'TOR', 'UHR', 'ZUG', 'TAL', 'ELF', 'RAD', 'HAI', 'REH', 'ZOO'],
   4:['BAUM', 'BERG', 'BOOT', 'BURG', 'DACH', 'DORF', 'EULE', 'FELS', 'GOLD', 'HAUS', 'HERZ', 'KORB', 'MOND', 'PFAD', 'RING', 'ROSE', 'SAND', 'SEIL', 'STEG', 'TURM', 'WALD', 'WIND', 'WOLF', 'ZELT', 'MEER', 'NEST', 'LUFT', 'BALL'],

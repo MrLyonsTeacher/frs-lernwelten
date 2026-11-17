@@ -49,9 +49,12 @@ function rolePieces(r,n,list){
   if(k<0)return [];
   /* gleichmäßig verteilen: jede Rolle bekommt etwas; gibt es weniger Teile als Rollen, teilen sich Rollen ein Teil */
   const m=ex.length;if(n<=0)return [];
-  if(n<m)return [k%n];
+  if(n<m){const out=[k%n];
+  if(window.__rpLog)window.__rpLog.push([r,n,list.join(','),out.slice()]);
+  return out}
   const out=[],a=Math.floor(k*n/m),b=Math.floor((k+1)*n/m);
   for(let i=a;i<b;i++)out.push(i);
+  if(window.__rpLog)window.__rpLog.push([r,n,list.join(','),out.slice()]);
   return out;
 }
 const toastEl=$('#toast');let toastT=0;
@@ -425,7 +428,7 @@ function showEnd(){
 /* ---------- Rollenkarte im Runenstein ---------- */
 function guardBody(){
   const hs=[];for(let i=1;i<=G.chHints;i++)hs.push('<div class="hint">'+esc(PZ[px(G.cur)].hint(G.data[G.cur],i))+'</div>');
-  return '<p class="lead">Du bist für die Erklärungen zuständig. Sag der Gruppe zu Beginn, wie die Rune funktioniert, und hilf allen weiter, wenn sie nicht mehr wissen, was zu tun ist. Du siehst keine Rätselteile, dafür kennst du die Regeln.</p>'
+  return '<p class="lead">Du bist für die Erklärungen zuständig. Sag der Gruppe zu Beginn, wie die Rune funktioniert, und hilf allen weiter, wenn sie nicht mehr wissen, was zu tun ist. Außerdem kennst du die Regeln und bringst deine eigenen Hinweise ein.</p>'
     +'<h3 class="sub">Das erklärst du bei dieser Rune</h3>'
     +'<ul class="log">'+PZ[px(G.cur)].explain(G.data[G.cur]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>'
     +'<h3 class="sub">Allgemein</h3>'
@@ -436,7 +439,16 @@ function guardBody(){
     +(hs.length?'<div class="hints">'+hs.join('')+'</div>':'');
 }
 function roleBody(r){
-  if(r==='guard')return guardBody();
+  if(r==='guard'){
+    /* Wächter/in: eigene Hinweise des Rätsels plus Erklärungen */
+    let own='';
+    if(G.cur!=='valves'){try{own=roleBodyFor('guard')}catch(e){own=''}}
+    if(own&&own.indexOf('keinen eigenen Hinweis')<0&&own.indexOf('Hilf mit, die Hinweise')<0)own='<h3 class="sub">Deine Hinweise</h3>'+own+'<h3 class="sub">Deine Aufgabe als Wächter/in</h3>';else own='';
+    return own+guardBody();
+  }
+  return roleBodyFor(r);
+}
+function roleBodyFor(r){
   return PZ[px(G.cur)].role(r,G.data[G.cur],G.pu);
 }
 const modalEl=$('#modal');
@@ -1000,5 +1012,5 @@ paintMode();paintStage();
 pad.hidden=true;abtn.hidden=true;
 assetsP.then(()=>{demo=buildWorld(12345,6,1);cam.x=demo.clear[0].cx;cam.y=demo.clear[0].cy});
 requestAnimationFrame(loop);
-if(DEV)window.__wl={G:G,enterChamber:setCi,RM:RM,ents:()=>ents,world:()=>G.world,walkable:walkable,chamberDone:chamberDone,handleAct:handleAct,PZ:PZ,px:px,beginGame:beginGame,tp:(x,y)=>{const m=meEnt();m.x=m.rx=x;m.y=m.ry=y},held:held,interact:interact,buildWorld:buildWorld,ready:()=>ASSETS_READY};
+if(DEV)window.__wl={G:G,genData:genData,roleBody:roleBody,ROLE_SETS:ROLE_SETS,existing:existing,enterChamber:setCi,RM:RM,ents:()=>ents,world:()=>G.world,walkable:walkable,chamberDone:chamberDone,handleAct:handleAct,PZ:PZ,px:px,beginGame:beginGame,tp:(x,y)=>{const m=meEnt();m.x=m.rx=x;m.y=m.ry=y},held:held,interact:interact,buildWorld:buildWorld,ready:()=>ASSETS_READY};
 })();

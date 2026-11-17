@@ -365,9 +365,12 @@ function rolePieces(r,n,list){
   if(k<0)return [];
   /* gleichmäßig verteilen: jede Rolle bekommt etwas; gibt es weniger Teile als Rollen, teilen sich Rollen ein Teil */
   const m=ex.length;if(n<=0)return [];
-  if(n<m)return [k%n];
+  if(n<m){const out=[k%n];
+  if(window.__rpLog)window.__rpLog.push([r,n,list.join(','),out.slice()]);
+  return out}
   const out=[],a=Math.floor(k*n/m),b=Math.floor((k+1)*n/m);
   for(let i=a;i<b;i++)out.push(i);
+  if(window.__rpLog)window.__rpLog.push([r,n,list.join(','),out.slice()]);
   return out;
 }
 
@@ -1391,7 +1394,7 @@ function chName(id){return CH_NAME[id]||(px(id)&&PZ[px(id)]?PZ[px(id)].name:'')}
 
 function guardBody(){
   const hs=[];for(let i=1;i<=G.chHints;i++)hs.push('<div class="hint">'+esc(hintText(G.cur,i))+'</div>');
-  return '<p class="lead">Du bist für die Erklärungen zuständig. Sag der Gruppe zu Beginn, wie das Rätsel funktioniert, und hilf allen weiter, wenn sie nicht mehr wissen, was zu tun ist. Du siehst keine Rätselteile, dafür kennst du die Regeln.</p>'
+  return '<p class="lead">Du bist für die Erklärungen zuständig. Sag der Gruppe zu Beginn, wie das Rätsel funktioniert, und hilf allen weiter, wenn sie nicht mehr wissen, was zu tun ist. Außerdem kennst du die Regeln und bringst deine eigenen Hinweise ein.</p>'
     +'<h3 class="sub">Das erklärst du bei diesem Rätsel</h3>'
     +'<ul class="log">'+explain(G.cur).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>'
     +'<h3 class="sub">Allgemein</h3>'
@@ -1480,7 +1483,16 @@ function metaRole(r){
   return '<p class="lead">Nenne deiner Gruppe deine Schatzziffern (siehe unten). Die Summe aller Ziffern öffnet das Siegel.</p>';
 }
 function roleBody(r){
-  if(r==='guard')return guardBody();
+  if(r==='guard'){
+    /* Wächter/in: eigene Hinweise des Rätsels plus Erklärungen */
+    let own='';
+    if(G.cur!=='valves'){try{own=roleBodyFor('guard')}catch(e){own=''}}
+    if(own&&own.indexOf('keinen eigenen Hinweis')<0&&own.indexOf('Hilf mit, die Hinweise')<0)own='<h3 class="sub">Deine Hinweise</h3>'+own+'<h3 class="sub">Deine Aufgabe als Wächter/in</h3>';else own='';
+    return own+guardBody();
+  }
+  return roleBodyFor(r);
+}
+function roleBodyFor(r){
   if(G.cur==='gate')return gateRole(r);
   if(G.cur==='lava')return lavaRole(r);
   if(G.cur==='side')return sideRole(r);
