@@ -6,7 +6,7 @@
 (function(){
   /* Zugangscode für die verschlüsselten Vokabeln: kommt im QR-Link nach dem # (wird nie an den Server gesendet) und wird auf dem Gerät gespeichert. */
   try{ const m=(location.hash||"").match(/[#&]k=([^&]+)/); if(m){ localStorage.setItem("frs-vk", decodeURIComponent(m[1])); history.replaceState(null,"",location.pathname+location.search); } }catch(e){}
-  const PWHASH = "87b907f06e737f1dcc420a8d7f168cdccb154c7f1fae0c772e9e9441c1305092";
+  const PWHASH = "0611c7aebf739bf54950c8a449d1b58ca01d3cbe4a3bb2acd4bfe9a9384610a9";
   const STANDARD_GESPERRT = {};            // z. B. { 6:["vocabulary"] } – dann sind diese Bereiche ohne Code gesperrt
   const KEY = k => "frs-frei-" + k;
   const hex = buf => [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
