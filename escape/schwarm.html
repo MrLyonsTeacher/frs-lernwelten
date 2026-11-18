@@ -479,7 +479,7 @@ function topColor(img){try{const c=document.createElement('canvas');c.width=32;c
 async function setStation(key,showBanner){
   if(key===curKey)return;curKey=key;
   const img=await loadImg(ASSET+'scene-'+key+'.webp');curImg=img;
-  if(img){bgImg.src=img.src;const col=topColor(img);$('#skyExt').style.background='url('+skyTile()+'), linear-gradient(to top, '+col+', #000 90%)';$('#skyBlend').style.background='linear-gradient('+col+', transparent)'}
+  if(img){bgImg.src=img.src;const col=topColor(img);{const mm=col.match(/\d+/g).map(Number);FLOCK.dark=(mm[0]*.3+mm[1]*.59+mm[2]*.11)>70}$('#skyExt').style.background='url('+skyTile()+'), linear-gradient(to top, '+col+', #000 90%)';$('#skyBlend').style.background='linear-gradient('+col+', transparent)'}
   $('#scene').style.animation=key==='tor'?'none':'';afxReset(key);
   const nx=nextStation(key);hzEl.innerHTML='';
   if(nx&&key!=='tor'){if(img)hzEl.style.setProperty('--hz',hazeColor(img));const p=await loadImg(ASSET+'planet-'+nx+'.webp');if(p){const im=new Image();im.src=p.src;im.alt='';hzEl.replaceChildren(im)}hzEl.style.display='block'}else hzEl.style.display='none';
@@ -555,14 +555,36 @@ function drawFx(dt){const c=fxC,t=FX.t;c.clearRect(0,0,W,H);const k=dt*60,m=Math
         if(tw>.97){c.strokeStyle='rgba(255,255,255,.9)';c.beginPath();c.moveTo(p.x-p.r*4,p.y);c.lineTo(p.x+p.r*4,p.y);c.moveTo(p.x,p.y-p.r*4);c.lineTo(p.x,p.y+p.r*4);c.stroke()}}break}
     case 'portal':break;
   }
-  const L=swarmLevel();if(L>0){const cx=W*(-.1+.5*L),cy=H*(.6-.1*L),R=m*(.16+.36*L);
-    const g=c.createRadialGradient(cx,cy,0,cx,cy,R*1.5);g.addColorStop(0,'rgba(4,4,10,.75)');g.addColorStop(.6,'rgba(4,4,10,.35)');g.addColorStop(1,'rgba(4,4,10,0)');c.fillStyle=g;c.fillRect(0,0,W,H);
-    for(const s of FX.swarm){const a=s.a+t*.0004*s.sp,rr=s.r*R*(1+.12*Math.sin(t*.002+s.ph)),x=cx+Math.cos(a)*rr*1.35+Math.sin(t*.003+s.ph)*6,y=cy+Math.sin(a*1.3)*rr*.75+Math.cos(t*.0025+s.ph)*5;
-      if(s.red){const fl=.5+.5*Math.sin(t*.008+s.ph);c.fillStyle='rgba(255,40,50,'+(.4+fl*.6)+')';c.beginPath();c.arc(x,y,s.sz*.9,0,7);c.fill();c.fillStyle='rgba(255,40,50,'+(.12*fl)+')';c.beginPath();c.arc(x,y,s.sz*4,0,7);c.fill()}
-      else{const gl=Math.sin(t*.004+s.ph*7)>.985;c.fillStyle=gl?'rgba(235,245,255,.95)':s.sz>2?'rgba(150,158,175,.8)':'rgba(10,10,16,.95)';c.fillRect(x,y,s.sz,s.sz)}}
-    for(let k2=0;k2<5;k2++){const ang=-.7+k2*.35+Math.sin(t*.0007+k2)*.15,len=R*(.9+.5*L)*(1+.25*Math.sin(t*.001+k2*2));
-      for(let q=0;q<26;q++){const f=q/26,wv=Math.sin(t*.003+k2*3+f*6)*R*.12*f,x=cx+Math.cos(ang)*len*f-Math.sin(ang)*wv,y=cy+Math.sin(ang)*len*f+Math.cos(ang)*wv,sz=3.2*(1-f)+.6;
-        c.fillStyle=(q%9===4&&Math.sin(t*.008+k2+q)>.6)?'rgba(255,50,60,.9)':'rgba(12,12,20,'+(.9-.6*f)+')';c.fillRect(x-sz/2,y-sz/2,sz,sz)}}}
+  const L=swarmLevel();if(L>0)drawFlock(c,t,dt,L,m);
+}
+/* Schwarm als Vogel-/Fischschwarm (Boids): alle fliegen gemeinsam in eine Richtung, der Schwarm faltet sich und wogt */
+const FLOCK={b:[],init:false,pred:{x:0,y:0,t:0},dark:true};
+function flockInit(){const N=REDUCED?300:1100;FLOCK.b=Array.from({length:N},(_,i)=>{const a=Math.random()*6.283;return{x:W*.1+Math.random()*W*.2,y:H*.5+Math.random()*H*.2,vx:Math.cos(a),vy:Math.sin(a),red:Math.random()<.05,ph:Math.random()*6}});FLOCK.init=true}
+function drawFlock(c,t,dt,L,m){
+  if(!FLOCK.init)flockInit();
+  const k=Math.min(3,dt*60),B=FLOCK.b,active=Math.round(B.length*(.3+.7*L)),cx=W*(.18+.32*L),cy=H*(.34-.04*L),R=m*(.22+.38*L);
+  // Zielpunkt wandert auf einer Schleifenbahn: der Schwarm folgt, dreht und faltet sich
+  const tx=cx+Math.cos(t*.00031)*R*.9+Math.sin(t*.00071)*R*.35,ty=cy+Math.sin(t*.00043)*R*.55+Math.cos(t*.00093)*R*.2;
+  // ab und zu stößt ein „Jäger“ in den Schwarm: es entstehen Wellen und Löcher
+  const P=FLOCK.pred;if(t>P.t){P.t=t+3000+Math.random()*4000;P.x=tx+(Math.random()-.5)*R;P.y=ty+(Math.random()-.5)*R*.6;P.end=t+1400}
+  const predOn=t<P.end;
+  const vis=m*.05,sep=m*.013,sp=m*.0045*(1+.4*L),cell=vis,grid=new Map();
+  for(let i=0;i<active;i++){const b=B[i],key=((b.x/cell)|0)*7919+((b.y/cell)|0);let a=grid.get(key);if(!a){a=[];grid.set(key,a)}a.push(i)}
+  for(let i=0;i<active;i++){const b=B[i],gx=(b.x/cell)|0,gy=(b.y/cell)|0;let ax=0,ay=0,px=0,py=0,sx=0,sy=0,n=0;
+    for(let ox=-1;ox<=1;ox++)for(let oy=-1;oy<=1;oy++){const a=grid.get((gx+ox)*7919+gy+oy);if(!a)continue;
+      for(const j of a){if(j===i)continue;const o=B[j],dx=o.x-b.x,dy=o.y-b.y,d2=dx*dx+dy*dy;if(d2>vis*vis)continue;n++;ax+=o.vx;ay+=o.vy;px+=o.x;py+=o.y;if(d2<sep*sep){const d=Math.sqrt(d2)||1;sx-=dx/d;sy-=dy/d}}}
+    let fx=0,fy=0;
+    if(n){fx+=(ax/n-b.vx)*.1+(px/n-b.x)/vis*.01;fy+=(ay/n-b.vy)*.1+(py/n-b.y)/vis*.01}
+    fx+=sx*.07;fy+=sy*.07;
+    const dx=tx-b.x,dy=ty-b.y,dd=Math.hypot(dx,dy)||1;fx+=dx/dd*.022*(dd>R?2.5:1);fy+=dy/dd*.022*(dd>R?2.5:1);
+    if(predOn){const qx=b.x-P.x,qy=b.y-P.y,qd=Math.hypot(qx,qy)||1;if(qd<R*.45){fx+=qx/qd*.12;fy+=qy/qd*.12}}
+    b.vx+=fx*k;b.vy+=fy*k;const v=Math.hypot(b.vx,b.vy)||1,lim=v>1.15?1.15/v:v<.75?.75/v:1;b.vx*=lim;b.vy*=lim}
+  // zeichnen: dunkle Striche in Flugrichtung, auf dunklem Himmel metallisch hell
+  c.lineCap='round';const path=new Path2D(),ln=sp*1.5;
+  for(let i=0;i<B.length;i++){const b=B[i];b.x+=b.vx*sp*k;b.y+=b.vy*sp*k;if(i>=active||b.red)continue;path.moveTo(b.x,b.y);path.lineTo(b.x-b.vx*ln,b.y-b.vy*ln)}
+  c.strokeStyle='rgba(185,195,215,.28)';c.lineWidth=2.8;c.stroke(path);  // heller Saum, damit der Schwarm auch vor dunklem Himmel sichtbar ist
+  c.strokeStyle='rgba(6,6,12,.92)';c.lineWidth=1.6;c.stroke(path);
+  for(let i=0;i<active;i++){const b=B[i];if(!b.red)continue;const fl=.5+.5*Math.sin(t*.008+b.ph);c.fillStyle='rgba(255,40,50,'+(.5+fl*.5)+')';c.fillRect(b.x-1.2,b.y-1.2,2.4,2.4);c.fillStyle='rgba(255,40,50,'+(.12*fl)+')';c.beginPath();c.arc(b.x,b.y,6,0,7);c.fill()}
 }
 
 /* ---------- Befall: Der Schwarm frisst den Planeten Stück für Stück ----------
