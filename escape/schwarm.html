@@ -37,8 +37,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--font-bo
 #bgImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 @keyframes kenburns{from{transform:scale(1.02)}to{transform:scale(1.08) translate(-1%,-.6%)}}
 #skyBlend{position:absolute;left:0;right:0;top:0;height:14%;pointer-events:none}
-#horizon{position:absolute;left:73%;top:16%;width:17vmin;height:17vmin;transform:translate(-50%,-50%);animation:float 7s ease-in-out infinite;pointer-events:none}
-#horizon img{width:100%;height:100%;display:block;filter:drop-shadow(0 0 2vmin rgba(180,220,255,.45))}
+#horizon{position:absolute;left:73%;top:16%;width:17vmin;height:17vmin;transform:translate(-50%,-50%);pointer-events:none;--hz:rgba(170,190,230,1)}
+#horizon img{width:100%;height:100%;display:block;filter:saturate(.82) contrast(.9) brightness(.93) blur(.35px) drop-shadow(0 0 1.6vmin var(--hz))}
+#horizon::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,var(--hz) 0,var(--hz) 31%,transparent 44%);opacity:.4;mix-blend-mode:screen}
+#horizon::before{content:"";position:absolute;inset:-12%;border-radius:50%;background:radial-gradient(circle,transparent 30%,var(--hz) 40%,transparent 62%);opacity:.18;filter:blur(4px)}
 @keyframes float{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-56%)}}
 #stage canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #fx{transition:opacity .6s}
@@ -162,7 +164,7 @@ input[type=text]{flex:1 1 180px;min-width:0;min-height:48px;padding:0 14px;borde
 
 <div id="app">
   <div id="stage" aria-hidden="true">
-    <div id="world"><div id="skyExt"></div><div id="scene"><img id="bgImg" alt=""><canvas id="afx"></canvas></div><div id="skyBlend"></div><div id="horizon"></div></div>
+    <div id="world"><div id="skyExt"></div><div id="scene"><img id="bgImg" alt=""><div id="horizon"></div><canvas id="afx"></canvas></div><div id="skyBlend"></div></div>
     <canvas id="fx"></canvas><canvas id="warp"></canvas><div id="flash"></div>
     <div id="banner"><div class="t"></div><div class="s"></div></div>
   </div>
@@ -470,6 +472,7 @@ const IMC={};
 function loadImg(src){if(IMC[src])return IMC[src];return IMC[src]=new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=src})}
 let starTile=null;
 function skyTile(){if(starTile)return starTile;const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');for(let i=0;i<70;i++){x.fillStyle='rgba(255,255,255,'+(.25+Math.random()*.75)+')';const r=Math.random()*1.4+.3;x.fillRect(Math.random()*256,Math.random()*256,r,r)}return starTile=c.toDataURL()}
+function hazeColor(img){try{const iw=img.naturalWidth,ih=img.naturalHeight,sc=Math.max(W/iw,H/ih),ox=(W-iw*sc)/2,oy=(H-ih*sc)/2,ix=(W*.73-ox)/sc,iy=(H*.16-oy)/sc,c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.drawImage(img,ix-60,iy-60,120,120,0,0,8,8);const d=x.getImageData(0,0,8,8).data;let r=0,g=0,b=0;for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2]}const n=d.length/4;r=r/n*.6+150*.4;g=g/n*.6+165*.4;b=b/n*.6+200*.4;return 'rgb('+(r|0)+','+(g|0)+','+(b|0)+')'}catch(e){return 'rgb(170,190,230)'}}
 function topColor(img){try{const c=document.createElement('canvas');c.width=32;c.height=4;const x=c.getContext('2d');x.drawImage(img,0,0,img.naturalWidth,img.naturalHeight*.03,0,0,32,4);const d=x.getImageData(0,0,32,4).data;let r=0,g=0,b=0;for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2]}const n=d.length/4;return 'rgb('+(r/n|0)+','+(g/n|0)+','+(b/n|0)+')'}catch(e){return '#000'}}
 ['mars','europa','saturn','titan','neptun','tor'].forEach(k=>{loadImg(ASSET+'scene-'+k+'.webp');if(k!=='mars')loadImg(ASSET+'planet-'+k+'.webp')});
 
@@ -479,7 +482,7 @@ async function setStation(key,showBanner){
   if(img){bgImg.src=img.src;const col=topColor(img);$('#skyExt').style.background='url('+skyTile()+'), linear-gradient(to top, '+col+', #000 90%)';$('#skyBlend').style.background='linear-gradient('+col+', transparent)'}
   $('#scene').style.animation=key==='tor'?'none':'';afxReset(key);
   const nx=nextStation(key);hzEl.innerHTML='';
-  if(nx&&key!=='tor'){const p=await loadImg(ASSET+'planet-'+nx+'.webp');if(p){const im=new Image();im.src=p.src;im.alt='';hzEl.appendChild(im)}hzEl.style.display='block'}else hzEl.style.display='none';
+  if(nx&&key!=='tor'){if(img)hzEl.style.setProperty('--hz',hazeColor(img));const p=await loadImg(ASSET+'planet-'+nx+'.webp');if(p){const im=new Image();im.src=p.src;im.alt='';hzEl.replaceChildren(im)}hzEl.style.display='block'}else hzEl.style.display='none';
   setFx(PL[key].fx);
   if(showBanner)banner(PL[key].name.toUpperCase(),PL[key].sub);
 }
@@ -535,7 +538,8 @@ function newPart(type,init){const p={x:Math.random()*W,y:Math.random()*H,s:Math.
 function setFx(type){FX.type=type;const n={dust:170,ice:150,rings:30,haze:240,diamonds:150,portal:220}[type]||0;FX.parts=Array.from({length:REDUCED?Math.round(n/4):n},()=>newPart(type,true));
   FX.extra=Array.from({length:6},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random(),ph:Math.random()*6}));FX.portalPower=G.phase==='won'?1:.18}
 FX.swarm=Array.from({length:420},()=>{const a=Math.random()*6.283,r=Math.pow(Math.random(),.7);return{a,r,sp:(.2+Math.random()*.8)*(Math.random()<.5?-1:1),ph:Math.random()*6,red:Math.random()<.06,sz:.8+Math.random()*2.2}});
-function swarmLevel(){if(G.phase==='lobby'||G.phase==='won')return 0;if(G.phase==='lost')return 1;return Math.max(.12,Math.min(1,progress()))}
+const PREVIEW=/[?&]vorschau\b/.test(location.search),PV={swarm:.3,portal:false};
+function swarmLevel(){if(PREVIEW)return AF.key?PV.swarm:0;if(G.phase==='lobby'||G.phase==='won')return 0;if(G.phase==='lost')return 1;return Math.max(.12,Math.min(1,progress()))}
 function drawFx(dt){const c=fxC,t=FX.t;c.clearRect(0,0,W,H);const k=dt*60,m=Math.min(W,H);
   switch(FX.type){
     case 'dust':{for(const e of FX.extra.slice(0,3)){e.x+=(1.5+e.s*2)*k;if(e.x>W*1.6)e.x=-W*.6;const yy=H*(.55+e.s*.3),g=c.createRadialGradient(e.x,yy,0,e.x,yy,W*.4);g.addColorStop(0,'rgba(230,140,80,.14)');g.addColorStop(1,'rgba(230,140,80,0)');c.fillStyle=g;c.fillRect(0,0,W,H)}
@@ -612,7 +616,7 @@ function drawAnchored(dt,t){
   AF.parts=AF.parts.filter(q=>{const P=S.plumes[q.p];q.age+=dt;if(q.age>q.life)return false;const hgt=P.y-q.y;q.vx+=(P.windH?(hgt>P.windH?P.wind:P.wind*.08):P.wind*.4)*dt;q.vy*=Math.pow(.6,dt);q.x+=q.vx*dt;q.y+=q.vy*dt;
     const f=q.age/q.life,a=P.a*Math.sin(Math.PI*Math.min(1,f*1.6))*(1-f*.3),r=(P.s0+(P.s1-P.s0)*f)*sc;c.globalAlpha=Math.max(0,a);c.drawImage(blobFor(P.col),X(q.x)-r,Y(q.y)-r,2*r,2*r);return true});c.globalAlpha=1;
   // Sprungtor
-  if(AF.key==='tor'){FX.portalPower+=((G.phase==='won'?1:.18)-FX.portalPower)*.02;drawPortal(c,t,FX.portalPower,FX.parts,dt*60)}
+  if(AF.key==='tor'){FX.portalPower+=((G.phase==='won'||(PREVIEW&&PV.portal)?1:.18)-FX.portalPower)*.02;drawPortal(c,t,FX.portalPower,FX.parts,dt*60)}
 }
 
 /* ---------- Klangwelt: Hall, Atmosphären je Planet, Schwarm-Summen, Lichtsprung ---------- */
@@ -622,7 +626,7 @@ const WARP_PEAK=.95;
 const SFX_FILES=['warp','portal','swarm','amb-mars','amb-europa','amb-saturn','amb-titan','amb-neptun','amb-tor'];
 const SFX={bus:null,rev:null,noise:null,amb:null,ambKey:null,swarm:null,buf:{},next:0};
 function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
-  const comp=a.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=4;comp.connect(a.destination);
+  const comp=a.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=3;comp.connect(a.destination);
   SFX.bus=a.createGain();SFX.bus.gain.value=.9;SFX.bus.connect(comp);
   const len=a.sampleRate*3.2,ir=a.createBuffer(2,len,a.sampleRate);for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
   SFX.rev=a.createConvolver();SFX.rev.buffer=ir;const rg=a.createGain();rg.gain.value=.5;SFX.rev.connect(rg);rg.connect(comp);
@@ -654,7 +658,7 @@ function startAmb(key){if(!sfxOn()||SFX.ambKey===key)return;stopAmb();SFX.ambKey
   if(key==='tor'){drone(41.2,'sawtooth',.06,180);drone(61.7,'sawtooth',.04,200);drone(220,'sine',.012);wind(300,.6,.08,.03,100)}
   SFX.amb={g:g,nodes:nodes}}
 /* zufällige Einzelgeräusche je Planet */
-function ambEvents(){if(!sfxOn()||G.phase!=='play'||warping||(SFX.amb&&SFX.amb.file))return;const a=AU.ctx,t=a.currentTime,k=SFX.ambKey;if(t<SFX.next)return;
+function ambEvents(){if(!sfxOn()||(G.phase!=='play'&&!PREVIEW)||warping||(SFX.amb&&SFX.amb.file))return;const a=AU.ctx,t=a.currentTime,k=SFX.ambKey;if(t<SFX.next)return;
   if(k==='europa'||k==='saturn'||k==='tor'){const b=[1568,1760,2093,2349,2637,3136];for(let i=0;i<1+Math.floor(Math.random()*3);i++)tone2(b[Math.floor(Math.random()*b.length)],t+i*.12,1.6,'sine',.025,.6);SFX.next=t+2.5+Math.random()*4}
   else if(k==='titan'){const n=noiseSrc(true),lp=a.createBiquadFilter(),g=a.createGain();lp.type='lowpass';lp.frequency.value=90;env(g,t,.8,.5,.4,3);n.connect(lp);lp.connect(g);send(g,1,.4);n.start(t);n.stop(t+5);SFX.next=t+8+Math.random()*8}
   else if(k==='neptun'){const n=noiseSrc(),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.value=2500;bp.Q.value=.8;env(g,t,.3,.07,1.2,1.5);n.connect(bp);bp.connect(g);send(g,1,.3);n.start(t);n.stop(t+3.2);SFX.next=t+4+Math.random()*5}
@@ -668,7 +672,7 @@ function swarmSound(){const a=AU.ctx,g=a.createGain();g.gain.value=0;const syn=a
   SFX.swarm=g}
 /* echte Schwarm-Aufnahme ersetzt das synthetische Summen */
 function swarmFile(){if(!SFX.swarm||SFX.swFile)return;const a=AU.ctx,src=a.createBufferSource();src.buffer=SFX.buf.swarm;src.loop=true;src.connect(SFX.swarm);src.start();SFX.swFile=true;SFX.swSyn.gain.value=0}
-function sfxTick(){if(!AU.ctx||!SFX.bus)return;const a=AU.ctx,on=AU.on&&G.phase==='play';
+function sfxTick(){if(!AU.ctx||!SFX.bus)return;const a=AU.ctx,on=AU.on&&(G.phase==='play'||PREVIEW);
   if(SFX.swarm){const L=on?swarmLevel():0,v=SFX.swFile?.08+.55*L*L:.01+.09*L*L;SFX.swarm.gain.setTargetAtTime(on&&!warping?v:0,a.currentTime,.5)}
   if(on&&curKey&&SFX.ambKey!==curKey&&!warping)startAmb(curKey);if(!on&&SFX.amb)stopAmb()}
 setInterval(sfxTick,300);
@@ -1386,7 +1390,40 @@ $('#homeBtn').addEventListener('click',()=>{
 });
 
 /* ---------- Start ---------- */
-initScene();
+
+/* ---------- Vorschau für die Lehrkraft: schwarm.html?vorschau ----------
+   Alle Planeten, Lichtsprünge, Klänge und Effekte durchklicken, ohne Rätsel zu lösen. Nicht im Katalog verlinkt. */
+function startPreview(){
+  G.mode='long';lobby.hidden=true;hud.hidden=true;sheet.hidden=true;$('#intro').hidden=true;layout();
+  const ORDER=['mars','europa','saturn','titan','neptun','tor'];
+  const box=document.createElement('div');box.id='pv';
+  box.style.cssText='position:fixed;left:12px;bottom:12px;z-index:50;background:rgba(4,10,28,.88);border:1px solid rgba(110,200,255,.45);border-radius:14px;padding:12px 14px;color:#e8f4ff;font:600 14px var(--font-body);max-width:min(560px,94vw);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)';
+  box.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><b style="font-family:var(--font-display);letter-spacing:.08em">VORSCHAU</b><span style="opacity:.6;font-weight:500">nur für die Lehrkraft</span><button data-pv="hide" class="chip" style="margin-left:auto">Ausblenden</button></div>'
+   +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+ORDER.map(k=>'<button class="chip" data-pv="go" data-k="'+k+'">'+PL[k].name+'</button>').join('')+'</div>'
+   +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"><button class="btn primary" data-pv="warp">🚀 Lichtsprung zum nächsten</button><button class="chip" data-pv="snd">🔇 Ton aus</button><button class="chip" data-pv="portal">🌀 Tor aktivieren</button><button class="chip" data-pv="win">Durch das Tor</button></div>'
+   +'<label style="display:flex;align-items:center;gap:10px">Schwarm <input type="range" min="0" max="100" value="30" data-pv="swarm" style="flex:1"> <span data-pv="sv">30 %</span></label>'
+   +'<div data-pv="info" style="margin-top:6px;opacity:.7;font-weight:500"></div>';
+  document.body.appendChild(box);
+  const show=document.createElement('button');show.textContent='Vorschau';show.className='chip';show.style.cssText='position:fixed;left:12px;bottom:12px;z-index:50;display:none';document.body.appendChild(show);
+  const info=t=>{box.querySelector('[data-pv=info]').textContent=t};
+  const cur=()=>ORDER.indexOf(curKey);
+  async function go(k,warp){if(warping)return;PV.portal=false;
+    if(warp){const p=k==='tor'&&curKey==='tor'?portalGeom():hzPoint();await doWarp(p.x,p.y,async()=>{await setStation(k,true)})}
+    else{$('#scene').style.opacity=1;curKey=null;await setStation(k,true)}
+    info(PL[k].name+' · '+PL[k].sub)}
+  box.addEventListener('click',async e=>{const b=e.target.closest('[data-pv]');if(!b)return;const a=b.dataset.pv;
+    if(a==='hide'){box.style.display='none';show.style.display='block'}
+    if(a==='go')go(b.dataset.k,false);
+    if(a==='warp'){const i=cur();if(i<ORDER.length-1)go(ORDER[i+1],true);else info('Pluto ist die letzte Station. Nutze „Durch das Tor“.')}
+    if(a==='snd'){initAudio();AU.on=!AU.on;if(AU.ctx&&AU.ctx.resume)AU.ctx.resume();b.textContent=AU.on?'🔊 Ton an':'🔇 Ton aus'}
+    if(a==='portal'){if(curKey!=='tor')await go('tor',false);PV.portal=!PV.portal;if(PV.portal)sfxPortal();b.textContent=PV.portal?'🌀 Tor beruhigen':'🌀 Tor aktivieren'}
+    if(a==='win'){if(curKey!=='tor')await go('tor',false);PV.portal=true;sfxPortal();await sleep(900);const pg=portalGeom();await doWarp(pg.x,pg.y,async()=>{hzEl.style.display='none';AF.key=null;setFx(null);$('#scene').style.opacity=0});info('Sieg-Sprung fertig. Wähle einen Planeten, um weiterzumachen.');PV.portal=false}
+  });
+  box.querySelector('[data-pv=swarm]').addEventListener('input',e=>{PV.swarm=e.target.value/100;box.querySelector('[data-pv=sv]').textContent=e.target.value+' %'});
+  show.addEventListener('click',()=>{box.style.display='block';show.style.display='none'});
+  go('mars',false);
+}
+initScene();if(PREVIEW)setTimeout(startPreview,300);
 paintMode();paintStage();
 })();
 </script>
