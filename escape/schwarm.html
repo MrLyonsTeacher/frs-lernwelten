@@ -270,7 +270,7 @@ const STAGES=[null,
   {pt:18,ph:35,gate:5,lava:7,cry:5,tm:1.0},
   {pt:20,ph:40,gate:6,lava:8,cry:6,tm:.95},
   {pt:25,ph:45,gate:6,lava:8,cry:6,tm:.9}];
-const DIFFS=[{id:1,label:'Einfach · Kl. 5–6',stage:1,info:'Für Klasse 5 und 6: mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal · Kl. 7–8',stage:3,info:'Für Klasse 7 und 8: die Standardstufe.'},{id:3,label:'Schwer · Kl. 9–10',stage:5,info:'Für Klasse 9 und 10: längere Rätsel, weniger Zeit, härtere Strafen.'}];
+const DIFFS=[{id:1,label:'Einfach',stage:1,info:'Mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal',stage:3,info:'Die Standardstufe.'},{id:3,label:'Schwer',stage:5,info:'Längere Rätsel, weniger Zeit, härtere Strafen.'}];
 function stageFor(d){const x=DIFFS.find(q=>q.id===(d|0));return x?x.stage:3}
 function applyStage(st){PEN_TRY=STAGES[st].pt;PEN_HINT=STAGES[st].ph}
 const QS=new URLSearchParams(location.search);
@@ -1301,7 +1301,7 @@ async function joinGroup(){
   try{
     if(!window.FRSNet||!FRSNet.relayUrl()){toast('Der Gruppenraum ist hier nicht eingerichtet. Der Testmodus funktioniert trotzdem.',4500);return}
     leaveGroup(true);
-    RM.named=await FRSNet.connect(FRSNet.relayUrl(),'vk-'+clean);
+    RM.named=await FRSNet.connect(FRSNet.relayUrl(),'sw-'+clean);
     RM.offs.push(RM.named.on('start',m=>{
       const d=m.data;
       if(!d||typeof d.epoch!=='number'||d.epoch<=G.epoch||typeof d.seed!=='number'||!Array.isArray(d.roster)||d.roster.length<1||d.roster.length>6||typeof d.total!=='number'||d.total<60||d.total>6000||!MODES[d.mode])return;

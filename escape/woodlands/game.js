@@ -6,7 +6,7 @@ const QS=new URLSearchParams(location.search),DEV=QS.has('dev');
 let PEN_TRY=15,PEN_HINT=30;
 const BONUS=30;
 const STAGES=[null,{pt:10,ph:20,tm:1.2},{pt:12,ph:25,tm:1.1},{pt:15,ph:30,tm:1.0},{pt:18,ph:35,tm:1.0},{pt:20,ph:40,tm:.95},{pt:22,ph:45,tm:.9}];
-const DIFFS=[{id:1,label:'Einfach · Kl. 5–6',stage:1,info:'Für Klasse 5 und 6: mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal · Kl. 7–8',stage:3,info:'Für Klasse 7 und 8: die Standardstufe.'},{id:3,label:'Schwer · Kl. 9–10',stage:5,info:'Für Klasse 9 und 10: längere Rätsel, weniger Zeit, härtere Strafen.'}];
+const DIFFS=[{id:1,label:'Einfach',stage:1,info:'Mehr Zeit, kürzere Rätsel, kleine Strafen.'},{id:2,label:'Normal',stage:3,info:'Die Standardstufe.'},{id:3,label:'Schwer',stage:5,info:'Längere Rätsel, weniger Zeit, härtere Strafen.'}];
 function stageFor(d){const x=DIFFS.find(q=>q.id===(d|0));return x?x.stage:3}
 function applyStage(st){PEN_TRY=STAGES[st].pt;PEN_HINT=STAGES[st].ph}
 const D0=(function(){const d=parseInt(QS.get('d'),10);return(d>=1&&d<=3)?d:2})();
