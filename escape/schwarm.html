@@ -565,6 +565,65 @@ function drawFx(dt){const c=fxC,t=FX.t;c.clearRect(0,0,W,H);const k=dt*60,m=Math
         c.fillStyle=(q%9===4&&Math.sin(t*.008+k2+q)>.6)?'rgba(255,50,60,.9)':'rgba(12,12,20,'+(.9-.6*f)+')';c.fillRect(x-sz/2,y-sz/2,sz,sz)}}}
 }
 
+/* ---------- Befall: Der Schwarm frisst den Planeten Stück für Stück ----------
+   Eine bewegte Maske (Rauschen + Front von links unten) legt eine „zerfressene“ Version des Bildes über die Landschaft.
+   Liegt eine eigene Bildversion vor (scene-<planet>-befallen.webp, in INFESTED_FILES eintragen), wird diese genutzt,
+   sonst wird die zerfressene Version aus dem Originalbild berechnet. */
+const INFESTED_FILES=[];
+const IF={MW:240,MH:160,key:null,corrupt:null,n1:null,n2:null,mask:null,edge:null,mctx:null,ectx:null,tmp:null,tctx:null,crawl:[]};
+(function(){IF.mask=document.createElement('canvas');IF.mask.width=IF.MW;IF.mask.height=IF.MH;IF.mctx=IF.mask.getContext('2d');
+  IF.edge=document.createElement('canvas');IF.edge.width=IF.MW;IF.edge.height=IF.MH;IF.ectx=IF.edge.getContext('2d');
+  IF.tmp=document.createElement('canvas');IF.tctx=IF.tmp.getContext('2d');
+  IF.mImg=IF.mctx.createImageData(IF.MW,IF.MH);IF.eImg=IF.ectx.createImageData(IF.MW,IF.MH)})();
+function valueNoise(gw,gh,W2,H2){const g=new Float32Array((gw+1)*(gh+1)).map(()=>Math.random()),o=new Float32Array(W2*H2);
+  for(let y=0;y<H2;y++)for(let x=0;x<W2;x++){const fx=x/W2*gw,fy=y/H2*gh,ix=fx|0,iy=fy|0,tx=fx-ix,ty=fy-iy,sx=tx*tx*(3-2*tx),sy=ty*ty*(3-2*ty),
+    a=g[iy*(gw+1)+ix],b=g[iy*(gw+1)+ix+1],c=g[(iy+1)*(gw+1)+ix],d=g[(iy+1)*(gw+1)+ix+1];o[y*W2+x]=(a+(b-a)*sx)*(1-sy)+(c+(d-c)*sx)*sy}return o}
+function buildCorrupt(img){const w=768,h=512,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(img,0,0,w,h);
+  const id=x.getImageData(0,0,w,h),d=id.data;
+  for(let i=0;i<d.length;i+=4){const l=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255,v=Math.pow(l,1.15)*105,n=Math.random()*26;d[i]=v*.8+n+4;d[i+1]=v*.84+n+5;d[i+2]=v*1.05+n+10}
+  x.putImageData(id,0,0);
+  // metallische Schuppen
+  for(let i=0;i<9000;i++){const px=Math.random()*w,py=Math.random()*h,s=1+Math.random()*3;x.fillStyle='rgba('+(120+Math.random()*80|0)+','+(125+Math.random()*80|0)+','+(140+Math.random()*80|0)+','+(.15+Math.random()*.35)+')';x.fillRect(px,py,s,s*.6)}
+  // rot glühende Adern
+  x.lineCap='round';
+  for(let v=0;v<14;v++){let px=Math.random()*w,py=Math.random()*h,ang=Math.random()*6.28;x.strokeStyle='rgba(255,40,50,.45)';x.lineWidth=.6+Math.random()*1.1;x.shadowColor='rgba(255,30,40,.9)';x.shadowBlur=8;x.beginPath();x.moveTo(px,py);
+    for(let s=0;s<30;s++){ang+=(Math.random()-.5)*.9;px+=Math.cos(ang)*7;py+=Math.sin(ang)*7;x.lineTo(px,py)}x.stroke()}
+  x.shadowBlur=0;
+  // rote Augen
+  for(let i=0;i<320;i++){const cxr=i%40===0?0:1,px=Math.random()*w,py=Math.random()*h;const g=x.createRadialGradient(px,py,0,px,py,4);g.addColorStop(0,'rgba(255,60,60,.95)');g.addColorStop(1,'rgba(255,0,0,0)');x.fillStyle=g;x.fillRect(px-4,py-4,8,8)}
+  return c}
+async function infestReset(key){IF.key=key;IF.corrupt=null;IF.n1=valueNoise(14,10,IF.MW,IF.MH);IF.n2=valueNoise(48,32,IF.MW,IF.MH);IF.n3=valueNoise(14,10,IF.MW,IF.MH);
+  let src=null;if(INFESTED_FILES.indexOf(key)>=0)src=await loadImg(ASSET+'scene-'+key+'-befallen.webp');
+  if(IF.key!==key)return;
+  if(src){const c=document.createElement('canvas');c.width=src.naturalWidth;c.height=src.naturalHeight;c.getContext('2d').drawImage(src,0,0);IF.corrupt=c}
+  else if(curImg)IF.corrupt=buildCorrupt(curImg)}
+function drawInfest(c,t,m,L){
+  if(!IF.corrupt||!m||L<=0)return;
+  const MW=IF.MW,MH=IF.MH,md=IF.mImg.data,ed=IF.eImg.data,n1=IF.n1,n2=IF.n2,n3=IF.n3,ca=Math.cos(t*.0004),sa=Math.sin(t*.0004),reach=-.15+L*1.38;
+  let pg=null;if(AF.key==='tor'){const p=portalGeom();pg={x:(p.x-m.ox)/(m.iw*m.sc),y:(p.y-m.oy)/(m.ih*m.sc),r:p.r*1.25/(m.ih*m.sc)}}
+  const edgeList=[];
+  for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const i=y*MW+x,u=x/MW,v=y/MH;
+    const dist=Math.sqrt(u*u*.9+(1-v)*(1-v)*.55);
+    const nz=(n1[i]*ca+n3[i]*sa)*.5+.5*n2[i];
+    let f=(reach-(dist+nz*.42-.18))*7;
+    if(pg){const dx=(u-pg.x)*1.5,dy=v-pg.y,pd=Math.sqrt(dx*dx+dy*dy);if(pd<pg.r)f=Math.min(f,(pd-pg.r*.85)*30)}
+    const a=f<=0?0:f>=1?1:f*f*(3-2*f);md[i*4+3]=a*255;
+    const e=a>0&&a<1?1-Math.abs(a-.5)*2:0;ed[i*4]=255;ed[i*4+1]=40;ed[i*4+2]=50;ed[i*4+3]=e*220;
+    if(e>.55&&(i*7919+(t/120|0))%11===0)edgeList.push(i)}
+  IF.mctx.putImageData(IF.mImg,0,0);IF.ectx.putImageData(IF.eImg,0,0);
+  const dw=m.iw*m.sc,dh=m.ih*m.sc,tw=Math.ceil(W/2),th=Math.ceil(H/2);
+  if(IF.tmp.width!==tw||IF.tmp.height!==th){IF.tmp.width=tw;IF.tmp.height=th}
+  const x=IF.tctx;x.globalCompositeOperation='source-over';x.clearRect(0,0,tw,th);x.drawImage(IF.corrupt,m.ox/2,m.oy/2,dw/2,dh/2);
+  x.globalCompositeOperation='destination-in';x.imageSmoothingEnabled=true;x.drawImage(IF.mask,m.ox/2,m.oy/2,dw/2,dh/2);x.globalCompositeOperation='source-over';
+  c.save();c.drawImage(IF.tmp,0,0,W,H);
+  // glühende Fressfront
+  c.globalCompositeOperation='lighter';c.globalAlpha=.55+.25*Math.sin(t*.006);c.drawImage(IF.edge,m.ox,m.oy,dw,dh);c.globalAlpha=1;c.globalCompositeOperation='source-over';
+  // krabbelnde Roboter entlang der Front
+  const sx=dw/MW,sy=dh/MH;
+  for(const i of edgeList){const gx=i%MW,gy=(i/MW)|0;for(let k=0;k<3;k++){const px=m.ox+(gx+Math.random())*sx,py=m.oy+(gy+Math.random())*sy;c.fillStyle=Math.random()<.12?'rgba(255,50,60,.95)':'rgba(8,8,14,.9)';const s=1+Math.random()*2.2;c.fillRect(px,py,s,s)}}
+  c.restore();
+}
+
 /* ---------- Bild-verankerte Animationen (bewegen sich mit dem Bild, auch beim Lichtsprung) ---------- */
 const afxCv=$('#afx'),afxC=afxCv.getContext('2d');
 const SPARK={"europa":[[596,516],[454,805],[457,804],[456,805],[457,805],[434,846],[434,845],[250,742],[371,680],[406,874],[406,873],[1339,785],[532,915],[428,853],[424,855],[426,854],[1345,785],[1021,995],[1193,469],[1164,447],[500,838],[591,540],[594,539],[963,982],[598,506],[679,564],[1235,466],[607,454],[591,541],[165,540],[1405,707],[1230,789],[442,674],[701,946],[471,699],[986,656],[598,491],[598,492],[211,566],[1279,796],[604,472],[602,472],[582,539],[65,538],[602,474],[603,470],[115,436],[339,674],[1152,695],[545,616],[1342,905],[115,464],[1186,451],[1204,982],[910,977],[1222,863],[908,976],[992,790],[376,886],[1502,747],[428,530],[1165,900],[227,727],[433,828],[841,496],[542,561],[1276,504],[1061,630],[1428,847],[1429,847]],"saturn":[[1275,961],[1408,635],[1418,635],[1419,635],[1474,809],[1475,810],[1439,811],[1471,808],[1416,634],[1379,661],[1378,660],[1377,659],[1380,661],[1402,627],[1134,749],[1440,811],[816,694],[1501,614],[1500,614],[1500,616],[1442,812],[815,692],[1440,812],[1441,812],[1502,610],[1500,612],[1500,615],[1429,650],[717,642],[420,918],[716,641],[716,642],[1397,767],[1398,767],[1462,786],[1461,785],[419,916],[867,555],[1114,657],[1389,665],[1307,605],[1437,889],[757,686],[1505,551],[1467,906],[1282,952],[1501,549],[778,616],[1283,954],[1092,738],[1284,953],[474,581],[1503,553],[1094,738],[918,701],[1422,880],[742,638],[1492,806],[1405,666],[1168,658],[1048,613],[960,685],[1492,828],[1523,811],[1392,653],[983,693],[926,693],[1487,646],[1208,761],[1377,811],[422,926],[794,568],[1389,616],[888,668],[1430,819],[1497,601],[876,612],[429,882],[1474,795],[893,631],[908,702],[1455,817],[1476,793],[1494,684],[1524,799],[1486,597],[1378,631],[1315,597],[890,596],[1302,594]],"tor":[[1413,790],[242,828],[1316,849],[1332,865],[1506,880],[227,840],[1356,824],[638,713],[1406,801],[1360,839],[1358,872],[486,641],[1360,773],[1364,816],[1254,795],[250,841],[458,868],[371,864],[1256,874],[1517,912],[10,704],[356,770],[1351,789],[1349,792],[1283,893],[336,781],[1333,810],[1378,873],[1336,680],[1375,806],[1317,871],[1279,862],[1379,815],[270,774],[814,741],[636,819],[1482,929],[1412,841],[648,814],[1342,815],[1203,889],[474,642],[246,794],[446,896],[116,772],[1500,754],[1446,914],[1462,876],[1449,851],[150,790]],"neptun":[[253,865],[190,820],[268,851],[218,798],[144,800],[240,860],[85,687],[1091,937],[231,806],[1268,889],[95,691],[44,630],[166,778],[273,839],[1456,852],[188,787],[204,791],[1108,768],[239,816],[1296,892],[60,634],[36,654],[156,775],[1284,731],[180,904],[64,674],[1492,855],[931,722],[508,713],[222,848],[252,842],[957,728],[1022,661],[1037,651],[893,695],[110,790],[85,864],[129,726],[972,731],[70,684]],"mars":[],"titan":[[441,979],[2,920],[380,948],[64,864],[557,975],[331,914],[58,853],[1257,994],[44,762],[1420,929],[365,945],[262,828],[732,1014],[29,917],[16,919],[26,905],[36,900],[95,878]]};
@@ -580,7 +639,7 @@ const SCN={
 };
 const BLOBS={};function blobFor(c){const k=c.join(',');return BLOBS[k]||(BLOBS[k]=blob(c[0],c[1],c[2]))}
 const AF={key:null,parts:[],acc:[],devils:[],seaL:[]};
-function afxReset(key){AF.key=key;AF.parts=[];const S=SCN[key]||{};AF.acc=(S.plumes||[]).map(()=>0);
+function afxReset(key){AF.key=key;AF.parts=[];infestReset(key);const S=SCN[key]||{};AF.acc=(S.plumes||[]).map(()=>0);
   AF.devils=Array.from({length:S.devils||0},(_,i)=>({x:300+Math.random()*900,v:(Math.random()<.5?-1:1)*(8+Math.random()*10),h:60+Math.random()*50,ph:Math.random()*6,y:478+i*22}));
   AF.seaL=S.sea?Array.from({length:70},()=>({x:Math.random()*1536,y:S.sea[0]+Math.random()*(S.sea[1]-S.sea[0]),l:20+Math.random()*110,v:4+Math.random()*10,ph:Math.random()*6})):[]}
 function drawAnchored(dt,t){
@@ -615,6 +674,8 @@ function drawAnchored(dt,t){
   if(AF.parts.length>600)AF.parts.splice(0,AF.parts.length-600);
   AF.parts=AF.parts.filter(q=>{const P=S.plumes[q.p];q.age+=dt;if(q.age>q.life)return false;const hgt=P.y-q.y;q.vx+=(P.windH?(hgt>P.windH?P.wind:P.wind*.08):P.wind*.4)*dt;q.vy*=Math.pow(.6,dt);q.x+=q.vx*dt;q.y+=q.vy*dt;
     const f=q.age/q.life,a=P.a*Math.sin(Math.PI*Math.min(1,f*1.6))*(1-f*.3),r=(P.s0+(P.s1-P.s0)*f)*sc;c.globalAlpha=Math.max(0,a);c.drawImage(blobFor(P.col),X(q.x)-r,Y(q.y)-r,2*r,2*r);return true});c.globalAlpha=1;
+  // Befall durch den Schwarm: der Planet wird dunkler und Stück für Stück zerfressen
+  {const L=swarmLevel();if(L>0){c.fillStyle='rgba(0,0,8,'+(.32*L*L)+')';c.fillRect(0,0,W,H);drawInfest(c,t,m,L)}}
   // Sprungtor
   if(AF.key==='tor'){FX.portalPower+=((G.phase==='won'||(PREVIEW&&PV.portal)?1:.18)-FX.portalPower)*.02;drawPortal(c,t,FX.portalPower,FX.parts,dt*60)}
 }
