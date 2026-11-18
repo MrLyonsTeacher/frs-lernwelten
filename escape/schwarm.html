@@ -503,7 +503,7 @@ const GATE_LIGHTS=new Image();GATE_LIGHTS.src=ASSET+'gate-lights.png';
 function gateMap(){if(!curImg)return null;const iw=curImg.naturalWidth,ih=curImg.naturalHeight,sc=Math.max(W/iw,H/ih);return {sc:sc,iw:iw,ih:ih,ox:(W-iw*sc)/2,oy:(H-ih*sc)/2}}
 /* Zerfall des Tors in den letzten 20 % der Zeit (0 = intakt, 1 = ganz zerfallen) */
 function gateDecay(L){const g=Math.min(1,Math.max(0,(L-.8)/.2));return g*g*(3-2*g)}
-function drawPortal(c,t,pw,parts,k,dec){dec=dec||0;if(dec>0&&G.phase!=='won'&&!(PREVIEW&&PV.portal))pw*=(1-.55*dec)*(.8+.2*Math.sin(t*.031)*Math.sin(t*.017));
+function drawPortal(c,t,pw,parts,k,dec){dec=dec||0;if(dec>0&&G.phase!=='won'&&!(PREVIEW&&PV.portal))pw=Math.max(.3,pw*(1+.6*dec))*(.82+.18*Math.sin(t*.031)*Math.sin(t*.017));/* das Tor kämpft: flackert unruhig, bleibt aber in Bewegung */
   const g=portalGeom(),x=g.x,y=g.y,r=g.r,m=g.m;let gr;
   c.save();c.beginPath();c.arc(x,y,r*.985,0,7);c.clip();
   // Membran
@@ -526,8 +526,8 @@ function drawPortal(c,t,pw,parts,k,dec){dec=dec||0;if(dec>0&&G.phase!=='won'&&!(
   c.restore();
   // Lichter am Ring: pulsieren und Lauflicht
   if(m&&GATE_LIGHTS.complete&&GATE_LIGHTS.naturalWidth){const lx=m.ox+GATE.lx*m.sc,ly=m.oy+GATE.ly*m.sc,lw=GATE_LIGHTS.naturalWidth*m.sc,lh=GATE_LIGHTS.naturalHeight*m.sc;
-    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=Math.min(1,.2+pw*.6+.15*Math.sin(t*.003))*(1-dec);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);
-    const sa=t*.0015*(1+pw*2);c.beginPath();c.moveTo(x,y);c.arc(x,y,r*1.7,sa,sa+.8);c.closePath();c.clip();c.globalAlpha=(.7+pw*.3)*(1-dec);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.restore()}
+    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=Math.min(1,.2+pw*.6+.15*Math.sin(t*.003))*(1-.6*dec*(.5+.5*Math.sin(t*.02)));c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);
+    const sa=t*.0015*(1+pw*2);c.beginPath();c.moveTo(x,y);c.arc(x,y,r*1.7,sa,sa+.8);c.closePath();c.clip();c.globalAlpha=(.7+pw*.3)*(1-.5*dec);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.restore()}
   // Außenglühen und Spiegelung auf dem Eis
   c.save();c.globalCompositeOperation='lighter';
   gr=c.createRadialGradient(x,y,r*.95,x,y,r*1.55);gr.addColorStop(0,'rgba(150,120,255,'+(.05+pw*.22)+')');gr.addColorStop(1,'rgba(150,120,255,0)');c.fillStyle=gr;c.beginPath();c.arc(x,y,r*1.55,0,7);c.arc(x,y,r*.97,0,7,true);c.fill();
@@ -734,15 +734,15 @@ function sfxInit(){if(!AU.ctx||SFX.bus)return;const a=AU.ctx;
   swarmSound();
 }
 const sfxOn=()=>AU.ctx&&AU.on&&SFX.bus;
-function send(node,dry,wet){const a=AU.ctx;if(dry){const g=a.createGain();g.gain.value=dry;node.connect(g);g.connect(SFX.bus)}if(wet){const g=a.createGain();g.gain.value=wet;node.connect(g);g.connect(SFX.rev)}}
+function sfxSend(node,dry,wet){const a=AU.ctx;if(dry){const g=a.createGain();g.gain.value=dry;node.connect(g);g.connect(SFX.bus)}if(wet){const g=a.createGain();g.gain.value=wet;node.connect(g);g.connect(SFX.rev)}}
 function noiseSrc(brown){const s=AU.ctx.createBufferSource();s.buffer=brown?SFX.brown:SFX.noise;s.loop=true;return s}
 function env(g,t,a,peak,hold,rel){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.setValueAtTime(peak,t+a+hold);g.gain.exponentialRampToValueAtTime(.0001,t+a+hold+rel)}
-function tone2(f,t,d,type,v,wet,f2){const a=AU.ctx,o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);env(g,t,.01,v,0,d);o.connect(g);send(g,1,wet||0);o.start(t);o.stop(t+d+.1)}
-function playBuf(n,v,loop){if(!SFX.buf[n])return null;const a=AU.ctx,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf[n];s.loop=!!loop;g.gain.value=v;s.connect(g);send(g,1,.15);s.start();return {s:s,g:g}}
+function tone2(f,t,d,type,v,wet,f2){const a=AU.ctx,o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);env(g,t,.01,v,0,d);o.connect(g);sfxSend(g,1,wet||0);o.start(t);o.stop(t+d+.1)}
+function playBuf(n,v,loop){if(!SFX.buf[n])return null;const a=AU.ctx,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf[n];s.loop=!!loop;g.gain.value=v;s.connect(g);sfxSend(g,1,.15);s.start();return {s:s,g:g}}
 
 /* Atmosphäre je Planet */
 function stopAmb(){if(!SFX.amb)return;const a=AU.ctx,o=SFX.amb;o.g.gain.setTargetAtTime(0,a.currentTime,.6);setTimeout(()=>o.nodes.forEach(n=>{try{n.stop()}catch(e){}}),3000);SFX.amb=null;SFX.ambKey=null}
-function startAmb(key){if(!sfxOn()||SFX.ambKey===key)return;stopAmb();SFX.ambKey=key;const a=AU.ctx,t=a.currentTime,g=a.createGain(),nodes=[];g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+3);send(g,1,.25);
+function startAmb(key){if(!sfxOn()||SFX.ambKey===key)return;stopAmb();SFX.ambKey=key;const a=AU.ctx,t=a.currentTime,g=a.createGain(),nodes=[];g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+3);sfxSend(g,1,.25);
   const f=SFX.buf['amb-'+key];if(f){const s=a.createBufferSource();s.buffer=f;s.loop=true;s.loopStart=.06;s.loopEnd=f.duration-.06;const v=a.createGain();v.gain.value=1.8;s.connect(v);v.connect(g);s.start(t,.06);nodes.push(s);SFX.amb={g:g,nodes:nodes,file:true};return}
   const lfo=(rate,depth,target)=>{const o=a.createOscillator(),d=a.createGain();o.frequency.value=rate;d.gain.value=depth;o.connect(d);d.connect(target);o.start();nodes.push(o)};
   const wind=(fc,q,v,lr,ld)=>{const n=noiseSrc(true),bp=a.createBiquadFilter(),v1=a.createGain();bp.type='bandpass';bp.frequency.value=fc;bp.Q.value=q;v1.gain.value=v;n.connect(bp);bp.connect(v1);v1.connect(g);n.start();nodes.push(n);lfo(lr,ld,bp.frequency);lfo(lr*.7,v*.5,v1.gain)};
@@ -758,13 +758,13 @@ function startAmb(key){if(!sfxOn()||SFX.ambKey===key)return;stopAmb();SFX.ambKey
 /* zufällige Einzelgeräusche je Planet */
 function ambEvents(){if(!sfxOn()||(G.phase!=='play'&&!PREVIEW)||warping||(SFX.amb&&SFX.amb.file))return;const a=AU.ctx,t=a.currentTime,k=SFX.ambKey;if(t<SFX.next)return;
   if(k==='europa'||k==='saturn'||k==='tor'){const b=[1568,1760,2093,2349,2637,3136];for(let i=0;i<1+Math.floor(Math.random()*3);i++)tone2(b[Math.floor(Math.random()*b.length)],t+i*.12,1.6,'sine',.025,.6);SFX.next=t+2.5+Math.random()*4}
-  else if(k==='titan'){const n=noiseSrc(true),lp=a.createBiquadFilter(),g=a.createGain();lp.type='lowpass';lp.frequency.value=90;env(g,t,.8,.5,.4,3);n.connect(lp);lp.connect(g);send(g,1,.4);n.start(t);n.stop(t+5);SFX.next=t+8+Math.random()*8}
-  else if(k==='neptun'){const n=noiseSrc(),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.value=2500;bp.Q.value=.8;env(g,t,.3,.07,1.2,1.5);n.connect(bp);bp.connect(g);send(g,1,.3);n.start(t);n.stop(t+3.2);SFX.next=t+4+Math.random()*5}
-  else if(k==='mars'){const n=noiseSrc(true),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.setValueAtTime(300,t);bp.frequency.linearRampToValueAtTime(1200,t+2);bp.Q.value=1.5;env(g,t,1.5,.2,.5,2);n.connect(bp);bp.connect(g);send(g,1,.2);n.start(t);n.stop(t+4.2);SFX.next=t+6+Math.random()*6}
+  else if(k==='titan'){const n=noiseSrc(true),lp=a.createBiquadFilter(),g=a.createGain();lp.type='lowpass';lp.frequency.value=90;env(g,t,.8,.5,.4,3);n.connect(lp);lp.connect(g);sfxSend(g,1,.4);n.start(t);n.stop(t+5);SFX.next=t+8+Math.random()*8}
+  else if(k==='neptun'){const n=noiseSrc(),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.value=2500;bp.Q.value=.8;env(g,t,.3,.07,1.2,1.5);n.connect(bp);bp.connect(g);sfxSend(g,1,.3);n.start(t);n.stop(t+3.2);SFX.next=t+4+Math.random()*5}
+  else if(k==='mars'){const n=noiseSrc(true),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.setValueAtTime(300,t);bp.frequency.linearRampToValueAtTime(1200,t+2);bp.Q.value=1.5;env(g,t,1.5,.2,.5,2);n.connect(bp);bp.connect(g);sfxSend(g,1,.2);n.start(t);n.stop(t+4.2);SFX.next=t+6+Math.random()*6}
 }
 setInterval(ambEvents,400);
 /* Schwarm: unheimliches Summen und Klicken, wird mit der Zeit lauter */
-function swarmSound(){const a=AU.ctx,g=a.createGain();g.gain.value=0;const syn=a.createGain();syn.gain.value=1;syn.connect(g);SFX.swSyn=syn;const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=1.8;bp.connect(syn);send(g,1,.2);
+function swarmSound(){const a=AU.ctx,g=a.createGain();g.gain.value=0;const syn=a.createGain();syn.gain.value=1;syn.connect(g);SFX.swSyn=syn;const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=1.8;bp.connect(syn);sfxSend(g,1,.2);
   [92,95.5,98,101.3,104,110.7].forEach(f=>{const o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;const v=a.createGain();v.gain.value=.16;o.connect(v);v.connect(bp);o.start();const l=a.createOscillator(),ld=a.createGain();l.frequency.value=3+Math.random()*5;ld.gain.value=f*.03;l.connect(ld);ld.connect(o.frequency);l.start()});
   const am=a.createOscillator(),ad=a.createGain();am.frequency.value=17;ad.gain.value=.4;am.connect(ad);ad.connect(syn.gain);am.start();
   SFX.swarm=g}
@@ -777,13 +777,13 @@ setInterval(sfxTick,300);
 /* Lichtsprung: Aufladen, Rauschen, Knall beim Blitz, glitzernder Nachhall */
 function sfxWarp(lead){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();
   if(SFX.buf.warp){/* der Höhepunkt der Aufnahme (bei 0,95 s) soll genau mit dem weißen Blitz zusammenfallen */
-    const d=(lead||1.95)-WARP_PEAK,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf.warp;g.gain.value=.95;s.connect(g);send(g,1,.12);if(d>=0)s.start(t+d);else s.start(t,-d);return}
-  const o=a.createOscillator(),lp=a.createBiquadFilter(),g=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(880,t+1.85);lp.type='lowpass';lp.frequency.setValueAtTime(300,t);lp.frequency.exponentialRampToValueAtTime(5000,t+1.85);lp.Q.value=6;env(g,t,1.7,.16,.1,.2);o.connect(lp);lp.connect(g);send(g,1,.3);o.start(t);o.stop(t+2.2);
-  const n=noiseSrc(),bp=a.createBiquadFilter(),ng=a.createGain();bp.type='bandpass';bp.Q.value=1.1;bp.frequency.setValueAtTime(150,t);bp.frequency.exponentialRampToValueAtTime(3500,t+1.9);bp.frequency.exponentialRampToValueAtTime(220,t+3.6);env(ng,t,1.8,.45,.15,1.6);n.connect(bp);bp.connect(ng);send(ng,1,.25);n.start(t);n.stop(t+4);
-  const tb=t+1.95,b=a.createOscillator(),bg=a.createGain();b.type='sine';b.frequency.setValueAtTime(120,tb);b.frequency.exponentialRampToValueAtTime(26,tb+1.3);env(bg,tb,.005,.9,.05,1.4);b.connect(bg);send(bg,1,.5);b.start(tb);b.stop(tb+1.6);
+    const d=(lead||1.95)-WARP_PEAK,s=a.createBufferSource(),g=a.createGain();s.buffer=SFX.buf.warp;g.gain.value=.95;s.connect(g);sfxSend(g,1,.12);if(d>=0)s.start(t+d);else s.start(t,-d);return}
+  const o=a.createOscillator(),lp=a.createBiquadFilter(),g=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(880,t+1.85);lp.type='lowpass';lp.frequency.setValueAtTime(300,t);lp.frequency.exponentialRampToValueAtTime(5000,t+1.85);lp.Q.value=6;env(g,t,1.7,.16,.1,.2);o.connect(lp);lp.connect(g);sfxSend(g,1,.3);o.start(t);o.stop(t+2.2);
+  const n=noiseSrc(),bp=a.createBiquadFilter(),ng=a.createGain();bp.type='bandpass';bp.Q.value=1.1;bp.frequency.setValueAtTime(150,t);bp.frequency.exponentialRampToValueAtTime(3500,t+1.9);bp.frequency.exponentialRampToValueAtTime(220,t+3.6);env(ng,t,1.8,.45,.15,1.6);n.connect(bp);bp.connect(ng);sfxSend(ng,1,.25);n.start(t);n.stop(t+4);
+  const tb=t+1.95,b=a.createOscillator(),bg=a.createGain();b.type='sine';b.frequency.setValueAtTime(120,tb);b.frequency.exponentialRampToValueAtTime(26,tb+1.3);env(bg,tb,.005,.9,.05,1.4);b.connect(bg);sfxSend(bg,1,.5);b.start(tb);b.stop(tb+1.6);
   [1318.5,1760,2637,3520].forEach((f,i)=>tone2(f,tb+.05+i*.06,2.4,'sine',.03,.9));
 }
-function sfxPortal(){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();if(playBuf('portal',.95))return;[220,277.2,329.6,440,554.4].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;env(g,t+i*.15,.8,.05,.6,2.2);o.connect(g);send(g,.7,.7);o.start(t+i*.15);o.stop(t+4.5)})}
+function sfxPortal(){if(!sfxOn())return;const a=AU.ctx,t=a.currentTime;stopAmb();if(playBuf('portal',.95))return;[220,277.2,329.6,440,554.4].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;env(g,t+i*.15,.8,.05,.6,2.2);o.connect(g);sfxSend(g,.7,.7);o.start(t+i*.15);o.stop(t+4.5)})}
 function sfxArrive(){if(!sfxOn())return;const t=AU.ctx.currentTime;tone2(392,t,1.4,'triangle',.05,.6);tone2(587.3,t+.12,1.6,'triangle',.04,.7)}
 
 /* Lichtsprung */

@@ -1014,4 +1014,25 @@ pad.hidden=true;abtn.hidden=true;
 assetsP.then(()=>{demo=buildWorld(12345,6,1);cam.x=demo.clear[0].cx;cam.y=demo.clear[0].cy});
 requestAnimationFrame(loop);
 if(DEV)window.__wl={G:G,genData:genData,roleBody:roleBody,ROLE_SETS:ROLE_SETS,existing:existing,enterChamber:setCi,RM:RM,ents:()=>ents,world:()=>G.world,walkable:walkable,chamberDone:chamberDone,handleAct:handleAct,PZ:PZ,px:px,beginGame:beginGame,tp:(x,y)=>{const m=meEnt();m.x=m.rx=x;m.y=m.ry=y},held:held,interact:interact,buildWorld:buildWorld,ready:()=>ASSETS_READY};
+/* ---------- Vorschau für die Lehrkraft: Adresse mit ?vorschau öffnen ----------
+   Startet den Testmodus und zeigt ein Steuerfeld: Rätsel überspringen, Ton, Zeit fast abgelaufen, Sieg, Niederlage.
+   Nicht im Katalog verlinkt. */
+(function(){if(!/[?&]vorschau\b/.test(location.search))return;
+  setTimeout(function(){try{startSolo()}catch(e){}
+    setTimeout(function(){const it=document.getElementById('intro');if(it&&!it.hidden)it.click()},700);
+    const box=document.createElement('div');
+    box.style.cssText='position:fixed;left:12px;bottom:12px;z-index:60;background:rgba(10,12,30,.9);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:10px 12px;color:#fff;font:600 14px system-ui,sans-serif;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:min(620px,94vw)';
+    const B=(l,f)=>{const b=document.createElement('button');b.textContent=l;b.className='chip';b.addEventListener('click',f);box.appendChild(b);return b};
+    const t=document.createElement('b');t.textContent='VORSCHAU';t.style.marginRight='6px';box.appendChild(t);
+    B('⏭ Rätsel überspringen',function(){if(G.phase==='play'&&!G.locked){try{chamberDone()}catch(e){}}});
+    const sb=B('🔇 Ton aus',function(){initAudio();AU.on=!AU.on;if(AU.ctx&&AU.ctx.resume)AU.ctx.resume();sb.textContent=AU.on?'🔊 Ton an':'🔇 Ton aus'});
+    B('⏳ Zeit fast um',function(){if(G.phase==='play')G.deadline=performance.now()+45000});
+    B('🏆 Sieg',function(){if(G.phase==='play')finish('won')});
+    B('💥 Niederlage',function(){if(G.phase==='play')finish('lost')});
+    B('↻ Neu',function(){location.reload()});
+    const hide=B('Ausblenden',function(){box.style.display='none';show.style.display='block'});
+    const show=document.createElement('button');show.textContent='Vorschau';show.className='chip';show.style.cssText='position:fixed;left:12px;bottom:12px;z-index:60;display:none';show.addEventListener('click',function(){box.style.display='flex';show.style.display='none'});
+    document.body.appendChild(box);document.body.appendChild(show);
+  },800);
+})();
 })();
