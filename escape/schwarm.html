@@ -501,7 +501,9 @@ function portalGeom(){const m=gateMap();if(m&&curKey==='tor')return {x:m.ox+GATE
 const GATE={u:759.5/1536,v:460.1/1024,r:179.3/1024,lx:500,ly:220};
 const GATE_LIGHTS=new Image();GATE_LIGHTS.src=ASSET+'gate-lights.png';
 function gateMap(){if(!curImg)return null;const iw=curImg.naturalWidth,ih=curImg.naturalHeight,sc=Math.max(W/iw,H/ih);return {sc:sc,iw:iw,ih:ih,ox:(W-iw*sc)/2,oy:(H-ih*sc)/2}}
-function drawPortal(c,t,pw,parts,k){
+/* Zerfall des Tors in den letzten 20 % der Zeit (0 = intakt, 1 = ganz zerfallen) */
+function gateDecay(L){const g=Math.min(1,Math.max(0,(L-.8)/.2));return g*g*(3-2*g)}
+function drawPortal(c,t,pw,parts,k,dec){dec=dec||0;if(dec>0&&G.phase!=='won'&&!(PREVIEW&&PV.portal))pw*=(1-.55*dec)*(.8+.2*Math.sin(t*.031)*Math.sin(t*.017));
   const g=portalGeom(),x=g.x,y=g.y,r=g.r,m=g.m;let gr;
   c.save();c.beginPath();c.arc(x,y,r*.985,0,7);c.clip();
   // Membran
@@ -524,8 +526,8 @@ function drawPortal(c,t,pw,parts,k){
   c.restore();
   // Lichter am Ring: pulsieren und Lauflicht
   if(m&&GATE_LIGHTS.complete&&GATE_LIGHTS.naturalWidth){const lx=m.ox+GATE.lx*m.sc,ly=m.oy+GATE.ly*m.sc,lw=GATE_LIGHTS.naturalWidth*m.sc,lh=GATE_LIGHTS.naturalHeight*m.sc;
-    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=Math.min(1,.2+pw*.6+.15*Math.sin(t*.003));c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);
-    const sa=t*.0015*(1+pw*2);c.beginPath();c.moveTo(x,y);c.arc(x,y,r*1.7,sa,sa+.8);c.closePath();c.clip();c.globalAlpha=.7+pw*.3;c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.restore()}
+    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=Math.min(1,.2+pw*.6+.15*Math.sin(t*.003))*(1-dec);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);
+    const sa=t*.0015*(1+pw*2);c.beginPath();c.moveTo(x,y);c.arc(x,y,r*1.7,sa,sa+.8);c.closePath();c.clip();c.globalAlpha=(.7+pw*.3)*(1-dec);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.drawImage(GATE_LIGHTS,lx,ly,lw,lh);c.restore()}
   // Außenglühen und Spiegelung auf dem Eis
   c.save();c.globalCompositeOperation='lighter';
   gr=c.createRadialGradient(x,y,r*.95,x,y,r*1.55);gr.addColorStop(0,'rgba(150,120,255,'+(.05+pw*.22)+')');gr.addColorStop(1,'rgba(150,120,255,0)');c.fillStyle=gr;c.beginPath();c.arc(x,y,r*1.55,0,7);c.arc(x,y,r*.97,0,7,true);c.fill();
@@ -559,7 +561,8 @@ function drawFx(dt){const c=fxC,t=FX.t;c.clearRect(0,0,W,H);const k=dt*60,m=Math
     case 'haze':{for(const e of FX.extra){e.x+=(.3+e.s*.5)*k;if(e.x>W*1.5)e.x=-W*.5;const y=H*(.3+e.s*.5),g=c.createRadialGradient(e.x,y,0,e.x,y,W*.45);g.addColorStop(0,'rgba(240,160,70,.16)');g.addColorStop(1,'rgba(240,160,70,0)');c.fillStyle=g;c.fillRect(0,0,W,H)}
       c.strokeStyle='rgba(255,210,150,.33)';c.lineWidth=1.2;c.beginPath();for(const p of FX.parts){p.y+=p.v*k;p.x+=p.v*.25*k;if(p.y>H+30||p.x>W+30){Object.assign(p,newPart('haze'));p.x=Math.random()*W*1.2-W*.2}c.moveTo(p.x,p.y);c.lineTo(p.x-p.len*.25,p.y-p.len)}c.stroke();break}
     case 'diamonds':{c.strokeStyle='rgba(160,200,255,.1)';c.lineWidth=1;c.beginPath();for(const e of FX.extra){e.x+=(14+e.s*10)*k;if(e.x>W+200)e.x=-200;const y=H*(.1+e.s*.5);c.moveTo(e.x,y);c.lineTo(e.x-160,y+4)}c.stroke();
-      for(const p of FX.parts){p.y+=p.v*k;p.x+=.6*k;if(p.y>H+10)Object.assign(p,newPart('diamonds'));const tw=Math.abs(Math.sin(t*.006+p.ph));c.fillStyle='rgba(220,240,255,'+(.5+tw*.5)+')';c.save();c.translate(p.x,p.y);c.rotate(.785);c.fillRect(-p.r/2,-p.r/2,p.r,p.r);c.restore();
+      const dn=Math.round(FX.parts.length*(1-.92*swarmLevel()));/* der Glitzerregen versiegt, je näher der Schwarm kommt */
+      for(let di=0;di<dn;di++){const p=FX.parts[di];p.y+=p.v*k;p.x+=.6*k;if(p.y>H+10)Object.assign(p,newPart('diamonds'));const tw=Math.abs(Math.sin(t*.006+p.ph));c.fillStyle='rgba(220,240,255,'+(.5+tw*.5)+')';c.save();c.translate(p.x,p.y);c.rotate(.785);c.fillRect(-p.r/2,-p.r/2,p.r,p.r);c.restore();
         if(tw>.97){c.strokeStyle='rgba(255,255,255,.9)';c.beginPath();c.moveTo(p.x-p.r*4,p.y);c.lineTo(p.x+p.r*4,p.y);c.moveTo(p.x,p.y-p.r*4);c.lineTo(p.x,p.y+p.r*4);c.stroke()}}break}
     case 'portal':break;
   }
@@ -634,13 +637,13 @@ async function infestReset(key){IF.key=key;IF.corrupt=null;IF.n1=valueNoise(14,1
 function drawInfest(c,t,m,L){
   if(!IF.corrupt||!m||L<=0)return;
   const MW=IF.MW,MH=IF.MH,md=IF.mImg.data,ed=IF.eImg.data,n1=IF.n1,n2=IF.n2,n3=IF.n3,ca=Math.cos(t*.0004),sa=Math.sin(t*.0004),reach=-.15+L*1.38;
-  let pg=null;if(AF.key==='tor'){const p=portalGeom();pg={x:(p.x-m.ox)/(m.iw*m.sc),y:(p.y-m.oy)/(m.ih*m.sc),r:p.r*1.25/(m.ih*m.sc)}}
+  let pg=null;if(AF.key==='tor'){const p=portalGeom(),dec=gateDecay(L);pg={x:(p.x-m.ox)/(m.iw*m.sc),y:(p.y-m.oy)/(m.ih*m.sc),r:p.r*1.6*(1-dec)/(m.ih*m.sc)}}
   const edgeList=[];
   for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){const i=y*MW+x,u=x/MW,v=y/MH;
     const dist=Math.sqrt(u*u*.9+(1-v)*(1-v)*.55);
     const nz=(n1[i]*ca+n3[i]*sa)*.5+.5*n2[i];
     let f=(reach-(dist+nz*.42-.18))*7;
-    if(pg){const dx=(u-pg.x)*1.5,dy=v-pg.y,pd=Math.sqrt(dx*dx+dy*dy);if(pd<pg.r)f=Math.min(f,(pd-pg.r*.85)*30)}
+    if(pg&&pg.r>0){const dx=(u-pg.x)*1.5,dy=v-pg.y,pd=Math.sqrt(dx*dx+dy*dy);if(pd<pg.r)f=Math.min(f,(pd-pg.r*.85)*30)}
     const a=f<=0?0:f>=1?1:f*f*(3-2*f);md[i*4+3]=a*255;
     const e=a>0&&a<1?1-Math.abs(a-.5)*2:0;ed[i*4]=255;ed[i*4+1]=40;ed[i*4+2]=50;ed[i*4+3]=e*220;
     if(e>.55&&(i*7919+(t/120|0))%11===0)edgeList.push(i)}
@@ -711,7 +714,7 @@ function drawAnchored(dt,t){
   // Befall durch den Schwarm: der Planet wird dunkler und Stück für Stück zerfressen
   {const L=swarmLevel();if(L>0){c.fillStyle='rgba(0,0,8,'+(.32*L*L)+')';c.fillRect(0,0,W,H);drawInfest(c,t,m,L)}}
   // Sprungtor
-  if(AF.key==='tor'){FX.portalPower+=((G.phase==='won'||(PREVIEW&&PV.portal)?1:.18)-FX.portalPower)*.02;drawPortal(c,t,FX.portalPower,FX.parts,dt*60)}
+  if(AF.key==='tor'){FX.portalPower+=((G.phase==='won'||(PREVIEW&&PV.portal)?1:.18)-FX.portalPower)*.02;drawPortal(c,t,FX.portalPower,FX.parts,dt*60,gateDecay(swarmLevel()))}
 }
 
 /* ---------- Klangwelt: Hall, Atmosphären je Planet, Schwarm-Summen, Lichtsprung ---------- */
