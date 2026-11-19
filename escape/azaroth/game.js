@@ -565,11 +565,13 @@ function buildWorld(seed,order,P,st){
       put({t:'lectern',im:'int_lectern',x:r.side[0][0],y:r.side[0][1],k:k,w:1});
       put({t:'lanternhook',im:'int_lantern',x:r.side[1][0],y:r.side[1][1],k:k,w:.8});
     }else if(t==='forge'){
-      for(let y=r.y;y<=r.y+1;y++)for(let x=r.cx-1;x<=r.cx+1;x++)block[idx(x,y)]=1;
-      put({t:'big',im:'big_forge',x:r.cx,y:r.y+1,w:3.2,solid:false});lights.push([r.cx+.5,r.y+1.4,3.2,1]);
+      /* Kommt der Gang von oben, rückt das Schmiedegebäude in die Ecke, damit der Eingang frei bleibt */
+      const fx=r.ent==='T'?(r.ext==='L'?r.x+RW-3:r.x+2):r.cx;
+      for(let y=r.y;y<=r.y+1;y++)for(let x=fx-1;x<=fx+1;x++)block[idx(x,y)]=1;
+      put({t:'big',im:'big_forge',x:fx,y:r.y+1,w:3.2,solid:false});lights.push([fx+.5,r.y+1.4,3.2,1]);
       put({t:'station',im:'anvil',x:r.cx,y:r.cy,k:k,w:1});
       put({t:'npc',im:'npc_smith',x:r.cx+2,y:r.cy-2,who:'smith'});
-      [['quench',r.cx-3,r.y+2],['bellows',r.cx+3,r.y+2],['crucible',r.cx-2,r.cy+2],['obj_sack',r.x+1,r.y+RH-2],['ore_coal',r.x+RW-2,r.y+RH-2],['hammer',r.cx+2,r.cy+2]].forEach(q=>{if(free(q[1],q[2]))put({t:'obj',im:q[0],x:q[1],y:q[2],w:.85})});
+      [['quench',fx-2,r.y+2],['bellows',fx+2,r.y+2],['crucible',r.cx-2,r.cy+2],['obj_sack',r.x+1,r.y+RH-2],['ore_coal',r.x+RW-2,r.y+RH-2],['hammer',r.cx+2,r.cy+2]].forEach(q=>{if(free(q[1],q[2]))put({t:'obj',im:q[0],x:q[1],y:q[2],w:.85})});
       [[r.x,r.y],[r.x+RW-1,r.y]].forEach(p=>{if(free(p[0],p[1])){put({t:'obj',im:'obj_brazier',x:p[0],y:p[1],w:.85});lights.push([p[0]+.5,p[1]+.2,2.4,.8])}});
     }else if(t==='finale'){
       for(let y=r.y;y<=r.y+1;y++)for(let x=r.cx-2;x<=r.cx+2;x++)block[idx(x,y)]=1;
