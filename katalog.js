@@ -216,6 +216,8 @@ const FRS = {
         bild:"escape/vorschau-wrack.jpg", farbe:"#1689B5", chips:["👥 1–6","⏱️ 35 / 70 Min.","🧭 Sehen & Raum"] },
       { id:"esc-bibliothek", raum:true, titel:"Die Bibliothek der Tinte", info:"In der Himmelsbibliothek versiegt die Tinte: Durch die Säle bis zum Buch der Bücher.", pfad:"escape/bibliothek.html",
         bild:"escape/vorschau-bibliothek.jpg", farbe:"#C9A23A", chips:["👥 1–6","⏱️ 35 / 70 Min.","🧠 Logik & Detektiv"], neu:"Testlauf" },
+      { id:"esc-azaroth", raum:true, titel:"Die Hallen von Azaroth", info:"Tief im Berg erwacht ein Drache: Felsbrocken schieben, Loren lenken, den Runenschlüssel schmieden und am Drachen vorbeischleichen.", pfad:"escape/azaroth.html",
+        bild:"escape/vorschau-azaroth.jpg", farbe:"#E0812E", chips:["👥 1–6","⏱️ 35 / 70 Min.","🧭 Sehen & Raum","2D"], neu:"Neu" },
       { id:"esc-schwarm", raum:true, titel:"Der Schwarm", info:"Flucht durchs Sonnensystem: per Lichtsprung von Planet zu Planet bis zum uralten Sprungtor.", pfad:"escape/schwarm.html",
         bild:"escape/vorschau-schwarm.jpg", farbe:"#3A7BFF", chips:["👥 1–6","⏱️ 35 / 70 Min.","🔢 Zahlen & Codes","🪐 Planeten"], neu:"Neu" },
       { id:"esc-test", titel:"iPad-Verbindungstest", info:"Vor der Stunde: prüft Grafik, Ton und die Live-Verbindung zwischen den iPads", pfad:"escape/test.html", icon:"📶" },

@@ -43,6 +43,7 @@ root.FRSSound=function(AU,o){
     if(r==='wrack'){band(160,.8,.3,.04,60);drone(55,'sine',.05);drone(82.4,'sine',.025);band(500,3,.03,.07,150)}
     if(r==='bibliothek'){drone(220,'sine',.012);drone(277.2,'sine',.008);drone(329.6,'sine',.008);band(1200,.8,.03,.05,500,false)}
     if(r==='woodlands'){band(700,.6,.12,.08,350,false);band(2200,1.5,.02,.11,800,false);drone(65.4,'sine',.02)}
+    if(r==='azaroth'){band(90,.7,.32,.03,30);drone(36.7,'sawtooth',.025,110);drone(55,'sine',.03);band(420,2,.025,.05,120)}
   }
   /* zufällige Einzelgeräusche */
   function events(){const t=a.currentTime;if(t<S.next||S.amb&&S.amb.file)return;const r=o.room;
@@ -62,6 +63,11 @@ root.FRSSound=function(AU,o){
       if(x<.5){for(let i=0;i<6;i++){const tt=t+i*.07,os=a.createOscillator(),g=a.createGain();os.frequency.value=4300+Math.random()*200;env(g,tt,.005,.015,.02,.03);os.connect(g);send(g,1,.1);os.start(tt);os.stop(tt+.1)}S.next=t+.8+Math.random()*1.5}
       else if(x<.65){[[0,392],[.45,349.2],[.62,349.2]].forEach(([dt,f])=>{const tt=t+dt,os=a.createOscillator(),g=a.createGain();os.frequency.setValueAtTime(f,tt);os.frequency.linearRampToValueAtTime(f*.93,tt+.3);env(g,tt,.05,.05,.12,.2);os.connect(g);send(g,1,.6);os.start(tt);os.stop(tt+.5)});S.next=t+5+Math.random()*6}
       else{[2093,2637,3136].forEach((f,i)=>bell(f,t+i*.11,1.2,.015,.9));S.next=t+4+Math.random()*5}}
+    else if(r==='azaroth'){ // Wassertropfen, ferne Hammerschläge, Steinchen
+      const x=Math.random();
+      if(x<.5){const tt=t,os=a.createOscillator(),g=a.createGain(),f=1400+Math.random()*900;os.frequency.setValueAtTime(f,tt);os.frequency.exponentialRampToValueAtTime(f*.45,tt+.09);env(g,tt,.003,.05,0,.12);os.connect(g);send(g,.6,.9);os.start(tt);os.stop(tt+.25);S.next=t+1.2+Math.random()*2.5}
+      else if(x<.8){const n=2+Math.floor(Math.random()*3);for(let i=0;i<n;i++)bell(780+Math.random()*40,t+i*.55,.6,.018,1);S.next=t+4+Math.random()*5}
+      else{const nn=noise(),bp=a.createBiquadFilter(),g=a.createGain();bp.type='bandpass';bp.frequency.value=1800;bp.Q.value=1.2;env(g,t,.01,.04,.05,.2);nn.connect(bp);bp.connect(g);send(g,1,.5);nn.start(t);nn.stop(t+.5);S.next=t+3+Math.random()*4}}
   }
   function tick(){const play=AU.on&&o.phase()==='play';if(play){startAmb();events()}else stopAmb()}
   setInterval(tick,400);

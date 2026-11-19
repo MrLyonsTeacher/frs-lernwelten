@@ -808,7 +808,7 @@ document.addEventListener('click',function(e){
 /* ================= Rätselfamilien =================
    Jeder Escape Room gehört zu einer Familie und zieht seine Rätsel vor allem daraus.
    Zahlen & Codes: Vulkan, Der Schwarm · Logik & Detektiv: Bibliothek, Eiswelt
-   Sehen & Raum: Wrack, Drachenhöhle · Team & Sinne: Finlorién, neuer Raum */
+   Sehen & Raum: Wrack, Azaroth (Drachenhöhle) · Team & Sinne: Finlorién, neuer Raum */
 const FAMILIES={
   zahlen:['symbols','pyramid','sequence','lock','scales','cipher'],
   logik:['logic','wires','switches','truth','suspects','sudoku'],
