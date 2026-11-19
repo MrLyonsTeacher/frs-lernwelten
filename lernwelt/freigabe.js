@@ -46,6 +46,19 @@
   if(sweep()) setTimeout(closeTab, 0);
   const tick = () => { if(sweep()) closeTab(); };
   setInterval(tick, 20000); document.addEventListener("visibilitychange", () => { if(!document.hidden) tick(); });
+  /* Mehrere Tabs auf Leih-iPads: Ein alter, noch offener Tab zeigt sonst die Freigabe vom Zeitpunkt seines Ladens
+     (oder alles offen), auch wenn inzwischen ein neuer QR-Code gescannt wurde. Daher: Ändert sich die Freigabe
+     (in einem anderen Tab, oder während der Tab im Hintergrund war), lädt sich die Seite selbst neu. */
+  const snap = () => { try{ return Object.keys(localStorage).filter(k=>/^frs-frei-/.test(k)).sort().map(k=>k+"="+localStorage.getItem(k)).join("|"); }catch(e){ return ""; } };
+  let SNAP = snap();
+  const recheck = () => { if(snap() !== SNAP){ SNAP = snap(); location.reload(); } };
+  window.addEventListener("storage", e => { if(!e.key || /^frs-frei-/.test(e.key)) recheck(); });
+  window.addEventListener("pageshow", e => { if(e.persisted) recheck(); });
+  window.addEventListener("focus", recheck);
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) recheck(); });
+  const _apply = apply, _clear = clear;
+  apply = async code => { const o = await _apply(code); SNAP = snap(); return o; };   // eigene Änderung: kein Neuladen nötig
+  clear = k => { _clear(k); SNAP = snap(); };
   const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
   window.FREI = { wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();
