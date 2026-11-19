@@ -247,6 +247,7 @@ async function startWelt(cfg){
   { const fp = new URLSearchParams(location.search).get("frei");
     if(fp && window.FREI){ const o = await FREI.apply(fp); const u = new URL(location.href); u.searchParams.delete("frei"); history.replaceState(null, "", u);
       msg = o ? (o.k === K ? "🔓 Orte freigeschaltet!" : "🔓 Code gespeichert (andere Klasse)") : "⚠️ Code ungültig"; } }
+  if(window.FREI) await FREI.gate(K);   // Klasse im Link geändert? Nur mit QR-Code dieser Klasse oder Passwort
   drawOver(); panEvents(); zeige($("#fOver"), C.startBlick || null);
   document.addEventListener("click", e => {
     if(dragged){ e.preventDefault(); return; }

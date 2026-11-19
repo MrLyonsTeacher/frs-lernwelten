@@ -63,6 +63,38 @@
   const _apply = apply, _clear = clear;
   apply = async code => { const o = await _apply(code); SNAP = snap(); return o; };   // eigene Änderung: kein Neuladen nötig
   clear = k => { _clear(k); SNAP = snap(); };
+  /* Zugangsschutz der Klassenwelten: Wer im Link nur die Klasse ändert (k=9 → k=10), kommt nicht mehr hinein.
+     Offen ist eine Klassenwelt, wenn auf dem Gerät ein Freigabe-Code oder der normale Klassen-QR-Code (mit Zugangszeichen z=…)
+     dieser Klasse gescannt wurde, wenn man von der (passwortgeschützten) Startseite kommt oder das Startseiten-Passwort eingibt. */
+  const START_HASH = "6ea733fee097b492ca9a8b4ffb2674ded74ed52bc508f02e6c619bf78dd9ae6d";   // = HASH in startgate.js (Passwort der Startseite)
+  const ZKEY = k => "frs-zugang-" + k;
+  const zToken = async k => (await sha(PWHASH + "zugang:" + k)).slice(0, 14);
+  const startOk = () => { try{ return localStorage.getItem("frs-start-ok") === START_HASH || sessionStorage.getItem("frs-start-ok") === START_HASH; }catch(e){ return false; } };
+  const fromStart = () => { try{ const r = new URL(document.referrer); return r.origin === location.origin && /\/(index\.html)?$/.test(r.pathname); }catch(e){ return false; } };
+  async function gate(k){
+    try{ const u = new URL(location.href), z = u.searchParams.get("z");
+      if(z){ if(z === await zToken(k)) localStorage.setItem(ZKEY(k), "1"); u.searchParams.delete("z"); history.replaceState(null, "", u); } }catch(e){}
+    let has = false; try{ has = !!state(k) || localStorage.getItem(ZKEY(k)) === "1"; }catch(e){}
+    if(has || startOk() || fromStart()) return true;
+    return new Promise(resolve => {
+      const g = document.createElement("div"); g.id = "zgate";
+      g.setAttribute("style", "position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(10,20,40,.96);padding:20px;font-family:system-ui,-apple-system,sans-serif");
+      g.innerHTML = `<form autocomplete="off" style="background:#fff;color:#13294B;border-radius:18px;padding:26px 22px;width:min(380px,100%);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <div style="font-size:2.4rem">🔒</div><h2 style="margin:.2em 0 .3em;font-size:1.3rem">Please scan your class QR code</h2>
+        <p style="margin:0 0 16px;opacity:.75;font-size:.95rem">Bitte scanne den QR-Code deiner Lehrkraft, um in diese Welt zu kommen.</p>
+        <input type="password" id="zgpw" placeholder="Passwort (Lehrkraft)" autocapitalize="off" spellcheck="false" style="width:100%;box-sizing:border-box;min-height:44px;padding:0 12px;border:2px solid #C8D2E0;border-radius:12px;font-size:1rem">
+        <button type="submit" style="margin-top:10px;width:100%;min-height:44px;border:0;border-radius:12px;background:#13294B;color:#fff;font-size:1rem;font-weight:700">Öffnen</button>
+        <p id="zgerr" style="color:#C0392B;min-height:1.2em;margin:8px 0 0;font-size:.9rem"></p></form>`;
+      document.body.appendChild(g);
+      g.querySelector("form").addEventListener("submit", async e => {
+        e.preventDefault(); const pw = g.querySelector("#zgpw");
+        let h = ""; try{ h = await sha("frs-start:" + pw.value.trim().toLowerCase()); }catch(err){}
+        if(h !== START_HASH){ g.querySelector("#zgerr").textContent = "Passwort falsch."; pw.select(); return; }
+        try{ sessionStorage.setItem("frs-start-ok", START_HASH); }catch(err){}
+        g.remove(); resolve(true);
+      });
+    });
+  }
   const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
-  window.FREI = { wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  window.FREI = { gate, zToken, wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();

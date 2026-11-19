@@ -329,7 +329,9 @@ document.addEventListener("click", e=>{
   const g = e.target.closest("[data-tog]");
   if(g){ const k=+g.dataset.tog, card=g.closest(".cls"), o=!OPEN.has(k); o?OPEN.add(k):OPEN.delete(k); card.classList.toggle("open",o); g.setAttribute("aria-expanded",o); return; }
   const q = e.target.closest("[data-qr]");
-  if(q){ showQR(q.dataset.s, q.dataset.t, abs(q.dataset.qr)); }
+  if(q){ let u = q.dataset.qr; const m = u.match(/^englisch\/welt\.html\?k=(\d+)$/) || u.match(/^sport\/klasse(\d+)\.html$/);
+    if(m){ const k = u.startsWith("sport") ? 100 + +m[1] : +m[1]; FREI.zToken(k).then(z => showQR(q.dataset.s, q.dataset.t, abs(u + (u.includes("?") ? "&" : "?") + "z=" + z))); }   // Klassen-QR mit Zugangszeichen
+    else showQR(q.dataset.s, q.dataset.t, abs(u)); }
 });
 document.getElementById("ownForm").addEventListener("submit", e=>{ e.preventDefault(); const u=document.getElementById("ownUrl").value.trim(); if(u) showQR("", "Link öffnen", u); });
 document.getElementById("close").onclick = ()=>document.getElementById("dlg").close();

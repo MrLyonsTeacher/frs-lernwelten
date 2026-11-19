@@ -230,6 +230,7 @@ async function main(){
   { const fp = new URLSearchParams(location.search).get("frei");
     if(fp){ const o = await FREI.apply(fp); const u = new URL(location.href); u.searchParams.delete("frei"); history.replaceState(null,"",u);
       freiMsg = o ? (o.k===K ? "🔓 Areas updated – Bereiche freigeschaltet!" : "🔓 Code saved for class "+o.k) : "⚠️ Code not valid / Code ungültig"; } }
+  await FREI.gate(K);   // Klasse im Link geändert? Nur mit QR-Code dieser Klasse oder Passwort
   document.title = `Class ${K} · ${WI.name} – FRS Lernwelten`;
   const BER = FRS.bereicheFuer(K), byKat = b => KL.themen.filter(t=>t.kat===b);
   const names = {}, counts = {}, icons = {};
