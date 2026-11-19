@@ -84,9 +84,40 @@ function img(i){return '<img alt="" src="'+shapeURL(i)+'">'}
 
 /* ---------- Ton ---------- */
 const AU={ctx:null,on:false};
+/* Aufnahmen aus ElevenLabs: werden früh geladen, beim ersten Tippen entschlüsselt */
+const SFXN=['az-amb-halle','az-amb-felsen','az-amb-kristall','az-amb-mine','az-amb-stollen','az-amb-schmiede','az-amb-hort','az-grollen','az-bruellen','az-auge-auf','az-atem','az-gitter','az-geroell','az-felsen-schieben','az-felsen-platte','az-weiche','az-lore-fahrt','az-lore-ziel','az-kristall-drehen','az-strahl-treffer','az-laterne','az-erz','az-amboss','az-schluessel','az-tor','az-richtig','az-falsch','az-hinweis','az-sieg','az-niederlage'];
+const SFX={raw:{},buf:{},out:null,amb:null,ambName:null};
+const SNDO={room:'azaroth-dateien',phase:()=>G.phase,progress:()=>progress()};
+SFXN.forEach(n=>{fetch('azaroth/sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(b=>{if(b){SFX.raw[n]=b;sfxDecode()}}).catch(()=>{})});
+setTimeout(()=>{if(!SFX.raw['az-amb-halle'])SNDO.room='azaroth'},9000); /* ohne Dateien: künstliche Atmosphäre */
+function sfxDecode(){
+  if(!AU.ctx)return;
+  if(!SFX.out){SFX.out=AU.ctx.createGain();SFX.out.gain.value=.9;SFX.out.connect(AU.ctx.destination)}
+  Object.keys(SFX.raw).forEach(n=>{if(SFX.buf[n]||SFX.raw[n]===1)return;const b=SFX.raw[n];SFX.raw[n]=1;try{AU.ctx.decodeAudioData(b,d=>{SFX.buf[n]=d},()=>{})}catch(e){}});
+}
+function sfx(n,vol,delay){
+  if(!AU.ctx||!AU.on||!SFX.buf[n])return null;
+  try{const s=AU.ctx.createBufferSource(),g=AU.ctx.createGain();s.buffer=SFX.buf[n];g.gain.value=vol==null?1:vol;s.connect(g);g.connect(SFX.out);s.start(AU.ctx.currentTime+(delay||0));return {s:s,g:g}}catch(e){return null}
+}
+function sfxStop(h,fade){if(!h)return;try{const t=AU.ctx.currentTime;h.g.gain.setValueAtTime(h.g.gain.value,t);h.g.gain.linearRampToValueAtTime(0,t+(fade||.3));h.s.stop(t+(fade||.3)+.05)}catch(e){}}
+/* Atmosphäre je Hallenart, weich überblendet */
+const AMBOF={pool:'az-amb-halle',boulder:'az-amb-felsen',beam:'az-amb-kristall',rails:'az-amb-mine',dark:'az-amb-stollen',forge:'az-amb-schmiede',finale:'az-amb-hort'};
+const AMBVOL={'az-amb-hort':.75,'az-amb-stollen':.75};
+function ambTick(){
+  if(!AU.ctx||!SFX.out)return;
+  let want=null;
+  if(AU.on&&G.phase==='play'&&G.world){const m=meEnt(),z=m?zoneAt(m.x,m.y):-1;want=z>=0?AMBOF[G.world.ch[z].type]:(SFX.ambName||AMBOF[chCur().type])}
+  if(want&&!SFX.buf[want])want=SFX.ambName&&SFX.buf[SFX.ambName]?SFX.ambName:null;
+  if(want===SFX.ambName)return;
+  const t=AU.ctx.currentTime;
+  if(SFX.amb){const o=SFX.amb;o.g.gain.cancelScheduledValues(t);o.g.gain.setValueAtTime(o.g.gain.value,t);o.g.gain.linearRampToValueAtTime(0,t+1.6);try{o.s.stop(t+1.7)}catch(e){}SFX.amb=null}
+  SFX.ambName=want;
+  if(want){const s=AU.ctx.createBufferSource(),g=AU.ctx.createGain();s.buffer=SFX.buf[want];s.loop=true;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(AMBVOL[want]||.6,t+2.2);s.connect(g);g.connect(SFX.out);s.start(t,Math.random()*Math.max(0,SFX.buf[want].duration-1));SFX.amb={s:s,g:g}}
+}
+setInterval(ambTick,500);
 function initAudio(){
-  if(AU.ctx){if(AU.ctx.resume)AU.ctx.resume();return}
-  try{const C=window.AudioContext||window.webkitAudioContext;if(C){AU.ctx=new C();window.__snd=window.FRSSound?FRSSound(AU,{room:'azaroth',phase:()=>G.phase,progress:()=>progress()}):null;}}catch(e){}
+  if(AU.ctx){if(AU.ctx.resume)AU.ctx.resume();sfxDecode();return}
+  try{const C=window.AudioContext||window.webkitAudioContext;if(C){AU.ctx=new C();window.__snd=window.FRSSound?FRSSound(AU,SNDO):null;sfxDecode()}}catch(e){}
 }
 function beep(f,d,type,v){
   if(!AU.ctx||!AU.on)return;
@@ -101,6 +132,7 @@ function beep(f,d,type,v){
 /* tiefes Drachengrollen */
 function rumble(strength){
   if(!AU.ctx||!AU.on)return;
+  if(sfx('az-grollen',Math.min(1,.45+strength*.5)))return;
   try{
     const a=AU.ctx,t=a.currentTime,len=a.sampleRate*2.4,b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);let l=0;
     for(let i=0;i<len;i++){const w=Math.random()*2-1;l=(l+.03*w)/1.03;d[i]=l*6}
@@ -148,7 +180,7 @@ let ASSETS_READY=false;
 const assetsP=(async()=>{
   const g=await loadImg(ASSET+'tiles_ground.png'),w=await loadImg(ASSET+'tiles_walls.png');
   await Promise.all(IMGN.map(async n=>{IM[n]=await loadImg(ASSET+n+'.png')}));
-  TILE=sliceSheet(g);WALL=sliceSheet(w);buildRailTiles();buildPetIcons();ASSETS_READY=true;
+  TILE=sliceSheet(g);WALL=sliceSheet(w);buildRailTiles();buildFlames();buildPetIcons();ASSETS_READY=true;
 })();
 function drawImg(name,cx,by,w,opts){
   /* zeichnet ein Bild mittig über cx, unten bei by, mit Breite w (Bildschirmpixel) */
@@ -191,6 +223,43 @@ function railCanvas(mask,dim){
   return c;
 }
 function buildRailTiles(){[1,2,4,8,3,5,6,9,10,12].forEach(m=>{RAIL[m]=railCanvas(m,false);RAIL['d'+m]=railCanvas(m,true)})}
+
+/* ---------- Flammen: kleine Pixel-Feuer, selbst berechnet (wie ein Lagerfeuer im Retro-Spiel) ---------- */
+const FLAME=[];
+function buildFlames(){
+  /* Schichten wie in Pixel-Spielen: rot außen, dann orange, gelb, heller Kern; Ränder und Spitzen bewegen sich */
+  const W=18,H=24,N=12,PAL=['#7a1c12','#c8361a','#f07022','#ffb030','#ffe27a','#fff8d8'];
+  for(let f=0;f<N;f++){
+    const t=f/N*Math.PI*2,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const u=y/(H-1);
+      const sway=Math.sin(t+u*2.6)*1.3*(1-u)*(1-u);
+      const cx=(W-1)/2+sway;
+      const tip=.1*Math.sin(x*1.25+t*2)+.07*Math.sin(x*2.3-t*3);
+      const uu=u+tip*(1-u);
+      if(uu<.02)continue;
+      const prof=uu<.78?Math.pow(uu/.78,.72):1-Math.pow((uu-.78)/.22,2)*.28;
+      const half=7.6*prof+Math.sin(y*1.1+t*2)*.55*uu;
+      const r=1-Math.abs(x-cx)/Math.max(.5,half);
+      if(r<=0)continue;
+      let k=0;
+      if(r>.22&&uu>.22)k=1;
+      if(r>.4&&uu>.34)k=2;
+      if(r>.56&&uu>.48)k=3;
+      if(r>.7&&uu>.62)k=4;
+      if(r>.82&&uu>.74)k=5;
+      g.fillStyle=PAL[k];g.fillRect(x,y,1,1);
+    }
+    /* zwei Funken, die nach oben steigen */
+    [[.3,0],[.7,.5]].forEach(q=>{const ph=(f/N+q[1])%1,yy=Math.round(5-ph*5),xx=Math.round(W*q[0]+Math.sin(t*2+q[1]*6)*1.5);if(yy>=0){g.fillStyle=PAL[3+(f%2)];g.fillRect(xx,yy,1,1)}});
+    FLAME.push(c);
+  }
+}
+function drawFlame(cx,by,w,h,seed,t){
+  if(!FLAME.length)return;
+  const fr=FLAME[Math.floor(t*11+seed*7)%FLAME.length],fl=1+Math.sin(t*13+seed*5)*.04;
+  ctx.imageSmoothingEnabled=false;ctx.drawImage(fr,cx-w/2,by-h*fl,w,h*fl);ctx.imageSmoothingEnabled=true;
+}
 const PETIC={};
 function buildPetIcons(){
   PETS.forEach(p=>{const im=IM['pet_'+p.id];const c=document.createElement('canvas');c.width=c.height=80;if(im){const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,0,0,120,120,0,0,80,80)}PETIC[p.id]=c.toDataURL()});
@@ -696,7 +765,7 @@ function handleAct(d,mineAct){
   const id=G.cur,r=chCur(),S=G.sub,pz=r&&r.pz;
   const meP=G.solo?0:G.me;
   if(d.type==='hint'){
-    if(d.n===G.chHints+1&&d.n<=3){G.chHints=d.n;G.hintsTotal++;G.deadline-=PEN_HINT*1000;renderModal()}
+    if(d.n===G.chHints+1&&d.n<=3){G.chHints=d.n;G.hintsTotal++;G.deadline-=PEN_HINT*1000;sfx('az-hinweis',.8);renderModal()}
   }else if(d.type==='x'&&pzOf(id)){
     const p=pzOf(id),res=p.act(G.data[id],G.pu,d,mineAct);
     if(!res)return;
@@ -707,41 +776,41 @@ function handleAct(d,mineAct){
     const i=d.i|0,b=S.b[i];if(!b||Math.abs(d.dx)+Math.abs(d.dy)!==1||b[0]!==d.bx||b[1]!==d.by)return;
     const nx=b[0]+d.dx,ny=b[1]+d.dy,ax=r.x+1,ay=r.y+1;
     if(nx<0||ny<0||nx>=AW||ny>=AH||G.world.block[(ny+ay)*G.world.W+nx+ax]||S.b.some(q=>q[0]===nx&&q[1]===ny))return;
-    const ox=b[0],oy=b[1];S.b[i]=[nx,ny];bump();beep(90,.18,'square',.06);
+    const ox=b[0],oy=b[1];S.b[i]=[nx,ny];bump();if(!sfx('az-felsen-schieben',.9))beep(90,.18,'square',.06);
     if(d.p===meP){const m=meEnt();if(m){m.x=ox+ax;m.y=oy+ay;m.lastStep=Date.now();sendPos()}}
-    if(pz.goals.every(g=>S.b.some(q=>q[0]===g[0]&&q[1]===g[1]))){beep(660,.3,'sine');scheduleDone()}
-    else if(pz.goals.some(g=>g[0]===nx&&g[1]===ny))beep(523,.2,'sine');
+    const onG=pz.goals.some(g=>g[0]===nx&&g[1]===ny);if(onG&&!sfx('az-felsen-platte',1,.25))beep(523,.2,'sine');
+    if(pz.goals.every(g=>S.b.some(q=>q[0]===g[0]&&q[1]===g[1])))scheduleDone();
   }else if(d.type==='reset'&&r.type==='boulder'){
     S.b=pz.boxes.map(p=>p.slice());bump();const pen=Math.round(PEN_TRY*.6);G.deadline-=pen*1000;
     ents.forEach(e=>{if(boulderAt(e.x,e.y)){const s=spawnFor(G.world,G.ci,e.i);e.x=e.rx=s.x;e.y=e.ry=s.y}});
     toast('Die Felsbrocken rollen zurück an ihren Platz (−'+pen+' s).');rumble(.5);shake(.6);
   }else if(d.type==='rot'&&r.type==='beam'){
-    const i=d.i|0;if(i<0||i>=S.o.length)return;S.o[i]=S.o[i]==='/'?'\\':'/';bump();beep(880,.12,'sine',.05);
-    if(beamTrace(pz,S.o).hit){beep(784,.4,'sine');scheduleDone()}
+    const i=d.i|0;if(i<0||i>=S.o.length)return;S.o[i]=S.o[i]==='/'?'\\':'/';bump();if(!sfx('az-kristall-drehen',.9))beep(880,.12,'sine',.05);
+    if(beamTrace(pz,S.o).hit){if(!sfx('az-strahl-treffer',1,.15))beep(784,.4,'sine');scheduleDone()}
   }else if(d.type==='sw'&&r.type==='rails'){
-    if(rail.run)return;const i=d.i|0;if(i<0||i>=S.s.length)return;S.s[i]^=1;bump();beep(300,.1,'square',.05);
+    if(rail.run)return;const i=d.i|0;if(i<0||i>=S.s.length)return;S.s[i]^=1;bump();if(!sfx('az-weiche',.9))beep(300,.1,'square',.05);
   }else if(d.type==='go'&&r.type==='rails'){
     if(rail.run)return;
     const rt=railRoute(pz,S.s),target=pz.targets[S.del],ok=rt.end===target,dur=rt.path.length*.26+.3;
     rail.run={path:rt.path,t0:performance.now(),dur:dur,ok:ok,end:rt.end,mine:d.p===meP};
-    const ep=G.epoch,ci=G.ci;beep(140,.4,'sawtooth',.06);
-    setTimeout(()=>{if(G.epoch!==ep||G.ci!==ci||G.phase!=='play')return;
+    const ep=G.epoch,ci=G.ci,snd=sfx('az-lore-fahrt',.85);if(!snd)beep(140,.4,'sawtooth',.06);
+    setTimeout(()=>{sfxStop(snd,.35);if(G.epoch!==ep||G.ci!==ci||G.phase!=='play')return;sfx('az-lore-ziel',1);
       if(ok){S.del++;bump();burstEnd(r,rt.end);
         if(S.del>=pz.targets.length){toast('Die Lore ist angekommen! Das Erz ist geliefert.',3200);chamberDone()}
         else{toast('Richtig geliefert! Jetzt die zweite Fuhre laut Frachtbrief.',4000);setTimeout(()=>{if(G.ci===ci)rail.run=null},1400)}}
       else{wrong(rail.run&&rail.run.mine,'Die Lore ist am falschen Ziel angekommen.');setTimeout(()=>{if(G.ci===ci)rail.run=null},1400)}
     },dur*1000);
   }else if(d.type==='lantern'&&r.type==='dark'){
-    S.holder=d.p|0;bump();beep(660,.15,'sine',.05);
+    S.holder=d.p|0;bump();if(!sfx('az-laterne',.9))beep(660,.15,'sine',.05);
     if(d.p===meP)toast('Du trägst jetzt die Laterne. Die anderen sehen fast nichts, lotst euch gegenseitig!',4500);
     else toast('Jemand anderes trägt jetzt die Laterne.',2500);
   }else if(d.type==='pick'&&r.type==='dark'){
-    const i=d.i|0;if(i<0||i>=S.got.length||S.got[i])return;S.got[i]=true;bump();beep(1046,.3,'sine',.07);
+    const i=d.i|0;if(i<0||i>=S.got.length||S.got[i])return;S.got[i]=true;bump();if(!sfx('az-erz',.9))beep(1046,.3,'sine',.07);
     const o=pz.ores[i];burst(r.x+o[0]+.5,r.y+o[1]+.5,26,'#9fd8ff');
     const n=S.got.filter(Boolean).length;toast('Sternenerz gefunden! '+n+' von '+S.got.length+'.',2600);
     if(n>=S.got.length)scheduleDone();
   }else if(d.type==='caught'&&id==='finale'){
-    G.caught++;G.deadline-=PEN_CAUGHT*1000;rumble(1);shake(1);eyeFlash=performance.now();
+    G.caught++;G.deadline-=PEN_CAUGHT*1000;if(!sfx('az-bruellen',1))rumble(1);shake(1);eyeFlash=performance.now();
     if(d.p===meP){const m=meEnt(),s=spawnFor(G.world,G.ci,d.p|0);if(m){m.x=m.rx=s.x;m.y=m.ry=s.y;sendPos()}toast('Der Drache hat dich gesehen! Zurück zum Eingang (−'+PEN_CAUGHT+' s).',4000)}
     else toast('Der Drache hat jemanden erwischt! (−'+PEN_CAUGHT+' s)',3000);
   }else if(d.type==='done'&&id==='finale'){
@@ -749,7 +818,7 @@ function handleAct(d,mineAct){
   }
 }
 function wrong(mineAct,msg){
-  G.attempts++;G.deadline-=PEN_TRY*1000;beep(160,.3,'sawtooth',.1);
+  G.attempts++;G.deadline-=PEN_TRY*1000;if(!sfx('az-falsch',.9))beep(160,.3,'sawtooth',.1);
   if(mineAct){G.feedback=msg+' Das hat '+PEN_TRY+' Sekunden gekostet.';G.fbBad=true;const f=$('#fb');if(f){f.textContent=G.feedback;f.className='fb bad'}if(!G.modal)toast(G.feedback,4000)}
   else toast('Fehlversuch bei den anderen (−'+PEN_TRY+' s).');
   renderModal();
@@ -759,10 +828,11 @@ function chamberDone(){
   const k=G.ci;
   G.found[k]=true;G.deadline=Math.min(G.deadline+BONUS*1000,performance.now()+G.total*1000);
   closeModal(true);
-  beep(523,.2,'sine');setTimeout(()=>beep(784,.35,'sine'),160);
+  if(G.order[k]==='w:forge'){if(!sfx('az-amboss',1)){beep(523,.2,'sine')}sfx('az-schluessel',.9,2.4)}
+  else if(!sfx('az-richtig',.9)){beep(523,.2,'sine');setTimeout(()=>beep(784,.35,'sine'),160)}
   const r=G.world.ch[k];burst(r.cx+.5,r.cy+.5,46,'#ffd59a');burst(r.cx+.5,r.cy+.5,20,'#9fe4ff');
   const g=G.world.gates[k];
-  if(g){g.anim=.0001;g.tiles.forEach(t=>burst(t.x+.5,t.y+.5,14,g.kind==='rubble'?'#9a8f88':'#ffd59a'));if(g.kind==='rubble'){rumble(.6);shake(.5)}}
+  if(g){g.anim=.0001;g.tiles.forEach(t=>burst(t.x+.5,t.y+.5,14,g.kind==='rubble'?'#9a8f88':'#ffd59a'));if(g.kind==='rubble'){if(!sfx('az-geroell',1,.6))rumble(.6);shake(.5)}else sfx('az-gitter',.8,.6)}
   const msg=G.order[k]==='w:forge'?'Der Runenschlüssel ist geschmiedet! +'+BONUS+' Sekunden.':'Halle '+(k+1)+' geschafft! +'+BONUS+' Sekunden. '+(g&&g.kind==='rubble'?'Das Geröll bricht weg.':'Das Gitter hebt sich.');
   toast(msg,3600);
   setCi(k+1,false);
@@ -774,8 +844,8 @@ function finish(phase){
     gateOpenT=performance.now();
     const r=G.world.ch[G.world.M-1];
     for(let i=0;i<7;i++)setTimeout(()=>{burst(r.cx+.5+(Math.random()*4-2),r.y+1+(Math.random()*1.5),40,i%2?'#ffd59a':'#ffffff')},i*260);
-    beep(523,.25,'sine');setTimeout(()=>beep(659,.25,'sine'),180);setTimeout(()=>beep(784,.5,'sine'),360);
-  }else{beep(110,.8,'sawtooth',.14);rumble(1.2);shake(1.4);eyeFlash=performance.now()}
+    if(sfx('az-tor',1)){sfx('az-sieg',.9,2.2)}else{beep(523,.25,'sine');setTimeout(()=>beep(659,.25,'sine'),180);setTimeout(()=>beep(784,.5,'sine'),360)}
+  }else{if(!sfx('az-niederlage',1)){beep(110,.8,'sawtooth',.14);rumble(1.2)}shake(1.4);eyeFlash=performance.now()}
   const ep=G.epoch;
   setTimeout(()=>{if(G.epoch===ep&&G.phase===phase)showEnd()},phase==='won'?3000:1600);
 }
@@ -1031,7 +1101,7 @@ function checkFinale(dt){
     const red=performance.now()-eyeFlash<1500,img=red?'eyes_3':es.st==='open'?'eyes_0':es.st==='warn'?'eyes_1':'eyes_2';
     const ei=$('#eyeimg');if(ei.dataset.n!==img){ei.src=ASSET+img+'.png';ei.dataset.n=img}
     const tx=$('#eyetxt'),cl=es.st==='open'?'stop':es.st==='warn'?'warn':'go',txt=es.st==='open'?'STOPP! Nicht bewegen!':es.st==='warn'?'Achtung, das Auge öffnet sich ...':'Augen zu, jetzt gehen!';
-    if(tx.textContent!==txt){tx.textContent=txt;tx.className=cl;if(cl==='stop')beep(220,.25,'sawtooth',.06);else if(cl==='warn')beep(392,.15,'sine',.05)}
+    if(tx.textContent!==txt){tx.textContent=txt;tx.className=cl;if(cl==='stop'){if(!sfx('az-auge-auf',1))beep(220,.25,'sawtooth',.06)}else if(cl==='warn')beep(392,.15,'sine',.05)}
     if(es.st==='open'&&es.since>.35&&caughtI!==es.i&&m.lastStep>es.openAt+350){caughtI=es.i;act({type:'caught',p:G.solo?0:G.me})}
   }
   let n=0;
@@ -1170,9 +1240,20 @@ function drawObj(o,sx,sy,t){
         for(let i=0;i<n;i++){const s=SO[i],ri=IM[s[2]];if(!ri)continue;const rw=w*.1,rh=rw*ri.height/ri.width;ctx.imageSmoothingEnabled=false;ctx.globalAlpha=1-op;ctx.drawImage(ri,x0+w*s[0]-rw/2,y0+h*s[1]-rh/2,rw,rh);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=true}}
       return}
     case 'big':{shadow(cx,sy+T*.92,T*.42*o.w,T*.12,.3);drawImg(o.im,cx,sy+T*1.02,T*o.w);return}
-    case 'obj':{shadow(cx,sy+T*.9,T*.34*(o.w||1),T*.1,.25);drawImg(o.im,cx,by,T*(o.w||.9)*.95);return}
+    case 'obj':{shadow(cx,sy+T*.9,T*.34*(o.w||1),T*.1,.25);if(o.im==='obj_brazier'){drawBrazier(o,cx,by,t);return}drawImg(o.im,cx,by,T*(o.w||.9)*.95);return}
     default:{if(o.im)drawImg(o.im,cx,by,T*(o.w||.9))}
   }
+}
+
+/* Feuerschale: Schale aus dem Bild, Flamme animiert darüber */
+function drawBrazier(o,cx,by,t){
+  const im=IM.obj_brazier;if(!im)return;
+  const w=T*(o.w||.9)*.95,h=w*im.height/im.width,top=by-h,cut=Math.round(im.height*.44),seed=hash2(o.x,o.y);
+  drawFlame(cx,top+h*.52,w*.92,h*.62,seed,tAnim);
+  ctx.imageSmoothingEnabled=false;ctx.drawImage(im,0,cut,im.width,im.height-cut,cx-w/2,top+h*cut/im.height,w,h*(im.height-cut)/im.height);ctx.imageSmoothingEnabled=true;
+  /* Glut-Schein und ab und zu ein Funke */
+  ctx.save();ctx.globalCompositeOperation='lighter';const gy=top+h*.3,gr=w*(1.1+.12*Math.sin(t*9+seed*6));const g=ctx.createRadialGradient(cx,gy,0,cx,gy,gr);g.addColorStop(0,'rgba(255,150,60,.22)');g.addColorStop(1,'rgba(255,120,40,0)');ctx.fillStyle=g;ctx.fillRect(cx-gr,gy-gr,gr*2,gr*2);ctx.restore();
+  if(Math.random()<.035){const wx0=(cx-VW/2)/T+cam.x,wy0=(top+h*.15-VH/2)/T+cam.y;parts.push({x:wx0+(Math.random()-.5)*.3,y:wy0,vx:(Math.random()-.5)*.4,vy:-.8-Math.random()*.8,g:-.2,life:.8+Math.random()*.7,t:0,col:Math.random()<.5?'#ffb347':'#ff7a2a',sz:1.5+Math.random()*1.5})}
 }
 function drawDragon(o,t){
   const es=eyeState(),fin=G.cur==='finale'&&G.phase==='play',im=fin?(es.st==='open'?'dragon_2':es.st==='warn'?'dragon_1':'dragon_0'):(G.phase==='lost'?'dragon_2':'dragon_0');
@@ -1209,11 +1290,13 @@ function render(dt){
   const x0=Math.max(0,Math.floor(cam.x-VW/2/T)-1),x1=Math.min(w.W-1,Math.ceil(cam.x+VW/2/T)+1);
   const y0=Math.max(0,Math.floor(cam.y-VH/2/T)-1),y1=Math.min(w.H-1,Math.ceil(cam.y+VH/2/T)+4);
   /* Boden und Fels */
+  const torches=[];
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
     const i=y*w.W+x,px0=Math.floor(wx(x)),py0=Math.floor(wy(y));
-    if(w.block[i]&&w.wallv[i]!==255){ctx.drawImage(WALL[w.wallv[i]],px0,py0,T+1,T+1);continue}
+    if(w.block[i]&&w.wallv[i]!==255){ctx.drawImage(WALL[w.wallv[i]],px0,py0,T+1,T+1);if(w.wallv[i]===10)torches.push([px0,py0,hash2(x,y)]);continue}
     ctx.drawImage(TILE[w.ground[i]],px0,py0,T+1,T+1);
   }
+  torches.forEach(q=>{const cx=q[0]+T*.5,by=q[1]+T*.37;ctx.fillStyle='#3a2a1e';drawFlame(cx,by,T*.26,T*.32,q[2],t)});
   /* Gleise, Platten */
   w.ch.forEach(r=>{
     if(r.cx<x0-RW||r.cx>x1+RW||r.cy<y0-RH||r.cy>y1+RH)return;
@@ -1273,7 +1356,7 @@ function render(dt){
   ents.forEach((e,i)=>{let rr=i===G.me?R:R*.55;if(inDark)rr=i===holder?T*3.3:(i===G.me?T*.95:T*.6);lightHole(wx(e.rx)+T/2,wy(e.ry)+T/2,rr,1)});
   if(pet.x!=null)lightHole(wx(pet.x)+T/2,wy(pet.y)+T/2,T*(inDark?1.1:1.6),inDark?.75:.6);
   if(G.spectator)lightHole(VW/2,VH/2,R,1);
-  if(!inDark)lights.forEach(l=>lightHole(wx(l[0]),wy(l[1]),T*l[2],l[3]));
+  if(!inDark)lights.forEach(l=>{const f=1+.06*Math.sin(t*11+l[0]*3.1)+.04*Math.sin(t*17.3+l[1]*1.7);lightHole(wx(l[0]),wy(l[1]),T*l[2]*f,l[3])});
   dg.globalCompositeOperation='source-over';
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(dark,0,0);ctx.setTransform(DPR,0,0,DPR,0,0);
   if(sa>0)ctx.translate(Math.sin(t*61)*T*.07*sa,Math.cos(t*53)*T*.05*sa);
@@ -1318,7 +1401,7 @@ function drawDarkEyes(t,inDark,m){
   if(!eyesDark||now>eyesDark.end+((inDark?5000:9000)+Math.random()*6000)){
     const a=Math.random()*6.28,d=inDark?3.6+Math.random()*2:5+Math.random()*2.5;
     eyesDark={x:m.rx+Math.cos(a)*d,y:m.ry+Math.sin(a)*d*.7,t0:now,end:now+2600,red:low&&Math.random()<.6};
-    if(AU.on)beep(65,1.1,'sawtooth',.05);
+    if(AU.on&&!sfx('az-atem',inDark?.7:.5))beep(65,1.1,'sawtooth',.05);
   }
   const e=eyesDark;if(now>e.end)return;
   const u=(now-e.t0)/(e.end-e.t0),al=u<.2?u/.2:u>.8?(1-u)/.2:1,blink=u>.45&&u<.52;
@@ -1479,7 +1562,7 @@ pad.hidden=true;abtn.hidden=true;
 requestAnimationFrame(loop);
 if(DEV)window.__az={G:G,RM:RM,genData:genData,ents:()=>ents,world:()=>G.world,walkable:walkable,chamberDone:chamberDone,handleAct:handleAct,act:act,PZ:PZ,pzOf:pzOf,beginGame:beginGame,setCi:setCi,
   tp:(x,y)=>{const m=meEnt();m.x=m.rx=x;m.y=m.ry=y;cam.x=x;cam.y=y},held:held,interact:interact,buildWorld:buildWorld,genBoulder:genBoulder,genBeam:genBeam,genRails:genRails,genDark:genDark,railRoute:railRoute,beamTrace:beamTrace,
-  ready:()=>ASSETS_READY,eyeState:eyeState,makeOrder:makeOrder,use:use,openModal:openModal,rail:rail,spawnFor:spawnFor};
+  ready:()=>ASSETS_READY,snd:()=>({n:Object.keys(SFX.buf).length,amb:SFX.ambName,on:AU.on,room:SNDO.room}),flames:()=>FLAME.map(c=>c.toDataURL()),eyeState:eyeState,makeOrder:makeOrder,use:use,openModal:openModal,rail:rail,spawnFor:spawnFor};
 /* ---------- Vorschau für die Lehrkraft: Adresse mit ?vorschau öffnen ---------- */
 (function(){if(!/[?&]vorschau\b/.test(location.search))return;
   setTimeout(function(){try{startSolo()}catch(e){}
