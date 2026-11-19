@@ -22,8 +22,12 @@
     try{ const [p, sig] = String(code).trim().split("."); const payload = unb64(p);
       if(!sig || (await sha(PWHASH + payload)).slice(0,14) !== sig) return null;
       const o = JSON.parse(payload); if(!o || !Array.isArray(o.o) || !o.k) return null;
+      const prev = state(o.k), sameCode = !!(prev && prev.ts === o.t), running = +localStorage.getItem(RKEY) > Date.now();
       localStorage.setItem(KEY(o.k), JSON.stringify({ open:o.o, x:Array.isArray(o.x)?o.x:[], ts:o.t, r:o.r>0?o.r:0 }));
-      if(o.r>0) localStorage.setItem(RKEY, String(Date.now() + o.r*60000)); else localStorage.removeItem(RKEY);   // Auto-Reset: in o.r Minuten
+      /* Auto-Reset: in o.r Minuten ab dem ersten Scan. Wird derselbe Code erneut gescannt, während die Uhr läuft, bleibt sie unverändert
+         (keine Verlängerung). Ist die Uhr abgelaufen (Gerät wurde zurückgesetzt) oder ist es ein neuer Code, startet sie neu. */
+      if(o.r>0){ if(!(sameCode && running)) localStorage.setItem(RKEY, String(Date.now() + o.r*60000)); }
+      else localStorage.removeItem(RKEY);
       return o;
     }catch(e){ return null; } }
   function clear(k){ try{ localStorage.removeItem(KEY(k)); }catch(e){} }
