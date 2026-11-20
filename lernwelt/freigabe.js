@@ -16,7 +16,10 @@
   function state(k){ try{ const v = JSON.parse(localStorage.getItem(KEY(k)) || "null"); return v && Array.isArray(v.open) ? v : null; }catch(e){ return null; } }
   function lockedThema(k, id){ const s = state(k); return !!(s && Array.isArray(s.x) && s.x.includes(id)); }
   function locked(k, kat){ const s = state(k); return s ? !s.open.includes(kat) : (STANDARD_GESPERRT[k]||[]).includes(kat); }
-  async function checkPw(pw){ try{ return (await sha("frs-lernwelten:" + String(pw).trim())) === PWHASH; }catch(e){ return false; } }
+  /* Freigabe (🔑) öffnet mit dem bisherigen Freigabe-Passwort ODER mit dem Startseiten-Passwort (ein Passwort für alles).
+     PWHASH bleibt unverändert, weil damit die QR-Codes unterschrieben sind – so bleiben alle alten Codes gültig. */
+  async function checkPw(pw){ try{ const v = String(pw).trim();
+    return (await sha("frs-lernwelten:" + v)) === PWHASH || (await sha("frs-start:" + v.toLowerCase())) === START_HASH; }catch(e){ return false; } }
   async function makeCode(k, open, x, r){ const o = { k:+k, o:open, t:Date.now() }; if(x && x.length) o.x = x; if(r>0) o.r = +r; const payload = JSON.stringify(o); return b64(payload) + "." + (await sha(PWHASH + payload)).slice(0,14); }
   async function apply(code){
     try{ const [p, sig] = String(code).trim().split("."); const payload = unb64(p);
