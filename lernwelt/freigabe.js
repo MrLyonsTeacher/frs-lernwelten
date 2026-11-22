@@ -74,11 +74,14 @@
   const zToken = async k => (await sha(PWHASH + "zugang:" + k)).slice(0, 14);
   const startOk = () => { try{ return localStorage.getItem("frs-start-ok") === START_HASH || sessionStorage.getItem("frs-start-ok") === START_HASH; }catch(e){ return false; } };
   const fromStart = () => { try{ const r = new URL(document.referrer); return r.origin === location.origin && /\/(index\.html)?$/.test(r.pathname); }catch(e){ return false; } };
-  async function gate(k){
+  async function allowed(k){
     try{ const u = new URL(location.href), z = u.searchParams.get("z");
       if(z){ if(z === await zToken(k)) localStorage.setItem(ZKEY(k), "1"); u.searchParams.delete("z"); history.replaceState(null, "", u); } }catch(e){}
     let has = false; try{ has = !!state(k) || localStorage.getItem(ZKEY(k)) === "1"; }catch(e){}
-    if(has || startOk() || fromStart()) return true;
+    return has || startOk() || fromStart();
+  }
+  async function gate(k){
+    if(await allowed(k)) return true;
     return new Promise(resolve => {
       const g = document.createElement("div"); g.id = "zgate";
       g.setAttribute("style", "position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(10,20,40,.96);padding:20px;font-family:system-ui,-apple-system,sans-serif");
@@ -99,5 +102,5 @@
     });
   }
   const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
-  window.FREI = { gate, zToken, wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  window.FREI = { gate, allowed, zToken, wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
 })();
