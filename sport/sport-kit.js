@@ -96,7 +96,7 @@ LW.addGame("zeigen", (l, A, done, K) => {
       <div class="zfig">${FIG[l.bild]()}</div></div>`;
     const svg = A.querySelector(".zfig svg");
     found.forEach(id => { const g = svg.querySelector(`[data-z="${id}"]`); if(g) g.classList.add("z-done"); });
-    if(nameMode) svg.querySelector(`[data-z="${q.id}"]`).classList.add("z-glow");
+    if(nameMode){ svg.classList.add("fokus"); svg.querySelector(`[data-z="${q.id}"]`).classList.add("z-glow"); }   // nur das gefragte Teil leuchtet, alle anderen treten zurück
     requestAnimationFrame(fitFig);
   }
   function answer(id, from){
