@@ -198,13 +198,13 @@ const FRS = {
       { id:"bb2", welt:8, titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 8 · Schiri-Turm (T5) · 8 Spiele", pfad:"sport/basketball.html",
         stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] },
       { id:"kn9", welt:9, titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Skelett-Werft, Röntgen-Klinik (E2) · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",
-        stationen:["Röntgen-Scan","Wer leuchtet?","Reime","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Mythos","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,11,8,13,14,10,12,11,12,14,6,9] },
+        stationen:["Röntgen-Scan","Wer leuchtet?","Reime","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Wahr/Falsch","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,11,8,13,14,10,12,11,12,14,6,9] },
       { id:"ge9", welt:9, titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Skelett-Werft, Robo-Werkstatt (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",
-        stationen:["Labor","Scanner","Reime","Memory","Lager","Knie","Band/Sehne","Quiz","Analyse","Mythos","Zahlen","Profi"], stationenMax:[16,8,6,8,12,16,12,10,14,10,8,8] },
+        stationen:["Labor","Scanner","Reime","Memory","Lager","Knie","Band/Sehne","Quiz","Analyse","Wahr/Falsch","Zahlen","Profi"], stationenMax:[16,8,6,8,12,16,12,10,14,10,8,8] },
       { id:"vl9", welt:9, titel:"Verletzungs-Lernwelt: Sportverletzungen & ihre Ursachen", info:"Profil Sport Kl. 9 · Flutlicht-Stadion (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 10 Spiele", pfad:"sport/verletzungen.html",
-        stationen:["Tatort","Was ist das?","Akut/Überlastung","Memory","Innen/Außen","Detektiv","Reime","Mythos","Zahlen","Profi"], stationenMax:[8,10,12,7,12,14,6,10,8,8] },
+        stationen:["Tatort","Was ist das?","Akut/Überlastung","Memory","Innen/Außen","Detektiv","Reime","Wahr/Falsch","Zahlen","Profi"], stationenMax:[8,10,12,7,12,14,6,10,8,8] },
       { id:"eh9", welt:9, titel:"Erste-Hilfe-Lernwelt: Erste Hilfe & Vorbeugen", info:"Profil Sport Kl. 9 · Bergwacht-Station (E2) · 5 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/erstehilfe.html",
-        stationen:["Rettungskette","Notruf","PECH","Einsatz","Blitz-Check","112?","Memory","Vorbeugen","Reime","Mythos","Zahlen","Profi"], stationenMax:[5,5,4,10,12,10,7,12,6,10,10,8] }
+        stationen:["Rettungskette","Notruf","PECH","Einsatz","Blitz-Check","112?","Memory","Vorbeugen","Reime","Wahr/Falsch","Zahlen","Profi"], stationenMax:[5,5,4,10,12,10,7,12,6,10,10,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       // raum:true = Escape Room mit Karte (bild, farbe, chips); sonst Werkzeug/Vorschau in der Liste darunter
