@@ -90,7 +90,7 @@ function gelenk(hl){
   </svg>`;
 }
 
-/* Kniegelenk von vorn (Kniescheibe hochgeklappt) */
+/* Kniegelenk von vorn: Kniescheibe an ihrem echten Platz vor dem Gelenk, durchsichtig gezeichnet, damit man die Kreuzbänder dahinter sieht */
 function knie(hl){
   hl = hl || [];
   const kreuz = `<path d="M140 206 L166 258" stroke="#FF8A3D" stroke-width="7" stroke-linecap="round"/><path d="M162 204 L136 258" stroke="#45C4B0" stroke-width="7" stroke-linecap="round"/>`;
@@ -102,8 +102,8 @@ function knie(hl){
     ${grp(hl,"meniskus", `<path d="M96 246 C100 236 118 232 140 234 L144 242 C126 242 112 244 104 250 Z" fill="#9FD8FF"/><path d="M204 246 C200 236 182 232 160 234 L156 242 C174 242 188 244 196 250 Z" fill="#9FD8FF"/><path class="h" d="M98 244 C110 236 130 236 142 238 M202 244 C190 236 170 236 158 238" stroke-width="12"/>`, ["Menisken",-72,262,"start",100,246])}
     ${grp(hl,"kreuzband", kreuz + `<path class="h" d="M140 206 L166 258 M162 204 L136 258" stroke-width="16"/>`, ["Kreuzbänder",382,250,"end",166,236])}
     ${grp(hl,"seitenband", `<path d="M88 186 C80 220 84 262 98 300" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path d="M212 186 C222 220 222 256 214 284" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path class="h" d="M88 186 C80 220 84 262 98 300 M212 186 C222 220 222 256 214 284" stroke-width="18"/>`, ["Seitenbänder",382,170,"end",218,200])}
-    ${grp(hl,"kniescheibe", `<ellipse cx="150" cy="96" rx="27" ry="32" fill="#F4E9D2" stroke="#C9B48A" stroke-width="1.5" opacity=".95"/>`, ["Kniescheibe",-72,124,"start",124,100])}
-    ${grp(hl,"sehne", `<path d="M136 0 L164 0 L162 64 L138 64 Z" fill="#F2F4F7" opacity=".95"/><path class="h" d="M150 2 L150 62" stroke-width="30"/>`, ["Quadrizepssehne",382,40,"end",164,30])}
+    ${grp(hl,"kniescheibe", `<ellipse cx="150" cy="178" rx="27" ry="35" fill="rgba(255,250,238,.42)" stroke="#6E5532" stroke-width="3" stroke-dasharray="8 4"/>`, ["Kniescheibe",-72,166,"start",124,176])}
+    ${grp(hl,"sehne", `<path d="M136 0 L164 0 L163 146 L137 146 Z" fill="#F2F4F7" opacity=".9"/><path d="M140 210 L144 288 L156 288 L160 210" fill="none" stroke="#F2F4F7" stroke-width="1.8" stroke-dasharray="5 4" opacity=".8" pointer-events="none"/><path class="h" d="M150 2 L150 142" stroke-width="30"/>`, ["Quadrizepssehne",382,40,"end",164,30])}
   </svg>`;
 }
 
@@ -183,7 +183,7 @@ const KNIE = [
   {id:"meniskus", name:"Menisken", tipp:"Die zwei **halbmondförmigen** Scheiben auf dem Schienbein.", e:"Zwei halbmondförmige Knorpelscheiben (Innen- und Außenmeniskus). Sie gleichen die Form der Knochen aus und **federn Stöße ab** – die Stoßdämpfer im Knie."},
   {id:"kreuzband", name:"Kreuzbänder", tipp:"Die beiden Bänder, die sich in der Mitte **kreuzen**.", e:"Vorderes und hinteres Kreuzband liegen mitten im Gelenk und kreuzen sich. Sie verhindern, dass Ober- und Unterschenkel nach vorn oder hinten wegrutschen."},
   {id:"seitenband", name:"Seitenbänder", e:"Innen- und Außenband sichern das Knie seitlich – vor allem, wenn das Bein gestreckt ist."},
-  {id:"kniescheibe", name:"Kniescheibe", e:"Sie liegt eingebettet in der Sehne des großen Oberschenkelmuskels und schützt das Gelenk. Hier ist sie **hochgeklappt** gezeichnet, damit man die Kreuzbänder sieht."},
+  {id:"kniescheibe", name:"Kniescheibe", e:"Sie liegt **vorne vor dem Kniegelenk**, eingebettet in die Sehne des großen Oberschenkelmuskels, und schützt das Gelenk. Hier ist sie durchsichtig gezeichnet, damit man die Kreuzbänder dahinter sieht."},
   {id:"sehne", name:"Quadrizepssehne", tipp:"Die **Sehne** über der Kniescheibe.", e:"Die Sehne des großen Oberschenkelmuskels (Quadrizeps). Sie zieht über die Kniescheibe zum Schienbein und streckt so das Knie."}
 ];
 const TYPEN = [
@@ -320,7 +320,7 @@ LW.start({
         {t:"hält über 800 kg Zugkraft aus", k:1}
       ]},
     { id:"knie", typ:"zeigen", bild:"knie", lernen:"arten", icon:"🦵", titel:"Knie-Check", art:"Bauteile antippen · 8 Teile",
-      anleitung:"Das **Kniegelenk von vorn** – die Kniescheibe ist hochgeklappt. Tippe auf das gesuchte Teil. Jeder Treffer = **2 Punkte**.",
+      anleitung:"Das **Kniegelenk von vorn** – die Kniescheibe ist durchsichtig gezeichnet. Tippe auf das gesuchte Teil. Jeder Treffer = **2 Punkte**.",
       ziele: KNIE, punkte:2, frage:"Finde im Knie:", richtigText:"Gefunden!" },
     { id:"blitz", typ:"rush", icon:"⚡", titel:"Band oder Sehne?", art:"Speed-Game · 60 Sekunden",
       anleitung:"**Band** (links) oder **Sehne** (rechts)? Ordne so schnell du kannst zu. **Ziel: 12 Treffer** in 60 Sekunden.",
