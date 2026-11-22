@@ -30,17 +30,23 @@
 .rk g[data-z].z-show > :not(.h):not(.tag):not(.tagl),.rk g[data-z].z-hl > :not(.h):not(.tag):not(.tagl){stroke:#FFD34D;stroke-width:5px}
 .rk g[data-z].z-no > :not(.h):not(.tag):not(.tagl){stroke:#FF5A5A;stroke-width:3px}
 .rk g[data-z].z-ok > :not(.h):not(.tag):not(.tagl){stroke:#5BE38C;stroke-width:4px}
-.rk .z-show .tag,.rk .z-hl .tag{opacity:1;fill:#FFD34D;font-size:15px}
+.rk .z-show .tag,.rk .z-hl .tag{opacity:1;fill:#FFD34D}
+.rk .z-show .tag rect,.rk .z-hl .tag rect{stroke:#FFD34D}
 .rk .z-show .tagl,.rk .z-hl .tagl{opacity:1;stroke:#FFD34D;stroke-width:2.5}
 .rk .z-no .tag{opacity:1;fill:#FF8A8A}
 .rk .z-no .tagl{opacity:1;stroke:#FF8A8A}
 @media (prefers-reduced-motion: no-preference){ .rk g[data-z].z-show{animation:rkpulse 1s ease-in-out infinite} }
 @keyframes rkpulse{50%{filter:drop-shadow(0 0 2px rgba(255,211,77,.5))}}
 .rk .z-ok .tag,.rk .z-done .tag{opacity:1}
-.rk .tagl{opacity:0;transition:opacity .3s;stroke:#E9F6FF;stroke-width:1.5;stroke-dasharray:3 3;pointer-events:none}
+.rk .tagl{opacity:0;transition:opacity .3s;stroke:#E9F6FF;stroke-width:2.5;fill:#E9F6FF;pointer-events:none}
+.rk .z-show .tagl,.rk .z-hl .tagl{fill:#FFD34D}
+.rk .z-no .tagl{fill:#FF8A8A}
 .rk .z-ok .tagl,.rk .z-done .tagl,.rk .z-hl .tagl{opacity:1}
 .rk .z-hl .tag{opacity:1}
-.rk .tag{opacity:0;transition:opacity .3s;font:700 13px var(--font-body);fill:#E9F6FF;pointer-events:none}
+.rk .tag{opacity:0;transition:opacity .3s;font-family:var(--font-body);font-weight:800;fill:#E9F6FF;pointer-events:none}
+.rk .tag rect{fill:#0E1522;stroke:#E9F6FF;stroke-width:2}
+.rk .z-no .tag rect{stroke:#FF8A8A}
+.rk.alle .tag,.rk.alle .tagl{opacity:1}
 
 /* Spiel „Zeigen“ */
 .zg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:.8rem;align-items:start}

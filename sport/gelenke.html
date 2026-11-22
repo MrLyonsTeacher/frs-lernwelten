@@ -43,7 +43,6 @@ body{background:var(--bg) repeating-linear-gradient(45deg,rgba(27,36,51,.025) 0 
 
 /* farbige Schnittbilder (Gelenk, Knie) */
 .rk .bone{fill:#F4E9D2;stroke:#C9B48A;stroke-width:1.5}
-.rk .tag{font-size:12.5px}
 </style>
 </head>
 <body>
@@ -57,7 +56,13 @@ body{background:var(--bg) repeating-linear-gradient(45deg,rgba(27,36,51,.025) 0 
 /* =========================================================
    Grafiken (selbst gezeichnet)
    ========================================================= */
-const grp = (hl, id, inner, tag) => `<g data-z="${id}"${hl.includes(id)?' class="z-hl"':''}>${inner}${tag?`${tag[4]!==undefined?`<path class="tagl" d="M${tag[4]} ${tag[5]} L${tag[6]} ${tag[7]}"/>`:""}<text class="tag" x="${tag[0]}" y="${tag[1]}" text-anchor="${tag[2]||"start"}">${tag[3]}</text>`:""}</g>`;
+/* Beschriftung als gut lesbares Schild mit Zeigelinie: tag = [Text, x, y, "start"|"end", Zielpunkt-x, Zielpunkt-y] */
+const TAGFS = 21;
+const tagHTML = tag => { if(!tag) return ""; const [t, x, y, a, zx, zy] = tag, w = Math.round(t.length * TAGFS * .56 + 18), h = TAGFS + 12, x0 = a === "end" ? x - w : x;
+  const lx = a === "end" ? x0 : x0 + w, ly = y - TAGFS * .35;
+  return (zx != null ? `<g class="tagl"><path d="M${lx} ${ly.toFixed(0)} L${zx} ${zy}"/><circle cx="${zx}" cy="${zy}" r="4.5"/></g>` : "") +
+    `<g class="tag"><rect x="${x0}" y="${(y - TAGFS*.85 - 6).toFixed(0)}" width="${w}" height="${h}" rx="${h/2}"/><text x="${x0 + w/2}" y="${y}" text-anchor="middle" font-size="${TAGFS}">${t}</text></g>`; };
+const grp = (hl, id, inner, tag) => `<g data-z="${id}"${hl.includes(id)?' class="z-hl"':''}>${inner}${tagHTML(tag)}</g>`;
 // Kreisring-Ausschnitt (unten offen) um (cx,cy) zwischen r1 und r2, von Winkel a0 bis a1 (Grad, 0 = rechts, 90 = unten)
 function arcBand(cx, cy, r1, r2, a0, a1){
   const P = (r,a) => [(cx + r*Math.cos(a*Math.PI/180)).toFixed(1), (cy + r*Math.sin(a*Math.PI/180)).toFixed(1)];
@@ -69,19 +74,19 @@ const arcLine = (cx, cy, r, a0, a1) => { const P = a => [(cx + r*Math.cos(a*Math
 /* Aufbau eines Gelenks (Schema) */
 function gelenk(hl){
   hl = hl || []; const C = [150,200];
-  return `<svg class="rk" viewBox="0 0 330 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aufbau eines Gelenks">
-    <rect width="330" height="470" rx="18" fill="#1B2433"/>
+  return `<svg class="rk" viewBox="-70 0 470 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aufbau eines Gelenks">
+    <rect x="-70" width="470" height="470" rx="18" fill="#1B2433"/>
     <path d="M150 112 C96 120 78 168 82 212 C86 262 110 292 128 304 L172 304 C190 292 214 262 218 212 C222 168 204 120 150 112 Z" fill="#2E4566" opacity=".55"/>
     <rect class="bone" x="122" y="0" width="56" height="170"/>
     <rect class="bone" x="120" y="290" width="60" height="180"/>
-    ${grp(hl,"kopf", `<circle class="bone" cx="150" cy="200" r="46"/><rect x="123" y="150" width="54" height="22" fill="#F4E9D2"/>`, [36,150,"start","Gelenkkopf",88,158,112,178])}
-    ${grp(hl,"pfanne", `<path class="bone" d="M216 196 L211 211 A62 62 0 0 1 89 211 L84 196 L94 300 L206 300 Z"/>`, [36,330,"start","Gelenkpfanne",88,326,110,288])}
-    ${grp(hl,"knorpel", `<path d="${arcBand(150,200,46,52,8,172)}" fill="#BDE7FF"/><path d="${arcBand(150,200,56,62,8,172)}" fill="#BDE7FF"/><path class="h" d="${arcLine(150,200,49,10,170)}" stroke-width="10"/><path class="h" d="${arcLine(150,200,59,10,170)}" stroke-width="10"/>`, [36,252,"start","Gelenkknorpel",80,248,96,236])}
-    ${grp(hl,"spalt", `<path d="${arcBand(150,200,52,56,8,172)}" fill="#FFE27A"/><path class="h" d="${arcLine(150,200,54,20,160)}" stroke-width="9"/>`, [150,282,"middle","Gelenkspalt mit Gelenkschmiere"])}
-    ${grp(hl,"kapsel", `<path d="M124 118 C80 128 66 170 70 212 C74 262 100 296 124 308 M176 118 C220 128 234 170 230 212 C226 262 200 296 176 308" fill="none" stroke="#B48CFF" stroke-width="5" stroke-linecap="round"/><path class="h" d="M124 118 C80 128 66 170 70 212 C74 262 100 296 124 308 M176 118 C220 128 234 170 230 212 C226 262 200 296 176 308" stroke-width="14"/>`, [236,120,"start","Gelenkkapsel",234,124,214,140])}
-    ${grp(hl,"band", `<path d="M118 92 C40 150 40 262 112 344" fill="none" stroke="#D8DEE9" stroke-width="10" stroke-linecap="round"/><path d="M118 92 C40 150 40 262 112 344" fill="none" stroke="#9AA6B8" stroke-width="2" stroke-dasharray="6 5"/><path class="h" d="M118 92 C40 150 40 262 112 344" stroke-width="18"/>`, [8,420,"start","Band (Knochen – Knochen)",40,410,82,320])}
-    ${grp(hl,"muskel", `<path d="M262 18 C292 30 298 90 284 132 C276 150 258 150 252 132 C240 90 238 30 262 18 Z" fill="#D8484A" stroke="#9E2A2C" stroke-width="2"/><path d="M256 40 C262 70 262 100 258 128 M270 34 C276 70 276 104 272 134" stroke="#F07B7D" stroke-width="2" fill="none"/>`, [298,70,"end","Muskel"])}
-    ${grp(hl,"sehne", `<path d="M268 140 C278 220 262 300 186 340" fill="none" stroke="#F2F4F7" stroke-width="7" stroke-linecap="round"/><path class="h" d="M268 140 C278 220 262 300 186 340" stroke-width="18"/>`, [322,250,"end","Sehne (Muskel – Knochen)",276,244,272,232])}
+    ${grp(hl,"kopf", `<circle class="bone" cx="150" cy="200" r="46"/><rect x="123" y="150" width="54" height="22" fill="#F4E9D2"/>`, ["Gelenkkopf",-62,46,"start",112,178])}
+    ${grp(hl,"pfanne", `<path class="bone" d="M216 196 L211 211 A62 62 0 0 1 89 211 L84 196 L94 300 L206 300 Z"/>`, ["Gelenkpfanne",-62,372,"start",112,290])}
+    ${grp(hl,"knorpel", `<path d="${arcBand(150,200,46,52,8,172)}" fill="#BDE7FF"/><path d="${arcBand(150,200,56,62,8,172)}" fill="#BDE7FF"/><path class="h" d="${arcLine(150,200,49,10,170)}" stroke-width="10"/><path class="h" d="${arcLine(150,200,59,10,170)}" stroke-width="10"/>`, ["Knorpel",-62,196,"start",100,228])}
+    ${grp(hl,"spalt", `<path d="${arcBand(150,200,52,56,8,172)}" fill="#FFE27A"/><path class="h" d="${arcLine(150,200,54,20,160)}" stroke-width="9"/>`, ["Gelenkschmiere",-62,446,"start",127,250])}
+    ${grp(hl,"kapsel", `<path d="M124 118 C80 128 66 170 70 212 C74 262 100 296 124 308 M176 118 C220 128 234 170 230 212 C226 262 200 296 176 308" fill="none" stroke="#B48CFF" stroke-width="5" stroke-linecap="round"/><path class="h" d="M124 118 C80 128 66 170 70 212 C74 262 100 296 124 308 M176 118 C220 128 234 170 230 212 C226 262 200 296 176 308" stroke-width="14"/>`, ["Gelenkkapsel",392,400,"end",226,262])}
+    ${grp(hl,"band", `<path d="M118 92 C40 150 40 262 112 344" fill="none" stroke="#D8DEE9" stroke-width="10" stroke-linecap="round"/><path d="M118 92 C40 150 40 262 112 344" fill="none" stroke="#9AA6B8" stroke-width="2" stroke-dasharray="6 5"/><path class="h" d="M118 92 C40 150 40 262 112 344" stroke-width="18"/>`, ["Band",-62,290,"start",52,240])}
+    ${grp(hl,"muskel", `<path d="M262 18 C292 30 298 90 284 132 C276 150 258 150 252 132 C240 90 238 30 262 18 Z" fill="#D8484A" stroke="#9E2A2C" stroke-width="2"/><path d="M256 40 C262 70 262 100 258 128 M270 34 C276 70 276 104 272 134" stroke="#F07B7D" stroke-width="2" fill="none"/>`, ["Muskel",392,40,"end",null,null])}
+    ${grp(hl,"sehne", `<path d="M268 140 C278 220 262 300 186 340" fill="none" stroke="#F2F4F7" stroke-width="7" stroke-linecap="round"/><path class="h" d="M268 140 C278 220 262 300 186 340" stroke-width="18"/>`, ["Sehne",392,320,"end",236,302])}
   </svg>`;
 }
 
@@ -89,16 +94,16 @@ function gelenk(hl){
 function knie(hl){
   hl = hl || [];
   const kreuz = `<path d="M140 206 L166 258" stroke="#FF8A3D" stroke-width="7" stroke-linecap="round"/><path d="M162 204 L136 258" stroke="#45C4B0" stroke-width="7" stroke-linecap="round"/>`;
-  return `<svg class="rk" viewBox="0 0 300 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kniegelenk von vorn">
-    <rect width="300" height="470" rx="18" fill="#1B2433"/>
-    ${grp(hl,"oberschenkel", `<path class="bone" d="M122 0 L178 0 L182 150 C200 162 216 180 214 204 C212 222 196 226 184 220 C172 214 162 208 150 208 C138 208 128 214 116 220 C104 226 88 222 86 204 C84 180 100 162 118 150 Z"/>`, [24,40,"start","Oberschenkel-",0,0,0,0])}
-    ${grp(hl,"schienbein", `<path class="bone" d="M90 256 C92 246 104 242 150 242 C196 242 206 246 208 256 L204 276 C192 286 180 292 176 304 L172 470 L128 470 L124 304 C120 292 108 286 96 276 Z"/>`, [24,400,"start","Schienbein",60,396,126,390])}
-    ${grp(hl,"wadenbein", `<path class="bone" d="M214 276 C224 276 230 284 226 296 L218 312 L214 470 L200 470 L202 312 L198 292 C198 282 204 276 214 276 Z"/>`, [290,400,"end","Wadenbein",250,396,214,390])}
-    ${grp(hl,"meniskus", `<path d="M96 246 C100 236 118 232 140 234 L144 242 C126 242 112 244 104 250 Z" fill="#9FD8FF"/><path d="M204 246 C200 236 182 232 160 234 L156 242 C174 242 188 244 196 250 Z" fill="#9FD8FF"/><path class="h" d="M98 244 C110 236 130 236 142 238 M202 244 C190 236 170 236 158 238" stroke-width="12"/>`, [24,300,"start","Menisken",70,296,104,252])}
-    ${grp(hl,"kreuzband", kreuz + `<path class="h" d="M140 206 L166 258 M162 204 L136 258" stroke-width="16"/>`, [290,250,"end","Kreuzbänder",246,246,170,236])}
-    ${grp(hl,"seitenband", `<path d="M88 186 C80 220 84 262 98 300" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path d="M212 186 C222 220 222 256 214 284" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path class="h" d="M88 186 C80 220 84 262 98 300 M212 186 C222 220 222 256 214 284" stroke-width="18"/>`, [290,170,"end","Seitenbänder",250,174,218,190])}
-    ${grp(hl,"kniescheibe", `<ellipse cx="150" cy="96" rx="27" ry="32" fill="#F4E9D2" stroke="#C9B48A" stroke-width="1.5" opacity=".95"/>`, [24,104,"start","Kniescheibe",56,100,122,98])}
-    ${grp(hl,"sehne", `<path d="M136 0 L164 0 L162 64 L138 64 Z" fill="#F2F4F7" opacity=".95"/><path class="h" d="M150 2 L150 62" stroke-width="30"/>`, [290,40,"end","Quadrizepssehne",222,36,166,30])}
+  return `<svg class="rk" viewBox="-80 0 470 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kniegelenk von vorn">
+    <rect x="-80" width="470" height="470" rx="18" fill="#1B2433"/>
+    ${grp(hl,"oberschenkel", `<path class="bone" d="M122 0 L178 0 L182 150 C200 162 216 180 214 204 C212 222 196 226 184 220 C172 214 162 208 150 208 C138 208 128 214 116 220 C104 226 88 222 86 204 C84 180 100 162 118 150 Z"/>`, ["Oberschenkel",-72,46,"start",122,70])}
+    ${grp(hl,"schienbein", `<path class="bone" d="M90 256 C92 246 104 242 150 242 C196 242 206 246 208 256 L204 276 C192 286 180 292 176 304 L172 470 L128 470 L124 304 C120 292 108 286 96 276 Z"/>`, ["Schienbein",-72,410,"start",128,400])}
+    ${grp(hl,"wadenbein", `<path class="bone" d="M214 276 C224 276 230 284 226 296 L218 312 L214 470 L200 470 L202 312 L198 292 C198 282 204 276 214 276 Z"/>`, ["Wadenbein",382,410,"end",214,400])}
+    ${grp(hl,"meniskus", `<path d="M96 246 C100 236 118 232 140 234 L144 242 C126 242 112 244 104 250 Z" fill="#9FD8FF"/><path d="M204 246 C200 236 182 232 160 234 L156 242 C174 242 188 244 196 250 Z" fill="#9FD8FF"/><path class="h" d="M98 244 C110 236 130 236 142 238 M202 244 C190 236 170 236 158 238" stroke-width="12"/>`, ["Menisken",-72,262,"start",100,246])}
+    ${grp(hl,"kreuzband", kreuz + `<path class="h" d="M140 206 L166 258 M162 204 L136 258" stroke-width="16"/>`, ["Kreuzbänder",382,250,"end",166,236])}
+    ${grp(hl,"seitenband", `<path d="M88 186 C80 220 84 262 98 300" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path d="M212 186 C222 220 222 256 214 284" fill="none" stroke="#D8DEE9" stroke-width="8" stroke-linecap="round"/><path class="h" d="M88 186 C80 220 84 262 98 300 M212 186 C222 220 222 256 214 284" stroke-width="18"/>`, ["Seitenbänder",382,170,"end",218,200])}
+    ${grp(hl,"kniescheibe", `<ellipse cx="150" cy="96" rx="27" ry="32" fill="#F4E9D2" stroke="#C9B48A" stroke-width="1.5" opacity=".95"/>`, ["Kniescheibe",-72,124,"start",124,100])}
+    ${grp(hl,"sehne", `<path d="M136 0 L164 0 L162 64 L138 64 Z" fill="#F2F4F7" opacity=".95"/><path class="h" d="M150 2 L150 62" stroke-width="30"/>`, ["Quadrizepssehne",382,40,"end",164,30])}
   </svg>`;
 }
 
@@ -122,10 +127,18 @@ const MODEL = {
       <animateTransform attributeName="transform" type="rotate" values="-14 100 132; 14 100 132; -14 100 132" dur="2.6s" repeatCount="indefinite"/></g>
     <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">wie ein Pferdesattel</text>`),
   dreh: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
-    <rect x="88" y="60" width="24" height="110" rx="10" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
-    <ellipse cx="100" cy="84" rx="44" ry="16" fill="none" stroke="#FFC94D" stroke-width="12"/>
-    <circle cx="100" cy="100" r="7" fill="#E8650F"><animate attributeName="cx" values="60;100;140;100;60" dur="3s" repeatCount="indefinite"/><animate attributeName="cy" values="84;99;84;69;84" dur="3s" repeatCount="indefinite"/></circle>
-    <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">drehen wie eine Schraube</text>`),
+    <!-- Kopf dreht sich auf dem Ring (Nein-Schütteln) -->
+    <rect x="95" y="52" width="10" height="34" rx="4" fill="#C99A20"/>
+    <circle cx="100" cy="38" r="23" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/>
+    <g><circle cx="92" cy="34" r="3" fill="#1B2433"/><circle cx="108" cy="34" r="3" fill="#1B2433"/><path d="M100 37 l-3 8 h5" fill="none" stroke="#9E6A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M93 50 q7 4 14 0" fill="none" stroke="#1B2433" stroke-width="2" stroke-linecap="round"/>
+      <animateTransform attributeName="transform" type="translate" values="0 0;-11 0;0 0;11 0;0 0" dur="3.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1"/></g>
+    <!-- unterer Knochen mit Zapfen (2. Halswirbel) -->
+    <path d="M52 172 L52 140 Q52 128 66 128 L88 128 L88 92 Q88 78 100 78 Q112 78 112 92 L112 128 L134 128 Q148 128 148 140 L148 172 Z" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
+    <!-- Ring (1. Halswirbel): hintere Hälfte hinter, vordere Hälfte vor dem Zapfen -->
+    <path d="M54 104 A46 15 0 0 1 146 104" fill="none" stroke="#C99A20" stroke-width="13"/>
+    <path d="M54 104 A46 15 0 0 0 146 104" fill="none" stroke="#FFC94D" stroke-width="13"/>
+    <circle r="6" fill="#E8650F" stroke="#1B2433" stroke-width="1.5"><animate attributeName="cx" values="100;62;100;138;100" dur="3.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1"/><animate attributeName="cy" values="119;113;119;113;119" dur="3.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1"/></circle>
+    <text x="100" y="192" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">Ring dreht um den Zapfen</text>`),
   ei: svgBox("0 0 200 200", `<rect width="200" height="200" rx="22" fill="#1B2433"/>
     <path d="M48 128 Q100 176 152 128 L152 168 L48 168 Z" fill="#F4E9D2" stroke="#C9B48A" stroke-width="2"/>
     <g><ellipse cx="100" cy="122" rx="44" ry="24" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/><rect x="92" y="40" width="16" height="70" rx="8" fill="#FFC94D" stroke="#C99A20" stroke-width="2"/>
@@ -147,6 +160,7 @@ const MODEL = {
     <text x="110" y="188" fill="#D5DDE8" font-size="14" text-anchor="middle" font-family="sans-serif">Muskel + Sehne = Motor</text>`)
 };
 const artR = s => s.replace('<svg class="rk"', '<svg class="rk lnsvg"');
+const alle = s => s.replace('class="rk ', 'class="rk alle ');
 const artSk = s => s.replace('<svg class="sk"', '<svg class="sk lnsvg"');
 
 /* =========================================================
@@ -188,7 +202,7 @@ const GELENKE = [
 
 const LERNEN = {
   werkstatt: { titel:"So ist ein Gelenk gebaut", folien:[
-    {bild:artR(gelenk()), titel:"Was ist ein Gelenk?", text:"Ein Gelenk ist eine **bewegliche Verbindung zwischen zwei Knochen**. Ohne Gelenke wäre dein Skelett starr wie eine Statue – kein Sprung, kein Wurf, kein Schritt."},
+    {bild:alle(artR(gelenk())), titel:"Was ist ein Gelenk?", text:"Ein Gelenk ist eine **bewegliche Verbindung zwischen zwei Knochen**. Ohne Gelenke wäre dein Skelett starr wie eine Statue – kein Sprung, kein Wurf, kein Schritt."},
     {bild:artR(gelenk(["kopf","pfanne"])), titel:"Kopf und Pfanne", text:"Meist passt ein gewölbter **Gelenkkopf** in eine **Gelenkpfanne** – wie zwei Puzzleteile. Die Form entscheidet, wie sich das Gelenk bewegen kann."},
     {bild:artR(gelenk(["knorpel"])), titel:"Gelenkknorpel", text:"Beide Knochenenden sind mit glattem **Knorpel** überzogen. Er ist rutschiger als Eis auf Eis, federt Stöße ab und schützt die Knochen."},
     {bild:artR(gelenk(["kapsel","spalt"])), titel:"Kapsel und Gelenkschmiere", text:"Die **Gelenkkapsel** umhüllt das Gelenk. Innen bildet sie die **Gelenkschmiere** – wie Öl in einer Maschine. Sie füllt den schmalen **Gelenkspalt** und ernährt den Knorpel."},
@@ -205,8 +219,8 @@ const LERNEN = {
     {bild:MODEL.scharnier, titel:"Scharniergelenk", text:"Funktioniert wie eine **Tür**: nur **beugen und strecken**. Beispiele: **Ellenbogen**, **Finger**, **Knie** und oberes **Sprunggelenk**."},
     {bild:MODEL.sattel, titel:"Sattelgelenk", text:"Zwei Flächen wie ein **Pferdesattel** und ein Reiter: vor, zurück und zur Seite. Beispiel: das **Daumensattelgelenk** – darum kannst du greifen."},
     {bild:MODEL.ei, titel:"Eigelenk", text:"Ein eiförmiger Kopf in einer passenden Mulde: vor, zurück und zur Seite – aber nicht ganz im Kreis. Beispiel: das **Handgelenk**."},
-    {bild:MODEL.dreh, titel:"Drehgelenk", text:"Ein Knochen dreht sich um den anderen – wie eine **Schraube in der Mutter**. Beispiel: zwischen **1. und 2. Halswirbel** (Kopf drehen) und zwischen Elle und Speiche (Hand drehen)."},
-    {bild:artR(knie()), titel:"Das Knie: das größte Gelenk", text:"Im Knie treffen Oberschenkelknochen, Schienbein und Kniescheibe zusammen. Es ist ein **Dreh-Scharniergelenk**: Es beugt und streckt und kann sich im gebeugten Zustand etwas drehen."},
+    {bild:MODEL.dreh, titel:"Drehgelenk", text:"Ein Knochen dreht sich um den anderen – wie ein **Ring um einen Zapfen**. Beispiel: zwischen **1. und 2. Halswirbel** (Kopf drehen) und zwischen Elle und Speiche (Hand drehen)."},
+    {bild:alle(artR(knie())), titel:"Das Knie: das größte Gelenk", text:"Im Knie treffen Oberschenkelknochen, Schienbein und Kniescheibe zusammen. Es ist ein **Dreh-Scharniergelenk**: Es beugt und streckt und kann sich im gebeugten Zustand etwas drehen."},
     {bild:artR(knie(["kreuzband","seitenband"])), titel:"Bänder im Knie", text:"Zwei **Seitenbänder** (innen und außen) und zwei **Kreuzbänder** halten das Knie stabil. Die Kreuzbänder liegen mitten im Gelenk und verhindern, dass der Unterschenkel nach vorn oder hinten rutscht."},
     {bild:artR(knie(["meniskus"])), titel:"Menisken – die Stoßdämpfer", text:"Zwei halbmondförmige **Menisken** aus Faserknorpel liegen auf dem Schienbein. Sie gleichen die Form der Knochen aus und federn bei jedem Sprung ab. Ähnliche Puffer sind die **Bandscheiben** zwischen den Wirbeln."}
   ]},
