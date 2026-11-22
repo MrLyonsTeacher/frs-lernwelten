@@ -11,6 +11,7 @@
 </head>
 <body>
 <script src="../lernwelt/freigabe.js"></script>
+<script src="../ergebnis.js"></script>
 <script src="sportwelt.js"></script>
 <script>
 /* Athletopolis – Sport-Welt Klasse 9. Koordinaten = Bildpunkte im 1536 × 1024-Bild.
@@ -64,7 +65,7 @@ const STADT_FX = [["clouds", 70], ["glow", 957, 341, 95, "#FF5A3C", "beat"], ["g
 // Mit Live-Ebene: Wasser und Herzschlag übernimmt WebGL
 const STADT_LIVE = STADT_FX.filter(f => f[0] !== "water" && !(f[0] === "glow" && f[1] === 957));
 
-SPORTWELT.start({ k:9, name:"Athletopolis", untertitel:"Profil Sport · Klasse 9", dir:"welt9", uebersicht:"stadt", zurueck:"Stadt",
+SPORTWELT.start({ rang:"s9", sammel:"🏀", k:9, name:"Athletopolis", untertitel:"Profil Sport · Klasse 9", dir:"welt9", uebersicht:"stadt", zurueck:"Stadt",
   startBlick:{x:767, y:612}, fx:STADT_FX, orte:ORTE,
   // Live-Ebene (WebGL): Wasser bewegt sich, Himmel zieht, das Herz schlägt und schickt Pulswellen durch die roten Straßen
   live:{ maske:"stadt-maske", herz:[958,334,82], sonne:[232,80], fx:STADT_LIVE } });

@@ -62,7 +62,7 @@
   const BASE = (()=>{ try{ const s = document.currentScript && document.currentScript.src; return s ? s.replace(/[^/]*$/,"") : ""; }catch(e){ return ""; } })();
   const RANK_AT = [0, 30, 70, 120, 180, 250];
   // Geheimer Rang: ab 350 Flaggen an einem Tag, erscheint erst nach dem Freischalten in der Rangliste
-  const HIDDEN_AT = 350, GODS = {5:["fire","Fire God","Fire Goddess"],6:["ocean","Ocean God","Ocean Goddess"],7:["mountain","Mountain God","Mountain Goddess"],8:["sky","Sky God","Sky Goddess"],9:["forest","Forest God","Forest Goddess"],10:["ice","Ice God","Ice Goddess"]};
+  const HIDDEN_AT = 350, GODS = {s8:["wildnis","Wildnis-Legende","Wildnis-Legende"],s9:["goat","GOAT","GOAT"],5:["fire","Fire God","Fire Goddess"],6:["ocean","Ocean God","Ocean Goddess"],7:["mountain","Mountain God","Mountain Goddess"],8:["sky","Sky God","Sky Goddess"],9:["forest","Forest God","Forest Goddess"],10:["ice","Ice God","Ice Goddess"]};
   const LS = (k,d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } }, LSset = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
   const gender = () => LS("frs-gender","m"), niv = () => LS("frs-niveau","M");
   const rName = r => (gender()==="f" && r[2]) ? r[2] : r[1], rFile = r => (gender()==="f" && r[3]) ? r[3] : r[0];
@@ -73,8 +73,14 @@
     7:  [["pebble","Pebble Picker"],["miner","Miner"],["blacksmith","Blacksmith"],["gemmaster","Gem Master","Gem Mistress"],["dwarfchampion","Dwarf Champion"],["mountainking","Mountain King","Mountain Queen","mountainking-f"]],
     8:  [["leafrider","Leaf Rider"],["kiteflyer","Kite Flyer"],["windwalker","Wind Walker"],["cloudsage","Cloud Sage"],["skyguardian","Sky Guardian"],["airmonk","Air Monk","Air Priestess"]],
     9:  [["acorn","Acorn"],["mushroom","Mushroom"],["pathfinder","Pathfinder"],["ranger","Ranger"],["woodelf-m","Wood Elf","Wood Elf","woodelf"],["forestmaster","Forestmaster","Forest Queen","forestmaster-f"]],
-    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem","Frost Maiden","frostgolem-f"],["frostwizard","Frost Wizard","Frost Witch","frostwizard-f"]]
+    10: [["snowflake","Snowflake"],["snowman","Snowman"],["icefox","Ice Fox"],["polarbear","Polar Bear"],["frostgolem","Frost Golem","Frost Maiden","frostgolem-f"],["frostwizard","Frost Wizard","Frost Witch","frostwizard-f"]],
+    // Sport-Klassenwelten (Profil Sport): s8 = Camp Start, s9 = Athletopolis
+    s8: [["s8-zelt","Zeltneuling"],["s8-feuer","Feuermacher","Feuermacherin"],["s8-spur","Spurenleser","Spurenleserin"],["s8-kompass","Kartenleser","Kartenleserin"],["s8-gipfel","Gipfelstürmer","Gipfelstürmerin"],["s8-leitung","Campleiter","Campleiterin"]],
+    s9: [["s9-neuling","Neuling"],["s9-ersatz","Ersatzspieler","Ersatzspielerin"],["s9-stamm","Stammspieler","Stammspielerin"],["s9-kapitaen","Kapitän","Kapitänin"],["s9-profi","Profi"],["s9-legende","Legende"]]
   };
+  // Was gesammelt wird (für Texte): [deutsch, englisch]
+  const UNIT = { s8:["Holzscheite","logs"], s9:["Basketbälle","basketballs"] };
+  const unit = (k, en) => (UNIT[k] ? UNIT[k][en===false?0:1] : (en===false?"Flaggen":"flags"));
   const rankImgUrl = f => BASE + "lernwelt/raenge/" + f + ".webp";
   const rankImg = (f, cls) => `<img class="${cls||"rk-img"}" src="${rankImgUrl(f)}" alt="" draggable="false">`;
   const worldImg = k => rankImgUrl("world-k"+k);
@@ -194,7 +200,7 @@
   function rankSheet(k, n, en, opts){
     const R = RANKS[k] || RANKS[5], cur = rank(k, n).i;
     rkStyle();
-    const flagsTxt = en===false ? "Flaggen" : "flags";
+    const flagsTxt = unit(k, en);
     const d = document.createElement("div"); d.className = "rkl-bg";
     d.innerHTML = `<div class="rkl" role="dialog" aria-modal="true" aria-label="Ranks"><button class="x" aria-label="Close">×</button>
       <h2>${en===false?"Alle Ränge":"All ranks"}</h2><p class="sub">${en===false?`Heute gesammelt: ${n} ${flagsTxt}`:`Collected today: ${n} ${flagsTxt}`}</p>
@@ -233,7 +239,7 @@
           <p class="gc-kick"><span></span>${en===false?"Geheimer Rang":"Secret Rank"}<span></span></p>
           <div class="gc-img"><img src="${godImg(k)}" alt=""></div>
           <div class="gc-plate"><h2>${godName(k)}</h2></div>
-          <p class="gc-sub">${en===false?`${HIDDEN_AT} Flaggen an einem Tag`:`${HIDDEN_AT} flags in a single day`}</p>
+          <p class="gc-sub">${en===false?`${HIDDEN_AT} ${unit(k,false)} an einem Tag`:`${HIDDEN_AT} ${unit(k,true)} in a single day`}</p>
           <p class="gc-date">✦ ${date} ✦</p>
         </div></div>
       <button class="gc-ok">${en===false?"Wow!":"Awesome!"}</button></div>`;
@@ -252,7 +258,9 @@
     7:  ["#4A2A7A","#7A48C8","#B88AFF","#EAD8FF","rgba(184,138,255,.8)","#C8A0FF","#24103A"],
     8:  ["#2E5EC0","#6AA4F0","#CFE4FF","#FFE6A0","rgba(255,214,120,.75)","#FFD27A","#2A1E06"],
     9:  ["#1E5A1E","#3A8A2E","#7CC44A","#E2F6A8","rgba(124,196,74,.8)","#A8DC5A","#14300A"],
-    10: ["#2A6AA0","#48A8D8","#8AE6FF","#F4FCFF","rgba(138,230,255,.85)","#A8ECFF","#0A2A3A"]
+    10: ["#2A6AA0","#48A8D8","#8AE6FF","#F4FCFF","rgba(138,230,255,.85)","#A8ECFF","#0A2A3A"],
+    s8: ["#2F4A1E","#5E7A2E","#C98A3A","#FFE2A8","rgba(255,170,60,.8)","#FFB24A","#2A1A06"],
+    s9: ["#7A2A0E","#D2541A","#FF8A2A","#FFE0B0","rgba(255,138,42,.8)","#FF9A3A","#3A1606"]
   };
   function xpBar(R, n, cur, en, flagsTxt, k){
     // unter 250 Flaggen: nur die sechs Ränge; ab 250 kommt oben der geheime Rang „???“ dazu (ab 350 die Gottheit)
@@ -290,8 +298,8 @@
   }
   /* ---------- Niveau (G/M/E) und weiblich/männlich ---------- */
   const NIV = { G:["G-Niveau","Basic","Grundlegendes Niveau – kürzer, mit mehr Hilfen"], M:["M-Niveau","Medium","Mittleres Niveau"], E:["E-Niveau","Expert","Erweitertes Niveau – schwieriger, mehr selbst formulieren"] };
-  function prefsHTML(){ const n=niv(), g=gender();
-    return `<span class="frs-pref"><button type="button" class="frs-niv" data-niv-open aria-label="Niveau wählen">${NIV[n][0]} <span aria-hidden="true">▾</span></button>`+
+  function prefsHTML(opt){ const n=niv(), g=gender(), nurG = opt && opt.nurGeschlecht;
+    return `<span class="frs-pref">${nurG ? "" : `<button type="button" class="frs-niv" data-niv-open aria-label="Niveau wählen">${NIV[n][0]} <span aria-hidden="true">▾</span></button>`}`+
       `<button type="button" class="frs-gen" data-gen-toggle aria-label="${g==="f"?"weiblich":"männlich"} – umschalten" title="weiblich / männlich"><span class="${g==="f"?"on":""}">♀</span><span class="${g==="m"?"on":""}">♂</span></button></span>`; }
   function prefStyle(){ if(document.getElementById("frs-pref-style") || !document.head) return; const st=document.createElement("style"); st.id="frs-pref-style"; st.textContent=`
     .frs-pref{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}

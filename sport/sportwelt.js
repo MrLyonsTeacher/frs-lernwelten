@@ -127,7 +127,7 @@ function geruest(){
   <button class="tb" id="back" hidden></button>
   <a class="tb" id="home" href="../index.html" aria-label="Zur Startseite">🏠</a>
   <div><h1 id="ttl"></h1></div><span class="sub" id="sub"></span>
-  <span class="sp"></span>
+  <span class="sp"></span><span id="rangBox"></span>
 </div>
 <div class="stage" id="stage">
   <div class="frame" id="fOver"><div class="pan"><div class="cam"><div class="drift" id="dOver"></div></div></div></div>
@@ -172,6 +172,15 @@ function cardSub(t){
   $("#card").innerHTML = `<h2>${t.i} ${esc(t.s)}</h2><p class="e">${esc(t.t)}</p><p>${esc(t.text||"")}</p>` +
     (t.pfad ? `<button class="th go" data-go="1"><span class="i">▶</span><span><b>Lernwelt starten</b><span class="s">Infokarten und Spiele</span></span></button>` : `<div class="th zu"><span class="i">🔒</span><span><b>Kommt bald</b><span class="s">Diese Lernwelt wird noch gebaut.</span></span></div>`);
 }
+/* Rang-Anzeige oben rechts: heute gesammelt (alle Lernwelten dieser Welt zusammen) + aktueller Rang; Tippen öffnet alle Ränge */
+function rangChip(){
+  const k = C.rang, box = $("#rangBox"); if(!k || !box || !window.UH || !UH.rank) return;
+  const n = UH.today(k), r = UH.rank(k, n);
+  box.innerHTML = `<button class="rangchip" id="rangChip" aria-label="Alle Ränge anzeigen"><span>${C.sammel || "⭐"} ${n}</span>${r.icon}<b>${esc(r.name)}</b></button>${UH.prefsHTML({nurGeschlecht:true})}`;
+  UH.bindPrefs(() => rangChip());
+}
+document.addEventListener("click", e => { if(e.target.closest("#rangChip")) UH.rankSheet(C.rang, UH.today(C.rang), false); });
+addEventListener("pageshow", () => { if(C) rangChip(); });   // nach dem Zurückkommen aus einer Lernwelt neu zählen
 function head(back, ttl, subt){ $("#back").hidden = !back; $("#back").textContent = back ? "← " + back : ""; $("#home").hidden = !!back; $("#ttl").textContent = ttl; $("#sub").textContent = subt; }
 function anim(el, cls, origin, sc){ const c = el.querySelector(".cam"); c.style.transformOrigin = origin || "50% 50%"; if(sc) c.style.setProperty("--s", sc.toFixed(3)); else c.style.removeProperty("--s"); c.classList.remove("fly-out","fly-in","back-out","back-in","exact"); void c.offsetWidth; c.classList.add(...cls.split(" ")); return c; }
 function flug(von, nach, z, instant, fertig){
@@ -242,7 +251,7 @@ async function startWelt(cfg){
   ORTE.forEach(o => o.themen.forEach((t, i) => { if(!t.id) t.id = o.id + "-" + i; }));
   document.title = `${C.name} – Sport Klasse ${C.k} – FRS Lernwelten`;
   if(C.farben) Object.entries(C.farben).forEach(([k, v]) => document.documentElement.style.setProperty("--" + k, v));
-  geruest(); head("", C.name, START());
+  geruest(); head("", C.name, START()); rangChip();
   let msg = "";
   { const fp = new URLSearchParams(location.search).get("frei");
     if(fp && window.FREI){ const o = await FREI.apply(fp); const u = new URL(location.href); u.searchParams.delete("frei"); history.replaceState(null, "", u);

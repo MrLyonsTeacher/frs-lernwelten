@@ -133,3 +133,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cam.fly-out .spot,.cam.back-out .spot{opacity:0;transition:opacity .12s}
 .cam.back-in .spot{animation:spotIn .3s ease .45s both}
 @keyframes spotIn{from{opacity:0}to{opacity:1}}
+
+/* Rang-Anzeige (wie in den Englisch-Welten) */
+#rangBox{display:flex;align-items:center;gap:.4rem}
+.rangchip{display:flex;align-items:center;gap:.4rem;min-height:40px;padding:0 .8rem;border-radius:999px;border:2px solid rgba(255,255,255,.75);background:rgba(10,8,24,.55);color:#fff;font:700 .95rem var(--font-body);cursor:pointer;white-space:nowrap}
+.rangchip .rk-img{height:1.7em;width:1.7em;vertical-align:middle}
+@media (max-width:640px){ .rangchip b{display:none} .rangchip{padding:0 .55rem} }

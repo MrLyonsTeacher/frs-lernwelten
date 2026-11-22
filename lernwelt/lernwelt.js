@@ -169,10 +169,11 @@ function pop(el, text){
   d.className="pop"; d.textContent=text; d.style.left=(r.left+r.width/2)+"px"; d.style.top=(r.top+8)+"px";
   document.body.appendChild(d); setTimeout(()=>d.remove(), 950);
 }
-const todayN = () => RANKED ? UH.today(W.insel.k) : 0;
+const RK = () => (W && (W.rang || W.insel) || {}).k;   // Rang-Welt: Englisch über die Insel, Sport über W.rang
+const todayN = () => RANKED ? UH.today(RK()) : 0;
 function chipInner(){
   if(!RANKED) return `<span class="chip-ic" aria-hidden="true">${W.sammel||"⭐"}</span><span id="ptsNum">${liveTotal()}</span><span class="chip-max">/${MAX}</span>`;
-  const n = todayN(), r = UH.rank(W.insel.k, n);
+  const n = todayN(), r = UH.rank(RK(), n);
   return `<span class="chip-ic" aria-hidden="true">${W.sammel||"⭐"}</span><span id="ptsNum">${n}</span>
     <span class="rk-ic" aria-hidden="true">${r.icon}</span><span class="rk" title="${esc(r.top?T.rankTop:T.rankNext(r.toNext, r.nextName))}"><span class="rk-n">${esc(r.name)}</span><span class="rk-bar"><i style="width:${Math.round(r.pct*100)}%"></i></span></span>`;
 }
@@ -182,13 +183,13 @@ function updateChip(bump){
   c.innerHTML = chipInner();
   const v = +(($("#ptsNum")||{}).textContent||0);
   if(bump && v>old && c.animate) c.animate([{transform:"scale(1)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],{duration:320});
-  if(RANKED){ const r = UH.rank(W.insel.k, todayN()); if(r.i > RANK_I){ RANK_I = r.i; if(bump) setTimeout(()=>rankPop(r), 350); } }
+  if(RANKED){ const r = UH.rank(RK(), todayN()); if(r.i > RANK_I){ RANK_I = r.i; if(bump) setTimeout(()=>rankPop(r), 350); } }
 }
-document.addEventListener("click", e=>{ if(RANKED && e.target.closest("#ptsChip")) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en"); });
-document.addEventListener("keydown", e=>{ if(RANKED && (e.key==="Enter"||e.key===" ") && e.target.closest && e.target.closest("#ptsChip")){ e.preventDefault(); UH.rankSheet(W.insel.k, todayN(), W.sprache==="en"); } });
+document.addEventListener("click", e=>{ if(RANKED && e.target.closest("#ptsChip")) UH.rankSheet(RK(), todayN(), W.sprache==="en"); });
+document.addEventListener("keydown", e=>{ if(RANKED && (e.key==="Enter"||e.key===" ") && e.target.closest && e.target.closest("#ptsChip")){ e.preventDefault(); UH.rankSheet(RK(), todayN(), W.sprache==="en"); } });
 function rankPop(r){
   if(document.querySelector(".medal-pop")) { setTimeout(()=>rankPop(r), 1200); return; }
-  if(r.hidden && UH.godCard){ UH.godCard(W.insel.k, W.sprache==="en"); confetti(200); return; }
+  if(r.hidden && UH.godCard){ UH.godCard(RK(), W.sprache==="en"); confetti(200); return; }
   const d=document.createElement("div"); d.className="medal-pop rank-pop"; d.setAttribute("role","dialog"); d.setAttribute("aria-label", T.rankNew);
   d.innerHTML = `<div class="mp-card"><div class="rk-big" aria-hidden="true">${r.icon}</div>
     <p class="rk-kicker">${T.rankNew}</p><h2 class="disp">${esc(r.name)}</h2>
@@ -196,7 +197,7 @@ function rankPop(r){
     <p class="rk-next">${r.top ? T.rankTop : T.rankNext(r.toNext, r.nextIcon+" "+esc(r.nextName))}</p>
     <button class="btn big">${T.rankOk}</button></div>`;
   document.body.appendChild(d); confetti(120);
-  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && W.insel && W.insel.k) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en", {reveal:true}); };
+  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && RK()) UH.rankSheet(RK(), todayN(), W.sprache==="en", {reveal:true}); };
 }
 function fly(fromEl, onLand){
   const to = $("#ptsChip");
@@ -231,7 +232,7 @@ function award(list, el){
   const r = lvRec(CUR.id), before = best(CUR.id);
   list.forEach(([k,p])=>{ if(p > (r.it[k]||0)) r.it[k] = p; });
   const gain = best(CUR.id) - before, any = list.some(([k,p])=>p>0);
-  if(gain > 0){ RUNGAIN += gain; r.best = best(CUR.id); save(); if(RANKED) UH.addToday(W.insel.k, gain); score(el, gain); }
+  if(gain > 0){ RUNGAIN += gain; r.best = best(CUR.id); save(); if(RANKED) UH.addToday(RK(), gain); score(el, gain); }
   else if(any && el) pop(el, "✓");
   return gain;
 }
@@ -273,7 +274,7 @@ function topbar(o){
     ${o.island?`<button class="back" data-href="${esc(W.insel.href)}" aria-label="${T.island}"><span aria-hidden="true">${W.insel.icon||"🗺️"}</span><span class="bl"> ${T.island}</span></button>`:""}
     ${o.title?`<div class="tb-title"><span class="ic" aria-hidden="true">${o.icon||"🎯"}</span><div style="min-width:0">${o.art?`<p class="tb-art">${esc(o.art)}</p>`:""}<h1 class="disp">${esc(o.title)}</h1></div></div>`:`<span class="sp"></span>`}
     ${o.pill?`<button class="pill-fin" ${finTarget()}><span aria-hidden="true">🏁</span> ${T.finishPill}</button>`:""}
-    ${RANKED && UH.prefsHTML ? UH.prefsHTML() : ""}
+    ${RANKED && UH.prefsHTML ? UH.prefsHTML(W.rang ? {nurGeschlecht:true} : null) : ""}
     <span class="chip${RANKED?" rchip":""}" id="ptsChip"${RANKED?` role="button" tabindex="0" aria-label="${esc(T.allRanks)}"`:""}>${chipInner()}</span></div>`;
 }
 function howBox(text, de, tip, extra){
@@ -483,7 +484,7 @@ function medalPop(t){
     <h2 class="disp">${T.medalNames[t]}</h2><p>${T.medalWon}</p><p class="mp-pts">${W.sammel||"⭐"} ${total()} / ${MAX}</p>${t===4?`<p class="mp-plat">${T.platHint}</p>`:""}
     <button class="btn big">${T.medalOk}</button></div>`;
   document.body.appendChild(d); confetti(160);
-  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && W.insel && W.insel.k) UH.rankSheet(W.insel.k, todayN(), W.sprache==="en", {reveal:true}); };
+  const b=d.querySelector(".btn"); b.focus({preventScroll:true}); b.onclick=()=>{ d.remove(); if(r.top && !r.hidden && RK()) UH.rankSheet(RK(), todayN(), W.sprache==="en", {reveal:true}); };
 }
 
 function progressBar(arr, cur){ return `<div class="progress" aria-hidden="true">${arr.map((v,i)=>`<i class="${v===true?"ok":v===false?"no":v==="mid"?"mid":i===cur?"cur":""}"></i>`).join("")}</div>`; }
@@ -944,7 +945,7 @@ const LW = {
     MAX = W.levels.reduce((a,l)=>a+maxOf(l),0);
     load();
     try{ localStorage.setItem("lw-meta-"+W.id+(W.niveau&&W.niveau!=="M"?"-"+W.niveau:""), JSON.stringify({max:MAX, titel:W.titel, ids:W.levels.map(l=>l.id), maxima:W.levels.map(maxOf)})); }catch(e){}
-    RANKED = !!(W.insel && W.insel.k && window.UH && UH.rank); if(RANKED){ RANK_I = UH.rank(W.insel.k, todayN()).i; UH.bindPrefs(); }
+    RANKED = !!(RK() && window.UH && UH.rank); if(RANKED){ RANK_I = UH.rank(RK(), todayN()).i; UH.bindPrefs(); }
     document.addEventListener("click", e=>{
       // Übersetzung
       const tr = e.target.closest("[data-tr]");

@@ -155,7 +155,7 @@ const HERO = `
   </svg>
   <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
   <h1>Sport&shy;verletzungen &amp; ihre Ursachen</h1>
-  <p>Flutlicht an! Im Stadion wirst du zum Verletzungs-Detektiv: Was ist passiert, wo tut’s weh – und warum? Sammle Pflaster 🩹 und erstelle am Ende deinen Ergebnis-Code.</p>
+  <p>Flutlicht an! Im Stadion wirst du zum Verletzungs-Detektiv: Was ist passiert, wo tut’s weh – und warum? Sammle Basketbälle 🏀 für deinen Rang in Athletopolis und erstelle am Ende deinen Ergebnis-Code.</p>
 </div>`;
 
 const BS = ["🔍 Innere Ursache","🌧️ Äußere Ursache"];
@@ -164,8 +164,9 @@ LW.start({
   titel: "Verletzungs-Lernwelt",
   sprache: "de",
   hero: HERO,
-  sammel: "🩹",
+  sammel: "🏀",
   kartenSymbol: "🩹",
+  rang: {k:"s9"},   // gemeinsame Basketbälle und Ränge in ganz Athletopolis
   konfetti: ["#D63A2F","#FFD34D","#101A33","#4FC38A","#FFFFFF"],
   lob: {3:"Top-Detektiv! Drei Sterne.", 2:"Gut ermittelt! Schaffst du drei Sterne?", 1:"Die Spur ist heiß – schau dir die Infokarten an und versuch es nochmal.", 0:"Fall noch offen: Lies die Erklärungen und probier es nochmal."},
   lernen: LERNEN,
