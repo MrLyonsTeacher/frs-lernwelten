@@ -116,7 +116,16 @@ LW.addGame("zeigen", (l, A, done, K) => {
   }
   A.onclick = e => {
     if(nameMode){ const b = e.target.closest("[data-o]"); if(b) answer(b.dataset.o, b); return; }
-    const g = e.target.closest("[data-z]"); if(g) answer(g.dataset.z, g);
+    const g = e.target.closest("[data-z]"); if(!g) return;
+    // Fingertipp-Toleranz: liegt das gesuchte Teil direkt unter oder knapp neben dem Tipp (auch unter anderen Teilen), zählt es als Treffer
+    const ziel = typMode ? qs[i].typ : qs[i].id;
+    if(g.dataset.z !== ziel && e.clientX != null){
+      const r = matchMedia("(pointer:coarse)").matches ? 18 : 10, pts = [[0,0]];
+      for(let k = 0; k < 8; k++){ const a = k * Math.PI / 4; pts.push([Math.cos(a)*r, Math.sin(a)*r]); }
+      for(const [dx,dy] of pts){ const t = document.elementsFromPoint(e.clientX + dx, e.clientY + dy).map(el => el.closest && el.closest("[data-z]")).find(z => z && z.dataset.z === ziel);
+        if(t){ answer(ziel, t); return; } }
+    }
+    answer(g.dataset.z, g);
   };
   const onR = () => fitFig(); addEventListener("resize", onR); K.onCleanup(() => removeEventListener("resize", onR));
   show();
