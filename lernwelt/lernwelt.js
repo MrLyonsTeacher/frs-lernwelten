@@ -269,12 +269,13 @@ const finTarget = () => W.insel ? `data-href="${esc(W.insel.href)}#fertig"` : `d
 function topbar(o){
   o = o || {};
   const lv = o.lvl;
+  // „Alles zurücksetzen“ steht ganz links – weit weg vom Fertig-Knopf, damit man es nicht aus Versehen erwischt
   return `<div class="topbar">
+    ${o.pill && !o.back?`<button class="pill-reset" title="${esc(T.reset)}" aria-label="${esc(T.reset)}"><span aria-hidden="true">↺</span><span class="bl"> ${T.reset}</span></button>`:""}
     ${o.back?`<button class="back" data-go="" aria-label="${T.map}"><span aria-hidden="true">←</span><span class="bl"> ${T.map}</span></button>`:""}
     ${o.island?`<button class="back" data-href="${esc(W.insel.href)}" aria-label="${T.island}"><span aria-hidden="true">${W.insel.icon||"🗺️"}</span><span class="bl"> ${T.island}</span></button>`:""}
     ${o.title?`<div class="tb-title"><span class="ic" aria-hidden="true">${o.icon||"🎯"}</span><div style="min-width:0">${o.art?`<p class="tb-art">${esc(o.art)}</p>`:""}<h1 class="disp">${esc(o.title)}</h1></div></div>`:`<span class="sp"></span>`}
     ${o.pill?`<button class="pill-fin" ${finTarget()}><span aria-hidden="true">🏁</span> ${T.finishPill}</button>`:""}
-    ${o.pill && !o.back?`<button class="pill-reset" title="${esc(T.reset)}" aria-label="${esc(T.reset)}"><span aria-hidden="true">↺</span><span class="bl"> ${T.reset}</span></button>`:""}
     ${RANKED && UH.prefsHTML ? UH.prefsHTML(W.rang ? {nurGeschlecht:true} : null) : ""}
     <span class="chip${RANKED?" rchip":""}" id="ptsChip"${RANKED?` role="button" tabindex="0" aria-label="${esc(T.allRanks)}"`:""}>${chipInner()}</span></div>`;
 }

@@ -41,7 +41,6 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manip
 .pill-fin{flex:0 0 auto;margin-left:auto;min-height:42px;padding:.35rem .9rem;border-radius:999px;font-weight:800;background:var(--surface);color:var(--ink);
   border:2px dashed var(--ink)}
 .pill-reset{flex:0 0 auto;min-height:42px;padding:.35rem .9rem;border-radius:999px;font-weight:700;background:var(--surface);color:var(--muted);border:2px solid var(--line);cursor:pointer}
-.pill-fin + .pill-reset{margin-left:-.1rem}
 @media (max-width:600px){ .pill-reset{padding:.35rem .6rem} }
 @media (max-width:600px){ .bl,.tb-art{display:none} .pill-fin{padding:.35rem .6rem} .chip-max{display:none} }
 
