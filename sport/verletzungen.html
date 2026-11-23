@@ -27,6 +27,11 @@
 }
 body{background:var(--bg) radial-gradient(circle at 0 0,rgba(255,211,77,.14),transparent 40%)}
 .chip{border:0}
+.ln-art img.lnbild{display:block;width:100%;height:auto;max-height:min(58vh,calc(var(--avail,700px) - 260px));object-fit:contain;margin:0 auto;border-radius:16px;background:#fff;border:3px solid var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.ln-stage:has(.lnbild){grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.4rem}
+.ln-art:has(.lnbild){align-self:stretch;display:flex;align-items:center;justify-content:center}
+.ln-art > span:has(.lnbild){display:block;width:100%;animation:lnPop .6s both}
+@media (max-aspect-ratio:1/1), (max-width:640px){ .ln-stage:has(.lnbild){grid-template-columns:1fr;overflow-y:auto} .ln-art img.lnbild{max-height:32vh;width:auto;max-width:100%} }
 /* Startbild: Stadion bei Flutlicht */
 .flut-hero{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(180deg,#0B1226 0,#14244A 70%,#1B5E3A 70%,#1F6B42 100%);color:#fff;padding:clamp(1.4rem,4vw,2.4rem);min-height:270px;isolation:isolate}
 .flut-hero .kicker{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--accent-2);margin:0;letter-spacing:.04em}
@@ -54,6 +59,7 @@ body{background:var(--bg) radial-gradient(circle at 0 0,rgba(255,211,77,.14),tra
 const artSk = s => s.replace('<svg class="sk"', '<svg class="sk lnsvg"');
 const G = hl => artSk(skel([], {gelenke:true}).replace(/class="jm" data-z="([a-z-]+)"/g, (m, id) => hl.includes(id) ? `class="jm z-hl" data-z="${id}"` : m));
 const T = (x, y, t, c="#D7E0F0", s=14) => `<text x="${x}" y="${y}" fill="${c}" font-size="${s}" text-anchor="middle" font-family="sans-serif" font-weight="700">${t}</text>`;
+const FOTO = (n, alt) => `<img class="lnbild" src="verletzungen-bilder/${n}.webp" alt="${alt||""}" loading="lazy">`;
 const ICON = {
   muskel: svgBox("0 0 220 200", `<rect width="220" height="200" rx="22" fill="#101A33"/>
     <g fill="none" stroke-linecap="round" stroke-width="7">
@@ -111,31 +117,31 @@ const TATORT = [
 
 const LERNEN = {
   arten: { titel:"Welche Verletzungen gibt es?", folien:[
-    {bild:G(["g-sprung","g-knie","g-hand","g-schulter"]), titel:"Akut oder Überlastung?", text:"**Akute Verletzungen** passieren plötzlich – durch Sturz, Schlag, Umknicken oder Verdrehen. **Überlastungsschäden** entstehen langsam, wenn der Körper immer wieder zu viel abbekommt, z. B. Sehnenreizung oder Ermüdungsbruch."},
-    {bild:ICON.prellung, titel:"Prellung", text:"Ein **Schlag oder Stoß** (z. B. Tritt, Ball, Zusammenprall) quetscht Muskeln und Haut. Kleine Blutgefäße platzen – es entsteht ein **Bluterguss** (blauer Fleck). Fachwort: **Kontusion**."},
-    {bild:ICON.zerrung, titel:"Zerrung", text:"Ein Muskel wird **überdehnt**, aber nichts reißt. Der Schmerz zieht und wird langsam stärker. Typisch beim Sprint oder abrupten Abstoppen, oft in Oberschenkel oder Wade."},
-    {bild:ICON.muskel, titel:"Muskelfaserriss", text:"Hier **reißen Muskelfasern**. Der Schmerz kommt **schlagartig und stechend**, oft muss man sofort aufhören. Die Heilung dauert meist **3 bis 6 Wochen**, bei großen Rissen länger."},
-    {bild:ICON.knoechel, titel:"Verstauchung & Bänderriss", text:"Beim **Umknicken** wird das Gelenk über das normale Maß hinaus bewegt. Bänder werden **gedehnt (Verstauchung, Fachwort Distorsion)** oder **reißen (Bänderriss)**. Am häufigsten trifft es die **Außenbänder am Sprunggelenk**."},
-    {bild:ICON.ausgekugelt, titel:"Verrenkung", text:"Der Gelenkkopf springt **aus der Pfanne** – das Gelenk ist „ausgekugelt“. Fachwort: **Luxation**. Häufig an Schulter und Fingern. Nie selbst einrenken!"},
-    {bild:art(skel(["speiche","elle"])), titel:"Knochenbruch", text:"Wenn die Kraft zu groß ist, **bricht der Knochen** (Fraktur). Anzeichen: starker Schmerz, Schwellung, Fehlstellung. Mehr dazu in der Röntgen-Klinik (Knochen-Lernwelt)."},
-    {bild:ICON.brennt, titel:"Überlastungsschäden", text:"Zu viel, zu oft, zu schnell gesteigert: **Sehnenreizung** (z. B. Tennisarm, Achillessehne), **Ermüdungsbruch** oder Knieschmerzen beim Springen. Warnsignal: Schmerzen, die bei jedem Training wiederkommen."},
-    {bild:G(["g-hand","g-sprung"]), titel:"Typisch im Schulsport", text:"Bei Ballspielen wie Basketball, Handball und Volleyball werden besonders oft die **Finger** verletzt (Ball auf die Fingerspitzen). Beim Laufen und Springen trifft es vor allem **Knöchel und Fuß**."}
+    {bild:FOTO("akut-ueberlast","Plötzliche Verletzung und schleichende Überlastung"), titel:"Akut oder Überlastung?", text:"**Akute Verletzungen** passieren plötzlich – durch Sturz, Schlag, Umknicken oder Verdrehen. **Überlastungsschäden** entstehen langsam, wenn der Körper immer wieder zu viel abbekommt, z. B. Sehnenreizung oder Ermüdungsbruch."},
+    {bild:FOTO("prellung","Prellung mit blauem Fleck"), titel:"Prellung", text:"Ein **Schlag oder Stoß** (z. B. Tritt, Ball, Zusammenprall) quetscht Muskeln und Haut. Kleine Blutgefäße platzen – es entsteht ein **Bluterguss** (blauer Fleck). Fachwort: **Kontusion**."},
+    {bild:FOTO("zerrung","Überdehnter Muskel"), titel:"Zerrung", text:"Ein Muskel wird **überdehnt**, aber nichts reißt. Der Schmerz zieht und wird langsam stärker. Typisch beim Sprint oder abrupten Abstoppen, oft in Oberschenkel oder Wade."},
+    {bild:FOTO("faserriss","Gerissene Muskelfasern"), titel:"Muskelfaserriss", text:"Hier **reißen Muskelfasern**. Der Schmerz kommt **schlagartig und stechend**, oft muss man sofort aufhören. Die Heilung dauert meist **3 bis 6 Wochen**, bei großen Rissen länger."},
+    {bild:FOTO("umknicken","Umknicken am Sprunggelenk"), titel:"Verstauchung & Bänderriss", text:"Beim **Umknicken** wird das Gelenk über das normale Maß hinaus bewegt. Bänder werden **gedehnt (Verstauchung, Fachwort Distorsion)** oder **reißen (Bänderriss)**. Am häufigsten trifft es die **Außenbänder am Sprunggelenk**."},
+    {bild:FOTO("verrenkung","Schultergelenk normal und ausgekugelt"), titel:"Verrenkung", text:"Der Gelenkkopf springt **aus der Pfanne** – das Gelenk ist „ausgekugelt“. Fachwort: **Luxation**. Häufig an Schulter und Fingern. Nie selbst einrenken!"},
+    {bild:FOTO("knochenbruch","Gipsarm und Röntgenbild"), titel:"Knochenbruch", text:"Wenn die Kraft zu groß ist, **bricht der Knochen** (Fraktur). Anzeichen: starker Schmerz, Schwellung, Fehlstellung. Mehr dazu in der Röntgen-Klinik (Knochen-Lernwelt)."},
+    {bild:FOTO("ueberlastung","Gereizte Achillessehne nach zu viel Training"), titel:"Überlastungsschäden", text:"Zu viel, zu oft, zu schnell gesteigert: **Sehnenreizung** (z. B. Tennisarm, Achillessehne), **Ermüdungsbruch** oder Knieschmerzen beim Springen. Warnsignal: Schmerzen, die bei jedem Training wiederkommen."},
+    {bild:FOTO("schulsport","Ball auf die Fingerspitzen in der Sporthalle"), titel:"Typisch im Schulsport", text:"Bei Ballspielen wie Basketball, Handball und Volleyball werden besonders oft die **Finger** verletzt (Ball auf die Fingerspitzen). Beim Laufen und Springen trifft es vor allem **Knöchel und Fuß**."}
   ]},
   ursachen: { titel:"Warum passiert das?", folien:[
-    {bild:ICON.innen, titel:"Innere Ursachen", text:"Sie liegen **bei dir selbst**: kein oder zu kurzes **Aufwärmen**, **Müdigkeit** am Ende des Spiels, zu wenig Kraft oder Ausdauer, **schlechte Technik**, eine **nicht ausgeheilte Verletzung**, Selbstüberschätzung, zu wenig getrunken."},
-    {bild:ICON.aussen, titel:"Äußere Ursachen", text:"Sie kommen **von außen**: **Foul** oder Zusammenprall mit anderen, rutschiger oder unebener **Boden**, falsche **Schuhe**, fehlende **Schutzausrüstung** (Schoner, Helm), Kälte oder Nässe, kaputte **Geräte**."},
-    {bild:ICON.warm, titel:"Kaltstart vermeiden", text:"Kalte Muskeln reißen leichter. **Aufwärmen** macht Muskeln, Sehnen, Bänder und Knorpel belastbarer. Es sollte **mindestens 10 Minuten** dauern und direkt in den Sport übergehen."},
-    {bild:ICON.brennt, titel:"Müdigkeit ist gefährlich", text:"Viele Verletzungen passieren **gegen Ende** eines Spiels oder Trainings: Die Muskeln sind müde, die Konzentration lässt nach, die Gelenke werden schlechter stabilisiert."},
-    {bild:ICON.muskel, titel:"Alte Verletzungen", text:"Ein nicht richtig ausgeheilter Muskel oder ein lockeres Band ist eine **Schwachstelle**. Wer zu früh wieder voll einsteigt, verletzt sich oft an derselben Stelle erneut."},
-    {bild:G(["g-sprung","g-knie"]), titel:"Vorbeugen", text:"**Aufwärmen**, Training **langsam steigern**, **Pausen** machen, **Technik** üben, passende **Schuhe** und Schutzausrüstung tragen, Kraft und Gleichgewicht trainieren – und **fair spielen**."}
+    {bild:FOTO("innen","Innere Ursachen rund um einen müden Sportler"), titel:"Innere Ursachen", text:"Sie liegen **bei dir selbst**: kein oder zu kurzes **Aufwärmen**, **Müdigkeit** am Ende des Spiels, zu wenig Kraft oder Ausdauer, **schlechte Technik**, eine **nicht ausgeheilte Verletzung**, Selbstüberschätzung, zu wenig getrunken."},
+    {bild:FOTO("aussen","Äußere Gefahren wie Pfütze, kaputte Matte, Loch im Rasen"), titel:"Äußere Ursachen", text:"Sie kommen **von außen**: **Foul** oder Zusammenprall mit anderen, rutschiger oder unebener **Boden**, falsche **Schuhe**, fehlende **Schutzausrüstung** (Schoner, Helm), Kälte oder Nässe, kaputte **Geräte**."},
+    {bild:FOTO("aufwaermen","Kalter steifer und warmer geschmeidiger Muskel"), titel:"Kaltstart vermeiden", text:"Kalte Muskeln reißen leichter. **Aufwärmen** macht Muskeln, Sehnen, Bänder und Knorpel belastbarer. Es sollte **mindestens 10 Minuten** dauern und direkt in den Sport übergehen."},
+    {bild:FOTO("muedigkeit","Erschöpfte Spielerin mit leerem Akku"), titel:"Müdigkeit ist gefährlich", text:"Viele Verletzungen passieren **gegen Ende** eines Spiels oder Trainings: Die Muskeln sind müde, die Konzentration lässt nach, die Gelenke werden schlechter stabilisiert."},
+    {bild:FOTO("alte-verletzung","Trainer bremst Spielerin mit Verband"), titel:"Alte Verletzungen", text:"Ein nicht richtig ausgeheilter Muskel oder ein lockeres Band ist eine **Schwachstelle**. Wer zu früh wieder voll einsteigt, verletzt sich oft an derselben Stelle erneut."},
+    {bild:FOTO("vorbeugen","Wege zum Vorbeugen"), titel:"Vorbeugen", text:"**Aufwärmen**, Training **langsam steigern**, **Pausen** machen, **Technik** üben, passende **Schuhe** und Schutzausrüstung tragen, Kraft und Gleichgewicht trainieren – und **fair spielen**."}
   ]},
   reime: { titel:"Merk-Reime", folien:[
-    {bild:ICON.prellung, titel:"Prellung", text:"**„Ein Schlag, ein Stoß, ein blauer Fleck – die Prellung geht von selber weg.“**"},
-    {bild:ICON.zerrung, titel:"Zerrung oder Riss?", text:"**„Gezerrt ist nur zu weit gedehnt, beim Faserriss es plötzlich brennt.“**"},
-    {bild:ICON.knoechel, titel:"Umknicken", text:"**„Knickt der Fuß nach innen ein, leidet meist das Außenband allein.“**"},
-    {bild:ICON.ausgekugelt, titel:"Verrenkung", text:"**„Ist das Gelenk aus der Pfanne raus, renkt es der Arzt ein – nicht du zu Haus!“**"},
-    {bild:ICON.warm, titel:"Aufwärmen", text:"**„Kalter Muskel reißt geschwind, drum wärm dich auf, mein liebes Kind!“**"},
-    {bild:ICON.innen, titel:"Ursachen", text:"**„Innen liegt’s an mir allein, außen können Boden, Schuh und Gegner sein.“**"}
+    {bild:FOTO("prellung"), titel:"Prellung", text:"**„Ein Schlag, ein Stoß, ein blauer Fleck – die Prellung geht von selber weg.“**"},
+    {bild:FOTO("faserriss"), titel:"Zerrung oder Riss?", text:"**„Gezerrt ist nur zu weit gedehnt, beim Faserriss es plötzlich brennt.“**"},
+    {bild:FOTO("umknicken"), titel:"Umknicken", text:"**„Knickt der Fuß nach innen ein, leidet meist das Außenband allein.“**"},
+    {bild:FOTO("verrenkung"), titel:"Verrenkung", text:"**„Ist das Gelenk aus der Pfanne raus, renkt es der Arzt ein – nicht du zu Haus!“**"},
+    {bild:FOTO("aufwaermen"), titel:"Aufwärmen", text:"**„Kalter Muskel reißt geschwind, drum wärm dich auf, mein liebes Kind!“**"},
+    {bild:FOTO("aussen"), titel:"Ursachen", text:"**„Innen liegt’s an mir allein, außen können Boden, Schuh und Gegner sein.“**"}
   ]}
 };
 
