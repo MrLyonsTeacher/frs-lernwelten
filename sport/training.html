@@ -45,7 +45,7 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(217,84,26,.12),t
    Bilder: ChatGPT-Illustrationen (sport/training-bilder/NAME.webp), sobald vorhanden in BILDER eintragen.
    Bis dahin wird die selbst gezeichnete Grafik bzw. das Symbol gezeigt.
    ========================================================= */
-const BILDER = new Set([]);
+const BILDER = new Set(["tr9-bewegung-training","tr9-fitnesstest","tr9-uebertraining","tr9-aufwaermen","tr9-tagebuch"]);
 const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="training-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
 
 /* =========================================================

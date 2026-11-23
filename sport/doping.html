@@ -42,7 +42,7 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(107,63,209,.13),
 <script src="sport-kit.js"></script>
 <script>
 /* Bilder: ChatGPT-Illustrationen (sport/doping-bilder/NAME.webp), sobald vorhanden in BILDER eintragen. */
-const BILDER = new Set([]);
+const BILDER = new Set(["do9-freizeit","do9-jan","do9-chaperon","do9-kampfrichter"]);
 const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="doping-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
 
 /* =========================================================

@@ -41,7 +41,7 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(47,138,76,.13),t
 <script src="sport-kit.js"></script>
 <script>
 /* Bilder: ChatGPT-Illustrationen (sport/ernaehrung-bilder/NAME.webp), sobald vorhanden in BILDER eintragen. */
-const BILDER = new Set([]);
+const BILDER = new Set(["er9-eiweissshake","er9-trinkpause","er9-bens-tag","er9-turniertag","er9-trinkflasche"]);
 const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="ernaehrung-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
 
 /* =========================================================
