@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16112A">
+<title>Doping-Lernwelt</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#EFEEF4; --surface:#FFFFFF; --surface-2:#F4F3F8; --ink:#1C1730; --muted:#5E5A72; --line:#D3D0DE;
+  --accent:#6B3FD1; --accent-ink:#FFFFFF; --accent-2:#8CFF4A; --mid-bg:#FFF1CC;
+  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
+  --xray:#101A33; --glow:#8CFF4A;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #D8D5E3; --shadow:0 3px 0 #C9C5D8; --border-opt:2px solid #D8D5E3;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#E8E0FF; --card-back:#16112A; --tile-bg:#E4FFD2; --tile-ink:#1C1730;
+  --chip-bg:#16112A; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #D8D5E3;
+  --track:#E1DFEA; --star:#6B3FD1; --star-off:#D8D5E3;
+}
+body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(107,63,209,.13),transparent 42%)}
+.chip{border:0}
+.labor-hero{background:linear-gradient(160deg,#16112A 0,#2A1B4F 60%,#3B7A1E 160%)}
+.labor-hero .kicker{color:#8CFF4A}
+@media (prefers-reduced-motion: no-preference){ .labor-hero .blase{animation:blase 3s ease-in infinite} @keyframes blase{0%{transform:translateY(0);opacity:0}20%{opacity:.9}100%{transform:translateY(-70px);opacity:0}}
+  .labor-hero .lupe{transform-box:fill-box;transform-origin:50% 50%;animation:lupe 5s ease-in-out infinite} @keyframes lupe{50%{transform:translate(-16px,8px) rotate(-8deg)}} }
+</style>
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script>
+/* Bilder: ChatGPT-Illustrationen (sport/doping-bilder/NAME.webp), sobald vorhanden in BILDER eintragen. */
+const BILDER = new Set([]);
+const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="doping-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
+
+/* =========================================================
+   Selbst gezeichnete Schaubilder
+   ========================================================= */
+const GE = "#FFD34D", OR = "#FF9A3D", GR = "#5BE38C", RO = "#FF6B6B", BL = "#5FE9FF", HG = "#9FB0CF", LI = "#C99BFF", NE = "#8CFF4A";
+const zeile = (x, y, w, h, farbe, a, b, sa=13.5) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#1E2C4D"/><rect x="${x}" y="${y}" width="8" height="${h}" rx="3" fill="${farbe}"/>` +
+  TX(x + 18, y + (b ? h/2 - 3 : h/2 + 5), a, {s:sa, a:"start", c:"#FFFFFF"}) + (b ? TX(x + 18, y + h/2 + 14, b, {s:11, a:"start", c:HG, w:600}) : "");
+
+// Mittel-Steckbrief: Wirkung (grün) und Gefahren (rot)
+const MITTEL = (name, c, wirk, gef) => KARTE(380, 236, TX(190, 32, name, {s:20, c}) +
+  `<rect x="14" y="48" width="170" height="172" rx="12" fill="#14301F"/><rect x="196" y="48" width="170" height="172" rx="12" fill="#3A1A22"/>` +
+  TX(99, 72, "gewünschte Wirkung", {s:12.5, c:GR}) + TX(281, 72, "Gefahren", {s:13.5, c:RO}) +
+  TX(99, 100, wirk, {s:12, c:"#FFFFFF", w:600, lh:1.35}) + TX(281, 100, gef, {s:12, c:"#FFFFFF", w:600, lh:1.35}));
+
+// Ampel: erlaubt – Grauzone – verboten (als Infokarte oder Antipp-Schaubild)
+function ampel(fig){
+  const L = [["verboten","verboten",RO,"Regelverstoß = Doping"],["grauzone","Grauzone",GE,"erlaubt, aber umstritten|oder riskant"],["erlaubt","erlaubt",GR,"nach den Regeln in Ordnung"]];
+  let s = `<rect x="40" y="26" width="120" height="330" rx="26" fill="#22273A" stroke="#4A5170" stroke-width="4"/><rect x="92" y="356" width="16" height="40" fill="#4A5170"/>`;
+  L.forEach(([id,t,c,b],k) => { const y = 82 + k*108;
+    const g = `<circle cx="100" cy="${y}" r="40" fill="${c}"/><circle cx="88" cy="${y - 12}" r="10" fill="#FFFFFF" opacity=".35"/>` + TX(186, y - 6, t, {s:22, a:"start", c}) + TX(186, y + 18, b, {s:12.5, a:"start", c:HG, w:600});
+    s += fig ? `<g data-z="${id}"><rect class="zr" x="50" y="${y - 50}" width="320" height="100" rx="16"/>${g}</g>` : g; });
+  return `<svg class="${fig ? "bz" : "lnsvg"}" viewBox="0 0 380 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ampel: erlaubt, Grauzone, verboten"><rect width="380" height="410" rx="22" fill="#101A33"/>${s}</svg>`;
+}
+FIG.ampel = () => ampel(true);
+
+// Körper mit Organen: Wo schaden Dopingmittel? (als Infokarte oder Antipp-Schaubild)
+function koerper(fig){
+  const HAUT = "#E9C3A0", HAUTD = "#C99A74";
+  let s = `<g opacity=".95">
+    <circle cx="210" cy="70" r="40" fill="${HAUT}"/><rect x="196" y="104" width="28" height="22" fill="${HAUT}"/>
+    <path d="M150 128 Q210 112 270 128 L282 250 Q276 300 268 316 L152 316 Q144 300 138 250 Z" fill="${HAUT}"/>
+    <path d="M150 132 Q126 140 120 170 L104 268 Q100 290 112 292 Q122 292 124 270 L144 182 Z" fill="${HAUT}"/>
+    <path d="M270 132 Q294 140 300 170 L316 268 Q320 290 308 292 Q298 292 296 270 L276 182 Z" fill="${HAUT}"/>
+    <path d="M152 312 L268 312 L262 360 L240 484 Q236 500 222 498 L214 372 L206 372 L198 498 Q184 500 180 484 L158 360 Z" fill="${HAUT}"/>
+    <path d="M210 330 L210 372" stroke="${HAUTD}" stroke-width="3"/></g>`;
+  // Organe
+  const O = {
+    gehirn: `<path d="M182 62 Q182 36 210 34 Q238 36 238 62 Q238 76 224 78 L196 78 Q182 76 182 62 Z" fill="#F4A6C0" stroke="#B5577A" stroke-width="2"/><path d="M196 46 q6 6 0 12 M210 40 q-6 8 0 16 M224 46 q-6 6 0 12" stroke="#B5577A" stroke-width="2" fill="none"/>`,
+    herz: `<path d="M226 166 C226 152 210 150 206 162 C202 150 186 152 186 166 C186 180 206 192 206 198 C206 192 226 180 226 166 Z" fill="#E5484D" stroke="#9E1F28" stroke-width="2"/>`,
+    leber: `<path d="M160 214 Q168 196 206 198 Q232 200 236 214 Q216 222 196 236 Q170 240 160 214 Z" fill="#9E4B3A" stroke="#5E2A1F" stroke-width="2"/>`,
+    niere: `<path d="M178 248 q-12 0 -12 16 q0 16 12 16 q8 0 6 -8 q-4 -8 0 -16 q2 -8 -6 -8z" fill="#C2574A" stroke="#7A2E26" stroke-width="2"/><path d="M242 248 q12 0 12 16 q0 16 -12 16 q-8 0 -6 -8 q4 -8 0 -16 q-2 -8 6 -8z" fill="#C2574A" stroke="#7A2E26" stroke-width="2"/>`,
+    blut: `<path d="M138 160 Q126 220 114 284" stroke="#C81E2C" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M178 330 Q176 410 188 488" stroke="#C81E2C" stroke-width="5" fill="none" stroke-linecap="round"/>${[[124,232],[118,262],[180,388],[184,430]].map(([x,y]) => `<ellipse cx="${x}" cy="${y}" rx="7" ry="4.5" fill="#FF8A8A" stroke="#C81E2C" stroke-width="1.5"/>`).join("")}`,
+    haut: `${[[194,84],[226,86],[220,96],[200,98]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="3.6" fill="#D0505A"/>`).join("")}`,
+    wachstum: `<rect x="226" y="390" width="12" height="70" rx="5" fill="#F4E9D2" stroke="#8B7B5A" stroke-width="1.5"/><rect x="224" y="404" width="16" height="4" fill="${LI}"/><rect x="224" y="444" width="16" height="4" fill="${LI}"/>`
+  };
+  const LAB = [["gehirn","Gehirn & Psyche",60,48,182,58,"start"],["haut","Haut",360,90,232,92,"end"],["herz","Herz & Kreislauf",360,168,228,170,"end"],["leber","Leber",40,206,162,214,"start"],
+    ["niere","Nieren",40,262,166,264,"start"],["blut","Blut & Gefäße",40,330,118,262,"start"],["wachstum","Knochen & Wachstum",360,438,240,424,"end"]];
+  const ZR = {gehirn:[176,28,68,54], haut:[184,78,52,26], herz:[180,146,52,58], leber:[154,192,88,50], niere:[158,242,104,44], blut:[100,150,96,350], wachstum:[218,380,30,90]};
+  s += Object.keys(O).map(id => { const [lid, t, lx, ly, px, py, an] = LAB.find(l => l[0] === id), [rx, ry, rw, rh] = ZR[id];
+    const tw = t.length * 7.6, bx = an === "start" ? 10 : 410 - tw - 18;
+    const lab = `<line x1="${an === "start" ? bx + tw + 14 : bx + 4}" y1="${ly}" x2="${px}" y2="${py}" stroke="#FFFFFF" stroke-width="1.6" opacity=".8"/><rect x="${bx}" y="${ly - 15}" width="${tw + 18}" height="28" rx="8" fill="#1E2C4D" stroke="#4A5A85"/>` + TX(bx + 9 + tw/2, ly + 4, t, {s:13});
+    const inner = O[id] + lab;
+    return fig ? `<g data-z="${id}"><rect class="zr" x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="10"/><rect class="zr" x="${bx - 3}" y="${ly - 18}" width="${tw + 24}" height="34" rx="10"/>${inner}</g>` : inner; }).join("");
+  return `<svg class="${fig ? "bz" : "lnsvg"}" viewBox="0 0 420 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Körper mit Organen"><rect width="420" height="520" rx="22" fill="#101A33"/>${s}</svg>`;
+}
+FIG.koerper = () => koerper(true);
+
+const ICON = {
+  definition: KARTE(380, 236, TX(190, 32, "Was ist Doping?", {s:19, c:NE}) +
+    SCHILD(20, 50, 340, 44, "Ein Verstoß gegen die Anti-Doping-Regeln", {s:15, c:"#FFFFFF"}) +
+    `<circle cx="100" cy="150" r="34" fill="#1E3A7A"/><path d="M66 150 h68 M100 116 v68 M76 128 q24 22 48 0 M76 172 q24 -22 48 0" stroke="${BL}" stroke-width="2.4" fill="none"/><ellipse cx="100" cy="150" rx="16" ry="34" fill="none" stroke="${BL}" stroke-width="2.4"/>` +
+    TX(100, 206, "WADA", {s:17, c:BL}) + TX(100, 224, "weltweit: Verbotsliste", {s:11.5, c:HG, w:600}) +
+    `<rect x="250" y="120" width="60" height="20" fill="#1A1A1A"/><rect x="250" y="140" width="60" height="20" fill="#D9262C"/><rect x="250" y="160" width="60" height="20" fill="#F2C230"/>` +
+    TX(280, 206, "NADA", {s:17, c:GE}) + TX(280, 224, "Deutschland: Kontrollen", {s:11.5, c:HG, w:600})),
+  verstoesse: KARTE(380, 236, TX(190, 28, "Das alles ist ein Doping-Verstoß", {s:16.5, c:NE}) +
+    [["verbotene Substanzen","nehmen oder besitzen",RO],["verbotene Methoden","anwenden, z. B. Blutdoping",OR],["Kontrolle","verweigern",GE],["beim Dopen helfen","auch Trainer und Ärzte",LI]].map(([a,b,c],k) =>
+      zeile(k % 2 ? 196 : 16, 48 + Math.floor(k/2)*90, 168, 78, c, a, b, 13)).join("")),
+  erlaubt: KARTE(380, 236, TX(190, 28, "Erlaubt – kein Doping", {s:17, c:GR}) +
+    [["Kaffee","Koffein steht nicht auf der Verbotsliste"],["Höhentraining","erlaubte Methode: mehr rote Blutkörperchen"],["Asthmaspray mit","ärztlicher Ausnahmegenehmigung"],["Training & Ernährung","der faire Weg zur Leistung"]].map(([a,b],k) =>
+      `<rect x="16" y="${44 + k*46}" width="348" height="40" rx="10" fill="#14301F"/>` + `<circle cx="38" cy="${64 + k*46}" r="11" fill="${GR}"/><path d="M32 ${64 + k*46} l4 5 l8 -10" stroke="#101A33" stroke-width="3.5" fill="none" stroke-linecap="round"/>` +
+      TX(58, 60 + k*46, a, {s:13.5, a:"start", c:"#FFFFFF"}) + TX(58, 76 + k*46, b, {s:11, a:"start", c:HG, w:600})).join("")),
+  motive: KARTE(400, 260, TX(200, 26, "Warum dopen Menschen?", {s:17, c:NE}) +
+    [["Geld","Prämien, Sponsoren",GE],["Ruhm","Rekorde, Medaillen",OR],["Druck","Trainer, Familie, Fans",RO],["„Alle tun es“","Angst, sonst chancenlos",LI],["Comeback","nach Verletzung schnell zurück",BL],["Selbstzweifel","„Ohne Hilfe schaffe ich es nicht“",GR],["Aussehen","mehr Muskeln, weniger Gewicht","#FFB3D1"],["Unwissen","Risiken werden unterschätzt",HG]].map(([a,b,c],k) =>
+      zeile(k % 2 ? 204 : 12, 40 + Math.floor(k/2)*54, 184, 48, c, a, b, 13)).join("")),
+  epo: KARTE(400, 270, TX(200, 26, "Die Wirkungskette von EPO", {s:17, c:NE}) +
+    [["EPO","Hormon",LI],["mehr rote|Blut-|körperchen","",RO],["mehr|Sauerstoff|zu Muskeln","",BL],["mehr|Ausdauer","",GR]].map(([a,b,c],k) => { const x = 12 + k*97;
+      return `<rect x="${x}" y="44" width="86" height="70" rx="12" fill="#1E2C4D" stroke="${c}" stroke-width="2.5"/>` + TX(x + 43, 84 - (a.split("|").length - 1) * 7.5, a, {s:12, c}) + (k < 3 ? PFEIL(x + 88, 79, x + 96, 79, "#FFFFFF", 3) : ""); }).join("") +
+    `<rect x="12" y="132" width="376" height="124" rx="12" fill="#3A1A22"/>` + TX(200, 154, "Aber: Das Blut wird dicker!", {s:15, c:RO}) +
+    `<path d="M40 200 h130" stroke="#C81E2C" stroke-width="34" stroke-linecap="round" opacity=".55"/>${[50,66,82,98,114,130,146,160,58,74,90,106,122,138,154].map((x,k) => `<ellipse cx="${x}" cy="${k < 8 ? 192 : 208}" rx="7" ry="5" fill="#FF6B6B" stroke="#8E1520" stroke-width="1.2"/>`).join("")}` +
+    TX(290, 186, "Herz muss stärker pumpen", {s:12, c:"#FFFFFF", w:600}) + TX(290, 206, "Blutgerinnsel möglich", {s:12, c:"#FFFFFF", w:600}) + TX(290, 230, "→ Herzinfarkt, Schlaganfall", {s:12.5, c:RO})),
+  nem: KARTE(380, 236, `<rect x="40" y="56" width="104" height="140" rx="16" fill="#2A2040"/><rect x="50" y="36" width="84" height="26" rx="8" fill="${LI}"/>` + TX(92, 112, "?", {s:58, c:NE}) + TX(92, 172, "„Booster“", {s:14, c:"#FFFFFF"}) +
+    TX(264, 64, "Nahrungsergänzung", {s:14.5, c:NE}) + TX(264, 92, "kann verunreinigt sein:", {s:12.5, c:"#FFFFFF", w:600}) + TX(264, 110, "verbotene Stoffe, die", {s:12.5, c:"#FFFFFF", w:600}) + TX(264, 128, "nicht draufstehen", {s:12.5, c:"#FFFFFF", w:600}) +
+    TX(264, 160, "Profis prüfen mit der", {s:12, c:HG, w:600}) + TX(264, 178, "„Kölner Liste“", {s:14, c:GE}) + TX(264, 208, "Jugendliche: Essen reicht!", {s:13, c:GR})),
+  ablauf: KARTE(400, 300, TX(200, 26, "Ablauf einer Dopingkontrolle", {s:17, c:NE}) +
+    ["Kontrollperson (Chaperon)|benachrichtigt die Athletin","Chaperon begleitet sie ohne|Unterbrechung zur Station","Urinprobe unter Sicht|einer Kontrollperson","Aufteilen in A- und B-Probe,|versiegeln","Untersuchung im|anerkannten Labor","A-Probe positiv? Athletin kann|Öffnung der B-Probe verlangen"].map((t,k) => { const x = k % 2 ? 206 : 12, y = 42 + Math.floor(k/2)*84;
+      return `<rect x="${x}" y="${y}" width="182" height="74" rx="12" fill="#1E2C4D"/><circle cx="${x + 22}" cy="${y + 37}" r="14" fill="${NE}"/>` + TX(x + 22, y + 42, k + 1, {s:15, c:"#101A33"}) + TX(x + 112, y + 32, t, {s:11.2, c:"#FFFFFF", w:600}); }).join("")),
+  kontrolle: KARTE(380, 236, TX(190, 28, "Wer kontrolliert – wann – wie?", {s:16.5, c:NE}) +
+    [["WADA","macht die Regeln & die weltweite Verbotsliste",BL],["NADA","plant und organisiert die Kontrollen in Deutschland",GE],["wann?","im Wettkampf und im Training – auch unangemeldet",GR],["wie?","mit Urin- und Blutproben",OR]].map(([a,b,c],k) => { const y = 44 + k*46;
+      return `<rect x="16" y="${y}" width="348" height="40" rx="10" fill="#1E2C4D"/>` + TX(28, y + 25, a, {s:14.5, a:"start", c}) + TX(96, y + 25, b, {s:11.2, a:"start", c:"#FFFFFF", w:600}); }).join("")),
+  meldepflicht: KARTE(380, 236, `<rect x="30" y="40" width="130" height="160" rx="16" fill="#1E2C4D"/><rect x="42" y="56" width="106" height="110" rx="6" fill="#2A3E69"/>` +
+    `<path d="M95 80 c-18 0 -26 14 -26 24 c0 20 26 44 26 44 c0 0 26 -24 26 -44 c0 -10 -8 -24 -26 -24z" fill="${RO}"/><circle cx="95" cy="104" r="9" fill="#FFFFFF"/>` + TX(95, 188, "Wo bin ich?", {s:13, c:"#FFFFFF"}) +
+    TX(270, 80, "Meldepflicht", {s:17, c:NE}) + TX(270, 108, "Spitzensportler im", {s:12.5, c:"#FFFFFF", w:600}) + TX(270, 126, "Testpool geben an,", {s:12.5, c:"#FFFFFF", w:600}) + TX(270, 144, "wo sie sich aufhalten –", {s:12.5, c:"#FFFFFF", w:600}) +
+    TX(270, 174, "für unangemeldete", {s:12.5, c:GE}) + TX(270, 192, "Kontrollen", {s:12.5, c:GE})),
+  abprobe: KARTE(340, 220, [["A",70],["B",190]].map(([b,x]) => `<rect x="${x}" y="70" width="70" height="110" rx="14" fill="#F2E7A8" stroke="#D9C66A" stroke-width="3"/><rect x="${x + 10}" y="50" width="50" height="26" rx="6" fill="${b === "A" ? BL : LI}"/>` +
+      `<rect x="${x + 6}" y="108" width="58" height="34" rx="6" fill="#FFFFFF"/>` + TX(x + 35, 133, b + "-Probe", {s:13, c:"#101A33"})).join("") +
+    TX(170, 30, "eine Probe – zwei Flaschen", {s:15, c:NE}) + TX(170, 206, "versiegelt · B nur bei positivem A-Befund", {s:12, c:HG, w:600})),
+  fishbowl: KARTE(380, 290, TX(190, 26, "Fishbowl-Debatte", {s:17, c:NE}) +
+    `<circle cx="190" cy="142" r="104" fill="none" stroke="#3A4A75" stroke-width="22"/>` + [...Array(14)].map((_,k) => { const a = k/14*2*Math.PI; return `<circle cx="${(190 + Math.cos(a)*104).toFixed(1)}" cy="${(142 + Math.sin(a)*104).toFixed(1)}" r="8" fill="${HG}"/>`; }).join("") +
+    [[0,"Pro",GR],[1,"Pro",GR],[2,"Contra",RO],[3,"Contra",RO],[4,"Moderation",GE],[5,"frei",BL]].map(([k,t,c]) => { const a = k/6*2*Math.PI - Math.PI/2, x = 190 + Math.cos(a)*50, y = 142 + Math.sin(a)*50;
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="${t === "frei" ? "none" : c}" stroke="${c}" stroke-width="3" ${t === "frei" ? 'stroke-dasharray="4 3"' : ""}/>` + TX(+x.toFixed(1), +(y + (y < 142 ? -18 : 28)).toFixed(1), t, {s:11, c}); }).join("") +
+    TX(190, 280, "innen diskutieren · außen beobachten · freier Stuhl", {s:11.5, c:HG, w:600})),
+  treppe: KARTE(400, 260, TX(200, 26, "Die Argumenten-Treppe", {s:17, c:NE}) +
+    [["Behauptung","Was ist meine Meinung?",LI],["Begründung","Warum ist das so?",BL],["Beleg","Fakt oder Quelle",GR],["Beispiel","ein konkreter Fall",GE],["Schluss","Was folgt daraus?",OR]].map(([a,b,c],k) => { const x = 14 + k*76, y = 196 - k*36;
+      return `<rect x="${x}" y="${y}" width="${400 - 28 - k*76}" height="34" rx="6" fill="${c}" opacity=".92"/>` + TX(x + 8, y + 15, a, {s:12.5, a:"start", c:"#101A33"}) + TX(x + 8, y + 29, b, {s:10, a:"start", c:"#101A33", w:600}); }).join("")),
+  regeln: KARTE(380, 220, TX(190, 30, "Gesprächsregeln", {s:17, c:NE}) +
+    ["ausreden lassen","sachlich bleiben","auf Vorredner eingehen","keine persönlichen Angriffe"].map((t,k) =>
+      `<rect x="30" y="${48 + k*40}" width="320" height="32" rx="9" fill="#1E2C4D"/><circle cx="50" cy="${64 + k*40}" r="9" fill="${GR}"/>` + TX(70, 69 + k*40, t, {s:14, a:"start", c:"#FFFFFF"})).join(""))
+};
+
+/* =========================================================
+   Inhalte (abgestimmt auf AB 20, 21, 22 und 23)
+   ========================================================= */
+const LERNEN = {
+  was: { titel:"Was ist Doping?", folien:[
+    {bild:ICON.definition, titel:"Doping – die Definition", text:"**Doping ist ein Verstoß gegen die Anti-Doping-Regeln.** Welche Stoffe und Methoden verboten sind, steht in der weltweiten **Verbotsliste der WADA** (Welt-Anti-Doping-Agentur). In Deutschland organisiert die **NADA** (Nationale Anti Doping Agentur) die Kontrollen."},
+    {bild:ICON.verstoesse, titel:"Was zählt als Verstoß?", text:"Verbotene **Substanzen nehmen oder besitzen** · verbotene **Methoden** anwenden, z. B. **Blutdoping** · eine **Kontrolle verweigern** · **anderen beim Dopen helfen** – das gilt auch für Trainer oder Ärzte."},
+    {bild:ICON.erlaubt, titel:"Nicht alles ist Doping", text:"Eine Tasse **Kaffee** ist kein Doping – Koffein steht nicht auf der Verbotsliste. Auch **Höhentraining** ist erlaubt, obwohl es ähnlich wie EPO mehr rote Blutkörperchen bildet. Entscheidend ist immer die **Verbotsliste**."},
+    {bild:ICON.motive, titel:"Warum dopen Menschen?", text:"**Geld** (Prämien, Sponsoren) · **Ruhm** (Rekorde, Medaillen) · **Druck** von Trainern, Familie, Verein, Fans · **„Alle tun es“** · schnelles **Comeback** nach einer Verletzung · **Selbstzweifel** · **Aussehen** · **Unwissen** über die Risiken. Manche Motive kommen von innen (Ehrgeiz, Zweifel), andere von außen (Geld, Druck)."},
+    {bild:FOTO("do9-freizeit","Fitnessstudio mit verdächtigen Pillen","🏋️"), titel:"Doping im Freizeitsport", text:"Nicht nur Profis dopen: Auch im **Fitnessstudio** werden z. B. **Anabolika** missbraucht – **ohne Kontrollen**, **ohne ärztliche Aufsicht** und oft aus **illegalen Quellen**. Die Mittel sind oft **gefälscht oder verunreinigt**, die Dosis unbekannt. Für Jugendliche im **Wachstum** besonders gefährlich."},
+    {bild:ICON.definition, titel:"Wer dopt, betrügt", text:"Wer dopt, **betrügt** die Gegner, die Zuschauer und sich selbst – und **gefährdet** seine **Gesundheit**."}
+  ]},
+  mittel: { titel:"Wirkung & Risiken", folien:[
+    {bild:MITTEL("Anabolika", OR, "Muskelaufbau|mehr Kraft|schnellere|Erholung", "Leber- und Herzschäden|Hormonstörungen|Akne, Aggressivität|bei Jugendlichen:|Wachstumsstörungen"), titel:"Anabolika", text:"Anabolika sind **Muskelaufbau-Hormone**. Sie sollen **Muskeln** und **Kraft** steigern und die **Erholung** beschleunigen. Gefahren: **Leber- und Herzschäden**, **Hormonstörungen**, **Akne**, **Aggressivität** – bei Jugendlichen auch **Wachstumsstörungen**."},
+    {bild:MITTEL("EPO", RO, "mehr rote|Blutkörperchen|→ mehr Sauerstoff|→ mehr Ausdauer", "dickeres Blut|Thrombose|(Blutgerinnsel)|Herzinfarkt|Schlaganfall"), titel:"EPO", text:"**EPO** ist ein Hormon, das die Bildung **roter Blutkörperchen** anregt. Mehr rote Blutkörperchen transportieren mehr **Sauerstoff** – die **Ausdauer** steigt. Aber das Blut wird **dicker**: Gefahr von **Blutgerinnseln**, **Herzinfarkt** und **Schlaganfall**."},
+    {bild:ICON.epo, titel:"Die Wirkungskette von EPO", text:"Hier siehst du, was du aus E1 kennst: Das **Blut** transportiert **Sauerstoff** zu den Muskeln. Mit EPO wird es dicker, das **Herz** muss stärker pumpen. Eine **erlaubte** Methode mit ähnlicher Wirkung ist das **Höhentraining**."},
+    {bild:MITTEL("Stimulanzien", GE, "wach machen|weniger Müdigkeit|mehr|Risikobereitschaft", "Herzrasen|Überhitzung|Überlastung|Abhängigkeit"), titel:"Stimulanzien", text:"Stimulanzien sind **aufputschende Mittel**. Man fühlt sich **wach**, spürt **weniger Müdigkeit** und geht **mehr Risiko** ein. Gefahren: **Herzrasen**, **Überhitzung**, **Überlastung** – der Körper merkt nicht mehr, wann er aufhören muss – und **Abhängigkeit**."},
+    {bild:MITTEL("Diuretika", BL, "schnell|Gewicht verlieren|andere Mittel|verschleiern", "Austrocknung|Krämpfe|Kreislauf-|probleme"), titel:"Diuretika", text:"Diuretika sind **entwässernde Mittel**. Sie werden missbraucht, um **schnell Gewicht zu verlieren** (z. B. für eine Gewichtsklasse) oder um **andere Dopingmittel zu verschleiern**. Gefahren: **Austrocknung**, **Krämpfe**, **Kreislaufprobleme**."},
+    {bild:koerper(false), titel:"Wo schadet Doping?", text:"Dopingmittel greifen in **Muskeln, Blut, Herz-Kreislauf und Hormone** ein. Sie können die Leistung **kurzfristig** steigern – und die **Gesundheit dauerhaft** zerstören. Die Gesundheit ist mehr wert als jeder Sieg."},
+    {bild:ICON.nem, titel:"Pulver aus dem Internet?", text:"Manche **Nahrungsergänzungsmittel** (Pulver, Kapseln, „Booster“) enthalten verbotene Stoffe, die **nicht auf der Packung stehen** – sie sind **verunreinigt**. Spitzensportler prüfen jedes Produkt, z. B. mit der **„Kölner Liste“**. Für Jugendliche gilt: **Eine ausgewogene Ernährung reicht.**"},
+    {bild:FOTO("do9-jan","Sprinter bekommt Tabletten angeboten","💊"), titel:"Fallakte Jan", text:"Jan (17) läuft 100 m in 11,9 s. Ein Trainingspartner bietet ihm Tabletten an: „Damit schaffst du 11,4 – merkt eh keiner.“ **Motive:** Erfolgsdruck, Startgeld, Erwartungen des Vaters. **Risiken:** unbekanntes Mittel, **Sperre**, Vertrauensverlust. **Besser:** mit Trainer oder Vertrauensperson reden, realistische Ziele. **Mitverantwortlich:** der Trainingspartner (Beihilfe), der Verein (Druck durch Prämien)."}
+  ]},
+  kontrolle: { titel:"Kontrollen, Fair Play & Grauzonen", folien:[
+    {bild:ICON.kontrolle, titel:"Wer kontrolliert?", text:"Die **WADA** legt weltweit die **Regeln** und die **Verbotsliste** fest. In Deutschland **plant und organisiert** die **NADA** die Kontrollen. Kontrolliert wird **im Wettkampf und im Training** – mit **Urin- und Blutproben**."},
+    {bild:ICON.meldepflicht, titel:"Meldepflicht", text:"Spitzensportler im **Testpool** müssen angeben, **wo sie sich aufhalten**, damit sie **jederzeit unangemeldet** getestet werden können."},
+    {bild:FOTO("do9-chaperon","Chaperon begleitet Athletin zur Kontrolle","🕵️"), titel:"Der Chaperon", text:"Nach einem Wettkampf **benachrichtigt** eine Kontrollperson – der **Chaperon** – die Athletin und **begleitet sie ohne Unterbrechung** bis zur Probe. So kann niemand vorher noch etwas verschwinden lassen."},
+    {bild:ICON.ablauf, titel:"Ablauf einer Kontrolle", text:"**1** Benachrichtigung durch den Chaperon → **2** Begleitung zur Kontrollstation → **3** Urinprobe **unter Sicht** → **4** Aufteilen in **A- und B-Probe**, versiegeln → **5** Untersuchung im **anerkannten Labor** → **6** Ist die A-Probe positiv, kann die Athletin die **Öffnung der B-Probe** verlangen."},
+    {bild:ICON.abprobe, titel:"A- und B-Probe", text:"Die Probe wird auf **zwei Flaschen** aufgeteilt. Die **B-Probe** ist die Sicherheit für die Athletin: Ist die A-Probe positiv, kann die B-Probe zur **Überprüfung** geöffnet werden."},
+    {bild:ampel(false), titel:"Erlaubt, verboten – oder Grauzone?", text:"**Erlaubt (grün):** z. B. Koffein, Höhentraining, Asthmaspray mit Ausnahmegenehmigung. **Verboten (rot):** z. B. EPO. **Grauzone (gelb):** erlaubt, aber **umstritten oder riskant** – z. B. Schmerzmittel, um trotz Verletzung zu spielen, Eiweißpulver aus unbekannten Shops, das Höhenzelt zu Hause oder Laufschuhe mit Carbonplatte („Technik-Doping“)."},
+    {bild:ampel(false), titel:"Nicht alles Erlaubte ist gesund", text:"In den **Grauzonen** muss man **selbst entscheiden**, was fair ist. Dabei helfen drei Fragen: Ist es **erlaubt**? Ist es **gesund**? Haben alle **die gleiche Chance**?"},
+    {bild:FOTO("do9-kampfrichter","Schüler messen fair beim Kugelstoßen","📏"), titel:"Fair Play als Kampfrichter", text:"Fair Play beginnt bei uns: Als Kampfrichter **misst du für alle gleich**, hältst das **Maßband straff und gerade**, wertest **ungültige Versuche nach den Regeln** – auch bei Freunden –, sagst Ergebnisse **laut an** und fragst bei Unklarheiten die Lehrkraft."}
+  ]},
+  debatte: { titel:"Debatte: Doping freigeben?", folien:[
+    {bild:ICON.fishbowl, titel:"Die Fishbowl", text:"**Streitfrage:** Sollte Doping unter ärztlicher Kontrolle erlaubt werden? Im **Innenkreis** diskutieren 2 Pro, 2 Contra und die **Moderation**, ein **Stuhl bleibt frei** – wer mitreden will, setzt sich dazu. Der **Außenkreis** beobachtet."},
+    {bild:ICON.treppe, titel:"Die Argumenten-Treppe", text:"Ein gutes Argument ist mehr als eine Meinung: **Behauptung** → **Begründung** → **Beleg** (Fakt oder Quelle) → **Beispiel** → **Schluss**."},
+    {bild:KARTE(380, 230, TX(190, 30, "PRO – erlauben", {s:18, c:GR}) + zeile(16, 50, 348, 74, GR, "Heimliches Doping wäre nicht mehr nötig –", "Ärzte könnten Schäden begrenzen.", 13) + zeile(16, 136, 348, 74, GR, "Kontrollen kosten viel Geld", "und erwischen trotzdem nicht alle.", 13)), titel:"Argumente dafür", text:"**Pro:** Heimliches Doping wäre nicht mehr nötig – **Ärzte könnten Schäden begrenzen**. Kontrollen **kosten viel Geld** und erwischen trotzdem nicht alle."},
+    {bild:KARTE(380, 270, TX(190, 28, "CONTRA – verbieten", {s:18, c:RO}) + ["Junge Sportler würden unter Druck gesetzt.","Medizin statt Talent & Training entscheidet.","Auch unter Aufsicht: Langzeitschäden.","Der Sport verliert seine Vorbildrolle."].map((t,k) => zeile(16, 44 + k*54, 348, 46, RO, t, "", 13)).join("")), titel:"Argumente dagegen", text:"**Contra:** **Junge Sportler** würden unter Druck gesetzt, auch zu dopen. Nicht Talent und Training, sondern **Medizin** würde über Siege entscheiden. Auch unter Aufsicht bleiben **Langzeitschäden** möglich. Der Sport verliert seine **Vorbildrolle**."},
+    {bild:ICON.regeln, titel:"Fair diskutieren", text:"**Ausreden lassen · sachlich bleiben · auf Vorredner eingehen · keine persönlichen Angriffe.** Die Beobachter achten auf: Behauptung mit Begründung, Beleg oder Beispiel, Eingehen auf andere, Fairness."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:ICON.definition, titel:"Verbotsliste", text:"**„Was verboten ist, steht schwarz auf weiß: auf der Liste der WADA – kein Wenn und Aber, kein Preis.“**"},
+    {bild:ICON.erlaubt, titel:"Kaffee", text:"**„Ein Kaffee vor dem Start ist okay – doch EPO macht dem Herzen weh.“**"},
+    {bild:ICON.epo, titel:"EPO", text:"**„Wird das Blut zu dick und schwer, hat’s das Herz bald richtig schwer.“**"},
+    {bild:ICON.nem, titel:"Booster", text:"**„Pulver, die das Netz verspricht, enthalten oft, was drauf steht nicht.“**"},
+    {bild:ICON.kontrolle, titel:"Kontrollen", text:"**„Ob Training oder Wettkampf-Tag – die Kontrolle kommt, auch wenn man’s nicht mag.“**"},
+    {bild:ICON.treppe, titel:"Argumente", text:"**„Behaupten, begründen, belegen fein – so muss ein starkes Argument sein.“**"}
+  ]}
+};
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const HERO = `
+<div class="sw-hero labor-hero">
+  <a class="welt-back" href="klasse9.html#o=labor">🏙️ Athletopolis</a>
+  <svg class="hero-art" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <path d="M150 90 L150 150 L110 240 Q104 260 124 262 L236 262 Q256 260 250 240 L210 150 L210 90 Z" fill="rgba(255,255,255,.12)" stroke="#C9D4E6" stroke-width="5"/>
+    <path d="M128 212 L232 212 L248 244 Q252 256 238 256 L122 256 Q108 256 112 244 Z" fill="#8CFF4A" opacity=".85"/><rect x="140" y="78" width="80" height="16" rx="6" fill="#C9D4E6"/>
+    ${[[160,236],[190,240],[214,232],[176,224]].map(([x,y],k) => `<circle class="blase" cx="${x}" cy="${y}" r="${5 + k%2*3}" fill="#D8FFB0" style="animation-delay:${k*.7}s"/>`).join("")}
+    <g class="lupe"><circle cx="300" cy="120" r="44" fill="rgba(140,255,74,.12)" stroke="#FFFFFF" stroke-width="9"/><path d="M332 152 L372 194" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/></g>
+    <rect x="270" y="210" width="34" height="50" rx="8" fill="#C99BFF"/><rect x="276" y="200" width="22" height="14" rx="4" fill="#FFFFFF"/>
+  </svg>
+  <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
+  <h1>Doping</h1>
+  <p>Willkommen im Doping-Labor! Hier deckst du auf, was als Doping gilt, warum es so gefährlich ist, wie kontrolliert wird – und wo die Grauzonen beginnen. Sammle Basketbälle 🏀 für deinen Rang in Athletopolis.</p>
+</div>`;
+
+const WN = ["🌍 WADA","🇩🇪 NADA"];
+LW.start({
+  id: "do9",
+  titel: "Doping-Lernwelt",
+  sprache: "de",
+  hero: HERO,
+  sammel: "🏀",
+  kartenSymbol: "🧪",
+  rang: {k:"s9"},   // gemeinsame Basketbälle und Ränge in ganz Athletopolis
+  konfetti: ["#6B3FD1","#8CFF4A","#FFFFFF","#16112A","#FFD34D"],
+  lob: {3:"Sauber ermittelt! Drei Sterne.", 2:"Starke Ermittlung! Schaffst du drei Sterne?", 1:"Die Spur ist heiß – schau dir die Infokarten an und versuch es nochmal.", 0:"Noch nicht aufgedeckt: Lies die Infokarten und probier es nochmal."},
+  lernen: LERNEN,
+  levels: [
+    { id:"definition", typ:"lueckentext", lernen:"was", icon:"📜", titel:"Was ist Doping?", art:"Lückentext · 6 Lücken",
+      anleitung:"Tippe auf eine Lücke und wähle das passende Wort. Jede richtige Lücke = 1 Punkt.",
+      ueberschrift:"Was ist Doping?",
+      text:"Doping ist ein Verstoß gegen die Anti-Doping-[[Regeln|Ärzte|Trainer]]. Was verboten ist, steht in der [[Verbotsliste|Bestenliste|Startliste]] der [[WADA|FIFA|UEFA]]. Verboten sind Substanzen und [[Methoden|Trainingspläne|Sportarten]]. Auch wer [[Kontrollen|Wettkämpfe|Pausen]] verweigert oder anderen beim Dopen [[hilft|zuschaut|zujubelt]], verstößt gegen die Regeln." },
+    { id:"oderNicht", typ:"swipe", lernen:"was", icon:"⚖️", titel:"Doping oder nicht?", art:"Wischen · 12 Fälle",
+      anleitung:"Ist das ein **Doping-Verstoß**? Wische nach **rechts = Doping-Verstoß**, nach **links = kein Doping** – oder tippe auf die Knöpfe.",
+      links:{t:"Kein Doping", icon:"✅"}, rechts:{t:"Doping-Verstoß", icon:"🚫"},
+      karten:[
+        {t:"Eine Sprinterin nimmt ein Mittel von der Verbotsliste, um schneller zu werden.", r:"r", e:"Verbotene **Substanz**."},
+        {t:"Ein Radfahrer lässt sich vor dem Rennen eigenes, vorher abgenommenes Blut zurückgeben.", r:"r", e:"**Blutdoping** ist eine verbotene **Methode** – auch mit eigenem Blut."},
+        {t:"Ein Läufer trainiert drei Wochen im Höhentrainingslager.", r:"l", e:"**Höhentraining** ist erlaubt."},
+        {t:"Eine Schwimmerin verweigert nach dem Rennen die Dopingkontrolle.", r:"r", e:"**Kontrolle verweigern** ist ein Verstoß."},
+        {t:"Ein Fußballer trinkt vor dem Spiel eine Tasse Kaffee.", r:"l", e:"Koffein steht **nicht** auf der Verbotsliste."},
+        {t:"Ein Trainer gibt seinem Athleten heimlich verbotene Tabletten.", r:"r", e:"**Beihilfe** – der Trainer verstößt gegen die Regeln."},
+        {t:"Eine Gewichtheberin hat Anabolika in ihrer Sporttasche.", r:"r", e:"Schon der **Besitz** verbotener Substanzen ist ein Verstoß."},
+        {t:"Ein Ruderer isst vor dem Rennen eine große Portion Nudeln.", r:"l", e:"Ganz normale Ernährung."},
+        {t:"Ein Arzt spritzt einem Radprofi EPO.", r:"r", e:"EPO ist verboten – der Arzt hilft beim Dopen."},
+        {t:"Eine Läuferin mit Asthma nutzt ihr Spray mit ärztlicher Ausnahmegenehmigung.", r:"l", e:"Mit **Ausnahmegenehmigung** erlaubt."},
+        {t:"Ein Boxer nimmt Entwässerungstabletten (Diuretika), um schnell Gewicht zu verlieren.", r:"r", e:"**Diuretika** stehen auf der Verbotsliste."},
+        {t:"Ein Volleyballer macht drei Monate lang Krafttraining nach Plan.", r:"l", e:"Training ist der **faire** Weg."}
+      ]},
+    { id:"wadanada", typ:"rush", lernen:"kontrolle", icon:"🌍", titel:"WADA oder NADA?", art:"Speed-Game · 45 Sekunden",
+      anleitung:"Weltweit (**WADA**, linker Knopf) oder in Deutschland (**NADA**, rechter Knopf)? **Ziel: 10 Treffer** in 45 Sekunden.",
+      zeit:45, ziel:10, fest:true,
+      items:[
+        {q:"erstellt die weltweite Verbotsliste", o:WN, c:0},
+        {q:"plant die Dopingkontrollen in Deutschland", o:WN, c:1},
+        {q:"macht die Anti-Doping-Regeln für die ganze Welt", o:WN, c:0},
+        {q:"organisiert Kontrollen bei deutschen Athletinnen und Athleten", o:WN, c:1},
+        {q:"Hauptsitz in Montreal (Kanada)", o:WN, c:0},
+        {q:"Sitz in Bonn", o:WN, c:1},
+        {q:"erkennt Labore auf der ganzen Welt an", o:WN, c:0},
+        {q:"gegründet 2002 für Deutschland", o:WN, c:1},
+        {q:"gegründet 1999 als internationale Agentur", o:WN, c:0},
+        {q:"macht Präventionsangebote für deutsche Nachwuchssportler", o:WN, c:1},
+        {q:"gilt für alle Länder, die den Welt-Anti-Doping-Code anerkennen", o:WN, c:0},
+        {q:"verwaltet die Aufenthaltsmeldungen deutscher Spitzensportler", o:WN, c:1}
+      ]},
+    { id:"motive", typ:"quiz", lernen:"was", icon:"🧠", titel:"Warum nur?", art:"Fälle · 8 Fälle",
+      anleitung:"Welches **Motiv** steckt vor allem dahinter? Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Fall",
+      fragen:[
+        {szene:"„Wenn ich gewinne, bekomme ich 10 000 € Prämie und einen neuen Sponsor.“", q:"Motiv?", o:["Geld","Unwissen","Aussehen","Comeback"], c:0, e:"Prämien und Sponsoren: **Geld**."},
+        {szene:"„Mein Trainer und meine Eltern erwarten, dass ich Landesmeisterin werde.“", q:"Motiv?", o:["Aussehen","Druck","Unwissen","Ruhm"], c:1, e:"Erwartungen von außen: **Druck**."},
+        {szene:"„Die anderen nehmen doch auch alle was – sonst habe ich keine Chance.“", q:"Motiv?", o:["Selbstzweifel","Geld","„Alle tun es“","Comeback"], c:2, e:"Angst, ohne Doping chancenlos zu sein: **„Alle tun es“**."},
+        {szene:"„Nach meinem Kreuzbandriss muss ich in sechs Wochen wieder spielen.“", q:"Motiv?", o:["Ruhm","Unwissen","Aussehen","Comeback"], c:3, e:"Schnell zurück nach einer Verletzung: **Comeback**."},
+        {szene:"„Ohne Hilfe schaffe ich das nie. Ich bin einfach nicht gut genug.“", q:"Motiv?", o:["Selbstzweifel","Geld","Druck","Ruhm"], c:0, e:"Zweifel an sich selbst: **Selbstzweifel**."},
+        {szene:"„Ich will einmal einen Weltrekord aufstellen und im Fernsehen sein.“", q:"Motiv?", o:["Unwissen","Ruhm","Comeback","Aussehen"], c:1, e:"Berühmt sein, Rekorde: **Ruhm**."},
+        {szene:"„Ich will fürs Freibad schnell mehr Muskeln haben.“", q:"Motiv?", o:["Druck","Geld","Aussehen","Comeback"], c:2, e:"Mehr Muskeln, anderer Körper: **Aussehen** – typisch im Freizeitsport."},
+        {szene:"„Das ist doch nur ein Pulver, was soll da schon passieren?“", q:"Motiv?", o:["Ruhm","Druck","Selbstzweifel","Unwissen"], c:3, e:"Risiken werden unterschätzt: **Unwissen**."}
+      ]},
+    { id:"risiko", typ:"bildzuordnen", bild:"koerper", lernen:"mittel", icon:"🩺", titel:"Risiko-Scanner", art:"Antippen · 10 Karten",
+      anleitung:"Wo im Körper richtet die Nebenwirkung Schaden an? **Tippe auf das Organ** (oder sein Schild). Jede richtige Antwort = **1 Punkt**.",
+      frage:"Wo schadet es?", ziel:"das betroffene Organ",
+      zonen:[{id:"gehirn", name:"Gehirn & Psyche"},{id:"haut", name:"Haut"},{id:"herz", name:"Herz & Kreislauf"},{id:"leber", name:"Leber"},{id:"niere", name:"Nieren"},{id:"blut", name:"Blut & Gefäße"},{id:"wachstum", name:"Knochen & Wachstum"}],
+      items:[
+        {t:"Anabolika: **Leberschäden**", z:"leber", e:"Anabolika belasten die **Leber**."},
+        {t:"Anabolika: **Akne**", z:"haut", e:"Die Hormone verändern die **Haut**."},
+        {t:"Anabolika: **Aggressivität** und Stimmungsschwankungen", z:"gehirn", e:"Die Hormone wirken auch aufs **Gehirn**."},
+        {t:"Anabolika bei Jugendlichen: das Wachstum hört zu früh auf", z:"wachstum", e:"Die **Wachstumsfugen** der Knochen können sich zu früh schließen."},
+        {t:"Anabolika: Schäden am **Herzmuskel**", z:"herz"},
+        {t:"EPO: das Blut wird dick, **Blutgerinnsel** entstehen", z:"blut", e:"Thrombose: Gerinnsel in den **Blutgefäßen**."},
+        {t:"EPO: das Herz muss viel stärker pumpen – **Herzinfarkt** möglich", z:"herz"},
+        {t:"Stimulanzien: **Herzrasen**", z:"herz"},
+        {t:"Stimulanzien: **Abhängigkeit** – man kommt nicht mehr davon los", z:"gehirn", e:"Abhängigkeit entsteht im **Gehirn**."},
+        {t:"Diuretika: der Körper verliert zu viel Wasser – **Austrocknung**", z:"niere", e:"Diuretika lassen die **Nieren** viel Wasser ausscheiden."}
+      ]},
+    { id:"memory", typ:"memory", lernen:"mittel", icon:"🧪", titel:"Labor-Memory", art:"Memory · 8 Paare",
+      anleitung:"Finde die Paare: **Begriff + Bedeutung**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Anabolika", b:"Muskelaufbau-Hormone"},
+        {a:"EPO", b:"mehr rote Blutkörperchen"},
+        {a:"Stimulanzien", b:"aufputschende Mittel"},
+        {a:"Diuretika", b:"entwässernde Mittel"},
+        {a:"WADA", b:"weltweite Verbotsliste"},
+        {a:"NADA", b:"Kontrollen in Deutschland"},
+        {a:"Chaperon", b:"begleitet zur Kontrolle"},
+        {a:"Kölner Liste", b:"geprüfte Nahrungsergänzung"}
+      ]},
+    { id:"epo", typ:"lueckentext", lernen:"mittel", icon:"🩸", titel:"Die EPO-Kette", art:"Lückentext · 6 Lücken",
+      anleitung:"Ergänze die **Wirkungskette von EPO**. Jede richtige Lücke = 1 Punkt.",
+      ueberschrift:"Die Wirkungskette von EPO",
+      text:"EPO ist ein Hormon, das die Bildung roter [[Blutkörperchen|Muskelfasern|Knochenzellen]] anregt. Mehr rote Blutkörperchen transportieren mehr [[Sauerstoff|Zucker|Fett]] zu den Muskeln – die [[Ausdauer|Beweglichkeit|Körpergröße]] steigt. Aber: Das Blut wird [[dicker|dünner|kälter]]. Das Herz muss stärker pumpen, und es können sich [[Blutgerinnsel|Muskeln|Sehnen]] bilden – Gefahr von Herzinfarkt und Schlaganfall. Eine erlaubte Methode mit ähnlicher Wirkung ist das [[Höhentraining|Krafttraining|Dehnen]]." },
+    { id:"fallakte", typ:"quiz", lernen:"mittel", icon:"🗂️", titel:"Fallakte Jan", art:"Fall lösen · 7 Fragen",
+      anleitung:"Lies den Fall und entscheide. Jede richtige Antwort = **2 Punkte**.",
+      punkte:2, mischen:false,
+      fragen:[
+        {szene:"Jan (17) läuft 100 m in 11,9 s. Ein Trainingspartner bietet ihm Tabletten an: „Damit schaffst du locker 11,4 – merkt eh keiner.“ Der Verein zahlt Startgelder nur für die Schnellsten, sein Vater war früher Landesmeister.", q:"Welche Motive könnten Jan zum Dopen bringen?", o:["Erfolgsdruck, Geld und die Erwartungen des Vaters","Er will mehr Muskeln für das Freibad","Er hat Asthma","Er möchte Kampfrichter werden"], c:0, e:"Druck, Startgeld, Vater als Vorbild – mehrere Motive kommen zusammen."},
+        {q:"Welches gesundheitliche Risiko ist bei Jans Tabletten besonders groß?", o:["Keins – Tabletten sind harmlos","Er weiß nicht, was drin ist – Wirkung und Nebenwirkungen sind unbekannt","Er wird davon nur müde","Tabletten wirken nur im Training"], c:1, e:"Ein **unbekanntes Mittel**: Inhalt, Dosis und Nebenwirkungen sind unklar."},
+        {q:"Welche sportliche Folge droht, wenn Jan erwischt wird?", o:["Er bekommt eine Medaille","Nichts – im Jugendbereich gibt es keine Regeln","Eine Sperre und der Verlust seiner Ergebnisse","Er muss nur eine Runde mehr laufen"], c:2, e:"Doping wird mit **Sperren** bestraft."},
+        {q:"Welche soziale Folge ist wahrscheinlich?", o:["Alle finden ihn noch toller","Vertrauensverlust bei Team, Trainer und Familie","Er wird automatisch Vereinsvorsitzender","Keine"], c:1, e:"Wer betrügt, verliert **Vertrauen** und Ansehen."},
+        {q:"Was könnte Jan stattdessen tun?", o:["Die Tabletten heimlich nehmen","Mit dem Trainer oder einer Vertrauensperson reden und realistische Ziele setzen","Mit dem Sport aufhören","Doppelt so viele Tabletten nehmen"], c:1, e:"Reden hilft – und ein **Trainingsplan** mit realistischen Zielen."},
+        {q:"Wer trägt außer Jan Verantwortung?", o:["Niemand","Nur der Vater","Der Trainingspartner (Beihilfe) und der Verein (Druck durch Prämien)","Die Zuschauer"], c:2, e:"Wer Dopingmittel anbietet, hilft beim Dopen – auch das ist ein Verstoß."},
+        {szene:"Mia (15, Leichtathletin) will sich einen „Muskel-Booster“ aus dem Internet bestellen.", q:"Was rätst du ihr?", o:["Sofort bestellen – je mehr, desto besser","Lieber nicht: nicht nötig, möglicherweise verunreinigt – Training und ausgewogenes Essen reichen","Nur bestellen, wenn er billig ist","Den Booster mit Energydrinks mischen"], c:1, e:"Booster sind **nicht nötig**, können **verunreinigt** sein (positiver Test!) und sind teuer."}
+      ]},
+    { id:"ablauf", typ:"zeitstrahl", lernen:"kontrolle", icon:"🔬", titel:"Ablauf einer Kontrolle", art:"Ordnen · 6 Schritte",
+      anleitung:"Bringe die Schritte einer **Dopingkontrolle** in die richtige Reihenfolge. Jeder richtige Platz = 1 Punkt.",
+      items:[
+        {t:"Eine Kontrollperson (Chaperon) benachrichtigt die Athletin nach dem Wettkampf.", j:"1"},
+        {t:"Der Chaperon begleitet sie ohne Unterbrechung zur Kontrollstation.", j:"2"},
+        {t:"Sie gibt unter Sicht einer Kontrollperson eine Urinprobe ab.", j:"3"},
+        {t:"Die Probe wird auf zwei Flaschen (A- und B-Probe) aufgeteilt und versiegelt.", j:"4"},
+        {t:"Die Proben werden in einem von der WADA anerkannten Labor untersucht.", j:"5"},
+        {t:"Ist die A-Probe positiv, kann die Athletin die Öffnung der B-Probe verlangen.", j:"6"}
+      ]},
+    { id:"ampel", typ:"bildzuordnen", bild:"ampel", lernen:"kontrolle", icon:"🚦", titel:"Grauzonen-Ampel", art:"Antippen · 10 Fälle",
+      anleitung:"**Erlaubt**, **verboten** oder **Grauzone** (erlaubt, aber umstritten oder riskant)? Tippe auf das passende Licht. Jede richtige Antwort = **1 Punkt**.",
+      frage:"Welches Licht?", ziel:"das passende Licht",
+      zonen:[{id:"erlaubt", name:"erlaubt"},{id:"grauzone", name:"Grauzone"},{id:"verboten", name:"verboten"}],
+      items:[
+        {t:"Koffein vor dem Rennen", z:"erlaubt", e:"Koffein steht nicht auf der Verbotsliste."},
+        {t:"EPO-Spritze vor der Tour", z:"verboten"},
+        {t:"Drei Wochen Höhentrainingslager", z:"erlaubt"},
+        {t:"Jede Nacht in einem Höhenzelt zu Hause schlafen", z:"grauzone", z2:"erlaubt", e:"Erlaubt – aber **umstritten**: Nicht jeder kann sich das leisten."},
+        {t:"Asthmaspray mit ärztlicher Ausnahmegenehmigung", z:"erlaubt", e:"Mit Ausnahmegenehmigung erlaubt (ohne – je nach Wirkstoff – verboten)."},
+        {t:"Vor jedem Spiel Schmerzmittel, um trotz Verletzung zu spielen", z:"grauzone", e:"Erlaubt, aber **gesundheitlich gefährlich**."},
+        {t:"Eiweißpulver aus einem unbekannten Online-Shop", z:"grauzone", e:"Erlaubt, aber vielleicht **verunreinigt**."},
+        {t:"Laufschuhe mit Carbonplatte (innerhalb der Regeln)", z:"grauzone", z2:"erlaubt", e:"Erlaubt – die Debatte um „**Technik-Doping**“ macht es zur Grauzone."},
+        {t:"Eigenes Blut kurz vor dem Rennen zurückführen", z:"verboten", e:"**Blutdoping** – verbotene Methode."},
+        {t:"Anabolika für schnelleren Muskelaufbau", z:"verboten"}
+      ]},
+    { id:"wahr", typ:"swipe", lernen:"kontrolle", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 11 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch** – oder tippe auf die Knöpfe.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Die NADA erstellt die weltweite Verbotsliste.", r:"l", e:"Die **WADA** erstellt die Verbotsliste, die NADA organisiert die Kontrollen in Deutschland."},
+        {t:"Kontrollen gibt es auch außerhalb von Wettkämpfen.", r:"r", e:"Auch **im Training** – unangemeldet."},
+        {t:"Es werden nur Urinproben genommen.", r:"l", e:"**Urin und Blut**."},
+        {t:"Spitzensportler müssen melden, wo sie sich aufhalten.", r:"r", e:"**Meldepflicht** für den Testpool."},
+        {t:"Der Chaperon begleitet die Person bis zur Probe.", r:"r", e:"Ohne Unterbrechung."},
+        {t:"Doping gibt es nur im Profisport.", r:"l", e:"Auch im **Freizeitsport**, z. B. Anabolika im Fitnessstudio."},
+        {t:"Nahrungsergänzungsmittel können verbotene Stoffe enthalten.", r:"r", e:"Sie können **verunreinigt** sein."},
+        {t:"Wer anderen beim Dopen hilft, verstößt auch gegen die Regeln.", r:"r", e:"Auch Trainer und Ärzte."},
+        {t:"Doping im Freizeitsport ist ungefährlich, weil die Mengen klein sind.", r:"l", e:"Ohne Kontrolle, ohne Arzt, mit oft gefälschten Mitteln – eher **gefährlicher**."},
+        {t:"Höhentraining ist verboten.", r:"l", e:"Höhentraining ist **erlaubt**."},
+        {t:"Mit der B-Probe kann ein positiver Befund überprüft werden.", r:"r", e:"Sie ist die Sicherheit für die Athletin."}
+      ]},
+    { id:"proContra", typ:"sortieren", lernen:"debatte", icon:"🗣️", titel:"Pro oder Contra?", art:"Sortieren · 10 Argumente",
+      anleitung:"**Streitfrage:** Sollte Doping unter ärztlicher Kontrolle erlaubt werden? Ist das Argument **Pro (erlauben)** oder **Contra (verbieten)**? Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"PRO", info:"erlauben", tipp:"Pro-Argumente sprechen dafür, Doping unter ärztlicher Kontrolle zu erlauben."},
+        {t:"CONTRA", info:"verbieten", tipp:"Contra-Argumente sprechen dafür, Doping weiter zu verbieten."}
+      ],
+      items:[
+        {t:"Heimliches Doping wäre nicht mehr nötig – Ärzte könnten Schäden begrenzen.", k:0},
+        {t:"Junge Sportler würden unter Druck gesetzt, auch zu dopen.", k:1},
+        {t:"Nicht Talent und Training, sondern Medizin würde über Siege entscheiden.", k:1},
+        {t:"Kontrollen kosten viel Geld und erwischen trotzdem nicht alle.", k:0},
+        {t:"Auch unter Aufsicht bleiben Langzeitschäden möglich.", k:1},
+        {t:"Der Sport verliert seine Vorbildrolle für Kinder und Jugendliche.", k:1},
+        {t:"Dann hätten alle die gleichen Mittel – niemand würde mehr heimlich betrügen.", k:0},
+        {t:"Wer sauber bleiben will, hätte keine Chance mehr.", k:1},
+        {t:"Das Geld für Kontrollen könnte in die Nachwuchsförderung fließen.", k:0},
+        {t:"Fair Play würde seine Bedeutung verlieren.", k:1}
+      ]},
+    { id:"treppe", typ:"zeitstrahl", lernen:"debatte", icon:"🪜", titel:"Argumenten-Treppe", art:"Ordnen · 5 Stufen",
+      anleitung:"Bringe die Teile dieses Arguments in die Reihenfolge der **Argumenten-Treppe**: Behauptung → Begründung → Beleg → Beispiel → Schluss.",
+      items:[
+        {t:"Doping sollte verboten bleiben,", j:"Behauptung"},
+        {t:"weil es die Gesundheit der Sportler gefährdet.", j:"Begründung"},
+        {t:"Laut NADA macht EPO das Blut dicker – Herzinfarkt und Schlaganfall drohen.", j:"Beleg"},
+        {t:"Ein Radprofi kann so trotz Topform einen Schlaganfall bekommen.", j:"Beispiel"},
+        {t:"Deshalb muss der Schutz der Gesundheit wichtiger sein als jeder Sieg.", j:"Schluss"}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 6 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut – so bleibt er hängen. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Was verboten ist, steht schwarz auf weiß: auf der Liste der ______ – kein Wenn und Aber, kein Preis.“", o:["WADA","FIFA","Schule"], c:0, e:"Die **WADA** führt die Verbotsliste."},
+        {q:"„Ein ______ vor dem Start ist okay – doch EPO macht dem Herzen weh.“", o:["Kaffee","Döner","Joint"], c:0, e:"**Koffein** ist nicht verboten."},
+        {q:"„Wird das ______ zu dick und schwer, hat’s das Herz bald richtig schwer.“", o:["Blut","Bein","Brot"], c:0, e:"EPO macht das **Blut** dicker."},
+        {q:"„______, die das Netz verspricht, enthalten oft, was drauf steht nicht.“", o:["Pulver","Bücher","Schuhe"], c:0, e:"Nahrungsergänzungsmittel können **verunreinigt** sein."},
+        {q:"„Ob Training oder Wettkampf-Tag – die ______ kommt, auch wenn man’s nicht mag.“", o:["Kontrolle","Pause","Pizza"], c:0, e:"Kontrollen gibt es **im Wettkampf und im Training**."},
+        {q:"„Behaupten, begründen, ______ fein – so muss ein starkes Argument sein.“", o:["belegen","beleidigen","bellen"], c:0, e:"Ein gutes Argument hat einen **Beleg**."}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 9 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Welche Organisation erstellt die weltweite Verbotsliste? (Abkürzung)", hilfe:"💡 W…", a:["WADA"], re:["^(die )?wada$"], e:"Die **WADA**."},
+        {q:"Welche Organisation organisiert die Kontrollen in Deutschland? (Abkürzung)", hilfe:"💡 N…", a:["NADA"], re:["^(die )?nada$"], e:"Die **NADA**."},
+        {q:"Welches Hormon regt die Bildung roter Blutkörperchen an? (Abkürzung)", hilfe:"💡 E…", a:["EPO"], re:["^epo$","^erythropoe?tin$"], e:"**EPO**."},
+        {q:"Welche erlaubte Methode hat eine ähnliche Wirkung wie EPO?", hilfe:"💡 H…", a:["Höhentraining"], re:["^(das )?h(ö|oe)hen ?training$"], e:"**Höhentraining**."},
+        {q:"Wie heißen Muskelaufbau-Hormone, die als Doping missbraucht werden?", hilfe:"💡 A…", a:["Anabolika"], re:["^anabolika$","^(anabole )?steroide$"], e:"**Anabolika**."},
+        {q:"Wie heißt die Kontrollperson, die die Athletin bis zur Probe begleitet?", hilfe:"💡 C…", a:["Chaperon"], re:["^(der |die )?chaperon(e)?$"], e:"Der **Chaperon**."},
+        {q:"Wie heißt die zweite Flasche, mit der ein positiver Befund überprüft werden kann?", hilfe:"💡 …-Probe", a:["B-Probe"], re:["^(die )?b ?probe$","^b$"], e:"Die **B-Probe**."},
+        {q:"Wie nennt man Fälle, die erlaubt, aber umstritten oder riskant sind?", hilfe:"💡 G…", a:["Grauzone"], re:["^(die |eine )?grauzonen?$"], e:"**Grauzone**."},
+        {q:"Mit welcher Liste prüfen Spitzensportler Nahrungsergänzungsmittel?", hilfe:"💡 K… Liste", a:["Kölner Liste"], re:["^(die )?k(ö|oe)lner liste$"], e:"Die **Kölner Liste**."}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>
