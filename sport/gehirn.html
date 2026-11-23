@@ -41,7 +41,7 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(194,52,122,.12),
 <script src="sport-kit.js"></script>
 <script>
 /* Bilder: ChatGPT-Illustrationen (sport/gehirn-bilder/NAME.webp), sobald vorhanden in BILDER eintragen. */
-const BILDER = new Set(["em9-gold-geteilt","em9-aufhelfen","em9-elfmeter","em9-tanzgruppe","em9-medien","em9-geld","em9-umwelt","em9-inklusion"]);
+const BILDER = new Set(["em9-gold-geteilt","em9-aufhelfen","em9-elfmeter","em9-tanzgruppe","em9-medien","em9-geld","em9-umwelt","em9-inklusion","em9-kasten"]);
 const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="gehirn-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
 
 /* =========================================================
@@ -128,7 +128,7 @@ const ICON = {
       return `<rect x="12" y="${y}" width="150" height="58" rx="10" fill="#3A1A22"/>` + TX(87, y + 34, a, {s:11, c:"#FFB3B3"}) + PFEIL(166, y + 29, 194, y + 29, "#FFFFFF", 3) +
         `<rect x="198" y="${y}" width="210" height="58" rx="10" fill="#14301F"/>` + TX(303, y + 34, b, {s:10.6, c:"#C8F7D6"}); }).join("")),
   mut: KARTE(380, 250, TX(190, 26, "Mut in kleinen Stufen", {s:17, c:PI}) +
-    [["Rolle auf der Matte",BL],["Rolle vom Mattenberg",GR],["niedriger Kasten + Hilfe",GE],["über den Kasten + Hilfe",OR]].map(([t,c],k) => { const x = 16 + k*40, y = 196 - k*40;
+    [["Rolle auf der Matte",BL],["Rolle vom Mattenberg",GR],["niedriger Kasten + Hilfe",GE],["hoher Kasten + Hilfe",OR]].map(([t,c],k) => { const x = 16 + k*40, y = 196 - k*40;
       return `<rect x="${x}" y="${y}" width="${348 - k*40}" height="36" rx="6" fill="${c}"/>` + TX(x + 8, y + 23, (k + 1) + "  " + t, {s:11.6, a:"start", c:"#101A33"}); }).join("") +
     TX(190, 244, "Mut = trotz Angst einen überlegten Schritt wagen", {s:11.8, c:"#FFFFFF", w:600})),
   karte: KARTE(420, 230, TX(210, 26, "Meine Strategie-Karte", {s:17, c:PI}) +
@@ -167,7 +167,7 @@ const LERNEN = {
     {bild:ICON.selbstgespraech, titel:"B – Selbstgespräch", text:"Aus einem **negativen** Satz einen **hilfreichen** machen: „Heute klappt gar nichts“ → „Ein Ball nach dem anderen.“ Hilft, wenn man nach Fehlern ins Grübeln kommt."},
     {bild:ICON.strategien, titel:"C, D, E, F", text:"**C Routine:** immer gleicher Ablauf vor der Aktion (z. B. vor dem Freiwurf). **D Fokuswort:** ein Wort für die Aufmerksamkeit – „Ball!“, „Ruhig!“ – wenn man abgelenkt ist. **E Kleine Schritte:** die Aufgabe in Zwischenschritte teilen. **F Kurz raus:** wegdrehen, bis zehn zählen, dann zurück – z. B. wenn man kurz davor ist zu meckern."},
     {bild:ICON.mut, titel:"Angst und Mut", text:"**Angst** ist ein **Schutzsignal**: Hier ist etwas neu oder gefährlich. **Mut** heißt nicht, keine Angst zu haben, sondern **trotz Angst einen überlegten nächsten Schritt** zu wagen. Dabei helfen **kleine Zwischenschritte** und **Sicherheit** (Matten, Hilfestellung)."},
-    {bild:FOTO("em9-kasten","Rolle über den Kasten mit Hilfestellung","🤸"), titel:"Die Stufenleiter", text:"Beispiel Rolle über den Kasten: **1** Rolle auf der Matte → **2** Rolle vom Mattenberg → **3** Rolle auf dem niedrigen Kasten mit Hilfestellung → **4** Rolle über den Kasten mit Hilfestellung."},
+    {bild:FOTO("em9-kasten","Rolle vorwärts auf dem Kasten mit Hilfestellung","🤸"), titel:"Die Stufenleiter", text:"Beispiel **Rolle vorwärts auf dem Kasten** (Kasten längs, Matte darauf): **1** Rolle auf der Matte → **2** Rolle vom Mattenberg → **3** Rolle auf dem niedrigen Kasten mit Hilfestellung → **4** Rolle auf dem hohen Kasten mit Hilfestellung. Jede Stufe erst dann, wenn die vorige sicher klappt."},
     {bild:ICON.karte, titel:"Meine Strategie-Karte", text:"**Wenn …** (Situation) **… merke ich es an …** (Körpersignal) **… dann mache ich …** (Strategie) – und **mein Satz**. So hast du im Turnier einen Plan, falls die Gefühle hochkochen."}
   ]},
   sinn: { titel:"Warum treiben wir Sport?", folien:[
