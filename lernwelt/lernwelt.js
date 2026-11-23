@@ -274,6 +274,7 @@ function topbar(o){
     ${o.island?`<button class="back" data-href="${esc(W.insel.href)}" aria-label="${T.island}"><span aria-hidden="true">${W.insel.icon||"🗺️"}</span><span class="bl"> ${T.island}</span></button>`:""}
     ${o.title?`<div class="tb-title"><span class="ic" aria-hidden="true">${o.icon||"🎯"}</span><div style="min-width:0">${o.art?`<p class="tb-art">${esc(o.art)}</p>`:""}<h1 class="disp">${esc(o.title)}</h1></div></div>`:`<span class="sp"></span>`}
     ${o.pill?`<button class="pill-fin" ${finTarget()}><span aria-hidden="true">🏁</span> ${T.finishPill}</button>`:""}
+    ${o.pill && !o.back?`<button class="pill-reset" title="${esc(T.reset)}" aria-label="${esc(T.reset)}"><span aria-hidden="true">↺</span><span class="bl"> ${T.reset}</span></button>`:""}
     ${RANKED && UH.prefsHTML ? UH.prefsHTML(W.rang ? {nurGeschlecht:true} : null) : ""}
     <span class="chip${RANKED?" rchip":""}" id="ptsChip"${RANKED?` role="button" tabindex="0" aria-label="${esc(T.allRanks)}"`:""}>${chipInner()}</span></div>`;
 }
@@ -959,7 +960,7 @@ const LW = {
       const g = e.target.closest("[data-go]");
       if(g){ const to=g.dataset.go; if(location.hash.slice(1)===to) render(); else location.hash=to; return; }
       if(e.target.closest("[data-again]")){ render(); window.scrollTo(0,0); return; }
-      if(e.target.closest("#lwReset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); if(window.FREI && FREI.wipe){ FREI.wipe(); FREI.closeTab(); } else { clearNames(); render(); } }
+      if(e.target.closest("#lwReset, .pill-reset") && confirm(T.resetQ)){ S={lv:{},name:"",done:false,seen:{}}; save(); if(window.FREI && FREI.wipe){ FREI.wipe(); FREI.closeTab(); } else { clearNames(); render(); } }
     });
     document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ p.hidden=true; }); });
     window.addEventListener("hashchange", ()=>{ hearStop(); render(); window.scrollTo(0,0); });
