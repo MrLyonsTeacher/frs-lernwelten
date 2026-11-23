@@ -94,3 +94,6 @@
 
 /* helles Gelenk-Schema: Zeigelinien dunkel */
 .rk.hell .tagl{stroke:#3A4558;fill:#3A4558}
+
+/* Hinweis zum Heranzoomen bei Antipp-Spielen */
+.zoomhint{margin:.6rem 0 0;font-size:.85rem;color:var(--muted);line-height:1.35}

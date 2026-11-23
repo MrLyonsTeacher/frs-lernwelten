@@ -91,7 +91,7 @@ LW.addGame("zeigen", (l, A, done, K) => {
     A.innerHTML = K.progressBar(K.fill(res, qs.length), i) + `<div class="zg">
       <div class="panel zq">${nameMode
         ? `<p class="zk">${K.esc(l.frage || (typMode ? "Welche Gelenkart leuchtet?" : "Wie heißt der leuchtende Knochen?"))}</p><div class="opts zopts">${options(q).map(o => `<button class="opt" data-o="${o.id}">${K.esc(o.name)}</button>`).join("")}</div>`
-        : `<p class="zk">${K.esc(l.frage || "Tippe auf:")}</p><p class="ztarget">${K.esc(q.name)}</p>${q.tipp ? `<p class="hint">💡 ${K.rich(q.tipp)}</p>` : ""}`}
+        : `<p class="zk">${K.esc(l.frage || "Tippe auf:")}</p><p class="ztarget">${K.esc(q.name)}</p>${q.tipp ? `<p class="hint">💡 ${K.rich(q.tipp)}</p>` : ""}<p class="zoomhint">🔍 ${matchMedia("(pointer:coarse)").matches ? "Kleine Teile? Zieh das Bild mit <b>zwei Fingern</b> größer, dann triffst du genauer." : "Kleine Teile? Mit <b>Strg + Mausrad</b> (Mac: <b>⌘ +</b>) kannst du heranzoomen."}</p>`}
         ${found.size ? `<div class="zfound"><p class="zk">Schon gefunden · ${found.size}/${qs.length}</p><div class="zchips">${[...found].map(id => `<span>✓ ${K.esc((Z.find(b => b.id === id) || {}).name || "")}</span>`).join("")}</div></div>` : ""}</div>
       <div class="zfig">${FIG[l.bild]()}</div></div>`;
     const svg = A.querySelector(".zfig svg");
