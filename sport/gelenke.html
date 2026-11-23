@@ -243,18 +243,43 @@ const BSP = {
     ${BSP_T(30, 132, "Haken", {s:10.5})}<path d="M42 130 L62 122" stroke="#2A2F3D" stroke-width="1.2"/>
     ${BSP_T(110, 192, "nur beugen und strecken – wie eine Tür", {s:10.5, w:400, c:"#5D6472"})}`),
   /* Daumen: Der Mittelhandknochen des Daumens kippt auf dem sattelförmigen Handwurzelknochen in zwei Richtungen */
-  daumen: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Daumensattelgelenk")}
-    <path d="M70 186 C64 160 66 132 80 112 L84 50 C84 40 98 40 98 50 L100 96 L104 40 C104 30 118 30 118 40 L120 96 L126 46 C126 36 140 36 140 46 L140 100 L148 66 C150 56 162 58 160 68 L156 130 C152 162 140 180 130 186 Z" fill="#F6DCC6" stroke="#E2B896" stroke-width="1.5" opacity=".9"/>
-    ${[[91,108,91,52],[111,104,111,42],[133,108,133,48],[152,124,154,70]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1+40} L${x1} ${y1}" stroke="#EADBC0" stroke-width="7" stroke-linecap="round"/><path d="M${x1} ${y1-4} L${x2} ${y2}" stroke="#EADBC0" stroke-width="5.5" stroke-linecap="round"/>`).join("")}
-    <path d="M80 166 Q86 156 92 166 Q86 162 80 166 Z" fill="#E8650F"/>
-    <ellipse cx="86" cy="164" rx="10" ry="7" fill="#E8C98F" stroke="#B49E7C"/>
+  daumen: (() => {
+    const K = (x1,y1,x2,y2,w) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#B49E7C" stroke-width="${w+2.4}" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#F4E5C8" stroke-width="${w}" stroke-linecap="round"/>`;
+    const finger = (bx,by,tx,ty,w) => { const p = t => [bx+(tx-bx)*t, by+(ty-by)*t];
+      const [a,b,c] = [p(.48),p(.74),p(.9)]; return K(bx,by,a[0],a[1],w)+K(a[0]+(tx-bx)*.03,a[1]+(ty-by)*.03,b[0],b[1],w-1.2)+K(b[0]+(tx-bx)*.03,b[1]+(ty-by)*.03,c[0],c[1],w-2)+K(c[0]+(tx-bx)*.03,c[1]+(ty-by)*.03,tx,ty,w-2.6); };
+    const D = `dur="4.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1"`;
+    return svgBox("0 0 220 200", `${BSP_BG("Beispiel: Daumensattelgelenk")}
+    <!-- Handumriss -->
+    <path d="M58 196 C56 176 58 156 62 140 C66 126 70 118 70 112 L76 40 C76 30 88 30 89 40 L92 98 L98 30 C99 20 112 20 112 30 L110 98 L118 36 C119 26 131 27 130 37 L126 102 L136 54 C138 45 149 47 147 57 L140 120 C136 150 126 172 124 196 Z" fill="#F7E2D0" opacity=".7"/>
+    <!-- Unterarm und Handwurzel -->
+    ${K(76,200,80,184,14)}${K(112,200,110,186,10)}
+    ${[[74,170],[88,168],[102,170],[116,172],[92,156],[106,154],[120,158]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="7.5" ry="6" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.2"/>`).join("")}
+    <!-- Sattelknochen (großes Vieleckbein) -->
+    <path d="M64 162 C64 152 70 146 78 148 C82 150 84 152 88 150 L88 160 C82 166 70 168 64 162 Z" fill="#FFC94D" stroke="#C99A20" stroke-width="1.4"/>
+    <!-- Finger 2–5 -->
+    ${finger(92,148,84,36,7)}${finger(106,146,106,26,7)}${finger(119,148,126,34,6.5)}${finger(130,154,143,56,6)}
+    <!-- Daumen: bewegt sich im Sattelgelenk -->
     <g>
-      <path d="M78 160 C60 150 44 132 36 116 C32 106 40 100 48 106 C58 120 70 134 88 150 Z" fill="#F6DCC6" stroke="#E2B896" stroke-width="1.5"/>
-      <path d="M82 156 L58 130" stroke="#EADBC0" stroke-width="7" stroke-linecap="round"/><path d="M56 126 L42 110" stroke="#EADBC0" stroke-width="5.5" stroke-linecap="round"/>
-      ${BSP_ROT([0, 30, 0, -22, 0], 86, 162)}
+      <path d="M60 158 C50 140 40 124 30 104 C24 92 20 80 24 72 C30 66 38 70 42 80 C50 96 60 110 76 128 C82 140 76 156 60 158 Z" fill="#F7E2D0" opacity=".85"/>
+      ${K(70,146,48,112,8)}${K(46,108,34,90,6.5)}${K(33,86,26,74,5.5)}
+      <path d="M62 150 C66 142 74 140 80 146" fill="none" stroke="#E8650F" stroke-width="3"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 74 150;24 74 150;0 74 150;-14 74 150;0 74 150" ${D}/>
     </g>
-    ${BSP_T(186, 150, "Sattel-", {s:10.5})}${BSP_T(186, 163, "knochen", {s:10.5})}<path d="M170 160 L98 164" stroke="#2A2F3D" stroke-width="1.2"/>
-    ${BSP_T(110, 192, "Daumen zum Zeigefinger hin und weg", {s:10.5, w:400, c:"#5D6472"})}`),
+    <path d="M30 60 A46 46 0 0 1 72 56" fill="none" stroke="#2AA8C4" stroke-width="2" stroke-dasharray="4 3"/><path d="M72 56 l-7 -3 M72 56 l-5 5" stroke="#2AA8C4" stroke-width="2"/>
+    <!-- Lupe: die zwei Sattelflächen -->
+    <circle cx="180" cy="104" r="34" fill="#FFFFFF" stroke="#2A2F3D" stroke-width="2"/>
+    <path d="M80 152 L147 116" stroke="#2A2F3D" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <clipPath id="bspLupe"><circle cx="180" cy="104" r="33"/></clipPath>
+    <g clip-path="url(#bspLupe)">
+      <path d="M146 140 L146 104 Q180 140 214 104 L214 140 Z" fill="#FFC94D" stroke="#C99A20" stroke-width="1.5"/><path d="M160 134 Q180 112 200 134" fill="none" stroke="#C99A20" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <g><path d="M146 66 L146 95 Q180 131 214 95 L214 66 Z" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.5"/>
+        <animateTransform attributeName="transform" type="rotate" values="0 180 81;14 180 81;0 180 81;-14 180 81;0 180 81" ${D}/></g>
+    </g>
+    ${BSP_T(180, 86, "Daumen", {s:9})}
+    ${BSP_T(180, 152, "Sattelfläche,", {s:9.5, w:400})}${BSP_T(180, 163, "zweifach gewölbt", {s:9.5, w:400})}
+    ${BSP_T(30, 186, "Sattel-", {s:10})}${BSP_T(30, 197, "knochen", {s:10})}<path d="M42 182 L64 162" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(110, 192, "", {s:1})}`);
+  })(),
   /* Handgelenk (Handrücken): Die eiförmige Handwurzel kippt auf Elle und Speiche zur Seite – aber dreht nicht im Kreis */
   handgelenk: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Handgelenk")}
     <path d="M78 196 L78 136 C80 124 104 122 110 130 L108 196 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
