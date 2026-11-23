@@ -10,6 +10,11 @@
 <link rel="stylesheet" href="../lernwelt/lernwelt.css">
 <link rel="stylesheet" href="sport-kit.css">
 <style>
+.ln-art img.lnbild{display:block;width:100%;height:auto;max-height:min(58vh,calc(var(--avail,700px) - 260px));object-fit:contain;margin:0 auto;border-radius:16px;background:#fff;border:3px solid var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.ln-stage:has(.lnbild){grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:1.4rem}
+.ln-art:has(.lnbild){align-self:stretch;display:flex;align-items:center;justify-content:center}
+.ln-art > span:has(.lnbild){display:block;width:100%;animation:lnPop .6s both}
+@media (max-aspect-ratio:1/1), (max-width:640px){ .ln-stage:has(.lnbild){grid-template-columns:1fr;overflow-y:auto} .ln-art img.lnbild{max-height:32vh;width:auto;max-width:100%} }
 :root{
   color-scheme:light;
   --bg:#F4F1EC; --surface:#FFFFFF; --surface-2:#F7F4EF; --ink:#1E2430; --muted:#5D6472; --line:#D8D2C7;
@@ -139,49 +144,76 @@ const ICON = {
 
 /* Stabile Seitenlage Schritt für Schritt (Blick von oben, Kopf rechts, Helferin unten) */
 function seitenlage(n){
-  const L = (pts, w, col) => `<path d="M${pts.map(p=>p.join(" ")).join(" L")}" fill="none" stroke="#2A2F3D" stroke-width="${w+3}" stroke-linecap="round" stroke-linejoin="round"/><path d="M${pts.map(p=>p.join(" ")).join(" L")}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
-  const SKIN="#F2C9A6", SHIRT="#8E6CC8", JEANS="#5B8BD6", SHOE="#7A4A2A";
-  const pfeil = (d) => `<path d="${d}" fill="none" stroke="#FF5A4F" stroke-width="4" stroke-linecap="round"/>`;
-  const spitze = (x,y,a) => `<path d="M0 0 L-10 -6 L-10 6 Z" fill="#FF5A4F" transform="translate(${x} ${y}) rotate(${a})"/>`;
+  const SKIN="#F2C9A6", SKIN_D="#D9A27E", SHIRT="#8E6CC8", SHIRT_D="#6E4FA8", JEANS="#5B8BD6", JEANS_D="#3F6DB8", SHOE="#7A4A2A", OUT="#2A2F3D";
+  const pts = a => a.map(p=>p.join(" ")).join(" L");
+  // Glied mit Umriss; optional Naht (dunklere Linie in der Mitte)
+  const L = (a, w, col, naht) => `<path d="M${pts(a)}" fill="none" stroke="${OUT}" stroke-width="${w+3}" stroke-linecap="round" stroke-linejoin="round"/><path d="M${pts(a)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`+
+    (naht ? `<path d="M${pts(a)}" fill="none" stroke="${naht}" stroke-width="1.2" stroke-dasharray="3 2.5" stroke-linecap="round" stroke-linejoin="round"/>` : "");
+  // Hand: Handfläche + Daumen + Finger angedeutet, Richtung a (Grad)
+  const hand = (x,y,a,glove) => `<g transform="translate(${x} ${y}) rotate(${a})"><path d="M-3 -5 L7 -5 C11 -5 12 -2 12 0 C12 2 11 5 7 5 L-3 5 Z" fill="${glove||SKIN}" stroke="${OUT}" stroke-width="1.2"/><path d="M7 -2.5 L11 -2.5 M7 0 L12 0 M7 2.5 L11 2.5" stroke="${glove?"#7D8590":SKIN_D}" stroke-width=".9"/><ellipse cx="2" cy="-6.5" rx="3.6" ry="2" fill="${glove||SKIN}" stroke="${OUT}" stroke-width="1"/></g>`;
+  const schuh = (x,y,a) => `<g transform="translate(${x} ${y}) rotate(${a})"><path d="M-6 -6 C4 -7 10 -4 10 0 C10 4 4 7 -6 6 Z" fill="${SHOE}" stroke="${OUT}" stroke-width="1.2"/><path d="M-4 -5.5 L-4 5.5" stroke="#4A2C18" stroke-width="2"/></g>`;
+  const kopf = (x,y,seite,offen) => {
+    let k = `<ellipse cx="${x+8}" cy="${y+(seite?-11:0)}" rx="${seite?4:0}" ry="3" fill="${SKIN}" stroke="${OUT}"/>`;
+    k += `<circle cx="${x}" cy="${y}" r="13" fill="${SKIN}" stroke="${OUT}" stroke-width="1.5"/>`;
+    if(!seite){
+      k += `<path d="M${x+1} ${y-13} C${x+12} ${y-14} ${x+17} ${y-6} ${x+16} ${y} C${x+17} ${y+6} ${x+12} ${y+14} ${x+1} ${y+13} C${x+8} ${y+8} ${x+9} ${y-8} ${x+1} ${y-13} Z" fill="#F2C230" stroke="${OUT}" stroke-width="1.2"/>`+
+           `<ellipse cx="${x+2}" cy="${y-14}" rx="3" ry="2.2" fill="${SKIN}" stroke="${OUT}"/><ellipse cx="${x+2}" cy="${y+14}" rx="3" ry="2.2" fill="${SKIN}" stroke="${OUT}"/>`+
+           `<path d="M${x-3} ${y-7} q-2 1.5 0 3 M${x-3} ${y+4} q-2 1.5 0 3" fill="none" stroke="${OUT}" stroke-width="1.3"/><path d="M${x-8} ${y-1} l-3 1 l3 1" fill="none" stroke="${SKIN_D}" stroke-width="1.3"/><path d="M${x-10} ${y-3} q-1 3 0 6" fill="none" stroke="#B5524F" stroke-width="1.4"/>`;
+    } else {
+      k += `<path d="M${x-10} ${y-8} C${x-2} ${y-18} ${x+16} ${y-12} ${x+15} ${y+2} C${x+14} ${y+8} ${x+10} ${y+10} ${x+6} ${y+6} C${x+8} ${y-2} ${x} ${y-8} ${x-10} ${y-8} Z" fill="#F2C230" stroke="${OUT}" stroke-width="1.2"/>`+
+           `<ellipse cx="${x+2}" cy="${y+1}" rx="2.6" ry="3.2" fill="${SKIN}" stroke="${OUT}"/><path d="M${x-7} ${y+1} q1.5 2 3 0" fill="none" stroke="${OUT}" stroke-width="1.3"/><path d="M${x-12} ${y+4} l-1 3 l3 0" fill="none" stroke="${SKIN_D}" stroke-width="1.3"/>`+
+           (offen ? `<ellipse cx="${x-8}" cy="${y+10}" rx="3" ry="2" fill="#8A2A2A" stroke="${OUT}" stroke-width=".8"/>` : `<path d="M${x-10} ${y+9} q3 1 5 0" fill="none" stroke="#B5524F" stroke-width="1.4"/>`);
+    }
+    return k;
+  };
+  const rumpf = (x,y,w,h) => `<path d="M${x} ${y+8} C${x} ${y} ${x+6} ${y} ${x+14} ${y} L${x+w-12} ${y} C${x+w-2} ${y} ${x+w} ${y+6} ${x+w} ${y+h/2} C${x+w} ${y+h-6} ${x+w-2} ${y+h} ${x+w-12} ${y+h} L${x+14} ${y+h} C${x+6} ${y+h} ${x} ${y+h} ${x} ${y+h-8} Z" fill="${SHIRT}" stroke="${OUT}" stroke-width="1.5"/>`+
+    `<path d="M${x+w-4} ${y+h/2-9} L${x+w-12} ${y+h/2} L${x+w-4} ${y+h/2+9}" fill="none" stroke="${SHIRT_D}" stroke-width="1.6"/>`+
+    `<path d="M${x+8} ${y+3} L${x+8} ${y+h-3}" stroke="#3B2F2A" stroke-width="4"/><rect x="${x+5.5}" y="${y+h/2-3}" width="5" height="6" fill="#D9B64A"/>`+
+    `<path d="M${x-6} ${y+4} C${x-2} ${y} ${x+4} ${y} ${x+6} ${y+4} L${x+6} ${y+h-4} C${x+4} ${y+h} ${x-2} ${y+h} ${x-6} ${y+h-4} Z" fill="${JEANS}" stroke="${OUT}" stroke-width="1.2"/>`;
+  const pfeil = d => `<path d="${d}" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity=".5"/><path d="${d}" fill="none" stroke="#FF4A3F" stroke-width="4" stroke-linecap="round"/>`;
+  const spitze = (x,y,a) => `<path d="M0 0 L-11 -7 L-11 7 Z" fill="#FF4A3F" transform="translate(${x} ${y}) rotate(${a})"/>`;
+  // Helferin: kniet unten, Warnweste, Zopf, Arme mit Handschuhen zu den Griffpunkten
+  const helferin = (hx, ziele) => {
+    const GL = "#C9CED6", SY = 166;
+    const arme = ziele.map(([x,y]) => { const sx = hx + (x < hx ? -15 : 15), ex = (sx + x)/2 + (x < hx ? -10 : 10), ey = (SY + y)/2 + 6;
+      return L([[sx,SY],[ex,ey],[x,y]], 7, "#F4F0E8") + `<circle cx="${x}" cy="${y}" r="5.5" fill="${GL}" stroke="${OUT}" stroke-width="1.2"/>`; }).join("");
+    return `<g><path d="M${hx-28} 200 C${hx-28} 176 ${hx-16} 160 ${hx} 160 C${hx+16} 160 ${hx+28} 176 ${hx+28} 200 Z" fill="#FF9F1C" stroke="${OUT}" stroke-width="1.5"/>
+      <path d="M${hx-26} 184 L${hx+26} 184" stroke="#F4F7FA" stroke-width="3.5"/><path d="M${hx-11} 162 L${hx-11} 200 M${hx+11} 162 L${hx+11} 200" stroke="#F4F7FA" stroke-width="2.5"/>
+      <circle cx="${hx}" cy="182" r="11" fill="#8A5A36" stroke="${OUT}" stroke-width="1.2"/><path d="M${hx+8} 188 q12 2 14 -8" fill="none" stroke="#8A5A36" stroke-width="5" stroke-linecap="round"/><circle cx="${hx+9}" cy="187" r="2.5" fill="#FF4A3F"/>
+      ${arme}</g>`;
+  };
   let p = "", helfer = "";
-  // Kopf: [x,y], liegend auf der Seite ab Schritt 4
-  const kopf = (x,y,seite,offen) => `<circle cx="${x}" cy="${y}" r="13" fill="${SKIN}" stroke="#2A2F3D" stroke-width="1.5"/>`+
-    (seite ? `<path d="M${x-8} ${y-11} C${x+4} ${y-16} ${x+16} ${y-6} ${x+13} ${y+4}" fill="none" stroke="#F2C230" stroke-width="7"/><circle cx="${x+1}" cy="${y+3}" r="1.6" fill="#2A2F3D"/>` : `<path d="M${x+2} ${y-12} C${x+14} ${y-10} ${x+14} ${y+10} ${x+2} ${y+12}" fill="none" stroke="#F2C230" stroke-width="7"/><circle cx="${x-4}" cy="${y-4}" r="1.6" fill="#2A2F3D"/><circle cx="${x-4}" cy="${y+4}" r="1.6" fill="#2A2F3D"/>`)+
-    (offen ? `<ellipse cx="${x-6}" cy="${y+9}" rx="3" ry="2" fill="#8A2A2A"/>` : "");
   if(n <= 3){
-    // Rückenlage
-    const fernArm = n === 1 ? [[150,84],[110,80]] : [[150,84],[128,104],[160,114]];
-    const nahArm = [[150,118],[150,146],[174,146]];
-    const fernBein = n === 3 ? [[98,92],[66,72],[60,100]] : [[98,92],[30,90]];
-    p = L(fernBein, 13, JEANS) + (n===3?`<ellipse cx="57" cy="103" rx="8" ry="5" fill="${SHOE}"/>`:`<ellipse cx="24" cy="90" rx="5" ry="8" fill="${SHOE}"/>`) +
-        L([[98,108],[30,110]], 13, JEANS) + `<ellipse cx="24" cy="110" rx="5" ry="8" fill="${SHOE}"/>` +
-        L(nahArm, 8, SHIRT) + `<circle cx="${nahArm[2][0]+4}" cy="${nahArm[2][1]}" r="5" fill="${SKIN}" stroke="#2A2F3D"/>` +
-        `<rect x="92" y="78" width="66" height="44" rx="14" fill="${SHIRT}" stroke="#2A2F3D" stroke-width="1.5"/>` +
-        kopf(172,100,false,false) +
-        L(fernArm, 8, SHIRT) + `<circle cx="${fernArm[fernArm.length-1][0]+ (n===1?-4:3)}" cy="${fernArm[fernArm.length-1][1]}" r="5" fill="${SKIN}" stroke="#2A2F3D"/>`;
-    if(n===1) p += pfeil("M140 154 Q156 162 168 154") + spitze(170,152,-30);
-    if(n===2) p += pfeil("M118 72 Q100 96 126 112") + spitze(128,113,25);
-    if(n===3) p += pfeil("M86 64 Q70 52 58 62") + spitze(56,64,140);
-    helfer = `<g><ellipse cx="${n===3?84:140}" cy="174" rx="26" ry="12" fill="#FF9F1C" stroke="#2A2F3D" stroke-width="1.5"/><circle cx="${n===3?84:140}" cy="182" r="10" fill="#7A4A2A"/></g>`;
+    const fernArm = n === 1 ? [[146,80],[126,74],[106,74]] : [[146,80],[128,98],[156,112]];
+    const fernHand = n === 1 ? hand(104,74,180) : hand(160,112,10);
+    const nahArm = [[146,120],[148,146],[170,147]];
+    p += n===3 ? L([[94,92],[66,72],[60,98]], 13, JEANS, JEANS_D) + schuh(60,104,90) : L([[94,92],[34,90]], 13, JEANS, JEANS_D) + schuh(26,90,180);
+    p += L([[94,108],[34,110]], 13, JEANS, JEANS_D) + schuh(26,110,180);
+    p += L(nahArm, 9, SHIRT) + hand(172,147,0);
+    p += rumpf(92,78,62,44) + kopf(170,100,false,false);
+    p += L(fernArm, 9, SHIRT) + fernHand;
+    if(n===1){ p += pfeil("M128 162 Q150 172 168 160") + spitze(170,158,-35); helfer = helferin(140,[[150,146],[170,150]]); }
+    if(n===2){ p += pfeil("M118 66 Q96 96 128 116") + spitze(131,117,20); helfer = helferin(150,[[160,116],[134,102]]); }
+    if(n===3){ p += pfeil("M92 60 Q72 46 58 58") + spitze(56,60,140); helfer = helferin(74,[[66,78],[88,92]]); }
   } else {
-    // Seitenlage (auf der Seite zur Helferin hin)
     const offen = n >= 5;
-    p = L([[98,100],[30,100]], 12, JEANS) + `<ellipse cx="24" cy="100" rx="5" ry="8" fill="${SHOE}"/>` +
-        L([[150,114],[150,142],[178,142]], 8, SHIRT) + `<circle cx="182" cy="142" r="5" fill="${SKIN}" stroke="#2A2F3D"/>` +
-        L([[98,110],[82,140],[50,140]], 13, JEANS) + `<ellipse cx="44" cy="140" rx="8" ry="5" fill="${SHOE}"/>` +
-        `<rect x="92" y="88" width="66" height="30" rx="12" fill="${SHIRT}" stroke="#2A2F3D" stroke-width="1.5"/>` +
-        L([[150,112],[132,132],[offen?168:160,offen?118:114]], 8, SHIRT) + `<circle cx="${offen?170:162}" cy="${offen?116:114}" r="5" fill="${SKIN}" stroke="#2A2F3D"/>` +
-        kopf(offen?176:172, offen?108:104, true, offen);
-    if(n===4) p += pfeil("M120 60 Q150 70 140 82") + spitze(139,84,100) + `<path d="M74 150 l8 -10 l8 10" fill="none" stroke="#4FC38A" stroke-width="3"/>`;
-    if(n===5) p += pfeil("M190 128 Q206 112 196 90") + spitze(195,88,-100);
-    if(n===6) p += `<rect x="14" y="34" width="34" height="48" rx="6" fill="#E9EDF5"/><rect x="18" y="40" width="26" height="32" rx="3" fill="#C8261C"/>${T(31,61,"112","#FFF",11)}`+
-      `<path d="M196 100 q8 -6 0 -12 q-8 -6 0 -12" fill="none" stroke="#9FD8FF" stroke-width="3"/>${T(194,56,"Atmung","#9FD8FF",11)}`;
-    if(n < 6) helfer = `<g><ellipse cx="130" cy="174" rx="26" ry="12" fill="#FF9F1C" stroke="#2A2F3D" stroke-width="1.5"/><circle cx="130" cy="182" r="10" fill="#7A4A2A"/></g>`;
+    p += L([[94,100],[34,100]], 12, JEANS, JEANS_D) + schuh(26,100,180);
+    p += L([[146,114],[150,142],[178,142]], 9, SHIRT) + hand(180,142,0);
+    p += L([[94,110],[80,140],[50,140]], 13, JEANS, JEANS_D) + schuh(42,140,180);
+    p += rumpf(92,88,60,30);
+    p += L([[146,110],[132,128],[offen?166:160,offen?120:116]], 9, SHIRT) + hand(offen?168:162,offen?120:116,-20);
+    p += kopf(offen?176:172, offen?106:102, true, offen);
+    if(n===4){ p += pfeil("M118 58 Q150 64 140 80") + spitze(139,83,100) + `<path d="M72 150 l8 -10 l8 10" fill="none" stroke="#4FC38A" stroke-width="3"/>`; helfer = helferin(104,[[84,136],[120,100]]); }
+    if(n===5){ p += pfeil("M190 128 Q208 112 196 88") + spitze(195,86,-100); helfer = helferin(160,[[186,98],[170,122]]); }
+    if(n===6){ p += `<rect x="14" y="36" width="32" height="50" rx="6" fill="#E9EDF5" stroke="${OUT}"/><rect x="18" y="42" width="24" height="34" rx="3" fill="#C8261C"/>${T(30,63,"112","#FFF",10)}`+
+      `<path d="M196 98 q8 -6 0 -12 q-8 -6 0 -12" fill="none" stroke="#9FD8FF" stroke-width="3"/>${T(194,56,"Atmung","#9FD8FF",11)}`+
+      `${T(96,186,"zudecken · dableiben","#BFE6C8",11)}`; }
   }
   const TXT = ["","Nahen Arm nach oben legen","Fernen Arm zur Wange","Fernes Bein aufstellen","Zu dir herüberdrehen","Kopf überstrecken","112 · Atmung prüfen"];
-  return svgBox("0 0 220 200", `${BG()}<rect x="6" y="20" width="208" height="150" rx="12" fill="#3B4253"/>${helfer}${p}
+  return svgBox("0 0 220 200", `${BG()}<rect x="6" y="40" width="208" height="128" rx="12" fill="#3B4253"/>${p}${helfer}
     <circle cx="22" cy="22" r="15" fill="#FFE08A"/>${T(22,28,n,"#1E2430",17)}${T(130,28,TXT[n],"#FFE08A",12.5)}`);
 }
+const FOTO = (n, alt) => `<img class="lnbild" src="erstehilfe-bilder/${n}.webp" alt="${alt||""}">`;
 /* =========================================================
    Inhalte
    ========================================================= */
@@ -192,45 +224,48 @@ const LERNEN = {
     {bild:ICON.telefon, titel:"Notruf 112", text:"Unter **112** erreichst du **Rettungsdienst und Feuerwehr** – kostenlos, mit jedem Handy, auch ohne Guthaben und in ganz Europa. Die **110** ist die **Polizei**."},
     {bild:ICON.wfragen, titel:"Die 5 W-Fragen", text:"**Wo** ist es passiert? **Was** ist passiert? **Wie viele** Verletzte? **Welche** Verletzungen? **Warten** auf Rückfragen – **nicht** selbst auflegen! Keine Angst: Die Leitstelle fragt nach und hilft dir."},
     {bild:ICON.seitenlage, titel:"Bewusstlos – atmet aber", text:"Laut ansprechen, an den Schultern rütteln. Reagiert die Person nicht, aber **atmet normal**: **stabile Seitenlage**, **Notruf 112**, Atmung immer wieder kontrollieren, zudecken."},
-    {bild:seitenlage(1), titel:"Stabile Seitenlage 1/6", text:"Knie dich **neben** die Person und strecke ihre Beine. Lege den **Arm, der dir am nächsten ist**, angewinkelt **nach oben** – die Handfläche zeigt nach oben."},
-    {bild:seitenlage(2), titel:"Stabile Seitenlage 2/6", text:"Greife den **anderen Arm** und lege ihn **über die Brust**. Halte den **Handrücken an ihre Wange** (auf deiner Seite) und lass die Hand dort."},
-    {bild:seitenlage(3), titel:"Stabile Seitenlage 3/6", text:"Fasse das **ferne Bein** am Oberschenkel und **beuge es**, sodass der Fuß auf dem Boden steht."},
-    {bild:seitenlage(4), titel:"Stabile Seitenlage 4/6", text:"Ziehe am gebeugten Bein und **drehe die Person zu dir herüber**. Lege das obere Bein so, dass **Hüfte und Knie rechtwinklig** gebeugt sind."},
-    {bild:seitenlage(5), titel:"Stabile Seitenlage 5/6", text:"**Kopf nach hinten überstrecken** und den **Mund leicht öffnen**, damit Blut oder Erbrochenes abfließen kann. Die Hand unter der Wange hält den Kopf in dieser Lage."},
-    {bild:seitenlage(6), titel:"Stabile Seitenlage 6/6", text:"**Notruf 112** (falls noch nicht geschehen), die Person **zudecken** und **bei ihr bleiben**. Kontrolliere die **Atmung** immer wieder."},
+    {bild:FOTO("seitenlage-1","Stabile Seitenlage Schritt 1"), titel:"Stabile Seitenlage 1/6", text:"Knie dich **neben** die Person und strecke ihre Beine. Lege den **Arm, der dir am nächsten ist**, angewinkelt **nach oben** – die Handfläche zeigt nach oben."},
+    {bild:FOTO("seitenlage-2","Stabile Seitenlage Schritt 2"), titel:"Stabile Seitenlage 2/6", text:"Greife den **anderen Arm** und lege ihn **über die Brust**. Halte den **Handrücken an ihre Wange** (auf deiner Seite) und lass die Hand dort."},
+    {bild:FOTO("seitenlage-3","Stabile Seitenlage Schritt 3"), titel:"Stabile Seitenlage 3/6", text:"Fasse das **ferne Bein** am Oberschenkel und **beuge es**, sodass der Fuß auf dem Boden steht."},
+    {bild:FOTO("seitenlage-4","Stabile Seitenlage Schritt 4"), titel:"Stabile Seitenlage 4/6", text:"Fasse **Knie und Schulter** und **drehe die Person zu dir herüber**. Lege das obere Bein so, dass **Hüfte und Knie rechtwinklig** gebeugt sind."},
+    {bild:FOTO("seitenlage-5","Stabile Seitenlage Schritt 5"), titel:"Stabile Seitenlage 5/6", text:"**Kopf nach hinten überstrecken** und den **Mund leicht öffnen**, damit Blut oder Erbrochenes abfließen kann. Die Hand unter der Wange hält den Kopf in dieser Lage."},
+    {bild:FOTO("seitenlage-6","Stabile Seitenlage Schritt 6"), titel:"Stabile Seitenlage 6/6", text:"**Notruf 112** (falls noch nicht geschehen), die Person **zudecken** und **bei ihr bleiben**. Kontrolliere die **Atmung** immer wieder."},
     {bild:ICON.herz, titel:"Keine normale Atmung", text:"**Prüfen:** laut ansprechen, an den Schultern rütteln. Keine Reaktion? Kopf überstrecken und **höchstens 10 Sekunden** schauen, hören, fühlen: Hebt sich der Brustkorb? Seltenes **Schnappen** ist **keine** normale Atmung. **Rufen:** **112**, Handy auf **Lautsprecher**, den Anweisungen folgen. **Drücken:** Handballen übereinander auf die **Mitte des Brustkorbs**, Arme gestreckt, **5–6 cm tief**, **100- bis 120-mal pro Minute** – nicht aufhören, bis Hilfe übernimmt. Ist ein **Defibrillator (AED)** da: einschalten und den Ansagen folgen."},
     {bild:ICON.arzt, titel:"Helfen ist Pflicht", text:"Jeder muss im Notfall helfen, so gut er kann. Mindestens: **Notruf absetzen** und beim Verletzten bleiben. Der einzige echte Fehler ist: **gar nichts tun**."}
   ]},
   pech: { titel:"Die PECH-Regel", folien:[
     {bild:ICON.pech, titel:"PECH bei Sportverletzungen", text:"Bei **Prellung, Zerrung, Verstauchung** und anderen stumpfen Verletzungen gilt: **P**ause – **E**is – **C**ompression – **H**ochlagern. Und zwar **sofort**!"},
     {bild:ICON.pause, titel:"P wie Pause", text:"**Sofort aufhören** – nicht „auf die Zähne beißen“ und weiterspielen. Den verletzten Körperteil **ruhig stellen** und nicht belasten."},
-    {bild:ICON.eis, titel:"E wie Eis", text:"**Kühlen** bremst die Schwellung und lindert den Schmerz. Kühlpack oder Eis **immer in ein Tuch** wickeln – **nie direkt auf die Haut** (Kälteschäden!). Etwa **10 Minuten** kühlen, Pause, dann wieder. Unterwegs hilft ein nasses, kaltes Tuch."},
+    {bild:FOTO("kuehlen","Kühlpack im Tuch"), titel:"E wie Eis", text:"**Kühlen** bremst die Schwellung und lindert den Schmerz. Kühlpack oder Eis **immer in ein Tuch** wickeln – **nie direkt auf die Haut** (Kälteschäden!). Etwa **10 Minuten** kühlen, Pause, dann wieder. Unterwegs hilft ein nasses, kaltes Tuch."},
     {bild:ICON.verband, titel:"C wie Compression", text:"Ein **Druckverband** oder eine elastische Binde verhindert, dass es noch mehr anschwillt. **Fest, aber nicht abschnüren:** Finger oder Zehen müssen warm und rosig bleiben."},
-    {bild:ICON.hoch, titel:"H wie Hochlagern", text:"Das verletzte Bein oder den Arm **hoch lagern, am besten über Herzhöhe**. So fließen Blut und Gewebeflüssigkeit besser ab, es schwillt weniger an."},
+    {bild:FOTO("hochlagern","Bein über Herzhöhe hochgelagert"), titel:"H wie Hochlagern", text:"Das verletzte Bein oder den Arm **hoch lagern, am besten über Herzhöhe**. So fließen Blut und Gewebeflüssigkeit besser ab, es schwillt weniger an."},
     {bild:ICON.arzt, titel:"Danach: abklären lassen", text:"PECH ist die **erste Hilfe**, keine Heilung. Ob ein Band gerissen oder ein Knochen gebrochen ist, sieht nur der **Arzt**. Tipp: Sportmediziner empfehlen heute, nach den ersten Tagen **wieder vorsichtig zu bewegen** statt lange zu schonen."}
   ]},
   wunden: { titel:"Typische Fälle im Sport", folien:[
     {bild:ICON.pflaster, titel:"Schürfwunde", text:"**Einmalhandschuhe** anziehen. Schmutz mit **sauberem Wasser** ausspülen, dann **keimfrei abdecken** (Pflaster oder Wundauflage). Nicht pusten, keine Hausmittel."},
-    {bild:ICON.nase, titel:"Nasenbluten", text:"Hinsetzen, **Kopf nach vorne** beugen (nicht nach hinten – sonst läuft Blut in den Magen). **Nasenflügel** einige Minuten **zusammendrücken**, **kaltes Tuch in den Nacken**."},
+    {bild:FOTO("druckverband-1","Wundauflage und Binde"), titel:"Starke Blutung: Druckverband 1/3", text:"**Einmalhandschuhe** an. Eine **keimfreie Wundauflage** auf die Wunde legen und mit **zwei, drei Bindengängen** festwickeln. Den verletzten Arm dabei **hochhalten**."},
+    {bild:FOTO("druckverband-2","Druckpolster"), titel:"Starke Blutung: Druckverband 2/3", text:"Ein **Druckpolster** – z. B. ein noch verpacktes Verbandpäckchen – genau **auf die Wunde** legen."},
+    {bild:FOTO("druckverband-3","Fertiger Druckverband"), titel:"Starke Blutung: Druckverband 3/3", text:"Die Binde **fest über das Polster** wickeln und das Ende befestigen. **Nicht abschnüren**: Die Finger bleiben warm und rosig. Blutet es durch: ein **zweites Polster** darüber wickeln. **Notruf 112!**"},
+    {bild:FOTO("nasenbluten","Nasenbluten: Kopf nach vorn"), titel:"Nasenbluten", text:"Hinsetzen, **Kopf nach vorne** beugen (nicht nach hinten – sonst läuft Blut in den Magen). **Nasenflügel** einige Minuten **zusammendrücken**, **kaltes Tuch in den Nacken**."},
     {bild:ICON.bruch, titel:"Knochenbruch", text:"Fehlstellung, starker Schmerz, Schwellung? **Nicht bewegen**, **nicht geraderichten**, so lagern wie vorgefunden und **ruhig stellen** (z. B. mit Kleidung polstern). **Notruf 112**. Bei einem **offenen Bruch** die Wunde **keimfrei abdecken**."},
-    {bild:ICON.kopf, titel:"Kopfverletzung", text:"Nach einem Schlag auf den Kopf: Ist jemandem **schwindelig, übel**, hat er **Kopfschmerzen** oder war kurz weg? → Verdacht auf **Gehirnerschütterung**. **Sofort raus aus dem Spiel**, nicht allein lassen, **Arzt**. Bei Bewusstlosigkeit oder Erbrechen: **112**."},
-    {bild:ICON.eis, titel:"Umgeknickt", text:"Klassischer Fall für die **PECH-Regel**: Pause, kühlen (im Tuch), Druckverband, hochlagern. Kann man **nicht auftreten** oder ist es stark geschwollen: zum Arzt."},
+    {bild:FOTO("kopf","Kopfverletzung"), titel:"Kopfverletzung", text:"Nach einem Schlag auf den Kopf: Ist jemandem **schwindelig, übel**, hat er **Kopfschmerzen** oder war kurz weg? → Verdacht auf **Gehirnerschütterung**. **Sofort raus aus dem Spiel**, nicht allein lassen, **Arzt**. Bei Bewusstlosigkeit oder Erbrechen: **112**."},
+    {bild:FOTO("kuehlen","Kühlpack im Tuch"), titel:"Umgeknickt", text:"Klassischer Fall für die **PECH-Regel**: Pause, kühlen (im Tuch), Druckverband, hochlagern. Kann man **nicht auftreten** oder ist es stark geschwollen: zum Arzt."},
     {bild:ICON.sicher, titel:"Nie selbst einrenken!", text:"Eine **ausgekugelte Schulter** oder einen verrenkten Finger **nie selbst einrenken** – dabei können Nerven, Gefäße und Knochen verletzt werden. Ruhig stellen, ab zum Arzt."}
   ]},
   vorbeugen: { titel:"Vorbeugen", folien:[
     {bild:ICON.warm, titel:"Aufwärmen", text:"**Mindestens 10 Minuten** aufwärmen macht Muskeln, Sehnen und Bänder belastbarer. Danach direkt in den Sport übergehen."},
-    {bild:ICON.schutz, titel:"Ausrüstung", text:"**Passende Schuhe** (Hallenschuhe in der Halle!), **Schienbeinschoner**, **Helm**, Handgelenkschoner – je nach Sportart. Kaputte Geräte nicht benutzen, sondern melden."},
-    {bild:ICON.schmuck, titel:"Schmuck ab", text:"**Ringe, Ketten, Ohrringe, Uhren** und Piercings ablegen oder abkleben. Lange Haare zusammenbinden. Brille nur als Sportbrille. So bleibt niemand hängen."},
+    {bild:FOTO("ausruestung","Schutzausrüstung"), titel:"Ausrüstung", text:"**Passende Schuhe** (Hallenschuhe in der Halle!), **Schienbeinschoner**, **Helm**, Handgelenkschoner – je nach Sportart. Kaputte Geräte nicht benutzen, sondern melden."},
+    {bild:FOTO("schmuck","Schmuck ablegen"), titel:"Schmuck ab", text:"**Ringe, Ketten, Ohrringe, Uhren** und Piercings ablegen oder abkleben. Lange Haare zusammenbinden. Brille nur als Sportbrille. So bleibt niemand hängen."},
     {bild:ICON.steigern, titel:"Clever trainieren", text:"Training **langsam steigern**, **Pausen** machen, **Technik** üben, genug **trinken** und **schlafen**. Verletzungen **richtig ausheilen** lassen, bevor man wieder voll einsteigt."},
-    {bild:ICON.sicher, titel:"Regeln & Fairness", text:"Viele Verletzungen entstehen durch **Fouls** und Rücksichtslosigkeit. **Regeln einhalten**, **fair spielen** und auf andere achten schützt alle."}
+    {bild:FOTO("fairplay","Fair Play"), titel:"Regeln & Fairness", text:"Viele Verletzungen entstehen durch **Fouls** und Rücksichtslosigkeit. **Regeln einhalten**, **fair spielen** und auf andere achten schützt alle."}
   ]},
   reime: { titel:"Merk-Reime", folien:[
     {bild:ICON.telefon, titel:"Notruf", text:"**„Eins-eins-zwei, die Hilfe eilt herbei.“**"},
     {bild:ICON.wfragen, titel:"Nicht auflegen", text:"**„Fünf W sag an, Warten ist dann dran.“**"},
     {bild:ICON.pech, titel:"PECH", text:"**„Hast du beim Sport mal Pech, dann denk an P-E-C-H!“**"},
-    {bild:ICON.eis, titel:"Kühlen", text:"**„Eis nie pur auf die Haut, sonst ist sie bald verhaut.“**"},
-    {bild:ICON.nase, titel:"Nasenbluten", text:"**„Blutet die Nase, schau zum Boden – Kopf nach vorn, nicht nach oben.“**"},
-    {bild:ICON.kopf, titel:"Kopf", text:"**„Kopf getroffen, Blick verschwommen? Heute wird nicht mehr gekommen!“**"}
+    {bild:FOTO("kuehlen","Kühlpack im Tuch"), titel:"Kühlen", text:"**„Eis nie pur auf die Haut, sonst ist sie bald verhaut.“**"},
+    {bild:FOTO("nasenbluten","Nasenbluten: Kopf nach vorn"), titel:"Nasenbluten", text:"**„Blutet die Nase, schau zum Boden – Kopf nach vorn, nicht nach oben.“**"},
+    {bild:FOTO("kopf","Kopfverletzung"), titel:"Kopf", text:"**„Kopf getroffen, Blick verschwommen? Heute wird nicht mehr gekommen!“**"}
   ]}
 };
 
