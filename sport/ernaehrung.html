@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1F3B2A">
+<title>Ernährungs-Lernwelt</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#F3F1E8; --surface:#FFFFFF; --surface-2:#F7F5EE; --ink:#1D2A22; --muted:#5A6459; --line:#D7D3C3;
+  --accent:#2F8A4C; --accent-ink:#FFFFFF; --accent-2:#FFC233; --mid-bg:#FFF1CC;
+  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
+  --xray:#101A33; --glow:#FFC233;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #DCD8C8; --shadow:0 3px 0 #CFCAB7; --border-opt:2px solid #DCD8C8;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#DDF1E2; --card-back:#1F3B2A; --tile-bg:#FFE9B8; --tile-ink:#1D2A22;
+  --chip-bg:#1F3B2A; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #DCD8C8;
+  --track:#E3E0D3; --star:#2F8A4C; --star-off:#DCD8C8;
+}
+body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(47,138,76,.13),transparent 42%)}
+.chip{border:0}
+.markt-hero{background:linear-gradient(160deg,#1F3B2A 0,#2F6B3F 60%,#E8A33A 150%)}
+@media (prefers-reduced-motion: no-preference){ .markt-hero .apfel{transform-box:fill-box;transform-origin:50% 100%;animation:wipp 3s ease-in-out infinite} @keyframes wipp{50%{transform:rotate(6deg)}}
+  .markt-hero .tropfen{animation:tropf 2.4s ease-in infinite} @keyframes tropf{0%{transform:translateY(-12px);opacity:0}30%{opacity:1}100%{transform:translateY(26px);opacity:0}} }
+</style>
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script>
+/* Bilder: ChatGPT-Illustrationen (sport/ernaehrung-bilder/NAME.webp), sobald vorhanden in BILDER eintragen. */
+const BILDER = new Set([]);
+const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="ernaehrung-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
+
+/* =========================================================
+   Selbst gezeichnete Schaubilder
+   ========================================================= */
+const GE = "#FFD34D", OR = "#FF9A3D", GR = "#5BE38C", RO = "#FF6B6B", BL = "#5FE9FF", HG = "#9FB0CF", LI = "#C99BFF";
+const zeile = (x, y, w, h, farbe, a, b) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#1E2C4D"/><rect x="${x}" y="${y}" width="8" height="${h}" rx="3" fill="${farbe}"/>` +
+  TX(x + 18, y + (b ? h/2 - 2 : h/2 + 5), a, {s:13.5, a:"start", c:"#FFFFFF"}) + (b ? TX(x + 18, y + h/2 + 14, b, {s:11, a:"start", c:HG, w:600}) : "");
+const wuerfel = (x, y, n, gr=13) => [...Array(n)].map((_,k) => `<rect x="${x + (k % 9) * (gr + 3)}" y="${y + Math.floor(k / 9) * (gr + 3)}" width="${gr}" height="${gr}" rx="2.5" fill="#FFFFFF" stroke="#C9D4E6" stroke-width="1.2"/>`).join("");
+
+// Ernährungspyramide (eigene Darstellung, angelehnt an die 6 Stufen des BZfE) – als Infokarte oder Antipp-Schaubild
+const STUFEN = [["getraenke","Getränke",GR,"reichlich"],["gemuese","Gemüse & Obst",GR,"reichlich"],["getreide","Brot, Getreide, Kartoffeln",GR,"reichlich"],
+  ["milch","Milchprodukte, Fleisch, Fisch, Ei",GE,"mäßig"],["fette","Öle & Fette",GE,"mäßig"],["suesses","Süßes & Knabbereien",RO,"sparsam"]];
+function pyramide(fig){
+  const H = 54, B = [372, 320, 268, 236, 172, 156];
+  let s = TX(200, 30, "Die Ernährungspyramide", {s:17, c:GE});
+  STUFEN.forEach(([id,t,c,m],k) => { const w = B[k] - k*0 , y = 372 - (k+1)*H, x = 200 - w/2;
+    const g = `<rect x="${x}" y="${y}" width="${w}" height="${H - 5}" rx="8" fill="${c}" opacity=".92"/>` + TX(26 + 0, y + 30, k + 1, {s:15, c:"#FFFFFF", a:"start"}) + TX(200, y + 23, t, {s:k === 3 ? 13 : 14.5, c:"#13201A"}) + TX(200, y + 40, m, {s:11.5, c:"#13201A", w:600});
+    s += fig ? `<g data-z="${id}"><rect class="zr" x="${x - 4}" y="${y - 3}" width="${w + 8}" height="${H + 1}" rx="10"/>${g}</g>` : g; });
+  s += TX(200, 398, "grün = reichlich · gelb = mäßig · rot = sparsam", {s:12.5, c:HG, w:600});
+  return `<svg class="${fig ? "bz" : "lnsvg"}" viewBox="0 0 400 412" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ernährungspyramide"><rect width="400" height="412" rx="22" fill="#101A33"/>${s}</svg>`;
+}
+FIG.pyramide = () => pyramide(true);
+
+const ICON = {
+  umsatz: KARTE(380, 240, TX(190, 30, "Wofür braucht der Körper Energie?", {s:16.5, c:GE}) +
+    `<rect x="30" y="54" width="150" height="150" rx="14" fill="#1E2C4D" stroke="${BL}" stroke-width="3"/><rect x="200" y="54" width="150" height="150" rx="14" fill="#1E2C4D" stroke="${OR}" stroke-width="3"/>` +
+    TX(105, 82, "Grundumsatz", {s:16, c:BL}) + TX(105, 100, "in völliger Ruhe", {s:11.5, c:HG, w:600}) + TX(105, 128, "Herz & Atmung", {s:13, c:"#FFFFFF"}) + TX(105, 150, "Gehirn", {s:13, c:"#FFFFFF"}) + TX(105, 172, "Temperatur 37 °C", {s:13, c:"#FFFFFF"}) + TX(105, 194, "– auch im Schlaf", {s:11.5, c:HG, w:600}) +
+    TX(275, 82, "Leistungsumsatz", {s:16, c:OR}) + TX(275, 100, "zusätzlich für Bewegung", {s:11.5, c:HG, w:600}) + TX(275, 128, "Rad fahren", {s:13, c:"#FFFFFF"}) + TX(275, 150, "Treppen steigen", {s:13, c:"#FFFFFF"}) + TX(275, 172, "Training & Spiel", {s:13, c:"#FFFFFF"}) +
+    TX(190, 228, "Gesamt = Grundumsatz + Leistungsumsatz", {s:13, c:GE})),
+  gehirn: KARTE(320, 230, `<circle cx="110" cy="118" r="70" fill="#2A3E69"/><path d="M110 118 L110 48 A70 70 0 0 1 176.6 96.4 Z" fill="${LI}"/>` +
+    TX(150, 84, "ca. 20 %", {s:13, c:"#101A33"}) + TX(240, 96, "Das Gehirn", {s:16, c:LI}) + TX(240, 118, "braucht etwa", {s:13, c:"#FFFFFF", w:600}) + TX(240, 140, "ein Fünftel", {s:16, c:"#FFFFFF"}) + TX(240, 160, "der Ruhe-Energie", {s:13, c:"#FFFFFF", w:600}) +
+    TX(160, 214, "Energie brauchst du sogar im Schlaf.", {s:13.5, c:HG, w:600})),
+  etikett: KARTE(380, 250, `<rect x="24" y="22" width="200" height="206" rx="8" fill="#FFFFFF"/>` + TX(124, 46, "Nährwerte pro 100 g", {s:13.5, c:"#13201A"}) +
+    [["Energie","1 680 kJ / 400 kcal"],["Kohlenhydrate","60 g"],["– davon Zucker","28 g"],["Fett","14 g"],["Eiweiß","7 g"]].map(([a,b],k) =>
+      `<line x1="32" y1="${58 + k*32}" x2="216" y2="${58 + k*32}" stroke="#13201A" stroke-width="${k ? 1 : 2.5}"/>` + TX(34, 80 + k*32, a, {s:12, a:"start", c:"#13201A", w:k === 2 ? 600 : 700}) + TX(214, 80 + k*32, b, {s:12, a:"end", c:"#13201A"})).join("") +
+    TX(124, 222, "Müsliriegel · 1 Riegel = 25 g", {s:11.5, c:"#3B4A40", w:600}) +
+    TX(300, 70, "1 Riegel", {s:15, c:GE}) + TX(300, 92, "= 25 g = ¼ von 100 g", {s:11.5, c:HG, w:600}) + TX(300, 124, "100 kcal", {s:17, c:"#FFFFFF"}) + TX(300, 152, "7 g Zucker", {s:17, c:"#FFFFFF"}) + TX(300, 178, "≈ 2 Zuckerwürfel", {s:13, c:HG, w:600}) +
+    wuerfel(282, 192, 2, 16)),
+  kj: KARTE(340, 200, TX(170, 34, "Energie wird angegeben in …", {s:16, c:GE}) + SCHILD(26, 58, 130, 56, "kJ|Kilojoule", {s:17, c:"#FFFFFF"}) + SCHILD(184, 58, 130, 56, "kcal|Kilokalorien", {s:17, c:"#FFFFFF"}) +
+    TX(170, 148, "1 kcal ≈ 4,2 kJ", {s:22, c:GR}) + TX(170, 178, "1 680 kJ : 400 kcal = 4,2", {s:13, c:HG, w:600})),
+  ranking: KARTE(380, 260, TX(190, 28, "Energie pro Stunde: von wenig bis viel", {s:15.5, c:GE}) +
+    [["schlafen",14],["Hausaufgaben",20],["zügig spazieren",44],["Volleyball im Unterricht",58],["Fußballspiel",84],["zügig joggen",94]].map(([t,w],k) => { const y = 44 + k*34;
+      return TX(18, y + 20, k + 1, {s:14, a:"start", c:HG}) + `<rect x="36" y="${y + 4}" width="${w*3.2}" height="24" rx="7" fill="${["#2E6FB0","#3E86C8","#4FA36A","#E0B03A",OR,RO][k]}"/>` + TX(44, y + 21, t, {s:12.5, a:"start", c:"#FFFFFF"}); }).join("") +
+    TX(190, 252, "Fußball & Joggen: je nach Tempo austauschbar", {s:11.5, c:HG, w:600})),
+  waage: KARTE(380, 240, TX(190, 30, "Die Energiebilanz", {s:17, c:GE}) +
+    `<path d="M190 70 L190 196" stroke="#C9D4E6" stroke-width="6"/><path d="M160 206 h60" stroke="#C9D4E6" stroke-width="8" stroke-linecap="round"/><path d="M70 78 L310 78" stroke="#C9D4E6" stroke-width="6" stroke-linecap="round"/><circle cx="190" cy="74" r="8" fill="${GE}"/>` +
+    `<path d="M70 78 L40 132 M70 78 L100 132 M310 78 L280 132 M310 78 L340 132" stroke="#9FB0CF" stroke-width="2"/><path d="M34 132 h72 a36 18 0 0 1 -72 0z" fill="${GR}"/><path d="M274 132 h72 a36 18 0 0 1 -72 0z" fill="${OR}"/>` +
+    TX(70, 172, "Zufuhr", {s:15, c:GR}) + TX(70, 190, "Essen & Trinken", {s:11.5, c:HG, w:600}) + TX(310, 172, "Verbrauch", {s:15, c:OR}) + TX(310, 190, "Grund- + Leistungsumsatz", {s:11, c:HG, w:600}) +
+    TX(190, 230, "Hunger und Sättigung zeigen, was du brauchst.", {s:12.5, c:"#FFFFFF", w:600})),
+  zuwenig: KARTE(380, 236, TX(190, 28, "Wer zu wenig isst …", {s:16.5, c:GE}) +
+    [["ist ständig müde",RO],["Leistung sinkt",OR],["Konzentration schlechter",GE],["öfter krank",LI],["mehr Verletzungen",BL],["Wachstum gestört",GR]].map(([t,c],k) =>
+      zeile(k % 2 ? 196 : 16, 44 + Math.floor(k/2)*62, 168, 52, c, t)).join("")),
+  naehrstoffe: KARTE(380, 250, TX(190, 28, "Die Nährstoffe und ihre Aufgabe", {s:16, c:GE}) +
+    [["Kohlenhydrate","schnelle Energie",OR],["Eiweiß","Baustoff: Muskeln, Zellen",RO],["Fett","Energiespeicher",GE],["Vitamine","Abwehr, Stoffwechsel",GR],["Mineralstoffe","Knochen, Muskeln, Nerven",LI],["Wasser","Transport, Kühlung",BL]].map(([a,b,c],k) =>
+      zeile(k % 2 ? 196 : 16, 42 + Math.floor(k/2)*68, 168, 58, c, a, b)).join("")),
+  teller: KARTE(340, 230, `<circle cx="120" cy="118" r="84" fill="#F4F1E8"/><circle cx="120" cy="118" r="68" fill="#FFFFFF" stroke="#E1DCCB" stroke-width="2"/>` +
+    `<path d="M120 118 L120 50 A68 68 0 0 1 186 136 Z" fill="#E9C46A"/><path d="M120 118 L186 136 A68 68 0 0 1 70 164 Z" fill="#F4A3A3"/><path d="M120 118 L70 164 A68 68 0 0 1 120 50 Z" fill="#8FD18F"/>` +
+    TX(150, 98, "KH", {s:14, c:"#13201A"}) + TX(128, 158, "Eiweiß", {s:13, c:"#13201A"}) + TX(84, 112, "Obst", {s:13, c:"#13201A"}) +
+    TX(262, 90, "Nach dem", {s:14, c:"#FFFFFF"}) + TX(262, 110, "Training:", {s:14, c:"#FFFFFF"}) + TX(262, 142, "Kohlenhydrate", {s:14, c:GE}) + TX(262, 160, "+ Eiweiß", {s:14, c:RO}) + TX(262, 190, "Speicher füllen,", {s:11.5, c:HG, w:600}) + TX(262, 206, "Muskeln reparieren", {s:11.5, c:HG, w:600})),
+  wasser: KARTE(320, 240, `<defs><clipPath id="kp"><circle cx="90" cy="52" r="22"/><rect x="58" y="78" width="64" height="86" rx="20"/><rect x="62" y="150" width="24" height="76" rx="10"/><rect x="94" y="150" width="24" height="76" rx="10"/><rect x="36" y="84" width="18" height="70" rx="9"/><rect x="126" y="84" width="18" height="70" rx="9"/></clipPath></defs>` +
+    `<g clip-path="url(#kp)"><rect x="20" y="20" width="140" height="220" fill="#2A3E69"/><rect x="20" y="108" width="140" height="130" fill="${BL}"/></g>` +
+    `<path d="M20 108 h140" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 4"/>` + TX(234, 104, "mehr als", {s:14, c:"#FFFFFF"}) + TX(234, 132, "die Hälfte", {s:20, c:BL}) + TX(234, 156, "des Körpers", {s:14, c:"#FFFFFF"}) + TX(234, 176, "ist Wasser", {s:14, c:"#FFFFFF"})),
+  urin: KARTE(380, 220, TX(190, 30, "Urin-Farbe: Habe ich genug getrunken?", {s:15.5, c:GE}) +
+    ["#FBF6C8","#F7EC9A","#F2DC64","#E7C23A","#D9A22A","#B9781C"].map((c,k) => `<rect x="${26 + k*56}" y="58" width="48" height="72" rx="10" fill="${c}"/>`).join("") +
+    `<rect x="26" y="142" width="104" height="8" rx="4" fill="${GR}"/><rect x="138" y="142" width="104" height="8" rx="4" fill="${GE}"/><rect x="250" y="142" width="104" height="8" rx="4" fill="${RO}"/>` +
+    TX(78, 172, "hell: gut so", {s:13, c:GR}) + TX(190, 172, "trinken!", {s:13, c:GE}) + TX(302, 172, "dunkel: dringend", {s:13, c:RO}) + TX(302, 188, "trinken", {s:13, c:RO}) +
+    TX(190, 208, "Weitere Signale: Durst, Kopfschmerzen, Müdigkeit, Schwindel", {s:11.4, c:HG, w:600})),
+  zucker: KARTE(400, 270, TX(200, 26, "Zuckerwürfel (je ca. 3 g) in 0,5 Liter", {s:15, c:GE}) +
+    [["Wasser",0,GR],["Schorle 1 : 3",4,GR],["Eistee",12,GE],["Apfelsaft pur",17,RO],["Cola",18,RO],["Energydrink",18,RO]].map(([t,n,c],k) => { const y = 42 + k*37;
+      return `<rect x="12" y="${y}" width="376" height="32" rx="9" fill="#1E2C4D"/>` + TX(24, y + 21, t, {s:13, a:"start", c}) +
+        [...Array(n)].map((_,j) => `<rect x="${130 + j*12.2}" y="${y + 11}" width="10" height="10" rx="2" fill="#FFFFFF"/>`).join("") + TX(378, y + 21, n, {s:13.5, a:"end", c:"#FFFFFF"}); }).join("") +
+    TX(200, 262, "Energydrink zusätzlich mit viel Koffein · gerundete Werte", {s:11.2, c:HG, w:600})),
+  trinktipps: KARTE(380, 220, TX(190, 28, "Trinken am Trainingstag", {s:16.5, c:GE}) +
+    [["vorher","1–2 h vorher ein|großes Glas",BL],["während","regelmäßig ein|paar Schlucke",GR],["nachher","Verlust ausgleichen:|Wasser oder Schorle",OR]].map(([a,b,c],k) => { const x = 16 + k*122;
+      return `<rect x="${x}" y="48" width="114" height="140" rx="12" fill="#1E2C4D" stroke="${c}" stroke-width="2.5"/>` + TX(x + 57, 76, a, {s:15.5, c}) +
+        `<path d="M${x+57} 92 c-9 13 -14 20 -14 27 a14 14 0 0 0 28 0 c0 -7 -5 -14 -14 -27z" fill="${c}"/>` + TX(x + 57, 158, b, {s:11.5, c:"#FFFFFF", w:600}); }).join("") +
+    TX(190, 210, "Durst ist ein spätes Warnsignal – also regelmäßig trinken.", {s:11.8, c:HG, w:600})),
+  timing: KARTE(400, 236, TX(200, 28, "Essen rund ums Training", {s:16.5, c:GE}) + PFEIL(20, 198, 386, 198, "#5B6C93", 3) +
+    [["2–3 h vorher","leichte,|kohlenhydrat-|reiche|Mahlzeit",BL,20],["kurz vorher","nur Kleinig-|keiten, z. B.|eine Banane",GE,116],["während","Wasser;|beim Turnier|kleine Snacks",GR,212],["danach","Kohlen-|hydrate|+ Eiweiß,|trinken",OR,308]].map(([a,b,c,x]) =>
+      `<rect x="${x}" y="48" width="88" height="130" rx="12" fill="#1E2C4D" stroke="${c}" stroke-width="2.5"/>` + TX(x + 44, 74, a, {s:12.8, c}) + `<circle cx="${x + 44}" cy="198" r="7" fill="${c}"/>` + TX(x + 44, 102, b, {s:11.5, c:"#FFFFFF", w:600})).join("") +
+    `<rect x="203" y="186" width="10" height="24" rx="3" fill="#E5484D"/>` + TX(208, 226, "Sport", {s:12, c:"#FF8A8A"})),
+  schwer: KARTE(380, 230, TX(190, 28, "Was liegt schwer im Magen?", {s:16.5, c:GE}) +
+    zeile(16, 44, 348, 54, GR, "leicht verdaulich", "Banane, Reiswaffeln, Brot, Nudeln mit Tomatensoße") + zeile(16, 104, 348, 54, RO, "liegt schwer im Magen", "Pommes mit Mayo, Döner, Fettiges, riesige Portionen") +
+    TX(190, 186, "Verdauen braucht Blut im Magen –", {s:13, c:"#FFFFFF", w:600}) + TX(190, 206, "beim Sport brauchen es die Muskeln.", {s:13, c:"#FFFFFF", w:600})),
+  hand: KARTE(440, 270, TX(220, 26, "Das Hand-Maß: 1 Portion ist …", {s:16, c:GE}) +
+    [["Getränke","1 Glas (ca. 200 ml)",BL],["Gemüse & Obst","1 Handvoll",GR],["Brot, Getreide, Kartoffeln","1 Scheibe Brot · 2 Hände Nudeln · 2 Kartoffeln",GR],["Milchprodukte","1 Glas Milch · 1 Becher Joghurt · 2 Scheiben Käse",GE],["Fleisch, Fisch, Ei","so groß wie die Handfläche · 1 Ei",GE],["Öle & Fette","1 Esslöffel",GE],["Süßes & Knabbereien","1 Handvoll · 1 kleiner Riegel · 1 Dose Limo",RO]].map(([a,b,c],k) => { const y = 38 + k*31;
+      return `<rect x="12" y="${y}" width="416" height="27" rx="7" fill="#1E2C4D"/><rect x="12" y="${y}" width="7" height="27" rx="3" fill="${c}"/>` + TX(26, y + 18, a, {s:11.8, a:"start", c:"#FFFFFF"}) + TX(422, y + 18, b, {s:10.6, a:"end", c:HG, w:600}); }).join("") +
+    TX(220, 262, "Kein Wiegen, keine Kalorien – nur Portionen zählen.", {s:11.5, c:GE, w:600})),
+  orientierung: KARTE(400, 270, TX(200, 26, "Orientierung pro Tag (Portionen)", {s:16, c:GE}) +
+    [["Getränke","6 Gläser – bei Sport mehr",6,BL],["Gemüse & Obst","5 (3 Gemüse + 2 Obst)",5,GR],["Brot, Getreide, Kartoffeln","4",4,GR],["Milchprodukte","3",3,GE],["Fleisch, Fisch, Ei / Hülsenfrüchte","1",1,GE],["Öle & Fette","2",2,GE],["Süßes, süße Getränke","höchstens 1",1,RO]].map(([a,b,n,c],k) => { const y = 38 + k*32;
+      return TX(14, y + 18, a, {s:11.8, a:"start", c:"#FFFFFF"}) + [...Array(n)].map((_,j) => `<circle cx="${246 + j*17}" cy="${y + 13}" r="7" fill="${c}"/>`).join("") + TX(388, y + 18, b.length > 3 ? "" : b, {s:12, a:"end", c:HG}); }).join("") +
+    TX(200, 264, "Richtwert – an einzelnen Tagen passt es nie genau.", {s:11.5, c:HG, w:600})),
+  sam: KARTE(400, 280, TX(200, 24, "Sams Tag mit Volleyballtraining", {s:15.5, c:GE}) +
+    [["07:00","Toast mit Nuss-Nougat-Creme · Kakao"],["09:30","nichts gegessen · 1 Dose Eistee"],["13:00","Nudeln mit Tomatensoße, Salat · Wasser"],["16:00","1 Apfel, 1 Handvoll Chips · Wasser"],["17:00","Training 1,5 h · 0,4 l Wasser"],["19:00","2 Brote mit Butter, Käse, Wurst, Gurke · Schorle"],["21:00","1 Handvoll Gummibärchen"]].map(([a,b],k) => { const y = 36 + k*33;
+      return `<rect x="12" y="${y}" width="376" height="28" rx="7" fill="${a === "17:00" ? "#3A2230" : "#1E2C4D"}"/>` + TX(22, y + 19, a, {s:12.5, a:"start", c:a === "17:00" ? "#FF8A8A" : GE}) + TX(72, y + 19, b, {s:11.6, a:"start", c:"#FFFFFF", w:600}); }).join("") +
+    TX(200, 274, "Beispielprotokoll · privat: nichts wird eingesammelt", {s:11.2, c:HG, w:600}))
+};
+
+/* =========================================================
+   Inhalte (abgestimmt auf AB 14, 15, 16, 17, 17b und 18)
+   ========================================================= */
+const LERNEN = {
+  energie: { titel:"Energie: Was mein Körper verbraucht", folien:[
+    {bild:ICON.umsatz, titel:"Grund- und Leistungsumsatz", text:"Der **Grundumsatz** ist die Energie, die der Körper in **völliger Ruhe** braucht: für Herz, Atmung, Gehirn und eine Körpertemperatur von etwa 37 °C – **sogar im Schlaf**. Der **Leistungsumsatz** ist die **zusätzliche** Energie für jede Bewegung und Anstrengung."},
+    {bild:ICON.gehirn, titel:"Das Gehirn ist hungrig", text:"Das **Gehirn** verbraucht in Ruhe etwa **ein Fünftel (ca. 20 %)** der Energie – obwohl es nur einen kleinen Teil des Körpers ausmacht. Darum fällt **Konzentration** schwer, wenn Energie fehlt."},
+    {bild:ICON.ranking, titel:"Energie pro Stunde", text:"Je mehr und je intensiver du dich bewegst, desto höher der Leistungsumsatz: **schlafen** < **Hausaufgaben** < **zügig spazieren** < **Volleyball im Sportunterricht** (viele Pausen) < **Fußballspiel** und **zügig joggen**."},
+    {bild:ICON.kj, titel:"kJ und kcal", text:"Energie wird in **Kilojoule (kJ)** oder **Kilokalorien (kcal)** angegeben. **1 kcal ≈ 4,2 kJ.** Auf jeder Verpackung steht die Energie **pro 100 g** – manchmal auch pro Portion."},
+    {bild:ICON.etikett, titel:"Die Verpackung lesen", text:"Ein Müsliriegel wiegt **25 g** – also **ein Viertel** von 100 g. Er hat 400 kcal × 0,25 = **100 kcal** und 28 g × 0,25 = **7 g Zucker**. Bei 3 g pro Zuckerwürfel sind das **gut 2 Würfel**."},
+    {bild:ICON.waage, titel:"Die Energiebilanz", text:"**Zufuhr** (Essen und Trinken) und **Verbrauch** (Grund- + Leistungsumsatz) sollten zusammenpassen. Wie viel jemand braucht, hängt von **Alter, Wachstum, Größe, Muskelmasse** und vor allem von der **Bewegung** ab. **Hunger** und **Sättigung** zeigen dir, was du brauchst – Kalorienzählen ist nicht nötig."},
+    {bild:ICON.zuwenig, titel:"Sportler brauchen genug", text:"Wer **wächst** und **viel Sport** treibt, braucht **mehr** Energie. Isst eine Sportlerin lange zu wenig, ist sie **müde**, die **Leistung** und **Konzentration** sinken, sie wird **öfter krank**, verletzt sich leichter (z. B. Ermüdungsbrüche) und auch das **Wachstum** kann gestört werden."},
+    {bild:ICON.timing, titel:"„Vor dem Turnier esse ich nichts“?", text:"Keine gute Idee: Ohne Energie fehlen die **Speicher** für die Spiele – man wird **früh müde, langsamer und unkonzentriert**. Besser: eine **leichte, kohlenhydratreiche Mahlzeit 2–3 Stunden vorher**."}
+  ]},
+  naehrstoffe: { titel:"Nährstoffe – was steckt im Essen?", folien:[
+    {bild:ICON.naehrstoffe, titel:"Die Nährstoffe", text:"**Kohlenhydrate** liefern **schnell Energie**. **Eiweiß** baut **Muskeln und Zellen** auf. **Fett** ist ein **Energiespeicher** und hilft, bestimmte Vitamine aufzunehmen. **Vitamine** und **Mineralstoffe** sind **Helfer** (Abwehr, Stoffwechsel, Knochen, Nerven). **Wasser** transportiert und kühlt."},
+    {bild:ICON.naehrstoffe, titel:"Wo steckt was drin?", text:"**Kohlenhydrate:** Nudeln, Brot, Reis, Kartoffeln, Haferflocken. **Eiweiß:** Quark, Hähnchen, Fisch, Ei, Linsen. **Fett:** Öl, Nüsse, Butter. **Vitamine & Mineralstoffe:** Obst und Gemüse, z. B. Paprika, Apfel, Brokkoli – Mineralstoffe auch in Milch und Vollkorn."},
+    {bild:pyramide(false), titel:"Die Ernährungspyramide", text:"Von unten nach oben: **1 Getränke · 2 Gemüse & Obst · 3 Brot, Getreide, Kartoffeln · 4 Milchprodukte, Fleisch, Fisch, Ei · 5 Öle & Fette · 6 Süßes & Knabbereien.** Die **größte** Stufe sind die **Getränke**, die **kleinste** das **Süße**."},
+    {bild:pyramide(false), titel:"Ampel-Farben", text:"**Grün (Stufe 1–3): reichlich.** **Gelb (Stufe 4–5): mäßig.** **Rot (Stufe 6): sparsam.** Die Basis bilden also **Getränke** sowie **Gemüse & Obst** und Getreide."},
+    {bild:ICON.teller, titel:"Nach dem Krafttraining", text:"Der Muskel braucht jetzt **Kohlenhydrate** (Speicher auffüllen) und **Eiweiß** (Reparatur). Gut sind z. B. **Vollkornbrot mit Käse** oder **Joghurt mit Haferflocken und Banane**."},
+    {bild:FOTO("er9-eiweissshake","Eiweißpulver und normales Essen","🥤"), titel:"Brauche ich Eiweißshakes?", text:"**Nein.** Normale Lebensmittel liefern Jugendlichen **genug Eiweiß**. Shakes sind **teuer** und manchmal sogar **verunreinigt** – mehr dazu im Doping-Labor."}
+  ]},
+  trinken: { titel:"Trinken – Wasser für Leistung", folien:[
+    {bild:ICON.wasser, titel:"Wasser im Körper", text:"Der Körper besteht zu **mehr als der Hälfte** aus Wasser. Das Blut **transportiert** Sauerstoff und Nährstoffe. Beim Sport kühlt sich der Körper über **Schweiß** – dabei verliert er Wasser und Salze. Wasser hält auch die **Gelenke** geschmeidig."},
+    {bild:FOTO("er9-trinkpause","Trinkpause beim Sport","💧"), titel:"Schon wenig fehlt viel", text:"Fehlt Flüssigkeit, sinken **Ausdauer** und **Konzentration** – schon bei einem kleinen Verlust. Achtung: **Durst ist ein spätes Warnsignal!** Wer erst bei Durst trinkt, ist schon zu spät dran."},
+    {bild:ICON.urin, titel:"Habe ich genug getrunken?", text:"Signale für „mehr trinken“: **Durst**, **dunkler Urin**, **Kopfschmerzen**, **Müdigkeit**, **Schwindel**, **trockener Mund**, die Konzentration lässt nach. Heller Urin zeigt: Du trinkst genug."},
+    {bild:ICON.zucker, titel:"Der Getränke-Check", text:"In 0,5 l stecken ungefähr: **Cola ≈ 18**, **Apfelsaft pur ≈ 17**, **Eistee ≈ 12**, **Schorle 1 : 3 ≈ 4**, **Wasser 0** Zuckerwürfel. Das beste Sportgetränk ist meist **Wasser** oder eine **Saftschorle**."},
+    {bild:ICON.zucker, titel:"Energydrinks? Nein danke!", text:"Energydrinks haben **viel Koffein** (Herzrasen, Unruhe, Schlafprobleme) und **viel Zucker**. Für Kinder und Jugendliche werden sie **nicht empfohlen**. Die „Energie“ ist nur Zucker – **keine echte Leistungssteigerung**."},
+    {bild:ICON.trinktipps, titel:"Trink-Tipps", text:"**Vorher:** etwa 1–2 Stunden vorher ein großes Glas – nicht literweise kurz vorher. **Während:** regelmäßig ein paar Schlucke, bei langer Belastung alle 15–20 Minuten. **Nachher:** den Verlust ausgleichen. Richtwert: Jugendliche trinken über den Tag etwa **1,5 Liter**, bei Sport und Hitze deutlich mehr."}
+  ]},
+  timing: { titel:"Essen rund ums Training", folien:[
+    {bild:ICON.timing, titel:"Vorher – während – nachher", text:"**2–3 Stunden vorher:** eine leichte, **kohlenhydratreiche** Mahlzeit. **Kurz vorher:** nur noch Kleinigkeiten, z. B. eine **Banane**. **Während:** regelmäßig **trinken**, bei langen Turnieren kleine **Snacks** zwischen den Spielen. **Danach:** **Kohlenhydrate + Eiweiß** und **Flüssigkeit** auffüllen."},
+    {bild:ICON.schwer, titel:"Was liegt schwer im Magen?", text:"**Fettiges** und **große Portionen** brauchen lange zum Verdauen. Dafür braucht der Magen viel **Blut** – das fehlt dann den **Muskeln**. Pommes mit Mayo, Döner oder Energydrinks also **lieber nicht** vor dem Sport. Gut **bis 1 h vorher:** Banane, Reiswaffeln."},
+    {bild:FOTO("er9-bens-tag","Ben ohne Frühstück mit Energydrink","😴"), titel:"Bens Tag", text:"Ben **frühstückt nicht** → leere Speicher, schlechte Konzentration; besser: kleines Frühstück oder Pausenbrot. **Energydrink** „für Power“ → Zucker und Koffein, kein Essen-Ersatz; besser: Wasser und Banane. **Chips** nach dem Training → kaum Kohlenhydrate, kein Eiweiß; besser: Brot mit Quark oder Käse."},
+    {bild:FOTO("er9-turniertag","Turniertag mit Trinkflasche und Snacks","🏐"), titel:"Mein Turniertag", text:"**Frühstück:** Haferflocken oder Vollkornbrot mit Obst, ein Glas Wasser oder Tee. **Große Pause:** Banane oder Reiswaffeln, Wasser. **Zwischen Test und Turnier:** ein paar Schlucke, evtl. ein paar Bissen Banane. **Danach:** ausgewogene Mahlzeit mit Kohlenhydraten + Eiweiß, trinken."}
+  ]},
+  analyse: { titel:"Meine Ernährungsanalyse", folien:[
+    {bild:ICON.hand, titel:"Das Hand-Maß", text:"Fürs Ernährungsprotokoll zählst du nur **Portionen mit der Hand** – **kein Wiegen, keine Kalorien**. Zum Beispiel: 1 Glas Getränk, 1 Handvoll Obst, 1 Scheibe Brot, eine Fleischportion so groß wie die **Handfläche**, 1 Esslöffel Öl."},
+    {bild:ICON.orientierung, titel:"Die Orientierung pro Tag", text:"**6 Gläser** Getränke (bei Sport mehr) · **5** Gemüse & Obst · **4** Brot, Getreide, Kartoffeln · **3** Milchprodukte · **1** Fleisch, Fisch, Ei oder Hülsenfrüchte · **2** Öle & Fette · **höchstens 1** Süßes. Es ist ein **Richtwert** – an einzelnen Tagen passt es nie genau."},
+    {bild:ICON.sam, titel:"Sams Beispielprotokoll", text:"Wer sein eigenes Essen nicht aufschreiben möchte, wertet **Sams Protokoll** aus. Bewertet wird nie, **was** jemand isst, sondern nur, wie gut die **Auswertung** ist. Dein Protokoll ist **privat**."},
+    {bild:ICON.sam, titel:"Sam ausgewertet", text:"**Getränke 5** (Kakao zählt als Milch, Eistee als Süßes) → zu wenig, am Sporttag erst recht · **Gemüse & Obst 3** → zu wenig · **Getreide 4** ✓ · **Milch 2** → knapp · **Fleisch 1** ✓ · **Fette 1** ✓ · **Süßes 4** (Nuss-Nougat, Eistee, Chips, Gummibärchen) → zu viel."},
+    {bild:ICON.timing, titel:"Sams Timing", text:"Letzte Mahlzeit um 13 Uhr, um 16 Uhr ein **Apfel (gut)** und **Chips (ungünstig)**. Im Training nur **0,4 l** Wasser. Danach ein Abendessen mit **Kohlenhydraten + Eiweiß (gut)**."},
+    {bild:FOTO("er9-trinkflasche","Volle Trinkflasche im Schulrucksack","🎯"), titel:"Ein kleines Ziel", text:"**Kleine Veränderungen** sind leichter umzusetzen als alles auf einmal. Beispiel: „Ich ersetze in den nächsten zwei Wochen den Eistee in der Pause durch Wasser.“ Oder: „Ich nehme ab Montag jeden Tag eine volle Trinkflasche mit.“"}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:ICON.umsatz, titel:"Grundumsatz", text:"**„Auch im Schlaf, ganz ohne Sport, verbraucht dein Grundumsatz fort.“**"},
+    {bild:pyramide(false), titel:"Pyramide", text:"**„Unten viel und oben klein – so soll die Pyramide sein.“**"},
+    {bild:ICON.naehrstoffe, titel:"Nährstoffe", text:"**„Kohlenhydrate geben Schwung, Eiweiß hält die Muskeln jung.“**"},
+    {bild:ICON.urin, titel:"Trinken", text:"**„Wartest du, bis Durst dich quält, hat dir das Wasser längst gefehlt.“**"},
+    {bild:ICON.zucker, titel:"Getränke", text:"**„Wasser, Schorle – frisch und klar, Cola ist nicht Sportler-Star.“**"},
+    {bild:ICON.timing, titel:"Timing", text:"**„Zwei, drei Stunden vor dem Spiel: leicht und Nudeln – nicht zu viel.“**"},
+    {bild:ICON.teller, titel:"Danach", text:"**„Nach dem Sport, da füll die Speicher: Brot mit Quark macht Muskeln reicher.“**"}
+  ]}
+};
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const HERO = `
+<div class="sw-hero markt-hero">
+  <a class="welt-back" href="klasse9.html#o=markt">🏙️ Athletopolis</a>
+  <svg class="hero-art" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <path d="M90 150 L200 70 L310 150 Z" fill="#E5484D"/><path d="M90 150 L200 70 L310 150" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-dasharray="22 16"/>
+    <rect x="100" y="150" width="200" height="110" fill="#F4EFE2"/><rect x="110" y="200" width="180" height="60" fill="#C98B4E"/>
+    <g class="apfel"><circle cx="150" cy="196" r="18" fill="#E5484D"/><path d="M150 178 q4 -10 12 -10" stroke="#3A5A2A" stroke-width="3" fill="none"/></g>
+    <circle cx="192" cy="194" r="16" fill="#FF9A3D"/><path d="M214 206 q18 -40 40 -30 q-6 32 -40 30z" fill="#FFD34D"/><circle cx="268" cy="196" r="15" fill="#5BBE5B"/>
+    <rect x="320" y="120" width="34" height="120" rx="12" fill="#5FE9FF" opacity=".9"/><rect x="326" y="104" width="22" height="20" rx="5" fill="#FFFFFF"/>
+    <path class="tropfen" d="M337 60 c-6 9 -9 13 -9 17 a9 9 0 0 0 18 0 c0 -4 -3 -8 -9 -17z" fill="#5FE9FF"/>
+  </svg>
+  <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
+  <h1>Ernährung für Sportler</h1>
+  <p>Willkommen in der Markthalle! Hier findest du heraus, wie viel Energie dein Körper braucht, was in deinem Essen steckt und was du vor, während und nach dem Sport essen und trinken solltest. Sammle Basketbälle 🏀 für deinen Rang in Athletopolis.</p>
+</div>`;
+
+const UM = ["😴 Grundumsatz","🏃 Leistungsumsatz"];
+LW.start({
+  id: "er9",
+  titel: "Ernährungs-Lernwelt",
+  sprache: "de",
+  hero: HERO,
+  sammel: "🏀",
+  kartenSymbol: "🍎",
+  rang: {k:"s9"},   // gemeinsame Basketbälle und Ränge in ganz Athletopolis
+  konfetti: ["#2F8A4C","#FFC233","#E5484D","#5FE9FF","#FFFFFF"],
+  lob: {3:"Ernährungs-Profi! Drei Sterne.", 2:"Gut gefüttert! Schaffst du drei Sterne?", 1:"Guter Anfang – schau dir die Infokarten an und versuch es nochmal.", 0:"Da fehlt noch Energie: Lies die Infokarten und probier es nochmal."},
+  lernen: LERNEN,
+  levels: [
+    { id:"umsatz", typ:"rush", lernen:"energie", icon:"⚡", titel:"Ruhe oder Bewegung?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Gehört die Energie zum **Grundumsatz** (in Ruhe, linker Knopf) oder zum **Leistungsumsatz** (Bewegung, rechter Knopf)? **Ziel: 12 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:12, fest:true,
+      items:[
+        {q:"Das Herz schlägt.", o:UM, c:0}, {q:"Mit dem Rad zur Schule fahren", o:UM, c:1},
+        {q:"Die Körpertemperatur auf etwa 37 °C halten", o:UM, c:0}, {q:"Fußballtraining", o:UM, c:1},
+        {q:"Das Gehirn arbeitet im Schlaf.", o:UM, c:0}, {q:"Treppen steigen", o:UM, c:1},
+        {q:"Die Atmung läuft.", o:UM, c:0}, {q:"Den Schulrucksack tragen", o:UM, c:1},
+        {q:"Die Nieren reinigen das Blut.", o:UM, c:0}, {q:"Volleyball im Sportunterricht", o:UM, c:1},
+        {q:"Die Verdauung arbeitet, während du still liegst.", o:UM, c:0}, {q:"Joggen im Park", o:UM, c:1},
+        {q:"Die Leber arbeitet in Ruhe.", o:UM, c:0}, {q:"Zum Bus sprinten", o:UM, c:1},
+        {q:"Das Herz pumpt Blut, während du schläfst.", o:UM, c:0}, {q:"Den Rasen mähen", o:UM, c:1}
+      ]},
+    { id:"ranking", typ:"zeitstrahl", lernen:"energie", icon:"📶", titel:"Energie-Ranking", art:"Ordnen · 5 Tätigkeiten",
+      anleitung:"Ordne die Tätigkeiten: oben **wenig Energie pro Stunde**, unten **viel**. Tippe sie nacheinander an. Jeder richtige Platz = 1 Punkt.",
+      items:[
+        {t:"schlafen", j:"1 · am wenigsten"},
+        {t:"Hausaufgaben am Schreibtisch", j:"2"},
+        {t:"zügig spazieren gehen", j:"3"},
+        {t:"Volleyball im Sportunterricht (mit vielen Pausen)", j:"4"},
+        {t:"zügig joggen", j:"5 · am meisten"}
+      ]},
+    { id:"etikett", typ:"eingabe", lernen:"energie", icon:"🏷️", titel:"Etiketten-Detektiv", art:"Rechnen & schreiben · 6 Aufgaben",
+      anleitung:"Lies die Angaben und **rechne selbst** (Taschenrechner erlaubt). Schreibe nur die Zahl. Ein Zuckerwürfel wiegt ca. **3 g**.",
+      mischen:false,
+      fragen:[
+        {szene:"Müsliriegel · pro 100 g: 400 kcal, 28 g Zucker · 1 Riegel = 25 g", q:"Wie viele kcal hat ein Riegel?", hilfe:"💡 25 g sind ¼ von 100 g", a:["100"], re:["^100( ?kcal)?$"], e:"400 kcal × 0,25 = **100 kcal**."},
+        {szene:"Müsliriegel · pro 100 g: 28 g Zucker · 1 Riegel = 25 g", q:"Wie viel Gramm Zucker stecken in einem Riegel?", hilfe:"💡 28 × 0,25", a:["7"], re:["^7( ?g(ramm)?)?$"], e:"28 g × 0,25 = **7 g**."},
+        {szene:"Ein Riegel hat 7 g Zucker, ein Zuckerwürfel wiegt ca. 3 g.", q:"Wie viele Zuckerwürfel sind das ungefähr? (ganze Zahl)", hilfe:"💡 7 : 3", a:["2"], re:["^(ca |etwa |ungefähr )?2( würfel| zuckerwürfel)?$","^2 3$"], e:"7 : 3 ≈ **2 Würfel**."},
+        {szene:"Müsliriegel · pro 100 g: 1 680 kJ / 400 kcal", q:"Wie viele kJ sind 1 kcal? (eine Stelle nach dem Komma)", hilfe:"💡 1 680 : 400", a:["4,2"], re:["^4 2( ?kj)?$"], e:"1 680 : 400 = **4,2 kJ** pro kcal."},
+        {szene:"Kakao · pro 100 ml: 10 g Zucker · Flasche = 500 ml", q:"Wie viel Gramm Zucker hat die ganze Flasche?", hilfe:"💡 500 ml = 5 × 100 ml", a:["50"], re:["^50( ?g(ramm)?)?$"], e:"10 g × 5 = **50 g** Zucker."},
+        {szene:"Die Kakaoflasche hat 50 g Zucker (Würfel ca. 3 g).", q:"Wie viele Zuckerwürfel sind das ungefähr? (ganze Zahl)", hilfe:"💡 50 : 3", a:["17"], re:["^(ca |etwa |ungefähr )?1[67]( würfel| zuckerwürfel)?$"], e:"50 : 3 ≈ **17 Würfel** – fast so viel wie in einer Cola."}
+      ]},
+    { id:"memory", typ:"memory", lernen:"naehrstoffe", icon:"🧠", titel:"Nährstoff-Memory", art:"Memory · 8 Paare",
+      anleitung:"Finde die Paare: **Begriff + Aufgabe**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Kohlenhydrate", b:"schnelle Energie"},
+        {a:"Eiweiß", b:"baut Muskeln und Zellen auf"},
+        {a:"Fett", b:"Energiespeicher"},
+        {a:"Vitamine", b:"Abwehr und Stoffwechsel"},
+        {a:"Mineralstoffe", b:"Knochen, Muskeln, Nerven"},
+        {a:"Wasser", b:"Transport und Kühlung"},
+        {a:"Grundumsatz", b:"Energie in völliger Ruhe"},
+        {a:"Leistungsumsatz", b:"Energie für Bewegung"}
+      ]},
+    { id:"sortierer", typ:"sortieren", lernen:"naehrstoffe", icon:"🥗", titel:"Lebensmittel-Sortierer", art:"Sortieren · 14 Karten",
+      anleitung:"Welcher Nährstoff steckt **vor allem** drin? Ordne zu. Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"Kohlenhydrate", info:"schnelle Energie", tipp:"Kohlenhydrate stecken vor allem in Nudeln, Brot, Reis, Kartoffeln und Haferflocken."},
+        {t:"Eiweiß", info:"Baustoff", tipp:"Eiweiß steckt vor allem in Quark, Fleisch, Fisch, Ei und Hülsenfrüchten."},
+        {t:"Fett", info:"Energiespeicher", tipp:"Fett steckt vor allem in Öl, Butter und Nüssen."},
+        {t:"Vitamine & Mineralstoffe", info:"Helfer", tipp:"Obst und Gemüse liefern vor allem Vitamine und Mineralstoffe."}
+      ],
+      items:[
+        {t:"Vollkornnudeln", k:0}, {t:"Magerquark", k:1}, {t:"Olivenöl", k:2}, {t:"Paprika", k:3},
+        {t:"Haferflocken", k:0}, {t:"Hähnchen", k:1}, {t:"Nüsse", k:2}, {t:"Apfel", k:3},
+        {t:"Reis", k:0}, {t:"Linsen", k:1, k2:0, e:"Linsen liefern viel **Eiweiß** – und auch Kohlenhydrate. Beides zählt."}, {t:"Butter", k:2}, {t:"Brokkoli", k:3},
+        {t:"Kartoffeln", k:0}, {t:"Ei", k:1}
+      ]},
+    { id:"pyramide", typ:"bildzuordnen", bild:"pyramide", lernen:"naehrstoffe", icon:"🔺", titel:"Pyramiden-Baumeister", art:"Antippen · 14 Lebensmittel",
+      anleitung:"In welche **Stufe der Ernährungspyramide** gehört das? Tippe auf die Stufe. Jede richtige Antwort = **1 Punkt**.",
+      frage:"In welche Stufe?", ziel:"die passende Stufe",
+      zonen:STUFEN.map(([id,t]) => ({id, name:t})),
+      items:[
+        {t:"Mineralwasser", z:"getraenke", e:"Ganz unten, die größte Stufe: **Getränke**."},
+        {t:"ungesüßter Früchtetee", z:"getraenke", e:"Ungesüßter Tee zählt zu den **Getränken**."},
+        {t:"Karotten", z:"gemuese"}, {t:"Banane", z:"gemuese"},
+        {t:"Vollkornbrot", z:"getreide"}, {t:"Kartoffeln", z:"getreide"}, {t:"Haferflocken", z:"getreide"},
+        {t:"Joghurt", z:"milch"}, {t:"Fischstäbchen", z:"milch", e:"Fisch gehört zur Stufe **Milchprodukte, Fleisch, Fisch, Ei**."}, {t:"Rührei", z:"milch"},
+        {t:"Rapsöl", z:"fette"}, {t:"Butter", z:"fette"},
+        {t:"Gummibärchen", z:"suesses"}, {t:"Kartoffelchips", z:"suesses", e:"Chips sind Knabbereien – ganz oben, **sparsam**."}
+      ]},
+    { id:"wuerfel", typ:"schaetzen", lernen:"trinken", icon:"🧊", titel:"Zuckerwürfel-Check", art:"Schätzen mit dem Regler",
+      anleitung:"Wie viele **Zuckerwürfel** (je ca. 3 g) stecken in **0,5 Liter**? Volltreffer = **2 Punkte**, knapp daneben = 1 Punkt.",
+      fragen:[
+        {q:"Cola (0,5 l)", min:0, max:30, step:1, start:5, unit:"Würfel", dec:0, ans:18, tol:2, e:"Etwa 53 g Zucker ≈ **18 Würfel**."},
+        {q:"Apfelsaft pur (0,5 l)", min:0, max:30, step:1, start:5, unit:"Würfel", dec:0, ans:17, tol:2, e:"Etwa 50 g Zucker ≈ **17 Würfel** – Saft pur ist zu süß für den Sport."},
+        {q:"Eistee (0,5 l)", min:0, max:30, step:1, start:3, unit:"Würfel", dec:0, ans:12, tol:2, e:"Etwa 35 g Zucker ≈ **12 Würfel**."},
+        {q:"Apfelschorle 1 : 3 (0,5 l)", min:0, max:30, step:1, start:12, unit:"Würfel", dec:0, ans:4, tol:1, e:"Etwa 12 g Zucker ≈ **4 Würfel** – gut für den Sport."},
+        {q:"Energydrink (0,5 l)", min:0, max:30, step:1, start:6, unit:"Würfel", dec:0, ans:18, tol:2, e:"Etwa 55 g Zucker ≈ **18 Würfel** – plus viel Koffein."}
+      ]},
+    { id:"luecke", typ:"lueckentext", lernen:"trinken", icon:"💧", titel:"Wasser im Körper", art:"Lückentext · 6 Lücken",
+      anleitung:"Tippe auf eine Lücke und wähle das passende Wort. Jede richtige Lücke = 1 Punkt.",
+      ueberschrift:"Wasser im Körper",
+      text:"Unser Körper besteht zu mehr als der [[Hälfte|Viertel|Zehntel]] aus Wasser. Das Blut [[transportiert|verbrennt|speichert]] Sauerstoff und Nährstoffe. Beim Sport kühlt sich der Körper über [[Schweiß|Muskeln|Knochen]] – dabei verliert er Wasser und Salze. Wasser hält auch die [[Gelenke|Haare|Zähne]] geschmeidig. Fehlt Flüssigkeit, sinken Ausdauer und [[Konzentration|Körpergröße|Laune]]. Achtung: [[Durst|Hunger|Gähnen]] ist ein spätes Warnsignal!" },
+    { id:"trinkcoach", typ:"quiz", lernen:"trinken", icon:"🚰", titel:"Trink-Coach", art:"Fälle · 7 Fälle",
+      anleitung:"Was rätst du? Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Fall",
+      fragen:[
+        {szene:"Mia hat Kopfschmerzen, ist müde und ihr Urin ist dunkelgelb.", q:"Was ist wahrscheinlich los?", o:["Sie hat zu wenig getrunken.","Sie hat zu viel gegessen.","Sie hat zu lange geschlafen.","Sie hat zu viel Gemüse gegessen."], c:0, e:"Dunkler Urin, Kopfschmerzen, Müdigkeit: typische Zeichen für **zu wenig Flüssigkeit**."},
+        {szene:"Tom trinkt direkt vor dem Spiel einen ganzen Liter Wasser auf einmal.", q:"Was sagst du ihm?", o:["Perfekt so!","Besser 1–2 Stunden vorher ein großes Glas und dann regelmäßig Schlucke.","Lieber gar nichts trinken.","Besser einen Energydrink."], c:1, e:"Nicht literweise kurz vorher – das schwappt im Bauch. **Vorher ein Glas**, **während** regelmäßig ein paar Schlucke."},
+        {szene:"Beim 90-minütigen Training will Lea erst trinken, wenn sie Durst hat.", q:"Was stimmt?", o:["Das ist ideal.","Durst ist ein spätes Warnsignal – sie sollte regelmäßig alle 15–20 Minuten trinken.","Sie sollte gar nicht trinken.","Nur nach dem Training trinken reicht."], c:1, e:"Wer erst bei Durst trinkt, hat schon Flüssigkeit verloren."},
+        {szene:"Kai hat nach dem Fußballtraining stark geschwitzt.", q:"Was trinkt er am besten?", o:["Cola","Energydrink","Wasser oder Saftschorle","Gar nichts"], c:2, e:"Den Verlust mit **Wasser oder Schorle** ausgleichen."},
+        {szene:"Ali sagt: „Ein Energydrink vor dem Spiel gibt mir echte Power.“", q:"Was antwortest du?", o:["Stimmt, das ist das beste Sportgetränk.","Die ‚Energie‘ ist vor allem Zucker – dazu viel Koffein, das Herzrasen und Unruhe machen kann.","Energydrinks enthalten keinen Zucker.","Energydrinks sind nur für Kinder."], c:1, e:"Für Jugendliche **nicht empfohlen**: viel Zucker und Koffein."},
+        {szene:"Elif fragt: Welches Getränk für den Sport hat am wenigsten Zucker?", q:"Was empfiehlst du?", o:["Apfelsaft pur","Eistee","Mineralwasser","Cola"], c:2, e:"**Wasser**: 0 Zuckerwürfel."},
+        {szene:"Es ist heiß, und das Turnier dauert den ganzen Tag.", q:"Wie viel sollte man trinken?", o:["Wie immer – etwa 1,5 Liter reichen sicher.","Deutlich mehr als an normalen Tagen.","Weniger, damit man leichter ist.","Nur Kaffee."], c:1, e:"Bei **Sport und Hitze** braucht der Körper **deutlich mehr** als die 1,5 Liter."}
+      ]},
+    { id:"wann", typ:"sortieren", lernen:"timing", icon:"⏰", titel:"Vorher, während, nachher?", art:"Sortieren · 10 Karten",
+      anleitung:"Wann passt der Tipp – **vor**, **während** oder **nach** dem Sport? Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"vorher", info:"vor dem Sport", tipp:"Vorher: leichte, kohlenhydratreiche Mahlzeit 2–3 h vorher, kurz vorher nur Kleinigkeiten."},
+        {t:"während", info:"beim Sport", tipp:"Während: regelmäßig ein paar Schlucke, bei langen Turnieren kleine Snacks."},
+        {t:"nachher", info:"nach dem Sport", tipp:"Nachher: Kohlenhydrate + Eiweiß und Flüssigkeit auffüllen."}
+      ],
+      items:[
+        {t:"2–3 Stunden vorher eine leichte, kohlenhydratreiche Mahlzeit", k:0},
+        {t:"Bei langer Belastung regelmäßig ein paar Schlucke Wasser trinken", k:1},
+        {t:"Kohlenhydrate + Eiweiß, z. B. Vollkornbrot mit Quark", k:2},
+        {t:"Kurz vorher nur noch Kleinigkeiten, z. B. eine Banane", k:0},
+        {t:"Verlorene Flüssigkeit wieder auffüllen", k:2},
+        {t:"Beim langen Turnier kleine Snacks zwischen den Spielen", k:1},
+        {t:"1–2 Stunden vorher ein großes Glas Wasser", k:0},
+        {t:"Joghurt mit Haferflocken und Banane, um die Speicher zu füllen", k:2},
+        {t:"Alle 15–20 Minuten einen Schluck aus der Trinkflasche", k:1},
+        {t:"Ein Glas Saftschorle zum Abendessen nach dem Training", k:2}
+      ]},
+    { id:"magen", typ:"sortieren", lernen:"timing", icon:"🍽️", titel:"Was liegt schwer im Magen?", art:"Sortieren · 10 Karten",
+      anleitung:"Wann ist das vor dem Sport sinnvoll? Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"2–3 h vorher", info:"richtige Mahlzeit", tipp:"Eine leichte, kohlenhydratreiche Mahlzeit braucht 2–3 Stunden."},
+        {t:"bis 1 h vorher", info:"kleiner Snack", tipp:"Kleine, leicht verdauliche Snacks gehen auch noch bis etwa 1 Stunde vorher."},
+        {t:"lieber nicht", info:"vor dem Sport", tipp:"Fettiges, Schweres und Energydrinks lieber nicht vor dem Sport."}
+      ],
+      items:[
+        {t:"Banane", k:1}, {t:"Pommes mit Mayo", k:2}, {t:"Vollkornbrot mit Käse", k:0}, {t:"Döner", k:2},
+        {t:"Naturjoghurt mit Obst", k:0, k2:1, e:"Joghurt mit Obst passt 2–3 h vorher – wer ihn gut verträgt, auch näher am Sport."},
+        {t:"Reiswaffeln", k:1}, {t:"Nudeln mit Tomatensoße", k:0}, {t:"Energydrink", k:2},
+        {t:"Fettige Currywurst", k:2}, {t:"Ein paar Bissen von einem Müsliriegel", k:1}
+      ]},
+    { id:"coach", typ:"quiz", lernen:"timing", icon:"🧑‍🍳", titel:"Ernährungs-Coach", art:"Fälle · 7 Fälle",
+      anleitung:"Was ist das **Problem** – und was wäre **besser**? Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Fall",
+      fragen:[
+        {szene:"Ben frühstückt nicht, weil er morgens keinen Hunger hat. In der 2. Stunde kann er sich kaum konzentrieren.", q:"Was ist besser?", o:["Ein kleines Frühstück oder ein Pausenbrot","Ein Energydrink in der Pause","Bis zum Abend nichts essen","Eine Tüte Gummibärchen"], c:0, e:"Leere Speicher → schlechte Konzentration. **Kleines Frühstück** (Brot, Joghurt, Obst) oder Pausenbrot."},
+        {szene:"In der Pause trinkt Ben einen Energydrink „für mehr Power“.", q:"Was ist besser?", o:["Zwei Energydrinks","Wasser und eine Banane oder ein Brot","Eine Cola","Gar nichts"], c:1, e:"Energydrink = Zucker + Koffein, **kein Ersatz für Essen**."},
+        {szene:"Nach dem Training isst Ben eine Tüte Chips.", q:"Was ist besser?", o:["Noch eine Tüte Chips","Gummibärchen","Brot mit Quark oder Käse, Joghurt mit Haferflocken","Nichts essen"], c:2, e:"Chips: kaum Kohlenhydrate zum Auffüllen, kein Eiweiß, viel Fett und Salz. Besser **Kohlenhydrate + Eiweiß**."},
+        {szene:"Lena sagt: „Vor dem Turnier esse ich gar nichts, dann bin ich leichter und schneller.“", q:"Was stimmt?", o:["Gute Idee – leichter ist schneller.","Ohne Energie wird sie früh müde und unkonzentriert. Besser: leichte Mahlzeit 2–3 h vorher.","Sie sollte direkt vorher einen Döner essen.","Sie sollte nur Wasser trinken und erst abends essen."], c:1, e:"Ohne Energie fehlen die **Speicher** für die Spiele."},
+        {szene:"Zwischen Fitnesstest und Volleyballturnier ist eine kurze Pause.", q:"Was passt am besten?", o:["Ein paar Schlucke Wasser, evtl. ein paar Bissen Banane","Eine große Portion Pommes","Ein Liter Cola","Gar nichts trinken"], c:0, e:"Kurz vor der nächsten Belastung nur **Kleinigkeiten** und **trinken**."},
+        {szene:"Jonas isst eine Stunde vor dem Spiel einen großen Döner. Beim Laufen ist ihm übel.", q:"Warum?", o:["Er hat zu wenig gegessen.","Fettiges und große Portionen brauchen lange zum Verdauen – dafür braucht der Magen Blut, das den Muskeln fehlt.","Döner enthält zu viel Wasser.","Übelkeit kommt nur vom Laufen."], c:1, e:"**Schwer im Magen**: lieber leicht und früh genug essen."},
+        {szene:"Mia will nach dem Krafttraining ihre Speicher auffüllen und den Muskeln helfen.", q:"Welcher Snack passt am besten?", o:["Eine Tüte Chips","Ein Eistee","Joghurt mit Haferflocken und Banane","Ein Energydrink"], c:2, e:"**Kohlenhydrate + Eiweiß** – genau richtig."}
+      ]},
+    { id:"protokoll", typ:"quiz", lernen:"analyse", icon:"📋", titel:"Protokoll-Profi", art:"Sams Protokoll · 7 Fragen",
+      anleitung:"Werte **Sams Beispielprotokoll** aus (Infokarte „Sams Beispielprotokoll“). Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {szene:"Sam: Kakao, Eistee, Wasser, Wasser, 2 Gläser Wasser im Training, Schorle.", q:"Wie viele Gläser zählen bei Sam als **Getränke** (Wasser, Tee, Schorle)? Kakao zählt als Milch, Eistee als Süßes.", o:["3","5","7","9"], c:1, e:"Wasser 4 + Schorle 1 = **5 Gläser** – unter der Orientierung von 6, am Sporttag erst recht zu wenig."},
+        {szene:"Sam: Salat, Apfel, Gurke.", q:"Wie bewertest du **Gemüse & Obst** (Orientierung: 5)?", o:["✓ passt","↓ zu wenig","↑ zu viel","kann man nicht sagen"], c:1, e:"Nur **3** Portionen statt 5 → **zu wenig**."},
+        {szene:"Sam: Nuss-Nougat-Creme, Eistee, Chips, Gummibärchen.", q:"Wie viele Portionen **Süßes & Knabbereien** hatte Sam?", o:["1","2","4","6"], c:2, e:"**4** – Orientierung: höchstens 1 → **zu viel**."},
+        {szene:"Sam: Toast, Nudeln, 2 Scheiben Brot.", q:"Wie bewertest du **Brot, Getreide, Kartoffeln** (Orientierung: 4)?", o:["↓ zu wenig","✓ passt","↑ zu viel","fehlt ganz"], c:1, e:"4 Portionen → **passt**."},
+        {szene:"Sam trainiert von 17:00 bis 18:30 und trinkt dabei 0,4 Liter.", q:"Was fällt beim Timing auf?", o:["Im Training hat Sam eher wenig getrunken.","Sam hat im Training viel zu viel getrunken.","Sam hätte im Training gar nichts trinken sollen.","Das Training war zu kurz."], c:0, e:"0,4 l für 1,5 Stunden Training ist **eher wenig**."},
+        {szene:"Um 19:00 isst Sam Brot mit Käse und Wurst, Gurke und trinkt Schorle.", q:"Wie bewertest du dieses Abendessen nach dem Training?", o:["ungünstig – zu viel Eiweiß","gut – Kohlenhydrate + Eiweiß und Flüssigkeit","schlecht – nach dem Sport soll man nichts essen","egal"], c:1, e:"Genau das braucht der Körper nach dem Sport."},
+        {q:"Welches Ziel passt am besten für Sam?", o:["Ab morgen nie wieder Süßes!","Ich ersetze in den nächsten zwei Wochen den Eistee in der Pause durch Wasser.","Ich esse gesünder.","Ich trinke jeden Tag 5 Liter."], c:1, e:"**Klein, konkret, messbar, machbar** – ein SMART-Ziel."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 6 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut – so bleibt er hängen. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Unten viel und oben ______ – so soll die Pyramide sein.“", o:["klein","fein","Wein"], c:0, e:"Unten reichlich, oben (Süßes) **wenig**."},
+        {q:"„Kohlenhydrate geben ______, Eiweiß hält die Muskeln jung.“", o:["Schwung","Hunger","Durst"], c:0, e:"Kohlenhydrate = **schnelle Energie**."},
+        {q:"„Wartest du, bis ______ dich quält, hat dir das Wasser längst gefehlt.“", o:["Durst","Hunger","Müdigkeit"], c:0, e:"**Durst** ist ein spätes Warnsignal."},
+        {q:"„Wasser, Schorle – frisch und klar, ______ ist nicht Sportler-Star.“", o:["Cola","Milch","Tee"], c:0, e:"**Cola** hat etwa 18 Zuckerwürfel pro 0,5 l."},
+        {q:"„Zwei, drei Stunden vor dem Spiel: leicht und ______ – nicht zu viel.“", o:["Nudeln","Pommes","Döner"], c:0, e:"Leicht und **kohlenhydratreich**, z. B. Nudeln."},
+        {q:"„Nach dem Sport, da füll die ______: Brot mit Quark macht Muskeln reicher.“", o:["Speicher","Taschen","Flaschen"], c:0, e:"Kohlenhydrate füllen die **Speicher**, Eiweiß repariert die Muskeln."}
+      ]},
+    { id:"mythos", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 11 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch** – oder tippe auf die Knöpfe.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Der Körper braucht auch im Schlaf Energie.", r:"r", e:"Herz, Atmung, Gehirn: **Grundumsatz**."},
+        {t:"Jugendliche brauchen Eiweißshakes, um Muskeln aufzubauen.", r:"l", e:"Normale Lebensmittel liefern **genug Eiweiß**. Shakes sind teuer und manchmal verunreinigt."},
+        {t:"Wer viel Sport treibt und wächst, braucht mehr Energie.", r:"r", e:"Wachstum + hoher Leistungsumsatz."},
+        {t:"Durst ist ein frühes Warnsignal – vorher muss man nicht trinken.", r:"l", e:"Durst ist ein **spätes** Warnsignal."},
+        {t:"Energydrinks werden für Kinder und Jugendliche nicht empfohlen.", r:"r", e:"Viel Koffein und Zucker."},
+        {t:"Apfelsaft pur ist das ideale Sportgetränk.", r:"l", e:"Zu süß (≈ 17 Würfel pro 0,5 l). Besser **Schorle 1 : 3**."},
+        {t:"Die größte Stufe der Ernährungspyramide sind die Getränke.", r:"r", e:"Ganz unten und am größten: **Getränke**."},
+        {t:"Fettiges Essen ist kurz vor dem Sport die beste Energiequelle.", r:"l", e:"Fett liegt **schwer im Magen** und braucht lange zum Verdauen."},
+        {t:"Nach dem Training helfen Kohlenhydrate und Eiweiß bei der Erholung.", r:"r", e:"Speicher füllen und Muskeln reparieren."},
+        {t:"Wer vor dem Turnier nichts isst, ist schneller.", r:"l", e:"Ohne Energie wird man **früh müde und langsamer**."},
+        {t:"Man muss Kalorien zählen, um sich sportgerecht zu ernähren.", r:"l", e:"Nicht nötig: **Hunger und Sättigung** sowie das **Hand-Maß** reichen zur Orientierung."}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 9 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie heißt die Energie, die der Körper in völliger Ruhe braucht?", hilfe:"💡 G…", a:["Grundumsatz"], re:["^(der )?grundumsatz$"], e:"**Grundumsatz**."},
+        {q:"Wie heißt die zusätzliche Energie für Bewegung?", hilfe:"💡 L…", a:["Leistungsumsatz"], re:["^(der )?leistungsumsatz$"], e:"**Leistungsumsatz**."},
+        {q:"Energie wird in kcal oder in … angegeben (Abkürzung).", hilfe:"💡 k…", a:["kJ"], re:["^kj$","^kilojoule$"], e:"**kJ** (Kilojoule)."},
+        {q:"Welcher Nährstoff liefert vor allem schnell Energie?", hilfe:"💡 K…", a:["Kohlenhydrate"], re:["^(die )?kohlenhydrate?$"], e:"**Kohlenhydrate**."},
+        {q:"Welcher Nährstoff ist der wichtigste Baustoff für Muskeln?", hilfe:"💡 E…", a:["Eiweiß"], re:["^(das )?(eiweiß|eiweiss|protein)$"], e:"**Eiweiß** (Protein)."},
+        {q:"Was ist das beste Sportgetränk? (ein Wort)", hilfe:"💡 W…", a:["Wasser"], re:["^(mineral)?wasser$"], e:"**Wasser** (oder Saftschorle)."},
+        {q:"Über was kühlt sich der Körper beim Sport?", hilfe:"💡 S…", a:["Schweiß"], re:["^(den |über )?(schweiß|schweiss|schwitzen)$"], e:"Über **Schweiß**."},
+        {q:"Welche Lebensmittelgruppe bildet die kleinste Stufe der Pyramide? (ein Wort)", hilfe:"💡 S…", a:["Süßes"], re:["^(s(ü|ue)(ß|ss)es|s(ü|ue)(ß|ss)igkeiten)( (und|&) knabbereien)?$"], e:"**Süßes** (& Knabbereien)."},
+        {q:"Wie viele Stunden vor dem Sport sollte die letzte richtige Mahlzeit sein? (z. B. 1–2)", hilfe:"💡 …–… Stunden", a:["2–3"], re:["^2 ?(bis)? ?3( stunden| h)?$","^2 3$"], e:"**2–3 Stunden** vorher."}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>
