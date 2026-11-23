@@ -81,7 +81,7 @@ function gelenk(hl){
   const KN_U = "M108 268 C108 258 114 254 124 254 C140 256 148 266 160 266 C172 266 180 256 196 254 C206 254 212 258 212 268 L212 276 C212 266 206 262 196 262 C180 264 172 274 160 274 C148 274 140 264 124 262 C114 262 108 266 108 276 Z";
   const KAP_L = "M126 136 C96 156 82 196 82 236 C82 280 98 318 126 340 L126 322 C108 304 98 274 98 236 C98 204 108 176 126 156 Z";
   const KAP_R = "M194 136 C224 156 238 196 238 236 C238 280 222 318 194 340 L194 322 C212 304 222 274 222 236 C222 204 212 176 194 156 Z";
-  return `<svg class="rk hell" viewBox="-70 0 500 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aufbau eines Gelenks">
+  return `<svg class="rk hell" viewBox="-70 0 520 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aufbau eines Gelenks">
     <defs>
       <linearGradient id="gBone" x1="0" x2="1"><stop offset="0" stop-color="#E9D6B6"/><stop offset=".45" stop-color="#FBEBD3"/><stop offset=".8" stop-color="#E3CCA6"/><stop offset="1" stop-color="#B49E7C"/></linearGradient>
       <linearGradient id="gSpalt" x1="0" x2="1"><stop offset="0" stop-color="#9EB4CC"/><stop offset=".5" stop-color="#B3C6DA"/><stop offset="1" stop-color="#6F86A0"/></linearGradient>
@@ -89,16 +89,16 @@ function gelenk(hl){
       <linearGradient id="gMus" x1="0" x2="1"><stop offset="0" stop-color="#A9262A"/><stop offset=".6" stop-color="#C9484A"/><stop offset="1" stop-color="#A42528"/></linearGradient>
       <linearGradient id="gSeh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C46A66"/><stop offset=".35" stop-color="#DDB3A8"/><stop offset="1" stop-color="#E8CBC2"/></linearGradient>
     </defs>
-    <rect x="-70" width="500" height="470" rx="18" fill="#FBF8F2"/>
+    <rect x="-70" width="520" height="470" rx="18" fill="#FBF8F2"/>
     ${grp(hl,"spalt", `<rect x="98" y="168" width="124" height="148" rx="34" fill="url(#gSpalt)"/><path class="h" d="M104 262 C130 262 190 262 216 262" stroke-width="14"/><path class="h" d="M104 200 L104 300 M216 200 L216 300" stroke-width="12"/>`, ["Gelenkschmiere",-62,392,"start",104,256])}
-    ${grp(hl,"kapsel", `<path d="${KAP_L}" fill="url(#gKap)"/><path d="${KAP_R}" fill="url(#gKap)"/><path d="M126 156 C108 176 98 204 98 236 C98 274 108 304 126 322 M194 156 C212 176 222 204 222 236 C222 274 212 304 194 322" fill="none" stroke="#E04B4B" stroke-width="3.5"/><path class="h" d="M120 150 C96 176 88 206 88 236 C88 278 102 310 120 330 M200 150 C224 176 232 206 232 236 C232 278 218 310 200 330" stroke-width="16"/>`, ["Gelenkkapsel",422,214,"end",232,228])}
+    ${grp(hl,"kapsel", `<path d="${KAP_L}" fill="url(#gKap)"/><path d="${KAP_R}" fill="url(#gKap)"/><path d="M126 156 C108 176 98 204 98 236 C98 274 108 304 126 322 M194 156 C212 176 222 204 222 236 C222 274 212 304 194 322" fill="none" stroke="#E04B4B" stroke-width="3.5"/><path class="h" d="M120 150 C96 176 88 206 88 236 C88 278 102 310 120 330 M200 150 C224 176 232 206 232 236 C232 278 218 310 200 330" stroke-width="16"/>`, ["Gelenkkapsel",442,214,"end",231,236])}
     ${grp(hl,"pfanne", `<path d="${PF}" fill="url(#gBone)"/>`, ["Gelenkpfanne",-62,446,"start",150,330])}
     ${grp(hl,"kopf", `<path d="${HEAD}" fill="url(#gBone)"/>`, ["Gelenkkopf",-62,46,"start",150,180])}
     ${grp(hl,"knorpel", `<path d="${KN_O}" fill="#F7F4EC" stroke="#D9D2C2" stroke-width="1"/><path d="${KN_U}" fill="#F7F4EC" stroke="#D9D2C2" stroke-width="1"/><path class="h" d="M108 206 C112 236 134 252 160 252 C186 252 208 236 212 206" stroke-width="12"/><path class="h" d="M110 264 C130 258 146 270 160 270 C174 270 190 258 210 264" stroke-width="12"/>`, ["Knorpel",-62,150,"start",116,226])}
     ${grp(hl,"band", `<path d="M124 112 C66 168 62 304 124 358" fill="none" stroke="#B9B1A2" stroke-width="12" stroke-linecap="round"/><path d="M124 112 C66 168 62 304 124 358" fill="none" stroke="#EFEAE0" stroke-width="8" stroke-linecap="round"/><path class="h" d="M124 112 C66 168 62 304 124 358" stroke-width="18"/>`, ["Band",-62,290,"start",77,280])}
-    ${grp(hl,"sehne", `<path d="M208 316 L228 316 C216 352 208 396 206 470 L196 470 C196 404 200 354 208 316 Z" fill="url(#gSeh)"/><path class="h" d="M216 322 C208 360 202 410 201 466" stroke-width="16"/>`, ["Sehne",422,392,"end",206,390])}
-    ${grp(hl,"muskel", `<path d="M196 0 L236 0 C236 44 258 112 260 190 C262 252 246 292 228 318 L208 318 C214 292 228 252 226 200 C224 150 196 110 196 76 Z" fill="url(#gMus)"/>
-      <path d="M204 0 C206 60 222 120 230 190 C234 240 226 280 214 314 M214 0 C218 60 236 120 242 190 C246 240 236 284 220 316 M224 0 C228 60 246 120 252 190 C254 240 242 286 226 316" fill="none" stroke="#8E1E22" stroke-width="1.6" opacity=".7"/>`, ["Muskel",422,60,"end",246,120])}
+    ${grp(hl,"sehne", `<path d="M226 316 L246 316 C226 354 210 398 206 470 L196 470 C198 404 210 356 226 316 Z" fill="url(#gSeh)"/><path class="h" d="M234 322 C218 360 206 410 201 466" stroke-width="16"/>`, ["Sehne",442,392,"end",210,396])}
+    ${grp(hl,"muskel", `<path d="M214 0 L254 0 C254 44 276 112 278 190 C280 252 264 292 246 318 L226 318 C232 292 246 252 244 200 C242 150 214 110 214 76 Z" fill="url(#gMus)"/>
+      <path d="M222 0 C224 60 240 120 248 190 C252 240 244 280 232 314 M232 0 C236 60 254 120 260 190 C264 240 254 284 238 316 M242 0 C246 60 264 120 270 190 C272 240 260 286 244 316" fill="none" stroke="#8E1E22" stroke-width="1.6" opacity=".7"/>`, ["Muskel",442,60,"end",262,120])}
   </svg>`;
 }
 
