@@ -281,19 +281,76 @@ const BSP = {
     ${BSP_T(110, 192, "", {s:1})}`);
   })(),
   /* Handgelenk (Handrücken): Die eiförmige Handwurzel kippt auf Elle und Speiche zur Seite – aber dreht nicht im Kreis */
-  handgelenk: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Handgelenk")}
-    <path d="M78 196 L78 136 C80 124 104 122 110 130 L108 196 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
-    <path d="M118 196 L122 132 C126 126 140 126 142 134 L136 196 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
-    <path d="M84 128 C96 120 132 118 146 128" fill="none" stroke="#F7F4EC" stroke-width="4"/>
+  /* Handgelenk (Handrücken): Die eiförmige erste Handwurzelreihe liegt in der Mulde der Speiche; die Hand kippt zur Seite */
+  handgelenk: (() => {
+    const K = (x1,y1,x2,y2,w) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#B49E7C" stroke-width="${w+2.4}" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#F4E5C8" stroke-width="${w}" stroke-linecap="round"/>`;
+    const finger = (bx,by,tx,ty,w) => { const p = t => [bx+(tx-bx)*t, by+(ty-by)*t]; const [a,b,c] = [p(.5),p(.75),p(.9)], d = t => [(tx-bx)*t,(ty-by)*t][0];
+      return K(bx,by,a[0],a[1],w)+K(a[0],a[1],b[0],b[1],w-1.2)+K(b[0],b[1],c[0],c[1],w-2)+K(c[0],c[1],tx,ty,w-2.6); };
+    const D = `dur="4.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1"`;
+    return svgBox("0 0 220 200", `${BSP_BG("Beispiel: Handgelenk")}
+    <!-- Unterarm: Speiche (Daumenseite) mit Gelenkmulde, Elle -->
+    <path d="M44 200 L46 150 C46 140 54 136 62 138 C70 142 80 142 88 138 C92 136 96 140 96 146 L94 200 Z" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.4"/>
+    <path d="M48 146 C58 154 80 154 92 146" fill="none" stroke="#F7F4EC" stroke-width="4"/>
+    <path d="M102 200 L104 152 C106 144 118 144 120 152 L118 200 Z" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.4"/>
+    <!-- Hand kippt im Handgelenk -->
     <g>
-      <ellipse cx="114" cy="112" rx="34" ry="13" fill="#E8C98F" stroke="#B49E7C" stroke-width="1.2"/>
-      ${[0,1,2,3,4,5,6].map(i => `<circle cx="${88 + i*8.6}" cy="${112 + (i%2?-4:4)}" r="4.5" fill="#F1DDB5" stroke="#B49E7C" stroke-width=".8"/>`).join("")}
-      ${[[86,96,74,42],[100,98,96,30],[116,98,116,26],[132,98,136,32],[146,100,156,48]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#EADBC0" stroke-width="7" stroke-linecap="round"/>`).join("")}
-      ${BSP_ROT([0, -20, 0, 16, 0], 114, 122)}
+      <path d="M40 150 C30 112 32 64 40 34 L120 30 C130 60 132 110 122 150 Z" fill="#F7E2D0" opacity=".55"/>
+      <!-- erste Handwurzelreihe = Ei -->
+      <path d="M46 140 C46 126 60 120 84 120 C108 120 122 126 122 138 C112 146 60 148 46 140 Z" fill="#FFC94D" stroke="#C99A20" stroke-width="1.4"/>
+      <path d="M68 122 L66 142 M96 121 L98 142" stroke="#C99A20" stroke-width="1.2"/>
+      <!-- zweite Handwurzelreihe -->
+      ${[[54,112],[70,110],[86,110],[102,110],[116,112]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="7.5" ry="6" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.2"/>`).join("")}
+      <!-- Daumen und Finger -->
+      ${K(50,104,34,80,7)}${K(33,76,26,60,6)}${K(25,56,22,46,5)}
+      ${finger(68,102,62,34,6.5)}${finger(84,100,86,24,6.5)}${finger(100,102,108,32,6)}${finger(114,106,126,48,5.5)}
+      <animateTransform attributeName="transform" type="rotate" values="0 84 146;-16 84 146;0 84 146;20 84 146;0 84 146" ${D}/>
     </g>
-    ${BSP_T(184, 96, "Hand-", {s:10.5})}${BSP_T(184, 109, "wurzel", {s:10.5})}<path d="M172 112 L150 114" stroke="#2A2F3D" stroke-width="1.2"/>
-    ${BSP_T(44, 166, "Speiche", {s:10.5})}<path d="M58 162 L80 160" stroke="#2A2F3D" stroke-width="1.2"/>${BSP_T(172, 166, "Elle", {s:10.5})}<path d="M160 162 L138 160" stroke="#2A2F3D" stroke-width="1.2"/>
-    ${BSP_T(110, 192, "kippt vor, zurück und zur Seite", {s:10.5, w:400, c:"#5D6472"})}`)
+    <!-- Lupe: Ei in der Mulde -->
+    <circle cx="184" cy="110" r="32" fill="#FFFFFF" stroke="#2A2F3D" stroke-width="2"/>
+    <path d="M124 134 L153 118" stroke="#2A2F3D" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <clipPath id="bspLupe2"><circle cx="184" cy="110" r="31"/></clipPath>
+    <g clip-path="url(#bspLupe2)">
+      <path d="M150 146 L150 120 Q184 150 218 120 L218 146 Z" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.5"/>
+      <g><ellipse cx="184" cy="114" rx="28" ry="17" fill="#FFC94D" stroke="#C99A20" stroke-width="1.5"/>
+        <animateTransform attributeName="transform" type="rotate" values="0 184 100;-12 184 100;0 184 100;12 184 100;0 184 100" ${D}/></g>
+    </g>
+    ${BSP_T(184, 116, "Ei", {s:10})}${BSP_T(184, 137, "Mulde", {s:8.5})}
+    ${BSP_T(184, 156, "eiförmiger Kopf", {s:9.5, w:400})}${BSP_T(184, 167, "in ovaler Mulde", {s:9.5, w:400})}
+    ${BSP_T(70, 180, "Speiche", {s:10})}${BSP_T(111, 194, "Elle", {s:10})}
+    ${BSP_T(184, 60, "Handwurzel", {s:10})}<path d="M160 64 L124 126" stroke="#2A2F3D" stroke-width="1.2"/>`);
+  })(),
+  /* 1. und 2. Halswirbel: Der Ring des Atlas dreht sich um den Zapfen des 2. Halswirbels, das Querband hält ihn fest */
+  halswirbel: (() => {
+    const D = `dur="4.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.25;.5;.75;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1;.45 0 .55 1"`;
+    return svgBox("0 0 220 200", `${BSP_BG("Beispiel: 1. und 2. Halswirbel")}
+    <!-- Kopf von vorn: dreht sich -->
+    <ellipse cx="62" cy="52" rx="24" ry="28" fill="#F7E2D0" stroke="#E2B896" stroke-width="1.5"/>
+    <g><circle cx="54" cy="48" r="2.6" fill="#2A2F3D"/><circle cx="70" cy="48" r="2.6" fill="#2A2F3D"/><path d="M62 52 l-3 7 h5" fill="none" stroke="#C98B6A" stroke-width="1.6"/><path d="M56 66 q6 3 12 0" fill="none" stroke="#2A2F3D" stroke-width="1.6"/>
+      <animateTransform attributeName="transform" type="translate" values="0 0;-12 0;0 0;12 0;0 0" ${D}/></g>
+    <path d="M40 112 L84 112" stroke="#8A6FB0" stroke-width="5"/>
+    <!-- 2. Halswirbel (Axis) mit Zapfen -->
+    <path d="M28 186 L28 150 Q28 140 40 140 L54 140 L54 104 Q54 92 62 92 Q70 92 70 104 L70 140 L84 140 Q96 140 96 150 L96 186 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.4"/>
+    <!-- 1. Halswirbel (Atlas): Ring, hinten hinter, vorne vor dem Zapfen -->
+    <path d="M24 118 A38 12 0 0 1 100 118" fill="none" stroke="#C9AE80" stroke-width="10"/>
+    <path d="M24 118 A38 12 0 0 0 100 118" fill="none" stroke="#F4E5C8" stroke-width="10"/><path d="M24 118 A38 12 0 0 0 100 118" fill="none" stroke="#B49E7C" stroke-width="1.2" stroke-dasharray="0"/>
+    <circle r="4" fill="#E8650F" stroke="#2A2F3D" stroke-width="1"><animate attributeName="cx" values="62;30;62;94;62" ${D}/><animate attributeName="cy" values="130;123;130;123;130" ${D}/></circle>
+    <!-- Lupe: Blick von oben -->
+    <circle cx="164" cy="104" r="44" fill="#FFFFFF" stroke="#2A2F3D" stroke-width="2"/>
+    ${BSP_T(164, 54, "von oben", {s:9.5, w:400, c:"#5D6472"})}
+    <g>
+      <path d="M128 104 C128 80 146 70 164 70 C182 70 200 80 200 104 C200 126 184 136 164 136 C144 136 128 126 128 104 Z M164 86 C176 86 182 96 182 106 C182 118 174 124 164 124 C154 124 146 118 146 106 C146 96 152 86 164 86 Z" fill="#F4E5C8" stroke="#B49E7C" stroke-width="1.4" fill-rule="evenodd"/>
+      <path d="M146 116 L182 116" stroke="#8A6FB0" stroke-width="4"/>
+      <circle cx="164" cy="74" r="4" fill="#E8650F"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 164 104;-32 164 104;0 164 104;32 164 104;0 164 104" ${D}/>
+    </g>
+    <circle cx="164" cy="104" r="8" fill="#FFC94D" stroke="#C99A20" stroke-width="1.5"/>
+    ${BSP_T(164, 108, "Z", {s:8})}
+    <!-- Beschriftung -->
+    ${BSP_T(110, 96, "Zapfen", {s:10})}<path d="M96 98 L70 100" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(124, 160, "Ring = 1. Halswirbel", {s:10, a:"start"})}<path d="M122 157 L100 124" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(124, 174, "Querband", {s:10, a:"start", c:"#6A4F98"})}<path d="M122 171 L82 114" stroke="#6A4F98" stroke-width="1.2"/>
+    ${BSP_T(124, 188, "2. Halswirbel", {s:10, a:"start"})}<path d="M122 185 L96 172" stroke="#2A2F3D" stroke-width="1.2"/>`);
+  })()
 };
 const artR = s => s.replace(/<svg class="rk(?=[ "])/, '<svg class="lnsvg rk');
 const alle = s => s.replace('<svg class="', '<svg class="alle ');
@@ -360,6 +417,7 @@ const LERNEN = {
     {bild:MODEL.ei, titel:"Eigelenk", text:"Ein eiförmiger Kopf in einer passenden Mulde: vor, zurück und zur Seite – aber nicht ganz im Kreis. Beispiel: das **Handgelenk**."},
     {bild:BSP.handgelenk, titel:"Im Körper: das Handgelenk", text:"Die eiförmige **Handwurzel** liegt in einer Mulde der **Speiche**. Die Hand kippt **vor und zurück** und **zur Seite** – ganz im Kreis drehen kann sie hier nicht. (Das Drehen der Hand machen Elle und Speiche.)"},
     {bild:MODEL.dreh, titel:"Drehgelenk", text:"Ein Knochen dreht sich um den anderen – wie ein **Ring um einen Zapfen**. Beispiel: zwischen **1. und 2. Halswirbel** (Kopf drehen) und zwischen Elle und Speiche (Hand drehen)."},
+    {bild:BSP.halswirbel, titel:"Im Körper: 1. und 2. Halswirbel", text:"Der **2. Halswirbel** hat oben einen **Zapfen**. Der **1. Halswirbel** ist ein **Ring**, der um diesen Zapfen liegt; ein **Querband** hält den Zapfen fest. Dreht sich der Ring, dreht sich dein **Kopf** – zum Beispiel beim „Nein“-Schütteln."},
     {bild:alle(artR(knie())), titel:"Das Knie: das größte Gelenk", text:"Im Knie treffen Oberschenkelknochen, Schienbein und Kniescheibe zusammen. Es ist ein **Dreh-Scharniergelenk**: Es beugt und streckt und kann sich im gebeugten Zustand etwas drehen."},
     {bild:artR(knie(["kreuzband","seitenband"])), titel:"Bänder im Knie", text:"Zwei **Seitenbänder** (innen und außen) und zwei **Kreuzbänder** halten das Knie stabil. Die Kreuzbänder liegen mitten im Gelenk und verhindern, dass der Unterschenkel nach vorn oder hinten rutscht."},
     {bild:artR(knie(["meniskus"])), titel:"Menisken – die Stoßdämpfer", text:"Zwei halbmondförmige **Menisken** aus Faserknorpel liegen auf dem Schienbein. Sie gleichen die Form der Knochen aus und federn bei jedem Sprung ab. Ähnliche Puffer sind die **Bandscheiben** zwischen den Wirbeln."}
