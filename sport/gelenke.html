@@ -208,6 +208,68 @@ function armModell(){
     <rect x="10" y="148" width="12" height="5" rx="2" fill="#EEF2F7"/><text x="26" y="154" fill="#D5DDE8" font-size="11" font-family="sans-serif">= Sehne</text>
     <text x="110" y="188" fill="#FFC94D" font-size="11" text-anchor="middle" font-family="sans-serif">Muskel zieht → Sehne zieht → Arm beugt</text>`);
 }
+/* Beispielgelenke im Körper: detaillierte, helle Ansicht mit Bewegung (Gelenkarten-Karten) */
+const BSP_DEFS = `<defs><linearGradient id="bspBone" x1="0" x2="1"><stop offset="0" stop-color="#E7D3B1"/><stop offset=".5" stop-color="#FBEBD3"/><stop offset="1" stop-color="#C9B08A"/></linearGradient></defs>`;
+const BSP_T = (x, y, t, o) => `<text x="${x}" y="${y}" fill="${(o&&o.c)||"#2A2F3D"}" font-size="${(o&&o.s)||11}" font-weight="${(o&&o.w)||700}" text-anchor="${(o&&o.a)||"middle"}" font-family="sans-serif">${t}</text>`;
+const BSP_BG = (titel) => `<rect width="220" height="200" rx="22" fill="#FBF8F2"/>${BSP_DEFS}${BSP_T(110, 18, titel, {s:13, c:"#C8261C"})}`;
+const BSP_ROT = (werte, cx, cy, dur) => `<animateTransform attributeName="transform" type="rotate" values="${werte.map(w => `${w} ${cx} ${cy}`).join(";")}" dur="${dur||"4s"}" repeatCount="indefinite" calcMode="spline" keyTimes="${werte.map((_,i)=>(i/(werte.length-1)).toFixed(3)).join(";")}" keySplines="${werte.slice(1).map(()=>".45 0 .55 1").join(";")}"/>`;
+const BSP = {
+  /* Hüfte (von vorn): Oberschenkelkopf in der Hüftpfanne, das Bein schwingt zur Seite und zurück */
+  huefte: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Hüftgelenk")}
+    <path d="M14 34 C40 26 92 26 124 40 C140 48 146 60 146 72 C146 86 140 96 130 102 C122 92 108 86 96 90 C84 76 60 66 34 70 C22 62 14 50 14 34 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+    <path d="M100 82 A28 28 0 0 1 146 74" fill="none" stroke="#F7F4EC" stroke-width="5"/>
+    <g>
+      <path d="M110 98 L136 124 C140 148 140 174 138 196 L162 196 C162 172 162 148 166 124 C180 118 182 102 170 96 C160 92 152 96 144 86 L132 68 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+      <circle cx="122" cy="86" r="22" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+      <path d="M102 78 A22 22 0 0 1 142 78" fill="none" stroke="#F7F4EC" stroke-width="4"/>
+      ${BSP_ROT([0, 26, 0, -14, 0], 122, 86)}
+    </g>
+    <path d="M60 30 C80 28 100 30 120 40" fill="none" stroke="#B49E7C" stroke-width="1" opacity=".6"/>
+    ${BSP_T(48, 106, "Hüftpfanne", {s:10.5})}<path d="M70 102 L100 92" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(190, 66, "Kopf", {s:10.5})}<path d="M180 70 L142 84" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(190, 152, "Ober-", {s:10.5})}${BSP_T(190, 165, "schenkel", {s:10.5})}
+    ${BSP_T(110, 192, "Bein schwingt in alle Richtungen", {s:10.5, w:400, c:"#5D6472"})}`),
+  /* Ellenbogen (von der Seite): Die Elle umgreift die Rolle des Oberarmknochens wie ein Haken und klappt nur auf und zu */
+  ellenbogen: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Ellenbogen")}
+    <path d="M58 26 L80 26 L84 92 C96 88 112 94 114 108 C116 122 104 132 90 130 C78 130 68 122 66 110 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+    <circle cx="92" cy="110" r="16" fill="none" stroke="#F7F4EC" stroke-width="4"/>
+    <g>
+      <path d="M70 100 C64 112 68 126 80 130 L188 136 L188 148 L86 146 C68 146 58 132 60 116 C62 104 70 96 78 94 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+      <path d="M100 150 L188 154 L188 164 L100 160 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2" opacity=".9"/>
+      ${BSP_ROT([0, -78, 0], 92, 110, "3.6s")}
+    </g>
+    ${BSP_T(32, 50, "Oberarm-", {s:10.5})}${BSP_T(32, 63, "knochen", {s:10.5})}<path d="M44 66 L60 72" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(176, 172, "Elle + Speiche", {s:10.5})}
+    ${BSP_T(30, 132, "Haken", {s:10.5})}<path d="M42 130 L62 122" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(110, 192, "nur beugen und strecken – wie eine Tür", {s:10.5, w:400, c:"#5D6472"})}`),
+  /* Daumen: Der Mittelhandknochen des Daumens kippt auf dem sattelförmigen Handwurzelknochen in zwei Richtungen */
+  daumen: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Daumensattelgelenk")}
+    <path d="M70 186 C64 160 66 132 80 112 L84 50 C84 40 98 40 98 50 L100 96 L104 40 C104 30 118 30 118 40 L120 96 L126 46 C126 36 140 36 140 46 L140 100 L148 66 C150 56 162 58 160 68 L156 130 C152 162 140 180 130 186 Z" fill="#F6DCC6" stroke="#E2B896" stroke-width="1.5" opacity=".9"/>
+    ${[[91,108,91,52],[111,104,111,42],[133,108,133,48],[152,124,154,70]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1+40} L${x1} ${y1}" stroke="#EADBC0" stroke-width="7" stroke-linecap="round"/><path d="M${x1} ${y1-4} L${x2} ${y2}" stroke="#EADBC0" stroke-width="5.5" stroke-linecap="round"/>`).join("")}
+    <path d="M80 166 Q86 156 92 166 Q86 162 80 166 Z" fill="#E8650F"/>
+    <ellipse cx="86" cy="164" rx="10" ry="7" fill="#E8C98F" stroke="#B49E7C"/>
+    <g>
+      <path d="M78 160 C60 150 44 132 36 116 C32 106 40 100 48 106 C58 120 70 134 88 150 Z" fill="#F6DCC6" stroke="#E2B896" stroke-width="1.5"/>
+      <path d="M82 156 L58 130" stroke="#EADBC0" stroke-width="7" stroke-linecap="round"/><path d="M56 126 L42 110" stroke="#EADBC0" stroke-width="5.5" stroke-linecap="round"/>
+      ${BSP_ROT([0, 30, 0, -22, 0], 86, 162)}
+    </g>
+    ${BSP_T(186, 150, "Sattel-", {s:10.5})}${BSP_T(186, 163, "knochen", {s:10.5})}<path d="M170 160 L98 164" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(110, 192, "Daumen zum Zeigefinger hin und weg", {s:10.5, w:400, c:"#5D6472"})}`),
+  /* Handgelenk (Handrücken): Die eiförmige Handwurzel kippt auf Elle und Speiche zur Seite – aber dreht nicht im Kreis */
+  handgelenk: svgBox("0 0 220 200", `${BSP_BG("Beispiel: Handgelenk")}
+    <path d="M78 196 L78 136 C80 124 104 122 110 130 L108 196 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+    <path d="M118 196 L122 132 C126 126 140 126 142 134 L136 196 Z" fill="url(#bspBone)" stroke="#B49E7C" stroke-width="1.2"/>
+    <path d="M84 128 C96 120 132 118 146 128" fill="none" stroke="#F7F4EC" stroke-width="4"/>
+    <g>
+      <ellipse cx="114" cy="112" rx="34" ry="13" fill="#E8C98F" stroke="#B49E7C" stroke-width="1.2"/>
+      ${[0,1,2,3,4,5,6].map(i => `<circle cx="${88 + i*8.6}" cy="${112 + (i%2?-4:4)}" r="4.5" fill="#F1DDB5" stroke="#B49E7C" stroke-width=".8"/>`).join("")}
+      ${[[86,96,74,42],[100,98,96,30],[116,98,116,26],[132,98,136,32],[146,100,156,48]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="#EADBC0" stroke-width="7" stroke-linecap="round"/>`).join("")}
+      ${BSP_ROT([0, -20, 0, 16, 0], 114, 122)}
+    </g>
+    ${BSP_T(184, 96, "Hand-", {s:10.5})}${BSP_T(184, 109, "wurzel", {s:10.5})}<path d="M172 112 L150 114" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(44, 166, "Speiche", {s:10.5})}<path d="M58 162 L80 160" stroke="#2A2F3D" stroke-width="1.2"/>${BSP_T(172, 166, "Elle", {s:10.5})}<path d="M160 162 L138 160" stroke="#2A2F3D" stroke-width="1.2"/>
+    ${BSP_T(110, 192, "kippt vor, zurück und zur Seite", {s:10.5, w:400, c:"#5D6472"})}`)
+};
 const artR = s => s.replace('<svg class="rk"', '<svg class="rk lnsvg"');
 const alle = s => s.replace('class="rk ', 'class="rk alle ');
 const artSk = s => s.replace('<svg class="sk"', '<svg class="sk lnsvg"');
@@ -265,9 +327,13 @@ const LERNEN = {
   arten: { titel:"Gelenkarten & das Knie", folien:[
     {bild:artSk(skel([], {gelenke:true})), titel:"Verschiedene Gelenke", text:"Nicht jedes Gelenk bewegt sich gleich. Die Form von Kopf und Pfanne entscheidet: kreisen, klappen, kippen oder drehen? Probier es an dir aus: Schulter, Ellenbogen, Daumen, Kopf."},
     {bild:MODEL.kugel, titel:"Kugelgelenk", text:"Eine Kugel in einer Pfanne – das **beweglichste** Gelenk. Bewegung in **alle Richtungen**, auch kreisen. Beispiele: **Schulter** und **Hüfte**. Vergleich: Anhängerkupplung."},
+    {bild:BSP.huefte, titel:"Im Körper: das Hüftgelenk", text:"Der kugelige **Oberschenkelkopf** sitzt tief in der **Hüftpfanne** des Beckens. Darum kann das Bein vor, zurück, zur Seite schwingen und sogar kreisen. Beide Flächen sind mit glattem **Knorpel** (weiß) überzogen."},
     {bild:MODEL.scharnier, titel:"Scharniergelenk", text:"Funktioniert wie eine **Tür**: nur **beugen und strecken**. Beispiele: **Ellenbogen**, **Finger**, **Knie** und oberes **Sprunggelenk**."},
+    {bild:BSP.ellenbogen, titel:"Im Körper: der Ellenbogen", text:"Am Ende des **Oberarmknochens** sitzt eine Rolle. Die **Elle** umgreift sie wie ein **Haken**. So kann der Unterarm nur **auf- und zuklappen** – zur Seite geht nichts."},
     {bild:MODEL.sattel, titel:"Sattelgelenk", text:"Zwei Flächen wie ein **Pferdesattel** und ein Reiter: vor, zurück und zur Seite. Beispiel: das **Daumensattelgelenk** – darum kannst du greifen."},
+    {bild:BSP.daumen, titel:"Im Körper: das Daumensattelgelenk", text:"Der Daumen sitzt auf einem **sattelförmigen Handwurzelknochen**. Er kann zum Zeigefinger hin und weg und zur Handfläche hin – darum kannst du den Daumen den anderen Fingern **gegenüberstellen** und greifen."},
     {bild:MODEL.ei, titel:"Eigelenk", text:"Ein eiförmiger Kopf in einer passenden Mulde: vor, zurück und zur Seite – aber nicht ganz im Kreis. Beispiel: das **Handgelenk**."},
+    {bild:BSP.handgelenk, titel:"Im Körper: das Handgelenk", text:"Die eiförmige **Handwurzel** liegt in einer Mulde der **Speiche**. Die Hand kippt **vor und zurück** und **zur Seite** – ganz im Kreis drehen kann sie hier nicht. (Das Drehen der Hand machen Elle und Speiche.)"},
     {bild:MODEL.dreh, titel:"Drehgelenk", text:"Ein Knochen dreht sich um den anderen – wie ein **Ring um einen Zapfen**. Beispiel: zwischen **1. und 2. Halswirbel** (Kopf drehen) und zwischen Elle und Speiche (Hand drehen)."},
     {bild:alle(artR(knie())), titel:"Das Knie: das größte Gelenk", text:"Im Knie treffen Oberschenkelknochen, Schienbein und Kniescheibe zusammen. Es ist ein **Dreh-Scharniergelenk**: Es beugt und streckt und kann sich im gebeugten Zustand etwas drehen."},
     {bild:artR(knie(["kreuzband","seitenband"])), titel:"Bänder im Knie", text:"Zwei **Seitenbänder** (innen und außen) und zwei **Kreuzbänder** halten das Knie stabil. Die Kreuzbänder liegen mitten im Gelenk und verhindern, dass der Unterschenkel nach vorn oder hinten rutscht."},

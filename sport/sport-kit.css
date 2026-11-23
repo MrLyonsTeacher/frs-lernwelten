@@ -70,8 +70,15 @@
 }
 
 /* Infokarten mit eigener Grafik */
-.ln-art .lnsvg{display:block;height:min(2.5em,46vh);width:auto;max-width:100%;margin:0 auto}
-@media (max-width:760px){ .ln-art .lnsvg{height:min(2.3em,30vh)} }
+/* Grafik groß: Bildspalte breiter, Grafik füllt sie aus (begrenzt durch die Höhe) */
+.ln-stage:has(.lnsvg){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:1.4rem}
+.ln-art > span:has(.lnsvg){display:block;width:100%}
+.ln-art .lnsvg{display:block;width:100%;height:auto;max-height:min(60vh,calc(var(--avail,700px) - 250px));margin:0 auto}
+@media (max-aspect-ratio:1/1), (max-width:640px){
+  .ln-stage:has(.lnsvg){grid-template-columns:1fr}
+  .ln-art .lnsvg{width:min(100%,420px);max-height:30vh}
+  .ln-stage:has(.lnsvg){overflow-y:auto}
+}
 /* Gelenk-Marker im Skelett */
 .sk g.jm{cursor:pointer}
 .sk g.jm .jr{fill:rgba(255,138,40,.45); stroke:#FF9A3D; stroke-width:3; transition:all .25s}
