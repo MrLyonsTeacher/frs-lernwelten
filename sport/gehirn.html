@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2A1236">
+<title>Gehirn-Arena-Lernwelt</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#F4EFF3; --surface:#FFFFFF; --surface-2:#F8F3F7; --ink:#2A1236; --muted:#665870; --line:#DCCFDB;
+  --accent:#C2347A; --accent-ink:#FFFFFF; --accent-2:#FFC233; --mid-bg:#FFF1CC;
+  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
+  --xray:#101A33; --glow:#FF9EC4;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #E0D4DF; --shadow:0 3px 0 #D3C4D2; --border-opt:2px solid #E0D4DF;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#FFE0EE; --card-back:#2A1236; --tile-bg:#FFE9B8; --tile-ink:#2A1236;
+  --chip-bg:#2A1236; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #E0D4DF;
+  --track:#E7DDE6; --star:#C2347A; --star-off:#E0D4DF;
+}
+body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(194,52,122,.12),transparent 42%)}
+.chip{border:0}
+.arena-hero{background:linear-gradient(160deg,#2A1236 0,#5A1F5C 60%,#FF9EC4 170%)}
+@media (prefers-reduced-motion: no-preference){ .arena-hero .puls{transform-box:fill-box;transform-origin:50% 50%;animation:puls 2.4s ease-in-out infinite} @keyframes puls{50%{transform:scale(1.06)}}
+  .arena-hero .funke{animation:funke 1.8s ease-in-out infinite} @keyframes funke{50%{opacity:.15}} }
+</style>
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script>
+/* Bilder: ChatGPT-Illustrationen (sport/gehirn-bilder/NAME.webp), sobald vorhanden in BILDER eintragen. */
+const BILDER = new Set([]);
+const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="gehirn-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
+
+/* =========================================================
+   Selbst gezeichnete Schaubilder
+   ========================================================= */
+const GE = "#FFD34D", OR = "#FF9A3D", GR = "#5BE38C", RO = "#FF6B6B", BL = "#5FE9FF", HG = "#9FB0CF", LI = "#C99BFF", PI = "#FF9EC4";
+const zeile = (x, y, w, h, farbe, a, b, sa=13.5) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#1E2C4D"/><rect x="${x}" y="${y}" width="8" height="${h}" rx="3" fill="${farbe}"/>` +
+  TX(x + 18, y + (b ? h/2 - 3 : h/2 + 5), a, {s:sa, a:"start", c:"#FFFFFF"}) + (b ? TX(x + 18, y + h/2 + 14, b, {s:11, a:"start", c:HG, w:600}) : "");
+const ok = (x, y) => `<circle cx="${x}" cy="${y}" r="10" fill="#14834F"/><path d="M${x-5} ${y} l3.5 4 l7 -8" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+const no = (x, y) => `<circle cx="${x}" cy="${y}" r="10" fill="#8E2A2A"/><path d="M${x-4} ${y-4} l8 8 M${x+4} ${y-4} l-8 8" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>`;
+const mi = (x, y) => `<circle cx="${x}" cy="${y}" r="10" fill="#8A6A10"/><path d="M${x-5} ${y} h10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>`;
+
+// Umgekehrte U-Kurve: Anspannung und Leistung (als Infokarte oder Antipp-Schaubild)
+function ukurve(fig){
+  const X = a => 50 + a * 380, Y = l => 250 - l * 180, f = a => Math.exp(-(((a - .5) / .26) ** 2));
+  let p = ""; for(let a = 0; a <= 1.0001; a += .01) p += `${p ? "L" : "M"}${X(a).toFixed(1)} ${Y(f(a)).toFixed(1)}`;
+  const Z = [["locker", 0, .3, "zu locker", BL, "unkonzentriert,|lustlos, Fehler"], ["richtig", .3, .7, "genau richtig", GR, "wach, konzentriert –|beste Leistung"], ["aufgeregt", .7, 1, "zu aufgeregt", RO, "verkrampft, zittrig,|fehleranfällig"]];
+  let s = `<line x1="50" y1="40" x2="50" y2="256" stroke="#5B6C93" stroke-width="2"/>` + PFEIL(50, 256, 444, 256, "#5B6C93", 2) + TX(56, 34, "Leistung", {s:13, a:"start", c:HG}) + TX(440, 276, "Aufregung / Anspannung →", {s:12.5, a:"end", c:HG});
+  Z.forEach(([id,a,b,t,c,u]) => {
+    const g = `<rect x="${X(a)}" y="44" width="${X(b) - X(a)}" height="210" fill="${c}" opacity=".10"/>` + TX(X((a+b)/2), 300, t, {s:15, c}) + TX(X((a+b)/2), 320, u, {s:11.5, c:"#FFFFFF", w:600});
+    s += fig ? `<g data-z="${id}"><rect class="zr" x="${X(a) + 2}" y="42" width="${X(b) - X(a) - 4}" height="306" rx="12"/>${g}</g>` : g; });
+  s += `<path d="${p}" fill="none" stroke="${PI}" stroke-width="6" stroke-linecap="round"/>`;
+  return `<svg class="${fig ? "bz" : "lnsvg"}" viewBox="0 0 480 356" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Umgekehrte U-Kurve"><rect width="480" height="356" rx="22" fill="#101A33"/>${s}</svg>`;
+}
+FIG.ukurve = () => ukurve(true);
+
+// Sinnperspektiven-Rad (als Infokarte oder Antipp-Schaubild)
+const SINN = [["leistung","Leistung","sich verbessern,|gewinnen",OR],["miteinander","Miteinander","Team,|Gemeinschaft",BL],["gesundheit","Gesundheit","fit sein,|sich wohlfühlen",GR],
+  ["wagnis","Wagnis","Mut,|Nervenkitzel",RO],["ausdruck","Ausdruck","gestalten,|sich darstellen",LI],["eindruck","Eindruck","Körper & Natur|erleben",GE]];
+function sinnrad(fig){
+  const cx = 220, cy = 214, R = 188, r = 56;
+  let s = "";
+  SINN.forEach(([id,t,u,c],k) => { const a0 = (k / 6) * 2 * Math.PI - Math.PI / 2 - Math.PI / 6, a1 = a0 + Math.PI / 3, am = (a0 + a1) / 2;
+    const P = (a, rr) => `${(cx + Math.cos(a) * rr).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)}`;
+    const d = `M${P(a0, r)} L${P(a0, R)} A${R} ${R} 0 0 1 ${P(a1, R)} L${P(a1, r)} A${r} ${r} 0 0 0 ${P(a0, r)} Z`;
+    const tx = cx + Math.cos(am) * 124, ty = cy + Math.sin(am) * 124;
+    const g = `<path d="${d}" fill="${c}" opacity=".9" stroke="#101A33" stroke-width="4"/>` + TX(+tx.toFixed(1), +(ty - 6).toFixed(1), t, {s:16, c:"#101A33"}) + TX(+tx.toFixed(1), +(ty + 14).toFixed(1), u, {s:11, c:"#1A1A2E", w:600});
+    s += fig ? `<g data-z="${id}"><path class="zr" d="${d}"/>${g}</g>` : g; });
+  s += `<circle cx="${cx}" cy="${cy}" r="${r - 4}" fill="#1E2C4D"/>` + TX(cx, cy - 4, "Warum", {s:15}) + TX(cx, cy + 15, "Sport?", {s:15});
+  return `<svg class="${fig ? "bz" : "lnsvg"}" viewBox="0 0 440 428" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sechs Sinnperspektiven"><rect width="440" height="428" rx="22" fill="#101A33"/>${s}</svg>`;
+}
+FIG.sinnrad = () => sinnrad(true);
+
+const ICON = {
+  merkmale: KARTE(380, 236, TX(190, 30, "Was macht Sport aus?", {s:18, c:PI}) +
+    [["körperliche|Bewegung",GR,"🏃"],["Leistung /|Wettkampf",OR,"🏆"],["feste|Regeln",BL,"📏"],["Fair|Play",PI,"🤝"]].map(([t,c,e],k) => { const x = 50 + k*93;
+      return `<circle cx="${x}" cy="100" r="36" fill="#1E2C4D" stroke="${c}" stroke-width="3"/><text x="${x}" y="113" font-size="34" text-anchor="middle">${e}</text>` + TX(x, 160, t, {s:13.5, c}); }).join("") +
+    TX(190, 222, "Es gibt keine einzige richtige Definition.", {s:12.5, c:HG, w:600})),
+  grenzfaelle: KARTE(420, 292, TX(210, 26, "Ist das Sport? – Merkmale im Check", {s:16, c:PI}) +
+    ["Bewegung","Wettkampf","Regeln","Fair Play"].map((t,k) => TX(214 + k*54, 56, t, {s:10.5, c:HG})).join("") +
+    [["Fußball im Verein",[1,1,1,1]],["Schach",[0,1,1,1]],["E-Sport-Turnier",[2,1,1,1]],["Joggen im Park",[1,0,0,2]],["Formel 1",[1,1,1,1]],["Disco-Tanzen",[1,0,0,2]]].map(([t,m],r) => { const y = 66 + r*34;
+      return `<rect x="10" y="${y}" width="400" height="30" rx="8" fill="${r % 2 ? "#17243F" : "#1E2C4D"}"/>` + TX(20, y + 20, t, {s:12.8, a:"start", c:"#FFFFFF"}) + m.map((v,k) => (v === 1 ? ok : v === 0 ? no : mi)(214 + k*54, y + 15)).join(""); }).join("") +
+    TX(210, 282, "– = kaum / umstritten · Schach ist vom DOSB als Sportart anerkannt", {s:11, c:HG, w:600})),
+  fairness: KARTE(400, 250, TX(200, 28, "Zwei Arten von Fairness", {s:17, c:PI}) +
+    `<rect x="14" y="44" width="180" height="192" rx="14" fill="#14301F" stroke="${GR}" stroke-width="2.5"/><rect x="206" y="44" width="180" height="192" rx="14" fill="#2A1A3A" stroke="${PI}" stroke-width="2.5"/>` +
+    TX(104, 72, "formell", {s:18, c:GR}) + TX(104, 92, "Regeln einhalten", {s:12.5, c:"#FFFFFF"}) + TX(104, 124, "kein Foul|keine Tricks|Schiri-Entscheidungen|akzeptieren", {s:12, c:HG, w:600, lh:1.4}) +
+    TX(296, 72, "informell", {s:18, c:PI}) + TX(296, 92, "mehr als die Regeln", {s:12.5, c:"#FFFFFF"}) + TX(296, 124, "Respekt|Gegner aufhelfen|ehrlich sein – auch wenn|es niemand sieht", {s:12, c:HG, w:600, lh:1.4})),
+  werte: KARTE(400, 236, TX(200, 30, "Die drei olympischen Werte", {s:17, c:PI}) +
+    [["Höchst-|leistung","Excellence",GE],["Freund-|schaft","Friendship",BL],["Respekt","Respect",GR]].map(([t,e,c],k) => { const x = 72 + k*128;
+      return `<circle cx="${x}" cy="118" r="56" fill="#1E2C4D" stroke="${c}" stroke-width="6"/><circle cx="${x}" cy="118" r="44" fill="none" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 4"/>` +
+        TX(x, t.includes("|") ? 114 : 124, t, {s:15, c}) + TX(x, 198, e, {s:12, c:HG, w:600}); }).join("")),
+  emotionen: KARTE(400, 260, TX(200, 26, "Gefühle im Sport – und was der Körper zeigt", {s:15, c:PI}) +
+    [["Nervosität / Angst","Herzklopfen, zittrige Knie, Bauchkribbeln",LI],["Freude / Stolz","Gänsehaut, Energie, Kraft",GE],["Ärger / Wut","heißer Kopf, Anspannung",RO],["Scham","heißer Kopf, Blick nach unten",OR],["Enttäuschung","Kloß im Hals, Müdigkeit",BL]].map(([a,b,c],k) =>
+      zeile(12, 40 + k*43, 376, 38, c, a, b, 13)).join("")),
+  protokoll: KARTE(400, 236, TX(200, 26, "Mein Emotionsprotokoll", {s:17, c:PI}) +
+    [["Situation","Was ist passiert?"],["Auslöser","Was hat es ausgelöst?"],["Gefühl","Welche Emotion? 1–10"],["Körper","Was spürst du?"],["Reaktion","Was hast du getan?"],["Nächstes Mal","Was machst du anders?"]].map(([a,b],k) => { const x = 12 + (k % 3) * 128, y = 44 + Math.floor(k/3) * 92;
+      return `<rect x="${x}" y="${y}" width="120" height="82" rx="12" fill="#1E2C4D" stroke="${k === 5 ? GR : "#3A4A75"}" stroke-width="2"/><circle cx="${x + 18}" cy="${y + 18}" r="11" fill="${PI}"/>` + TX(x + 18, y + 23, k + 1, {s:13, c:"#101A33"}) +
+        TX(x + 60, y + 48, a, {s:13.5, c:"#FFFFFF"}) + TX(x + 60, y + 68, b, {s:10.2, c:HG, w:600}); }).join("")),
+  sportarten: KARTE(400, 220, TX(200, 30, "Wie viel Aufregung hilft?", {s:17, c:PI}) +
+    `<defs><linearGradient id="ag" x1="0" x2="1"><stop offset="0" stop-color="${BL}"/><stop offset="1" stop-color="${OR}"/></linearGradient></defs><rect x="20" y="96" width="360" height="16" rx="8" fill="url(#ag)"/>` +
+    TX(20, 80, "eher wenig", {s:14, a:"start", c:BL}) + TX(380, 80, "eher mehr", {s:14, a:"end", c:OR}) +
+    TX(20, 142, "präzise, feine Bewegungen:", {s:12, a:"start", c:"#FFFFFF"}) + TX(20, 162, "Bogenschießen, Golf,", {s:12, a:"start", c:HG, w:600}) + TX(20, 180, "Elfmeter, Freiwurf", {s:12, a:"start", c:HG, w:600}) +
+    TX(380, 142, "Kraft & Schnellkraft:", {s:12, a:"end", c:"#FFFFFF"}) + TX(380, 162, "Gewichtheben, Sprint,", {s:12, a:"end", c:HG, w:600}) + TX(380, 180, "Kugelstoßen", {s:12, a:"end", c:HG, w:600}) +
+    TX(200, 208, "Und: Jeder Mensch ist anders.", {s:12, c:GE})),
+  strategien: KARTE(420, 280, TX(210, 26, "Sechs Strategien", {s:17, c:PI}) +
+    [["A","Ruhig atmen","4 s ein, 6 s aus",BL],["B","Selbstgespräch","„Ich hab das geübt.“",GR],["C","Routine","immer gleicher Ablauf",GE],["D","Fokuswort","„Ball!“ – „Ruhig!“",OR],["E","Kleine Schritte","Aufgabe in Etappen",LI],["F","Kurz raus","wegdrehen, bis 10 zählen",RO]].map(([b,a,u,c],k) => { const x = 12 + (k % 2) * 202, y = 40 + Math.floor(k/2) * 78;
+      return `<rect x="${x}" y="${y}" width="194" height="70" rx="12" fill="#1E2C4D"/><rect x="${x}" y="${y}" width="44" height="70" rx="12" fill="${c}"/>` + TX(x + 22, y + 46, b, {s:26, c:"#101A33", w:800}) +
+        TX(x + 56, y + 30, a, {s:14.5, a:"start", c:"#FFFFFF"}) + TX(x + 56, y + 52, u, {s:11.4, a:"start", c:HG, w:600}); }).join("")),
+  atmen: KARTE(360, 220, TX(180, 30, "Ruhig atmen", {s:17, c:BL}) + `<path d="M40 160 L150 70 L320 160" fill="none" stroke="${BL}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>` +
+    TX(100, 150, "ein", {s:16, c:"#FFFFFF"}) + TX(100, 170, "4 Sekunden", {s:12.5, c:HG, w:600}) + TX(262, 78, "aus – länger", {s:16, c:"#FFFFFF"}) + TX(262, 98, "6 Sekunden", {s:12.5, c:HG, w:600}) +
+    TX(180, 200, "Nur ruhig atmen – kein Luftanhalten, kein Hecheln.", {s:12, c:GE})),
+  selbstgespraech: KARTE(420, 250, TX(210, 26, "Selbstgespräch umformulieren", {s:17, c:PI}) +
+    [["„Ich verhaue das bestimmt.“","„Ich hab das geübt – ich mache meinen Ablauf.“"],["„Der Gegner ist viel zu stark.“","„Ich spiele mein Spiel, Schritt für Schritt.“"],["„Alle schauen mir zu.“","„Ich konzentriere mich auf den Ball.“"]].map(([a,b],k) => { const y = 42 + k*68;
+      return `<rect x="12" y="${y}" width="150" height="58" rx="10" fill="#3A1A22"/>` + TX(87, y + 34, a, {s:11, c:"#FFB3B3"}) + PFEIL(166, y + 29, 194, y + 29, "#FFFFFF", 3) +
+        `<rect x="198" y="${y}" width="210" height="58" rx="10" fill="#14301F"/>` + TX(303, y + 34, b, {s:10.6, c:"#C8F7D6"}); }).join("")),
+  mut: KARTE(380, 250, TX(190, 26, "Mut in kleinen Stufen", {s:17, c:PI}) +
+    [["Rolle auf der Matte",BL],["Rolle vom Mattenberg",GR],["niedriger Kasten + Hilfe",GE],["über den Kasten + Hilfe",OR]].map(([t,c],k) => { const x = 16 + k*40, y = 196 - k*40;
+      return `<rect x="${x}" y="${y}" width="${348 - k*40}" height="36" rx="6" fill="${c}"/>` + TX(x + 8, y + 23, (k + 1) + "  " + t, {s:11.6, a:"start", c:"#101A33"}); }).join("") +
+    TX(190, 244, "Mut = trotz Angst einen überlegten Schritt wagen", {s:11.8, c:"#FFFFFF", w:600})),
+  karte: KARTE(420, 230, TX(210, 26, "Meine Strategie-Karte", {s:17, c:PI}) +
+    [["WENN …","der Schiri gegen|mich pfeift",RO],["… MERKE ICH ES AN","heißem Kopf",OR],["… DANN MACHE ICH","kurz wegdrehen,|bis 10 zählen",GR],["MEIN SATZ","„Nächster|Ball!“",BL]].map(([a,b,c],k) => { const x = 10 + k*102;
+      return `<rect x="${x}" y="44" width="96" height="160" rx="12" fill="#1E2C4D" stroke="${c}" stroke-width="2.5"/>` + TX(x + 48, 68, a, {s:9.6, c}) + TX(x + 48, 118, b, {s:12, c:"#FFFFFF", w:600}); }).join("") +
+    TX(210, 222, "Beispiel – deine eigene Karte füllst du selbst aus.", {s:11.2, c:HG, w:600})),
+  stationen: KARTE(420, 270, TX(210, 26, "Sport & Gesellschaft", {s:17, c:PI}) +
+    [["A","Medien","Was wird gezeigt – was nie?",BL],["B","Geld","Woher bekommt ein Verein Geld?",GE],["C","Umwelt","Anreise, Stadien, Skigebiete",GR],["D","Inklusion","Sport mit und ohne Behinderung",PI]].map(([b,a,u,c],k) => { const x = 12 + (k % 2) * 202, y = 42 + Math.floor(k/2) * 110;
+      return `<rect x="${x}" y="${y}" width="194" height="100" rx="14" fill="#1E2C4D" stroke="${c}" stroke-width="2.5"/><circle cx="${x + 28}" cy="${y + 30}" r="16" fill="${c}"/>` + TX(x + 28, y + 36, b, {s:16, c:"#101A33"}) +
+        TX(x + 54, y + 36, a, {s:17, a:"start", c:"#FFFFFF"}) + TX(x + 97, y + 72, u, {s:11.2, c:HG, w:600}); }).join(""))
+};
+
+/* =========================================================
+   Inhalte (abgestimmt auf AB 26, 27, 28, 29 und 32)
+   ========================================================= */
+const LERNEN = {
+  fairplay: { titel:"Wettkampf & Fair Play", folien:[
+    {bild:ICON.merkmale, titel:"Was ist Sport?", text:"Sport verbindet **körperliche Bewegung** mit **Leistung** bzw. **Wettkampf**, **festen Regeln** und **Fair Play**. Nicht immer sind alle Merkmale da – darum muss man bei manchen Fällen **abwägen**."},
+    {bild:ICON.grenzfaelle, titel:"Grenzfälle", text:"**Schach:** kaum Bewegung, aber Wettkampf und Regeln – vom **DOSB** als Sportart anerkannt. **E-Sport:** Wettkampf und Regeln, wenig Bewegung – **umstritten**. **Joggen:** Bewegung, meist ohne Wettkampf (Freizeitsport). **Formel 1:** hohe körperliche Belastung der Fahrer. **Disco-Tanzen:** Bewegung ohne Regeln und Wettkampf. Entscheidend ist die **Begründung**."},
+    {bild:ICON.fairness, titel:"Formelle Fairness", text:"**Formelle Fairness** heißt: **Regeln einhalten** – kein Foul, keine Tricks, **Schiri-Entscheidungen akzeptieren**. Beispiel: Ein Floorballspieler hält sich an die Regel „kein hoher Stock“."},
+    {bild:ICON.fairness, titel:"Informelle Fairness", text:"**Informelle Fairness** geht **über die Regeln hinaus**: **Respekt**, dem Gegner aufhelfen, **ehrlich sein – auch wenn es niemand sieht**. Beispiel: Eine Spielerin spielt den Ball ins Aus, weil ein Gegner verletzt am Boden liegt. **Unfair** ist z. B. ein **vorgetäuschtes Foul** oder lautes Jubeln über den Fehler des Gegners."},
+    {bild:ICON.werte, titel:"Die olympischen Werte", text:"Die Olympische Bewegung nennt drei Werte: **Höchstleistung** (Excellence) – sein Bestes geben, **Freundschaft** – Verbindung über Grenzen hinweg, und **Respekt** – vor Gegnern, Regeln und sich selbst."},
+    {bild:FOTO("em9-gold-geteilt","Zwei Hochspringer teilen sich die Goldmedaille","🥇"), titel:"Geteiltes Gold", text:"Bei Olympia 2021 in Tokio waren zwei Hochspringer gleich hoch gesprungen. Statt in ein Stechen zu gehen, **teilten sie sich die Goldmedaille** – ein Zeichen von **Freundschaft** und **Respekt**."},
+    {bild:FOTO("em9-aufhelfen","Läuferin hilft gestürzter Konkurrentin","🤝"), titel:"Fair Play im Turnier", text:"Für das Floorball-Turnier entwickelt ihr eine **Fair-Play-Wertung** mit vier Kriterien (je 0–2 Punkte), z. B. **Regeln einhalten**, **respektvoll** mit Gegner und Schiri, **Fehler zugeben**, **Begrüßung und Verabschiedung**, **alle einbinden**."}
+  ]},
+  emotionen: { titel:"Emotionen im Sport", folien:[
+    {bild:ICON.emotionen, titel:"Gefühle zeigen sich im Körper", text:"Freude, Stolz, Angst, Nervosität, Ärger, Wut, Scham, Enttäuschung – im Sport erleben wir **starke Gefühle**. Sie zeigen sich im **Körper**: Herzklopfen, zittrige Knie, Schwitzen, Kloß im Hals, Bauchkribbeln, heißer Kopf, Gänsehaut oder plötzliche Kraft."},
+    {bild:FOTO("em9-elfmeter","Nervöse Spielerin vor dem Elfmeter","⚽"), titel:"Gefühle beeinflussen die Leistung", text:"**Nervosität** vor dem Elfmeter kann verkrampfen – oder wach machen. **Wut** nach einer Fehlentscheidung führt zu Fouls und Konzentrationsverlust. **Angst** vor dem Sprung lässt zögern – das kann gefährlich werden. **Freude** motiviert, kann aber kurz unaufmerksam machen."},
+    {bild:ukurve(false), titel:"Die umgekehrte U-Kurve", text:"Bei **zu wenig** Anspannung ist man **unkonzentriert**, bei **zu viel** **verkrampft und fehleranfällig**. Eine **mittlere Anspannung** bringt die **beste Leistung**."},
+    {bild:ICON.sportarten, titel:"Wie viel Aufregung passt?", text:"Bei **präzisen, feinen** Bewegungen (Bogenschießen, Golf, Elfmeter) hilft eher **wenig** Aufregung. Bei **Kraft und Schnellkraft** (Gewichtheben, Sprint) darf es **mehr** sein. Außerdem ist **jeder Mensch anders**."},
+    {bild:ICON.protokoll, titel:"Das Emotionsprotokoll", text:"**Situation** → **Auslöser** → **Gefühl** (wie stark, 1–10?) → **Körpersignal** → **Reaktion** → **Nächstes Mal**. Wer seine Gefühle **erkennt**, kann sie besser **steuern**. Dein Protokoll ist **persönlich**."}
+  ]},
+  steuern: { titel:"Emotionen steuern & Mut", folien:[
+    {bild:ICON.strategien, titel:"Sechs Strategien", text:"Gefühle kann man **nicht abschalten**, aber man kann lernen, mit ihnen umzugehen: **A Ruhig atmen** · **B Selbstgespräch** · **C Routine** · **D Fokuswort** · **E Kleine Schritte** · **F Kurz raus**."},
+    {bild:ICON.atmen, titel:"A – Ruhig atmen", text:"Langsam **4 Sekunden einatmen**, **6 Sekunden ausatmen** – das längere Ausatmen beruhigt. Hilft z. B., wenn vor dem Aufschlag die **Hände zittern**. Wer Schwindel spürt, atmet einfach normal weiter."},
+    {bild:ICON.selbstgespraech, titel:"B – Selbstgespräch", text:"Aus einem **negativen** Satz einen **hilfreichen** machen: „Heute klappt gar nichts“ → „Ein Ball nach dem anderen.“ Hilft, wenn man nach Fehlern ins Grübeln kommt."},
+    {bild:ICON.strategien, titel:"C, D, E, F", text:"**C Routine:** immer gleicher Ablauf vor der Aktion (z. B. vor dem Freiwurf). **D Fokuswort:** ein Wort für die Aufmerksamkeit – „Ball!“, „Ruhig!“ – wenn man abgelenkt ist. **E Kleine Schritte:** die Aufgabe in Zwischenschritte teilen. **F Kurz raus:** wegdrehen, bis zehn zählen, dann zurück – z. B. wenn man kurz davor ist zu meckern."},
+    {bild:ICON.mut, titel:"Angst und Mut", text:"**Angst** ist ein **Schutzsignal**: Hier ist etwas neu oder gefährlich. **Mut** heißt nicht, keine Angst zu haben, sondern **trotz Angst einen überlegten nächsten Schritt** zu wagen. Dabei helfen **kleine Zwischenschritte** und **Sicherheit** (Matten, Hilfestellung)."},
+    {bild:FOTO("em9-kasten","Rolle über den Kasten mit Hilfestellung","🤸"), titel:"Die Stufenleiter", text:"Beispiel Rolle über den Kasten: **1** Rolle auf der Matte → **2** Rolle vom Mattenberg → **3** Rolle auf dem niedrigen Kasten mit Hilfestellung → **4** Rolle über den Kasten mit Hilfestellung."},
+    {bild:ICON.karte, titel:"Meine Strategie-Karte", text:"**Wenn …** (Situation) **… merke ich es an …** (Körpersignal) **… dann mache ich …** (Strategie) – und **mein Satz**. So hast du im Turnier einen Plan, falls die Gefühle hochkochen."}
+  ]},
+  sinn: { titel:"Warum treiben wir Sport?", folien:[
+    {bild:sinnrad(false), titel:"Sechs Sinnperspektiven", text:"Menschen treiben aus verschiedenen Gründen Sport: **Leistung** (sich verbessern, gewinnen) · **Miteinander** (Team, Gemeinschaft) · **Gesundheit** (fit sein, sich wohlfühlen) · **Wagnis** (Mut, Nervenkitzel) · **Ausdruck** (gestalten, sich darstellen) · **Eindruck** (den Körper und die Natur erleben)."},
+    {bild:sinnrad(false), titel:"Meist mehrere zugleich", text:"Eine Sportart spricht meist **mehrere Perspektiven gleichzeitig** an. Der **Parkour-Sprung** über eine Mauer ist **Wagnis** – und **Leistung**. Das jubelnde **Floorball-Team** erlebt **Miteinander** – und Leistung. Der **Lauf bei Sonnenaufgang** ist **Eindruck** – und Gesundheit."},
+    {bild:FOTO("em9-tanzgruppe","Tanzgruppe beim Schulfest","💃"), titel:"Ausdruck und Eindruck", text:"**Ausdruck:** Eine Tanzgruppe zeigt ihre Choreografie beim Schulfest – sie **gestaltet** und **stellt sich dar**. **Eindruck:** Beim Lauf am See spürst du deinen Körper, den Wind und die Natur."},
+    {bild:sinnrad(false), titel:"Mein Ranking", text:"Welche Sinnperspektiven sind **dir** am wichtigsten? Es gibt kein Richtig oder Falsch – entscheidend ist ein **konkretes Beispiel** in deiner Begründung."}
+  ]},
+  gesellschaft: { titel:"Sport & Gesellschaft", folien:[
+    {bild:ICON.stationen, titel:"Über den Spielfeldrand", text:"Sport passiert nicht nur in der Halle: Er ist in **Medien** und Werbung, kostet **Geld**, beeinflusst die **Umwelt** und kann Menschen **zusammenbringen** – oder ausschließen."},
+    {bild:FOTO("em9-medien","Kamera und Social Media beim Sport","📺"), titel:"A – Sport & Medien", text:"**Oft gezeigt:** Fußball, Formel 1, Wintersport. **Selten:** viele Frauen- und Randsportarten. Gründe: **Einschaltquoten**, **Werbeeinnahmen**, Tradition. Davon profitieren **Vereine, Sender, Sponsoren** und Athleten."},
+    {bild:FOTO("em9-geld","Einnahmen eines Profivereins","💶"), titel:"B – Sport & Geld", text:"Profivereine verdienen Geld mit **Tickets**, **Sponsoren**, **Fernseh- und Medienrechten**, **Fanartikeln (Merchandising)** und **Transfers**. Für Familien kostet Vereinssport **Mitgliedsbeitrag**, **Ausrüstung**, **Fahrten** und **Turniergebühren**."},
+    {bild:FOTO("em9-umwelt","Sport und Umwelt","🌱"), titel:"C – Sport & Umwelt", text:"Belastungen: **Anreise** vieler Zuschauer, **Energie** für Stadien und Flutlicht, **Flächenverbrauch**, **Kunstrasen-Granulat**, **Skigebiete und Schneekanonen**. Was hilft: **Fahrgemeinschaften**, **Bus und Bahn**, **gebrauchte Ausrüstung**, Sport **in der Nähe**."},
+    {bild:FOTO("em9-inklusion","Rollstuhlbasketball","♿"), titel:"D – Sport & Inklusion", text:"Menschen mit und ohne Behinderung können zusammen Sport treiben: **Paralympics**, **Special Olympics**, **Rollstuhlbasketball**, **Blindenfußball**, **Sitzvolleyball**, inklusive Vereinsgruppen. In der Schule helfen eine **barrierefreie Halle**, **angepasste Regeln**, passendes **Material** und **gemeinsame Turniere**."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:ICON.fairness, titel:"Fairness", text:"**„Regeln halten ist formell fair – informell gibst du noch mehr.“**"},
+    {bild:ukurve(false), titel:"U-Kurve", text:"**„Zu locker lahm, zu heiß verkrampft – die Mitte hat’s am besten geschafft.“**"},
+    {bild:ICON.atmen, titel:"Atmen", text:"**„Vier ein, sechs aus – die Ruhe kommt heraus.“**"},
+    {bild:ICON.mut, titel:"Mut", text:"**„Mut heißt nicht: Ich hab keine Angst – Mut heißt: Schritt für Schritt, so wie du’s kannst.“**"},
+    {bild:sinnrad(false), titel:"Sinn", text:"**„Leistung, Wagnis, Miteinand’ – Gesundheit, Ausdruck, Eindruck – sechs Gründe, die man kennt.“**"},
+    {bild:ICON.selbstgespraech, titel:"Selbstgespräch", text:"**„Sag nicht: Das wird nie was! Sag: Ein Ball nach dem andern – und dann Spaß.“**"}
+  ]}
+};
+
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const HERO = `
+<div class="sw-hero arena-hero">
+  <a class="welt-back" href="klasse9.html#o=gehirn">🏙️ Athletopolis</a>
+  <svg class="hero-art" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <g class="puls"><path d="M170 160 Q150 90 210 76 Q240 40 290 62 Q340 52 352 100 Q384 120 366 162 Q372 206 326 212 Q300 240 256 222 Q214 240 194 208 Q156 200 170 160 Z" fill="#FF9EC4" stroke="#C2347A" stroke-width="6"/>
+      <path d="M210 110 q20 10 10 30 M250 82 q-10 24 10 40 q20 14 10 36 M300 92 q-16 20 4 36 M330 130 q-20 10 -10 34 M230 180 q24 -6 40 10" stroke="#C2347A" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+    ${[[160,90],[380,70],[390,200],[150,230],[240,40]].map(([x,y],k) => `<path class="funke" d="M${x} ${y-12} L${x+4} ${y} L${x} ${y+12} L${x-4} ${y} Z" fill="#FFD34D" style="animation-delay:${k*.35}s"/>`).join("")}
+  </svg>
+  <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
+  <h1>Kopf&shy;sache Sport</h1>
+  <p>Willkommen in der Gehirn-Arena! Hier geht es um Fair Play, Gefühle im Wettkampf, Mut – und um die Frage, warum wir eigentlich Sport treiben. Sammle Basketbälle 🏀 für deinen Rang in Athletopolis.</p>
+</div>`;
+
+const HH = ["👍 Hilfreich","👎 Hinderlich"], AU = ["🎯 eher wenig","💥 eher mehr"];
+LW.start({
+  id: "em9",
+  titel: "Gehirn-Arena-Lernwelt",
+  sprache: "de",
+  hero: HERO,
+  sammel: "🏀",
+  kartenSymbol: "🧠",
+  rang: {k:"s9"},   // gemeinsame Basketbälle und Ränge in ganz Athletopolis
+  konfetti: ["#C2347A","#FFC233","#FF9EC4","#2A1236","#FFFFFF"],
+  lob: {3:"Kopf und Herz am rechten Fleck! Drei Sterne.", 2:"Stark! Schaffst du drei Sterne?", 1:"Guter Anfang – schau dir die Infokarten an und versuch es nochmal.", 0:"Kopf hoch: Lies die Infokarten und probier es nochmal."},
+  lernen: LERNEN,
+  levels: [
+    { id:"merkmal", typ:"quiz", lernen:"fairplay", icon:"🔍", titel:"Merkmal-Check", art:"Quiz · 7 Fragen",
+      anleitung:"Welches **Merkmal von Sport** fehlt – oder ist vorhanden? Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Disco-Tanzen: Es gibt viel Bewegung. Was fehlt vor allem?", o:["feste Regeln und Wettkampf","Bewegung","Musik","Spaß"], c:0, e:"Bewegung ja – aber **keine Regeln und kein Wettkampf**."},
+        {q:"Schach: Wettkampf und feste Regeln gibt es. Was fehlt vor allem?", o:["Fair Play","körperliche Bewegung","Leistung","Regeln"], c:1, e:"Kaum **Bewegung** – trotzdem ist Schach vom **DOSB** als Sportart anerkannt."},
+        {q:"Joggen im Park: Was fehlt meistens?", o:["Bewegung","Gesundheit","Wettkampf","Anstrengung"], c:2, e:"Meist **ohne Wettkampf** – Freizeitsport."},
+        {q:"Formel 1: Welches Merkmal wird oft unterschätzt?", o:["die hohe körperliche Belastung der Fahrer","die Regeln","der Wettkampf","die Zuschauer"], c:0, e:"Fahrer müssen enorme **Kräfte** aushalten – sehr anstrengend."},
+        {q:"E-Sport (FIFA-Turnier): Was spricht vor allem dagegen, es Sport zu nennen?", o:["Es gibt keine Regeln.","Es gibt keinen Wettkampf.","Es gibt wenig körperliche Bewegung.","Es gibt keine Gewinner."], c:2, e:"Wettkampf und Regeln ja – aber **wenig Bewegung**. Darum ist es **umstritten**."},
+        {q:"Fußball im Verein: Welche Merkmale sind erfüllt?", o:["nur Bewegung","alle: Bewegung, Wettkampf, Regeln, Fair Play","nur Regeln","keins"], c:1, e:"Der klare Fall: **alle Merkmale**."},
+        {q:"Was ist bei den Grenzfällen am wichtigsten?", o:["die eine richtige Lösung kennen","eine begründete Abwägung","möglichst schnell antworten","die Meinung der Lehrkraft"], c:1, e:"Es gibt **keine einzige richtige Definition** – die **Begründung** zählt."}
+      ]},
+    { id:"fairness", typ:"sortieren", lernen:"fairplay", icon:"🤝", titel:"Formell, informell oder unfair?", art:"Sortieren · 12 Situationen",
+      anleitung:"Ist das **formelle Fairness** (Regeln einhalten), **informelle Fairness** (mehr als die Regeln) oder **unfair**? Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"formell", info:"Regeln einhalten", tipp:"Formell fair: die Regeln einhalten, Schiri-Entscheidungen akzeptieren."},
+        {t:"informell", info:"mehr als die Regeln", tipp:"Informell fair: Respekt, helfen, ehrlich sein – auch wenn es niemand sieht."},
+        {t:"unfair", info:"gegen Regeln oder Respekt", tipp:"Unfair: tricksen, vortäuschen, andere verhöhnen."}
+      ],
+      items:[
+        {t:"Eine Spielerin spielt den Ball ins Aus, weil ein Gegner verletzt am Boden liegt.", k:1},
+        {t:"Ein Spieler hält sich an die Regel: kein hoher Stock.", k:0},
+        {t:"Ein Team jubelt laut über einen Fehler des Gegners.", k:2},
+        {t:"Ein Spieler gibt zu, dass der Ball noch seinen Schläger berührt hat – Ballbesitz für den Gegner.", k:1},
+        {t:"Nach dem Spiel geben sich alle die Hand – auch die Verlierer.", k:1},
+        {t:"Jemand täuscht ein Foul vor, um einen Freischlag zu bekommen.", k:2},
+        {t:"Ein Spieler akzeptiert die Entscheidung des Schiris ohne Meckern.", k:0},
+        {t:"Eine Spielerin hilft einer gestürzten Gegnerin wieder auf.", k:1},
+        {t:"Jemand hält den Gegner heimlich am Trikot fest.", k:2},
+        {t:"Ein Team hält beim Einwurf den richtigen Abstand ein.", k:0},
+        {t:"Ein Spieler beleidigt den Schiedsrichter.", k:2},
+        {t:"Eine Spielerin wartet mit dem Anstoß, bis alle auf ihren Positionen sind.", k:0}
+      ]},
+    { id:"werte", typ:"quiz", lernen:"fairplay", icon:"🏅", titel:"Olympische Werte", art:"Geschichten · 6 Fälle",
+      anleitung:"Welcher **olympische Wert** passt **am besten**? Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Zwei Hochspringer teilen sich bei Olympia die Goldmedaille, statt in ein Stechen zu gehen.", o:["Freundschaft","Höchstleistung","Respekt"], c:0, e:"**Freundschaft** (auch Respekt) – Tokio 2021."},
+        {q:"Ein Schwimmer trainiert vier Jahre lang, um seine persönliche Bestzeit zu verbessern.", o:["Respekt","Höchstleistung","Freundschaft"], c:1, e:"Sein Bestes geben: **Höchstleistung**."},
+        {q:"Eine Läuferin hilft einer gestürzten Konkurrentin auf und läuft mit ihr gemeinsam ins Ziel.", o:["Höchstleistung","Freundschaft","Respekt"], c:2, e:"**Respekt** vor der Gegnerin (auch Freundschaft)."},
+        {q:"Eine Turnerin verbeugt sich vor den Kampfrichtern und gratuliert der Siegerin, obwohl sie selbst knapp verloren hat.", o:["Respekt","Höchstleistung","Freundschaft"], c:0, e:"Anerkennung für Gegnerin und Kampfrichter: **Respekt**."},
+        {q:"Sportler aus verfeindeten Ländern wohnen im olympischen Dorf zusammen und tauschen Anstecker.", o:["Höchstleistung","Respekt","Freundschaft"], c:2, e:"Verbindung über Grenzen hinweg: **Freundschaft**."},
+        {q:"Ein Gewichtheber wagt im letzten Versuch ein neues persönliches Rekordgewicht.", o:["Freundschaft","Höchstleistung","Respekt"], c:1, e:"Über sich hinauswachsen: **Höchstleistung**."}
+      ]},
+    { id:"gefuehl", typ:"quiz", lernen:"emotionen", icon:"😤", titel:"Gefühls-Detektiv", art:"Situationen · 8 Fälle",
+      anleitung:"Welche **Emotion** passt am besten? Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Situation",
+      fragen:[
+        {szene:"Kurz vor dem entscheidenden Elfmeter: Herzklopfen, zittrige Knie.", q:"Welche Emotion?", o:["Nervosität","Stolz","Enttäuschung","Scham"], c:0, e:"**Nervosität** bzw. Angst."},
+        {szene:"Direkt nach dem Siegtor: Gänsehaut, du könntest Bäume ausreißen.", q:"Welche Emotion?", o:["Angst","Freude","Scham","Wut"], c:1, e:"**Freude** und **Stolz**."},
+        {szene:"Der Schiri pfeift eine klare Fehlentscheidung gegen dich. Dein Kopf wird heiß.", q:"Welche Emotion?", o:["Freude","Enttäuschung","Ärger","Stolz"], c:2, e:"**Ärger** bzw. Wut – Gefahr: Fouls und Konzentrationsverlust."},
+        {szene:"Vor dem Sprung über eine hohe Mauer beim Parkour zögerst du, das Herz rast.", q:"Welche Emotion?", o:["Angst","Freude","Scham","Stolz"], c:0, e:"**Angst** – ein Schutzsignal. Zögern kann gefährlich werden."},
+        {szene:"Mitspieler lachen über deinen Fehler. Du wirst rot und schaust nach unten.", q:"Welche Emotion?", o:["Stolz","Freude","Nervosität","Scham"], c:3, e:"**Scham** (oft auch Ärger)."},
+        {szene:"Dein Team verliert das Finale knapp. Kloß im Hals, plötzlich bist du total müde.", q:"Welche Emotion?", o:["Wut","Enttäuschung","Freude","Angst"], c:1, e:"**Enttäuschung**."},
+        {szene:"Zum ersten Mal schaffst du die Rolle über den Kasten – alle klatschen.", q:"Welche Emotion?", o:["Scham","Ärger","Stolz","Angst"], c:2, e:"**Stolz** und Freude."},
+        {szene:"Ein Gegner foult dich zum dritten Mal absichtlich. Du ballst die Fäuste.", q:"Welche Emotion?", o:["Wut","Enttäuschung","Nervosität","Freude"], c:0, e:"**Wut** – jetzt hilft Strategie F: kurz raus!"}
+      ]},
+    { id:"ukurve", typ:"bildzuordnen", bild:"ukurve", lernen:"emotionen", icon:"📉", titel:"Zu locker oder zu aufgeregt?", art:"Antippen · 9 Situationen",
+      anleitung:"Wo auf der **umgekehrten U-Kurve** steht die Person gerade? Tippe auf den Bereich. Jede richtige Antwort = **1 Punkt**.",
+      frage:"Wo auf der Kurve?", ziel:"den passenden Bereich",
+      zonen:[{id:"locker", name:"zu locker"},{id:"richtig", name:"genau richtig"},{id:"aufgeregt", name:"zu aufgeregt"}],
+      items:[
+        {t:"Lea gähnt vor dem Freiwurf und denkt schon an das Mittagessen.", z:"locker", e:"Zu wenig Anspannung: **unkonzentriert**."},
+        {t:"Tom zittert so stark, dass ihm der Ball aus der Hand rutscht.", z:"aufgeregt", e:"Zu viel Anspannung: **verkrampft**."},
+        {t:"Mia ist wach und konzentriert, spürt ein leichtes Kribbeln – und trifft.", z:"richtig", e:"**Mittlere Anspannung** = beste Leistung."},
+        {t:"Ben findet das Spiel langweilig und macht dumme Fehler.", z:"locker"},
+        {t:"Elif hat vor dem Elfmeter Herzrasen, ihr Kopf ist leer.", z:"aufgeregt"},
+        {t:"Kai freut sich aufs Spiel, ist fokussiert und hat Energie.", z:"richtig"},
+        {t:"Jonas läuft beim Aufwärmen nur halbherzig mit und ist mit den Gedanken woanders.", z:"locker"},
+        {t:"Sara ist so nervös, dass sie den Ablauf ihrer Routine vergisst.", z:"aufgeregt"},
+        {t:"Paul atmet ruhig, macht seine Routine und ist bereit.", z:"richtig"}
+      ]},
+    { id:"aufregung", typ:"rush", lernen:"emotionen", icon:"🎯", titel:"Wenig oder viel Aufregung?", art:"Speed-Game · 45 Sekunden",
+      anleitung:"Hilft hier eher **wenig Aufregung** (präzise, feine Bewegung – linker Knopf) oder eher **mehr** (Kraft, Schnellkraft – rechter Knopf)? **Ziel: 8 Treffer** in 45 Sekunden.",
+      zeit:45, ziel:8, fest:true,
+      items:[
+        {q:"Bogenschießen", o:AU, c:0}, {q:"Gewichtheben", o:AU, c:1}, {q:"Golf: kurzer Putt", o:AU, c:0}, {q:"100-m-Sprint", o:AU, c:1},
+        {q:"Basketball-Freiwurf", o:AU, c:0}, {q:"Kugelstoßen", o:AU, c:1}, {q:"Darts", o:AU, c:0}, {q:"Tauziehen", o:AU, c:1},
+        {q:"Elfmeter", o:AU, c:0}, {q:"Startsprung beim Sprint-Schwimmen", o:AU, c:1}, {q:"Schießen beim Biathlon", o:AU, c:0}, {q:"Hochreißen der Hantel", o:AU, c:1}
+      ]},
+    { id:"strategie", typ:"quiz", lernen:"steuern", icon:"🧘", titel:"Strategie-Coach", art:"Fälle · 8 Fälle",
+      anleitung:"Welche **Strategie** passt am besten? Oft passen mehrere – wähle die **beste** aus den Antworten. Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Fall",
+      fragen:[
+        {szene:"Vor dem entscheidenden Aufschlag zittern dir die Hände.", q:"Was hilft am besten?", o:["Ruhig atmen: 4 s ein, 6 s aus","Kurz raus und bis zehn zählen","Die Aufgabe in kleine Schritte teilen","Laut meckern"], c:0, e:"**A Ruhig atmen** (oder C Routine)."},
+        {szene:"Der Schiri pfeift gegen dich – du bist kurz davor zu meckern.", q:"Was hilft am besten?", o:["Fokuswort „Ball!“","Kurz wegdrehen und bis zehn zählen","Kleine Schritte","Gar nichts tun"], c:1, e:"**F Kurz raus** – Abstand gewinnen."},
+        {szene:"Du hast Angst vor dem Sprung über den Kasten.", q:"Was hilft am besten?", o:["Kleine Schritte mit Hilfestellung","Fokuswort „Ruhig!“","Kurz raus","Augen zu und durch"], c:0, e:"**E Kleine Schritte** (+ B Selbstgespräch)."},
+        {szene:"Nach zwei Fehlern denkst du: „Heute klappt gar nichts.“", q:"Was hilft am besten?", o:["Kurz raus","Kleine Schritte","Hilfreiches Selbstgespräch: „Ein Ball nach dem anderen.“","Aufhören"], c:2, e:"**B Selbstgespräch**."},
+        {szene:"Im Turnier bist du ständig abgelenkt, weil Leute am Rand rufen.", q:"Was hilft am besten?", o:["Ein Fokuswort: „Ball!“","Kurz raus","Zurückrufen","Kleine Schritte"], c:0, e:"**D Fokuswort** (oder C Routine)."},
+        {szene:"Vor jedem Freiwurf bist du unsicher, was du zuerst machen sollst.", q:"Was hilft am besten?", o:["Eine feste Routine: dreimal tippen, ausatmen, werfen","Kurz raus","Laut singen","Schneller werfen"], c:0, e:"**C Routine** – immer gleicher Ablauf."},
+        {szene:"Ein Mitspieler beleidigt dich. Du spürst, wie die Wut hochkocht.", q:"Was hilft am besten?", o:["Zurückschubsen","Kurz wegdrehen, bis zehn zählen, dann zurück","Fokuswort","Kleine Schritte"], c:1, e:"**F Kurz raus** – und danach mit Schiri oder Lehrkraft reden."},
+        {szene:"Beim Parkour willst du einen hohen Sprung schaffen, den du noch nie gemacht hast.", q:"Was hilft am besten?", o:["Sofort den höchsten Sprung probieren","Vom niedrigen zum hohen Hindernis steigern, mit Sicherheit","Nur zuschauen","Fokuswort „Ball!“"], c:1, e:"**E Kleine Schritte** – Mut mit Verstand."}
+      ]},
+    { id:"selbst", typ:"swipe", lernen:"steuern", icon:"💬", titel:"Hilfreich oder hinderlich?", art:"Wischen · 12 Sätze",
+      anleitung:"Ist das ein **hilfreiches** oder **hinderliches** Selbstgespräch? Wische nach **rechts = hilfreich**, nach **links = hinderlich**.",
+      links:{t:"Hinderlich", icon:"👎"}, rechts:{t:"Hilfreich", icon:"👍"},
+      karten:[
+        {t:"„Ich verhaue das bestimmt.“", r:"l", e:"Besser: „Ich hab das geübt – ich mache meinen Ablauf.“"},
+        {t:"„Ein Ball nach dem anderen.“", r:"r"},
+        {t:"„Der Gegner ist viel zu stark.“", r:"l", e:"Besser: „Ich spiele mein Spiel, Schritt für Schritt.“"},
+        {t:"„Ich konzentriere mich auf den Ball, nicht auf die Zuschauer.“", r:"r"},
+        {t:"„Alle schauen mir zu – wie peinlich.“", r:"l", e:"Lenkt die Aufmerksamkeit weg von der Aufgabe."},
+        {t:"„Ich hab das geübt. Ich kann das.“", r:"r"},
+        {t:"„Heute klappt gar nichts.“", r:"l", e:"Besser: „Fehler passieren – nächster Versuch.“"},
+        {t:"„Fehler passieren. Nächster Versuch.“", r:"r"},
+        {t:"„Wenn ich das nicht schaffe, bin ich ein Versager.“", r:"l", e:"Viel zu viel Druck – das verkrampft."},
+        {t:"„Ruhig. Atmen. Mein Ablauf.“", r:"r"},
+        {t:"„Ich darf jetzt bloß keinen Fehler machen!“", r:"l", e:"Lenkt den Fokus auf den Fehler. Besser: „Ich ziele auf die Mitte.“"},
+        {t:"„Ich schaue auf meinen nächsten Schritt.“", r:"r"}
+      ]},
+    { id:"stufen", typ:"zeitstrahl", lernen:"steuern", icon:"🪜", titel:"Stufenleiter zum Mut", art:"Ordnen · 5 Stufen",
+      anleitung:"Ein Schüler hat Respekt vor dem **Parkour-Sprung über eine hohe Mauer**. Bringe seine Stufen von **leicht** bis zum **Ziel** in die richtige Reihenfolge.",
+      items:[
+        {t:"Über eine niedrige Bank springen", j:"1 · leicht"},
+        {t:"Über einen niedrigen Kasten springen, Matte dahinter", j:"2"},
+        {t:"Über einen mittleren Kasten springen, mit Hilfestellung", j:"3"},
+        {t:"Auf die hohe Mauer aufspringen und wieder heruntersteigen", j:"4"},
+        {t:"Über die hohe Mauer springen, Matte und Hilfestellung bereit", j:"5 · Ziel"}
+      ]},
+    { id:"sinn", typ:"bildzuordnen", bild:"sinnrad", lernen:"sinn", icon:"🧭", titel:"Bilder-Detektiv", art:"Antippen · 12 Situationen",
+      anleitung:"Welche **Sinnperspektive** steckt **vor allem** in der Situation? Tippe auf das Feld im Rad. Manchmal passen zwei – dann zählen beide. Jede richtige Antwort = **1 Punkt**.",
+      frage:"Welche Sinnperspektive?", ziel:"das passende Feld",
+      zonen:SINN.map(([id,t]) => ({id, name:t})),
+      items:[
+        {t:"Parkour-Sprung über eine hohe Mauer", z:"wagnis", z2:"leistung", e:"Vor allem **Wagnis** (auch Leistung)."},
+        {t:"Eine Tanzgruppe zeigt ihre Choreografie beim Schulfest", z:"ausdruck", z2:"miteinander", e:"Vor allem **Ausdruck** (auch Miteinander)."},
+        {t:"Ein Lauf bei Sonnenaufgang am See", z:"eindruck", z2:"gesundheit", e:"Vor allem **Eindruck** (auch Gesundheit)."},
+        {t:"Ein Rückenkurs im Fitnessstudio", z:"gesundheit", e:"**Gesundheit**."},
+        {t:"Das Floorball-Team jubelt nach dem Tor", z:"miteinander", z2:"leistung", e:"Vor allem **Miteinander** (auch Leistung)."},
+        {t:"Persönliche Bestzeit beim 1000-m-Lauf", z:"leistung", e:"**Leistung**."},
+        {t:"Klettern an einer steilen Felswand", z:"wagnis", z2:"eindruck", e:"Vor allem **Wagnis** (auch Eindruck)."},
+        {t:"Eine Kür auf dem Trampolin vor Publikum", z:"ausdruck", z2:"leistung", e:"Vor allem **Ausdruck**."},
+        {t:"Morgens zehn Minuten Yoga, um sich wohlzufühlen", z:"gesundheit", z2:"eindruck", e:"Vor allem **Gesundheit**."},
+        {t:"Mit der Klasse ein Volleyballturnier spielen", z:"miteinander", z2:"leistung", e:"Vor allem **Miteinander**."},
+        {t:"Mit dem Kanu durch einen stillen Fluss gleiten und den Wald riechen", z:"eindruck", e:"**Eindruck**: Körper und Natur erleben."},
+        {t:"Beim Sportfest den ersten Platz holen", z:"leistung", e:"**Leistung**: gewinnen."}
+      ]},
+    { id:"gesellschaft", typ:"quiz", lernen:"gesellschaft", icon:"🌍", titel:"Über den Spielfeldrand", art:"Quiz · 8 Fragen",
+      anleitung:"Sport & Medien, Geld, Umwelt und Inklusion. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Warum werden manche Sportarten fast nie im Fernsehen gezeigt?", o:["Weil sie verboten sind","Wegen geringer Einschaltquoten und Werbeeinnahmen","Weil sie zu gesund sind","Weil sie keine Regeln haben"], c:1, e:"**Quoten** und **Werbeeinnahmen** entscheiden oft mit."},
+        {q:"Wer profitiert, wenn eine Sportart viel gezeigt wird?", o:["Nur die Zuschauer","Vereine, Sender, Sponsoren und Athleten","Niemand","Nur die Schiedsrichter"], c:1, e:"Mehr Aufmerksamkeit = mehr **Geld** für viele Beteiligte."},
+        {q:"Was ist **keine** typische Einnahmequelle eines Profivereins?", o:["Ticketverkauf","Sponsoren","Fernsehrechte","Mitgliedsbeitrag der Gegner"], c:3, e:"Einnahmen: Tickets, **Sponsoren**, **TV-Rechte**, Merchandising, Transfers."},
+        {q:"Was kostet Vereinssport eine Familie typischerweise?", o:["Nichts","Mitgliedsbeitrag, Ausrüstung, Fahrten, Turniergebühren","Nur die Trikotwäsche","Fernsehrechte"], c:1, e:"Sport im Verein kostet – das kann manche ausschließen."},
+        {q:"Was belastet bei großen Sportveranstaltungen die Umwelt am meisten?", o:["Die Anreise vieler Zuschauer","Das Klatschen","Die Trikotfarben","Die Torlinie"], c:0, e:"Die **Anreise** – dazu Energie, Flächen, Müll."},
+        {q:"Was kann jede und jeder tun, damit Sport umweltfreundlicher wird?", o:["Mit dem Auto allein zum Training","Fahrgemeinschaften, Bus und Bahn, gebrauchte Ausrüstung","Jedes Jahr neue Schuhe kaufen","Nur Wintersport machen"], c:1, e:"Kleine Schritte mit großer Wirkung."},
+        {q:"Wie heißen die Olympischen Spiele für Menschen mit Behinderung?", o:["Paralympics","Juniorspiele","Commonwealth Games","Weltspiele"], c:0, e:"Die **Paralympics** (außerdem gibt es die Special Olympics)."},
+        {q:"Was hilft, damit in der Schule alle gemeinsam Sport machen können?", o:["Nur die Besten spielen lassen","Barrierefreie Halle, angepasste Regeln, passendes Material","Weniger Sportunterricht","Mehr Wettkämpfe nur für Jungen"], c:1, e:"**Inklusion**: Sport für alle."}
+      ]},
+    { id:"memory", typ:"memory", icon:"🧠", titel:"Arena-Memory", art:"Memory · 8 Paare",
+      anleitung:"Finde die Paare: **Begriff + Bedeutung**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"formelle Fairness", b:"Regeln einhalten"},
+        {a:"informelle Fairness", b:"ehrlich, auch wenn es niemand sieht"},
+        {a:"Wagnis", b:"Mut und Nervenkitzel"},
+        {a:"Eindruck", b:"Körper und Natur erleben"},
+        {a:"Ausdruck", b:"gestalten, sich darstellen"},
+        {a:"Routine", b:"immer gleicher Ablauf"},
+        {a:"Fokuswort", b:"ein Wort für die Aufmerksamkeit"},
+        {a:"Paralympics", b:"Spiele für Sportler mit Behinderung"}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 6 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut – so bleibt er hängen. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Regeln halten ist ______ fair – informell gibst du noch mehr.“", o:["formell","informell","unfair"], c:0, e:"**Formelle** Fairness = Regeln einhalten."},
+        {q:"„Zu locker lahm, zu heiß verkrampft – die ______ hat’s am besten geschafft.“", o:["Mitte","Spitze","Pause"], c:0, e:"**Mittlere** Anspannung bringt die beste Leistung."},
+        {q:"„Vier ein, ______ aus – die Ruhe kommt heraus.“", o:["sechs","zwei","null"], c:0, e:"Länger **ausatmen** beruhigt."},
+        {q:"„Mut heißt nicht: Ich hab keine ______ – Mut heißt: Schritt für Schritt, so wie du’s kannst.“", o:["Angst","Lust","Zeit"], c:0, e:"Mut = **trotz Angst** einen überlegten Schritt wagen."},
+        {q:"„Leistung, ______, Miteinand’ – Gesundheit, Ausdruck, Eindruck – sechs Gründe, die man kennt.“", o:["Wagnis","Wasser","Wetter"], c:0, e:"Die sechs **Sinnperspektiven**."},
+        {q:"„Sag nicht: Das wird nie was! Sag: Ein ______ nach dem andern – und dann Spaß.“", o:["Ball","Fehler","Foul"], c:0, e:"Hilfreiches **Selbstgespräch**."}
+      ]},
+    { id:"mythos", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 10 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch** – oder tippe auf die Knöpfe.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Je aufgeregter man ist, desto besser die Leistung.", r:"l", e:"Zu viel Aufregung **verkrampft** – die Mitte ist am besten."},
+        {t:"Mutige Menschen haben keine Angst.", r:"l", e:"Mut heißt, **trotz** Angst einen überlegten Schritt zu wagen."},
+        {t:"Gefühle zeigen sich auch im Körper.", r:"r", e:"Herzklopfen, Gänsehaut, heißer Kopf …"},
+        {t:"Gefühle kann man einfach abschalten.", r:"l", e:"Abschalten nicht – aber **steuern**."},
+        {t:"Fair Play bedeutet nur, keine Fouls zu machen.", r:"l", e:"Das ist formelle Fairness – **informelle** Fairness geht weiter."},
+        {t:"Schach ist vom DOSB als Sportart anerkannt.", r:"r", e:"Obwohl es kaum Bewegung gibt."},
+        {t:"Eine Sportart spricht meist mehrere Sinnperspektiven an.", r:"r", e:"Z. B. Parkour: Wagnis und Leistung."},
+        {t:"Angst ist ein Schutzsignal.", r:"r", e:"Sie zeigt: Hier ist etwas neu oder gefährlich."},
+        {t:"Beim Bogenschießen hilft möglichst viel Aufregung.", r:"l", e:"Bei präzisen Bewegungen eher **wenig**."},
+        {t:"Vereinssport kostet für alle gleich viel und schließt niemanden aus.", r:"l", e:"Beiträge, Ausrüstung, Fahrten – Kosten können **ausschließen**."}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 8 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie heißt die Fairness, die über die Regeln hinausgeht?", hilfe:"💡 i…", a:["informelle Fairness"], re:["^(die )?informell(e)?( fairness)?$"], e:"**Informelle** Fairness."},
+        {q:"Nenne einen der drei olympischen Werte.", hilfe:"💡 H…, F… oder R…", a:["Respekt"], re:["^(höchstleistung|hoechstleistung|freundschaft|respekt|excellence|friendship|respect)$"], e:"**Höchstleistung**, **Freundschaft** oder **Respekt**."},
+        {q:"Wie heißt die Kurve, die Anspannung und Leistung zeigt? (umgekehrte …-Kurve)", hilfe:"💡 ein Buchstabe", a:["U"], re:["^(umgekehrte )?u( ?kurve)?$"], e:"Die umgekehrte **U-Kurve**."},
+        {q:"Wie viele Sekunden atmest du bei der ruhigen Atmung aus?", hilfe:"💡 länger als ein", a:["6"], re:["^6( sekunden| s)?$","^sechs( sekunden)?$"], e:"**6 Sekunden** aus (4 ein)."},
+        {q:"Wie heißt die Strategie „immer gleicher Ablauf vor der Aktion“?", hilfe:"💡 R…", a:["Routine"], re:["^(die |eine )?routine$"], e:"**Routine**."},
+        {q:"Welche Sinnperspektive steckt vor allem im Nervenkitzel?", hilfe:"💡 W…", a:["Wagnis"], re:["^(das )?wagnis$"], e:"**Wagnis**."},
+        {q:"Welche Sinnperspektive heißt „den Körper und die Natur erleben“?", hilfe:"💡 E…", a:["Eindruck"], re:["^(der )?eindruck$"], e:"**Eindruck**."},
+        {q:"Wie heißen die Olympischen Spiele für Sportler mit Behinderung?", hilfe:"💡 P…", a:["Paralympics"], re:["^(die )?paralympics$","^paralympische spiele$"], e:"**Paralympics**."}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

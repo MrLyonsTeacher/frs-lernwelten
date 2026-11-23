@@ -188,8 +188,8 @@ const FRS = {
     { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
       orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie", offen:true}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
              {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", offen:true, themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen", offen:true, themen:["eh9"]},
-             {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness", offen:true}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung", offen:true},
-             {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping", offen:true}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn", offen:true} ] }
+             {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness", offen:true, themen:["tr9"]}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung", offen:true, themen:["er9"]},
+             {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping", offen:true, themen:["do9"]}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn", offen:true, themen:["em9"]} ] }
   ]},
 
   // Fächer ohne Inseln: einfache Liste
@@ -204,7 +204,15 @@ const FRS = {
       { id:"vl9", welt:9, titel:"Verletzungs-Lernwelt: Sportverletzungen & ihre Ursachen", info:"Profil Sport Kl. 9 · Flutlicht-Stadion (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 10 Spiele", pfad:"sport/verletzungen.html",
         stationen:["Tatort","Was ist das?","Akut/Überlastung","Memory","Innen/Außen","Detektiv","Reime","Wahr/Falsch","Zahlen","Profi"], stationenMax:[8,10,12,7,12,14,6,10,8,8] },
       { id:"eh9", welt:9, titel:"Erste-Hilfe-Lernwelt: Erste Hilfe & Vorbeugen", info:"Profil Sport Kl. 9 · Bergwacht-Station (E2) · 5 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/erstehilfe.html",
-        stationen:["Rettungskette","Notruf","PECH","Einsatz","Blitz-Check","112?","Memory","Vorbeugen","Reime","Wahr/Falsch","Zahlen","Profi"], stationenMax:[5,5,4,10,12,10,7,12,6,10,10,8] }
+        stationen:["Rettungskette","Notruf","PECH","Einsatz","Blitz-Check","112?","Memory","Vorbeugen","Reime","Wahr/Falsch","Zahlen","Profi"], stationenMax:[5,5,4,10,12,10,7,12,6,10,10,8] },
+      { id:"tr9", welt:9, titel:"Trainings-Lernwelt: Training, Superkompensation & Trainingsplan", info:"Profil Sport Kl. 9 · Muskel-Fitnesscenter (E3, AB 10–13 & 19) · 5 Infokarten-Stapel inkl. Merk-Reime · 16 Spiele", pfad:"sport/training.html",
+        stationen:["Training?","Test","Fair","Kurve","Timing","Erholung","Stellschrauben","Prinzipien","Methoden","Memory","SMART","Rechnen","Ursachen","Reime","Wahr/Falsch","Profi"], stationenMax:[10,9,11,9,8,8,10,10,12,8,7,7,7,7,11,9] },
+      { id:"er9", welt:9, titel:"Ernährungs-Lernwelt: Energie, Nährstoffe, Trinken & Timing", info:"Profil Sport Kl. 9 · Markthalle (E4, AB 14–18) · 6 Infokarten-Stapel inkl. Merk-Reime · 16 Spiele", pfad:"sport/ernaehrung.html",
+        stationen:["Umsatz","Ranking","Etikett","Memory","Sortierer","Pyramide","Zucker","Wasser","Trinken","Timing","Magen","Coach","Protokoll","Reime","Wahr/Falsch","Profi"], stationenMax:[12,5,6,8,14,14,10,6,7,10,10,7,7,6,11,9] },
+      { id:"do9", welt:9, titel:"Doping-Lernwelt: Doping, Risiken, Kontrollen & Debatte", info:"Profil Sport Kl. 9 · Doping-Labor (E5, AB 20–23) · 5 Infokarten-Stapel inkl. Merk-Reime · 15 Spiele", pfad:"sport/doping.html",
+        stationen:["Definition","Doping?","WADA/NADA","Motive","Risiko","Memory","EPO","Fallakte","Kontrolle","Ampel","Wahr/Falsch","Pro/Contra","Treppe","Reime","Profi"], stationenMax:[6,12,10,8,10,8,6,14,6,10,11,10,5,6,9] },
+      { id:"em9", welt:9, titel:"Gehirn-Arena-Lernwelt: Fair Play, Emotionen, Sinn & Gesellschaft", info:"Profil Sport Kl. 9 · Gehirn-Arena (E6, AB 26–29 & 32) · 6 Infokarten-Stapel inkl. Merk-Reime · 15 Spiele", pfad:"sport/gehirn.html",
+        stationen:["Merkmale","Fairness","Werte","Gefühle","U-Kurve","Aufregung","Strategien","Selbstgespräch","Mut","Sinn","Gesellschaft","Memory","Reime","Wahr/Falsch","Profi"], stationenMax:[7,12,6,8,9,8,8,12,5,12,8,8,6,10,8] }
     ]},
     { id:"escape", name:"Escape Rooms", icon:"🗝️", materialien:[
       // raum:true = Escape Room mit Karte (bild, farbe, chips); sonst Werkzeug/Vorschau in der Liste darunter
