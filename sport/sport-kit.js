@@ -131,3 +131,23 @@ LW.addGame("zeigen", (l, A, done, K) => {
   show();
 }, l => l.ziele.length * (l.punkte || 1));
 
+
+/* Texte in Infokarten-Grafiken automatisch einpassen: Ragt ein Text über den Bildrand hinaus (oder in den Nachbartext),
+   wird er so weit verkleinert, dass er ganz sichtbar bleibt. */
+(function(){
+  function passeEin(svg){
+    if(svg.dataset.fit) return; const vb = svg.viewBox && svg.viewBox.baseVal; if(!vb || !vb.width) return; svg.dataset.fit = 1;
+    svg.querySelectorAll("text").forEach(t => {
+      if(t.closest(".tag")) return;
+      let bb; try{ bb = t.getBBox(); }catch(e){ return; } if(!bb.width) return;
+      const x = parseFloat(t.getAttribute("x")) || bb.x, a = t.getAttribute("text-anchor") || "start", L = vb.x + 5, R = vb.x + vb.width - 5;
+      const platz = a === "middle" ? 2 * Math.min(x - L, R - x) : a === "end" ? x - L : R - x;
+      if(bb.width > platz && platz > 10){
+        const fs = parseFloat(getComputedStyle(t).fontSize) || 14;
+        t.setAttribute("font-size", (fs * platz / bb.width * .98).toFixed(1)); t.style.fontSize = "";
+      }
+    });
+  }
+  const lauf = () => document.querySelectorAll(".ln-art svg").forEach(passeEin);
+  new MutationObserver(() => requestAnimationFrame(lauf)).observe(document.documentElement, {childList:true, subtree:true});
+})();

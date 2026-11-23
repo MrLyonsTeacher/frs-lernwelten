@@ -73,6 +73,7 @@
 /* Grafik groß: Bildspalte breiter, Grafik füllt sie aus (begrenzt durch die Höhe) */
 .ln-stage:has(.lnsvg){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:1.4rem}
 .ln-art > span:has(.lnsvg){display:block;width:100%}
+.ln-art svg{font-size:15px;line-height:normal}   /* Texte ohne eigene Größe nicht riesig werden lassen */
 .ln-art .lnsvg{display:block;width:100%;height:auto;max-height:min(60vh,calc(var(--avail,700px) - 250px));margin:0 auto}
 @media (max-aspect-ratio:1/1), (max-width:640px){
   .ln-stage:has(.lnsvg){grid-template-columns:1fr}

@@ -69,7 +69,7 @@ const ICON = {
     <path d="M110 22 L180 150 H40 Z" fill="#FF9F1C"/><path d="M110 50 L158 138 H62 Z" fill="#2A2F3D"/>${T(110,128,"!","#FF9F1C",56)}
     ${T(110,186,"Erst sichern, dann helfen")}`),
   pech: svgBox("0 0 220 200", `${BG()}
-    ${[["P","Pause","#9AA3B5"],["E","Eis","#9FD8FF"],["C","Compression","#FF9F1C"],["H","Hochlagern","#4FC38A"]].map(([b,w,c],i)=>`<rect x="${14+i*50}" y="40" width="42" height="56" rx="10" fill="${c}"/>${T(35+i*50,82,b,"#1E2430",34)}${T(35+i*50,122,w,"#FFF3E2",i===2?9:12)}`).join("")}
+    ${[["P","Pause","#9AA3B5"],["E","Eis","#9FD8FF"],["C","Compression","#FF9F1C"],["H","Hochlagern","#4FC38A"]].map(([b,w,c],i)=>`<rect x="${14+i*50}" y="40" width="42" height="56" rx="10" fill="${c}"/>${T(35+i*50,82,b,"#1E2430",34)}${T(35+i*50,i%2?140:122,w,"#FFF3E2",11)}`).join("")}
     ${T(110,180,"PECH-Regel","#FFE08A",20)}`),
   pause: svgBox("0 0 220 200", `${BG()}
     <rect x="76" y="40" width="22" height="90" rx="6" fill="#E9EDF5"/><rect x="122" y="40" width="22" height="90" rx="6" fill="#E9EDF5"/>${T(110,180,"Sofort aufhören, ruhig stellen")}`),

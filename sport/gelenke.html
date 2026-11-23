@@ -270,8 +270,8 @@ const BSP = {
     ${BSP_T(44, 166, "Speiche", {s:10.5})}<path d="M58 162 L80 160" stroke="#2A2F3D" stroke-width="1.2"/>${BSP_T(172, 166, "Elle", {s:10.5})}<path d="M160 162 L138 160" stroke="#2A2F3D" stroke-width="1.2"/>
     ${BSP_T(110, 192, "kippt vor, zurück und zur Seite", {s:10.5, w:400, c:"#5D6472"})}`)
 };
-const artR = s => s.replace('<svg class="rk"', '<svg class="rk lnsvg"');
-const alle = s => s.replace('class="rk ', 'class="rk alle ');
+const artR = s => s.replace(/<svg class="rk(?=[ "])/, '<svg class="lnsvg rk');
+const alle = s => s.replace('<svg class="', '<svg class="alle ');
 const artSk = s => s.replace('<svg class="sk"', '<svg class="sk lnsvg"');
 
 /* =========================================================
