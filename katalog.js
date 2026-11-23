@@ -186,7 +186,7 @@ const FRS = {
              {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"T2 Motorische Fähigkeiten", offen:true}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"T6 Fair Play & Emotionen", offen:true},
              {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio", offen:true} ] },
     { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
-      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie", offen:true}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
+      orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie", offen:true, themen:["hz9"]}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
              {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", offen:true, themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen", offen:true, themen:["eh9"]},
              {id:"muskel", name:"Muskel-Fitnesscenter", icon:"🏋️", e:"E3 Training & Fitness", offen:true, themen:["tr9"]}, {id:"markt", name:"Markthalle", icon:"🍎", e:"E4 Ernährung", offen:true, themen:["er9"]},
              {id:"labor", name:"Doping-Labor", icon:"🧪", e:"E5 Doping", offen:true, themen:["do9"]}, {id:"gehirn", name:"Gehirn-Arena", icon:"🧠", e:"E6 Emotionen, Fair Play & Sinn", offen:true, themen:["em9"]} ] }
@@ -197,6 +197,8 @@ const FRS = {
     { id:"sport", name:"Sport", icon:"🏀", materialien:[
       { id:"bb2", welt:8, titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 8 · Schiri-Turm (T5) · 8 Spiele", pfad:"sport/basketball.html",
         stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] },
+      { id:"hz9", welt:9, titel:"Herz-Lernwelt: Herz, Kreislauf, Pulskurve & Ausdauer", info:"Profil Sport Kl. 9 · Herz-Kraftwerk (E1, AB 01–02) · 5 Infokarten-Stapel inkl. Merk-Reime · 14 Spiele", pfad:"sport/herz.html",
+        stationen:["Kreislauf","Rot/Blau","Herz-Quiz","Zonen","Energiewege","Lückentext","Puls-Kette","Rechner","Memory","Ruhepuls","Zahlen","Reime","Wahr/Falsch","Profi"], stationenMax:[12,10,8,10,12,5,5,8,8,8,10,6,12,9] },
       { id:"kn9", welt:9, titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Skelett-Werft, Röntgen-Klinik (E2) · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",
         stationen:["Röntgen-Scan","Wer leuchtet?","Reime","Memory","Sortierer","Labor","Labor-Quiz","Zahlen","Wahr/Falsch","Booster","Sani","Heilung","Profi"], stationenMax:[14,10,11,8,13,14,10,12,11,12,14,6,9] },
       { id:"ge9", welt:9, titel:"Gelenke-Lernwelt: Gelenke, Bänder, Sehnen & Knorpel", info:"Profil Sport Kl. 9 · Skelett-Werft, Robo-Werkstatt (E2) · 3 Infokarten-Stapel inkl. Merk-Reime · 12 Spiele", pfad:"sport/gelenke.html",
