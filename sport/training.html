@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#14223D">
+<title>Trainings-Lernwelt</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#EEF2F5; --surface:#FFFFFF; --surface-2:#F2F6F8; --ink:#14223D; --muted:#56637A; --line:#CBD5DF;
+  --accent:#D9541A; --accent-ink:#FFFFFF; --accent-2:#FFC233; --mid-bg:#FFF1CC;
+  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
+  --xray:#101A33; --glow:#FFC233;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #D0D9E2; --shadow:0 3px 0 #C3CDD8; --border-opt:2px solid #D0D9E2;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#FFE3D4; --card-back:#14223D; --tile-bg:#FFE7B8; --tile-ink:#14223D;
+  --chip-bg:#14223D; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #D0D9E2;
+  --track:#DCE3EA; --star:#D9541A; --star-off:#D0D9E2;
+}
+body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(217,84,26,.12),transparent 42%)}
+.chip{border:0}
+.gym-hero{background:linear-gradient(160deg,#14223D 0,#1E3A5C 55%,#D9541A 140%)}
+.gym-hero .hero-art .hantel{transform-box:fill-box;transform-origin:50% 50%}
+@media (prefers-reduced-motion: no-preference){ .gym-hero .hantel{animation:heben 2.6s ease-in-out infinite} @keyframes heben{50%{transform:translateY(-14px)}}
+  .gym-hero .zeiger{transform-origin:300px 96px;animation:uhr 6s linear infinite} @keyframes uhr{to{transform:rotate(360deg)}} }
+</style>
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script>
+/* =========================================================
+   Bilder: ChatGPT-Illustrationen (sport/training-bilder/NAME.webp), sobald vorhanden in BILDER eintragen.
+   Bis dahin wird die selbst gezeichnete Grafik bzw. das Symbol gezeigt.
+   ========================================================= */
+const BILDER = new Set([]);
+const FOTO = (n, alt, ersatz) => BILDER.has(n) ? `<img class="lnbild" src="training-bilder/${n}.webp" alt="${alt||""}">` : ersatz;
+
+/* =========================================================
+   Selbst gezeichnete Schaubilder
+   ========================================================= */
+const GE = "#FFD34D", OR = "#FF9A3D", GR = "#5BE38C", RO = "#FF6B6B", BL = "#5FE9FF", HG = "#9FB0CF";
+// Leistungsverlauf für eine Folge von Trainings (Zeit in Tagen) – wie im Spiel „Timing-Coach“
+function verlauf(ts){ const h = [{t:0,b:0}]; ts.slice(1).forEach(t => { const p = h[h.length-1]; h.push({t, b:p.b + SK_R(t - p.t)}); });
+  return t => { if(t <= 0) return 0; let k = h.length - 1; while(k > 0 && h[k].t > t) k--; return h[k].b + SK_R(t - h[k].t); }; }
+const pfad = (f, a, b, xs, ys, st=.04) => { let p = ""; for(let t = a; t <= b + 1e-9; t += st) p += `${p?"L":"M"}${xs(t).toFixed(1)} ${ys(f(t)).toFixed(1)}`; return p; };
+
+// Hantel, Herz, Blitz … als kleine Symbole (Mittelpunkt x,y)
+const SYM = {
+  hantel:(x,y,c=OR) => `<g transform="translate(${x} ${y})"><rect x="-22" y="-3.5" width="44" height="7" rx="3" fill="#C9D4E6"/><rect x="-27" y="-14" width="8" height="28" rx="2.5" fill="${c}"/><rect x="19" y="-14" width="8" height="28" rx="2.5" fill="${c}"/><rect x="-33" y="-9" width="6" height="18" rx="2" fill="${c}"/><rect x="27" y="-9" width="6" height="18" rx="2" fill="${c}"/></g>`,
+  herz:(x,y,c=RO,s=1) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 9 C0 -3 -17 -6 -17 5 C-17 14 -4 20 0 26 C4 20 17 14 17 5 C17 -6 0 -3 0 9 Z" fill="${c}"/>`,
+  blitz:(x,y,c=GE) => `<path transform="translate(${x} ${y})" d="M4 -20 L-11 3 L-1 3 L-5 20 L11 -4 L1 -4 Z" fill="${c}"/>`,
+  bogen:(x,y,c=GR) => `<g transform="translate(${x} ${y})" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"><path d="M-18 14 Q0 -26 18 14"/><path d="M12 7 L18 14 L22 5"/></g>`,
+  baelle:(x,y) => `<g transform="translate(${x} ${y})"><path d="M-20 12 Q0 -26 20 12" fill="none" stroke="#9FB0CF" stroke-width="2" stroke-dasharray="3 4"/><circle cx="-16" cy="2" r="6.5" fill="${BL}"/><circle cx="0" cy="-12" r="6.5" fill="${GE}"/><circle cx="16" cy="2" r="6.5" fill="${RO}"/></g>`,
+  uhr:(x,y,c="#EAF0FA") => `<g transform="translate(${x} ${y})"><circle r="17" fill="none" stroke="${c}" stroke-width="4"/><rect x="-4" y="-25" width="8" height="6" rx="1.5" fill="${c}"/><path d="M0 0 L0 -10 M0 0 L7 4" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/></g>`,
+  batterie:(x,y,stufe,c=GR) => `<g transform="translate(${x} ${y})"><rect x="-24" y="-13" width="44" height="26" rx="5" fill="none" stroke="#EAF0FA" stroke-width="3.5"/><rect x="21" y="-6" width="5" height="12" rx="2" fill="#EAF0FA"/>${[0,1,2,3].map(k => k < stufe ? `<rect x="${-20 + k*10}" y="-9" width="8" height="18" rx="2" fill="${c}"/>` : "").join("")}</g>`,
+  haken:(x,y,c=GR) => `<path transform="translate(${x} ${y})" d="M-8 0 L-2 7 L9 -7" fill="none" stroke="${c}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  kreuz:(x,y,c=RO) => `<path transform="translate(${x} ${y})" d="M-7 -7 L7 7 M7 -7 L-7 7" stroke="${c}" stroke-width="4.5" stroke-linecap="round"/>`
+};
+
+const ICON = {
+  merkmale: KARTE(340, 230, TX(170, 34, "Training ist …", {s:19, c:"#EAF0FA"}) +
+    // Klemmbrett (geplant)
+    `<g transform="translate(62 106)"><circle r="44" fill="#1E2C4D"/><rect x="-20" y="-26" width="40" height="52" rx="5" fill="#F4E9D2"/><rect x="-9" y="-31" width="18" height="10" rx="3" fill="${OR}"/>
+      ${[ -12, -2, 8, 18 ].map(y => `<path d="M-12 ${y} h6" stroke="${GR}" stroke-width="3" stroke-linecap="round"/><path d="M-2 ${y} h14" stroke="#14223D" stroke-width="3" stroke-linecap="round"/>`).join("")}</g>` +
+    // Kalender (regelmäßig)
+    `<g transform="translate(170 106)"><circle r="44" fill="#1E2C4D"/><rect x="-26" y="-22" width="52" height="46" rx="5" fill="#F4E9D2"/><rect x="-26" y="-22" width="52" height="11" rx="4" fill="${RO}"/>
+      ${[0,1,2].map(r => [0,1,2,3].map(c => `<rect x="${-21 + c*11.5}" y="${-6 + r*10}" width="9" height="7" rx="1.5" fill="${(c===1||c===3) ? GR : "#C9C0AE"}"/>`).join("")).join("")}</g>` +
+    // Zielscheibe (zielgerichtet)
+    `<g transform="translate(278 106)"><circle r="44" fill="#1E2C4D"/><circle r="27" fill="#F4E9D2"/><circle r="19" fill="${RO}"/><circle r="11" fill="#F4E9D2"/><circle r="4.5" fill="${RO}"/><path d="M30 -30 L3 -3" stroke="${GE}" stroke-width="4" stroke-linecap="round"/><path d="M24 -36 L34 -34 L32 -24" fill="none" stroke="${GE}" stroke-width="3"/></g>` +
+    TX(62, 178, "geplant", {s:17, c:GE}) + TX(170, 178, "regelmäßig", {s:17, c:GE}) + TX(278, 178, "zielgerichtet", {s:17, c:GE}) +
+    TX(170, 212, "… um die Leistung zu verbessern.", {s:14.5, c:HG, w:600})),
+  faehigkeiten: KARTE(380, 290, [[190,52,"herz","Ausdauer"],[318,118,"hantel","Kraft"],[274,232,"blitz","Schnelligkeit"],[106,232,"bogen","Beweglichkeit"],[62,118,"baelle","Koordination"]].map(([x,y]) => `<line x1="190" y1="150" x2="${x}" y2="${y}" stroke="#2E4472" stroke-width="3"/>`).join("") +
+    `<circle cx="190" cy="150" r="52" fill="#22345C" stroke="${GE}" stroke-width="3"/>` + TX(190, 146, "Motorische|Fähigkeiten", {s:15, c:"#FFFFFF"}) +
+    [[190,52,"herz","Ausdauer"],[318,118,"hantel","Kraft"],[274,232,"blitz","Schnelligkeit"],[106,232,"bogen","Beweglichkeit"],[62,118,"baelle","Koordination"]].map(([x,y,s,t]) => {
+      const sym = s === "herz" ? SYM.herz(x, y-13, RO, .85) : s === "hantel" ? SYM.hantel(x, y) : SYM[s](x, y);
+      return `<circle cx="${x}" cy="${y}" r="28" fill="#1E2C4D" stroke="#3A5288" stroke-width="2"/>${sym}` + TX(x, y + (y > 200 ? 46 : -36) + (s === "herz" ? 0 : 0), t, {s:15, c:GE}); }).join("")),
+  fair: KARTE(360, 236, TX(180, 34, "Fair testen = gleich & genau", {s:18, c:GE}) +
+    [["gleiches Aufwärmen","im Januar und im März"],["gleicher Ort, gleiche Strecke","Halle oder draußen – aber immer gleich"],["gleiche Variante","z. B. Liegestütz immer auf den Knien"],["genau zählen & messen","nur saubere Wiederholungen"]].map(([a,b],k) =>
+      `<rect x="22" y="${56 + k*44}" width="316" height="38" rx="10" fill="#1E2C4D"/><circle cx="44" cy="${75 + k*44}" r="12" fill="#14834F"/>${SYM.haken(44, 75 + k*44, "#FFFFFF")}` +
+      TX(66, 72 + k*44, a, {s:14.5, a:"start", c:"#FFFFFF"}) + TX(66, 88 + k*44, b, {s:11.5, a:"start", c:HG, w:600})).join("")),
+  vergleich: KARTE(340, 220, TX(170, 32, "Dein Vergleich: du mit dir selbst", {s:16.5, c:GE}) +
+    `<rect x="40" y="60" width="110" height="120" rx="12" fill="#1E2C4D"/><rect x="190" y="60" width="110" height="120" rx="12" fill="#1E2C4D"/>` +
+    TX(95, 86, "Januar", {s:16, c:"#FFFFFF"}) + TX(245, 86, "März", {s:16, c:"#FFFFFF"}) + TX(95, 106, "Eingangstest", {s:12.5, c:HG, w:600}) + TX(245, 106, "Ausgangstest", {s:12.5, c:HG, w:600}) +
+    `<rect x="70" y="${170-34}" width="50" height="34" rx="4" fill="${BL}"/><rect x="220" y="${170-52}" width="50" height="52" rx="4" fill="${GR}"/>` + PFEIL(155, 120, 186, 120, GE, 4) +
+    TX(170, 206, "Werte sind persönlich – keine Rangliste.", {s:13.5, c:HG, w:600})),
+  pausen: KARTE(340, 230, TX(170, 30, "Pausen-Experiment (Beispiel)", {s:16.5, c:GE}) +
+    [[1,22,"frisch",BL],[2,15,"nach 20 s|Pause",RO],[3,21,"nach 2 min|Pause",GR]].map(([n,v,t,c],k) => { const x = 62 + k*100, h = v*5.4;
+      return `<rect x="${x}" y="${178 - h}" width="56" height="${h}" rx="6" fill="${c}"/>` + TX(x + 28, 170 - h, v + " ×", {s:15, c:"#FFFFFF"}) + TX(x + 28, 196, "Durchgang " + n, {s:12.5, c:"#FFFFFF"}) + TX(x + 28, 211, t.split("|")[0] + " " + (t.split("|")[1]||""), {s:11, c:HG, w:600}); }).join("") +
+    `<line x1="40" y1="178" x2="310" y2="178" stroke="#5B6C93" stroke-width="2"/>`),
+  erholung: KARTE(380, 236, TX(190, 30, "Wie lange dauert die Erholung?", {s:16.5, c:GE}) +
+    [0,1,2,3].map(d => `<line x1="${140 + d*66}" y1="48" x2="${140 + d*66}" y2="202" stroke="#24345A" stroke-width="1.5"/>` + TX(140 + d*66, 222, d === 0 ? "0" : d + (d === 1 ? " Tag" : " Tage"), {s:12, c:HG, w:600})).join("") +
+    [["Puls & Atmung","nach einem Sprint",.06,"Minuten",BL],["Energiespeicher","nach Ausdauertraining",1.5,"1–2 Tage",GE],["Muskeln","nach Krafttraining",2.5,"2–3 Tage",OR]].map(([a,b,d,t,c],k) => { const y = 72 + k*48;
+      return TX(14, y + 2, a, {s:13, a:"start", c:"#FFFFFF"}) + TX(14, y + 17, b, {s:10, a:"start", c:HG, w:600}) +
+        `<rect x="140" y="${y - 10}" width="${Math.max(10, d*66)}" height="22" rx="7" fill="${c}"/>` + TX(140 + Math.max(10, d*66) + 7, y + 6, t, {s:13.5, a:"start", c}); }).join("")),
+  experimentText: "",
+  stellschrauben: KARTE(420, 250, TX(210, 28, "Die 5 Stellschrauben der Belastung", {s:16.5, c:GE}) +
+    [["Intensität","wie hart?",OR],["Dauer","wie lange am Stück?",BL],["Umfang","wie viel insgesamt?",GR],["Dichte","wie lang die Pausen?",RO],["Häufigkeit","wie oft pro Woche?","#C99BFF"]].map(([n,q,c],k) => {
+      const x = k < 3 ? 72 + k*138 : 141 + (k-3)*138, y = k < 3 ? 80 : 172, w = -40 + k*35;
+      return `<circle cx="${x}" cy="${y}" r="26" fill="#1E2C4D" stroke="${c}" stroke-width="5"/>${[0,1,2,3,4,5,6,7].map(j => { const a = j*Math.PI/4; return `<circle cx="${(x + Math.cos(a)*33).toFixed(1)}" cy="${(y + Math.sin(a)*33).toFixed(1)}" r="2.2" fill="#3A5288"/>`; }).join("")}
+        <line x1="${x}" y1="${y}" x2="${(x + Math.cos((w-90)*Math.PI/180)*19).toFixed(1)}" y2="${(y + Math.sin((w-90)*Math.PI/180)*19).toFixed(1)}" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="5" fill="#FFFFFF"/>` +
+        TX(x, y + 48, n, {s:15, c}) + TX(x, y + 63, q, {s:11.2, c:HG, w:600}); }).join("")),
+  prinzipien: KARTE(380, 236, TX(190, 28, "Trainingsprinzipien", {s:17, c:GE}) +
+    [["Progression","steigern",OR],["Kontinuität","regelmäßig",BL],["Regeneration","Pausen",GR],["Individualität","passend zu mir","#C99BFF"],["Variation","abwechseln",RO]].map(([n,q,c],k) => {
+      const x = 22, y = 46 + k*37;
+      return `<rect x="${x}" y="${y}" width="336" height="31" rx="9" fill="#1E2C4D"/><rect x="${x}" y="${y}" width="9" height="31" rx="3" fill="${c}"/>` + TX(x + 22, y + 21, n, {s:15, a:"start", c:"#FFFFFF"}) + TX(x + 322, y + 21, q, {s:13.5, a:"end", c}); }).join("")),
+  progression: KARTE(300, 220, [0,1,2,3].map(k => `<rect x="${40 + k*56}" y="${170 - (k+1)*30}" width="56" height="${(k+1)*30}" fill="${k===3?OR:"#2A3E69"}" stroke="#101A33" stroke-width="2"/>` + TX(68 + k*56, 192, "W" + (k+1), {s:13, c:HG})).join("") +
+    PFEIL(52, 128, 236, 34, GE, 5) + TX(150, 212, "Belastung Schritt für Schritt steigern", {s:13.5, c:"#FFFFFF"})),
+  kontinuitaet: KARTE(300, 220, TX(150, 30, "jede Woche: Di + Sa", {s:15, c:GE}) + ["Mo","Di","Mi","Do","Fr","Sa","So"].map((d,k) => TX(48 + k*34, 58, d, {s:12, c:HG})).join("") +
+    [0,1,2,3].map(r => [0,1,2,3,4,5,6].map(c => `<rect x="${33 + c*34}" y="${68 + r*32}" width="30" height="26" rx="5" fill="${(c===1||c===5) ? "#14834F" : "#1E2C4D"}"/>${(c===1||c===5) ? SYM.haken(48 + c*34, 81 + r*32, "#FFFFFF") : ""}`).join("")).join("")),
+  regeneration: KARTE(300, 220, `<path d="M118 66 a32 32 0 1 0 34 46 a26 26 0 1 1 -34 -46z" fill="${GE}"/>` + TX(124, 160, "Ruhetag", {s:15, c:GE}) +
+    SYM.batterie(220, 90, 1, RO) + PFEIL(220, 112, 220, 142, "#EAF0FA", 3) + SYM.batterie(220, 166, 4, GR) + TX(150, 206, "In der Pause wirst du stärker.", {s:14, c:"#FFFFFF"})),
+  individualitaet: KARTE(300, 220, [[90,"Lina","Ausdauer",BL,"herz"],[210,"Ali","Kraft",OR,"hantel"]].map(([x,n,z,c,s]) =>
+      `<circle cx="${x}" cy="66" r="17" fill="#F2C9A6"/><path d="M${x-26} 132 q0 -40 26 -40 q26 0 26 40 z" fill="${c}"/>` + TX(x, 152, n, {s:15, c:"#FFFFFF"}) +
+      `<rect x="${x-46}" y="164" width="92" height="30" rx="9" fill="#1E2C4D" stroke="${c}" stroke-width="2"/>` + TX(x, 184, "Ziel: " + z, {s:12.5, c})).join("") +
+    TX(150, 214, "Jeder braucht seinen eigenen Plan.", {s:13, c:HG, w:600})),
+  variation: KARTE(300, 220, `<circle cx="150" cy="104" r="58" fill="none" stroke="#2E4472" stroke-width="10"/>` +
+    [[150,46,"Laufen",BL],[200,134,"Rad",GE],[100,134,"Zirkel",OR]].map(([x,y,t,c]) => `<circle cx="${x}" cy="${y}" r="27" fill="#1E2C4D" stroke="${c}" stroke-width="3"/>` + TX(x, y + 5, t, {s:12.5, c})).join("") +
+    PFEIL(188, 62, 204, 90, "#EAF0FA", 3) + PFEIL(170, 152, 132, 152, "#EAF0FA", 3) + PFEIL(102, 96, 114, 66, "#EAF0FA", 3) + TX(150, 206, "Abwechslung hält motiviert.", {s:14, c:"#FFFFFF"})),
+  smart: KARTE(380, 226, TX(190, 30, "Ein gutes Ziel ist SMART", {s:17, c:GE}) +
+    [["S","Spezifisch","genau was?",OR],["M","Messbar","mit Zahl",BL],["A","Attraktiv","ich will es",GR],["R","Realistisch","machbar",GE],["T","Terminiert","bis wann?",RO]].map(([b,n,q,c],k) => { const x = 18 + k*70;
+      return `<rect x="${x}" y="50" width="64" height="64" rx="12" fill="${c}"/>` + TX(x + 32, 96, b, {s:38, c:"#101A33", w:800}) + TX(x + 32, 138, n, {s:12.6, c:"#FFFFFF"}) + TX(x + 32, 155, q, {s:11, c:HG, w:600}); }).join("") +
+    TX(190, 196, "„Bis zum 19.03. schaffe ich im 6-Minuten-Lauf", {s:12.4, c:"#FFFFFF", w:600}) + TX(190, 213, "100 m mehr als im Januar.“", {s:12.4, c:"#FFFFFF", w:600})),
+  plan: KARTE(360, 236, TX(180, 30, "Beispiel: 4 Wochen Ausdauer", {s:16.5, c:GE}) +
+    [["W1","2 × 20 min locker",40],["W2","25 min + 4 × 2 min zügig",41],["W3","30 min + 5 × 2 min",50],["W4","30 min + 4 × 3 min",54]].map(([w,t,m],k) => { const y = 54 + k*42;
+      return TX(34, y + 22, w, {s:15, c:"#FFFFFF"}) + `<rect x="60" y="${y + 4}" width="${m*4.6}" height="26" rx="7" fill="${["#2E6FB0","#3E86C8","#E07A2E",OR][k]}"/>` + TX(68, y + 22, t, {s:12.5, a:"start", c:"#FFFFFF"}); }).join("") +
+    TX(180, 228, "Progression: Dauer und Intervalle steigen · 1 Ruhetag dazwischen", {s:11.4, c:HG, w:600})),
+  prozent: KARTE(380, 236, TX(190, 32, "So rechnest du deine Veränderung", {s:16.5, c:GE}) +
+    SCHILD(20, 50, 340, 40, "Differenz = Ausgangswert (März) − Eingangswert (Januar)", {s:13.2, c:"#FFFFFF"}) +
+    SCHILD(20, 98, 340, 40, "Veränderung in % = Differenz : Eingangswert × 100", {s:13.2, c:"#FFFFFF"}) +
+    TX(190, 166, "Beispiel Lena · 6-Minuten-Lauf: 1 150 m → 1 240 m", {s:13, c:HG, w:600}) +
+    TX(190, 192, "Differenz: + 90 m", {s:15, c:GR}) + TX(190, 218, "90 : 1 150 × 100 ≈ + 7,8 %", {s:15, c:GR})),
+  ursachen: KARTE(380, 240, TX(190, 30, "Warum hat sich etwas verändert?", {s:16.5, c:GE}) +
+    [["Training nach Plan","Anpassung des Körpers",GR],["Test kenne ich besser","Technik & Taktik",BL],["Tagesform","Schlaf, Krankheit, Motivation",GE],["Messfehler","andere Bedingungen",RO],["kaum trainiert","diese Fähigkeit nicht geübt",OR],["Wachstum","körperliche Entwicklung","#C99BFF"]].map(([a,b,c],k) => {
+      const x = k % 2 ? 196 : 16, y = 46 + Math.floor(k/2)*62;
+      return `<rect x="${x}" y="${y}" width="168" height="54" rx="10" fill="#1E2C4D"/><rect x="${x}" y="${y}" width="8" height="54" rx="3" fill="${c}"/>` + TX(x + 18, y + 23, a, {s:13.4, a:"start", c:"#FFFFFF"}) + TX(x + 18, y + 41, b, {s:10.8, a:"start", c:HG, w:600}); }).join("")),
+  vorsicht: KARTE(340, 220, TX(170, 30, "Vorsicht bei kleinen Zahlen", {s:16.5, c:GE}) +
+    `<rect x="50" y="${168 - 4*8}" width="60" height="${4*8}" rx="5" fill="${BL}"/><rect x="130" y="${168 - 8*8}" width="60" height="${8*8}" rx="5" fill="${GR}"/>` + TX(80, 160 - 32, "4", {s:16}) + TX(160, 160 - 64, "8", {s:16}) +
+    TX(80, 190, "Januar", {s:12.5, c:HG}) + TX(160, 190, "März", {s:12.5, c:HG}) + `<line x1="36" y1="168" x2="206" y2="168" stroke="#5B6C93" stroke-width="2"/>` +
+    TX(272, 96, "+ 4 Liegestütze", {s:13.5, c:"#FFFFFF"}) + TX(272, 124, "= + 100 %", {s:22, c:OR}) + TX(272, 152, "klingt riesig –", {s:12.2, c:HG, w:600}) + TX(272, 168, "ist aber wenig", {s:12.2, c:HG, w:600}))
+};
+delete ICON.experimentText;
+
+// glatte Kurve durch Punkte (Catmull-Rom → Bézier)
+function glatt(P){ let d = `M${P[0][0]} ${P[0][1]}`; for(let i = 0; i < P.length - 1; i++){ const p0 = P[i-1] || P[i], p1 = P[i], p2 = P[i+1], p3 = P[i+2] || p2;
+  d += ` C${(p1[0] + (p2[0]-p0[0])/6).toFixed(1)} ${(p1[1] + (p2[1]-p0[1])/6).toFixed(1)} ${(p2[0] - (p3[0]-p1[0])/6).toFixed(1)} ${(p2[1] - (p3[1]-p1[1])/6).toFixed(1)} ${p2[0]} ${p2[1]}`; } return d; }
+// Superkompensations-Kurve (Schema wie auf AB 11): als Infokarte (fig=false) oder als Antipp-Schaubild (fig=true)
+function skDiagramm(fig){
+  const B = 150, K = [[28,B],[100,B],[135,196],[170,212],[205,196],[240,B],[290,112],[330,100],[375,118],[420,140],[470,B]];
+  const Z = [["ausgang",24,98,"","Ausgangs-|niveau",HG],["ermuedung",100,170,"1","Ermüdung",RO],["erholung",170,240,"2","Erholung",OR],["superkomp",240,345,"3","Superkompensation",GR],["rueck",345,474,"","Rückbildung","#B9C6E4"]];
+  let s = Z.map(([id,a,b,,,c]) => `<rect x="${a}" y="36" width="${b-a}" height="226" fill="${c}" opacity=".07"/>`).join("") +
+    `<line x1="24" y1="${B}" x2="474" y2="${B}" stroke="${HG}" stroke-width="2" stroke-dasharray="7 6"/>` +
+    `<line x1="24" y1="34" x2="24" y2="262" stroke="#5B6C93" stroke-width="2"/>` + PFEIL(24, 262, 476, 262, "#5B6C93", 2) + TX(30, 28, "Leistung", {s:13, a:"start", c:HG}) + TX(470, 254, "Zeit", {s:12.5, a:"end", c:HG}) +
+    `<line x1="100" y1="40" x2="100" y2="262" stroke="#E5484D" stroke-width="3" stroke-dasharray="6 5"/><rect x="94" y="246" width="12" height="16" rx="3" fill="#E5484D"/>` + TX(106, 50, "Training (Reiz)", {s:13, a:"start", c:"#FF8A8A"}) +
+    `<path d="${glatt(K)}" fill="none" stroke="${BL}" stroke-width="5" stroke-linecap="round"/>`;
+  Z.forEach(([id,a,b,n,t,c]) => { const m = (a + b) / 2;
+    let g = (n ? `<circle cx="${m}" cy="286" r="11" fill="${c}"/>` + TX(m, 291, n, {s:14, c:"#101A33"}) + TX(m, 316, t, {s:id === "superkomp" ? 11.5 : 12.5, c}) : TX(m, t.includes("|") ? 292 : 304, t, {s:12.5, c}));
+    s += fig ? `<g data-z="${id}"><rect class="zr" x="${a + 2}" y="38" width="${b - a - 4}" height="286" rx="10"/>${g}</g>` : g; });
+  const stern = `<path d="M330 85 l4.3 9 l9.8 1.2 l-7.2 6.8 l1.9 9.7 l-8.8 -4.8 l-8.8 4.8 l1.9 -9.7 l-7.2 -6.8 l9.8 -1.2z" fill="${GE}" stroke="#101A33" stroke-width="1.5"/>`;
+  s += fig ? `<g data-z="zeitpunkt"><circle class="zr" cx="330" cy="92" r="24"/>${stern}${TX(330, 62, "bester Zeitpunkt", {s:13, c:GE})}</g>` : stern + TX(330, 62, "★ nächstes Training", {s:13, c:GE});
+  return `<svg class="${fig ? "bz" : "lnsvg"}" viewBox="0 0 480 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Superkompensations-Kurve"><rect width="480" height="330" rx="22" fill="#101A33"/>${s}</svg>`;
+}
+// drei Kurven aus AB 11: zu früh, optimal, zu spät
+function dreiKurven(){
+  const R = [["zu früh – Übertraining",[0,.9,1.8,2.7],RO],["optimal",[0,2.6,5.2,7.8],GR],["zu spät – kein Fortschritt",[0,6,12,18],GE]];
+  return KARTE(380, 300, R.map(([t,ts,c],k) => { const y0 = 12 + k*96, f = verlauf(ts), tE = ts[3] + 3, xs = t => 22 + (t + .4) / (tE + .4) * 336;
+    let mn = 0, mx = 0; for(let t = 0; t <= tE; t += .05){ mn = Math.min(mn, f(t)); mx = Math.max(mx, f(t)); }
+    const ys = v => y0 + 82 - (v - mn) / (mx - mn) * 50;
+    return `<rect x="10" y="${y0}" width="360" height="88" rx="12" fill="#17243F"/>` + TX(22, y0 + 20, t, {s:14, a:"start", c}) +
+      `<line x1="22" y1="${ys(0)}" x2="358" y2="${ys(0)}" stroke="${HG}" stroke-width="1.5" stroke-dasharray="5 5"/>` + ts.map(x => `<rect x="${xs(x) - 3}" y="${y0 + 70}" width="6" height="14" rx="2" fill="#E5484D"/>`).join("") +
+      `<path d="${pfad(f, -.4, tE, xs, ys, .05)}" fill="none" stroke="${c}" stroke-width="4" stroke-linejoin="round"/>`; }).join(""));
+}
+FIG.skkurve = () => skDiagramm(true);
+
+/* =========================================================
+   Inhalte (abgestimmt auf AB 10, 11, 12, 13 und 19)
+   ========================================================= */
+const LERNEN = {
+  training: { titel:"Was ist Training? – Fitness messen", folien:[
+    {bild:ICON.merkmale, titel:"Training oder nur Bewegung?", text:"**Training** ist **geplantes**, **regelmäßiges** und **zielgerichtetes** Üben, um die Leistung zu verbessern. Wer einfach so Fußball spielt oder mit dem Rad zur Schule fährt, bewegt sich – das ist gesund, aber noch **kein Training**."},
+    {bild:FOTO("tr9-bewegung-training","Radfahren zur Schule und Lauftraining nach Plan","🚲"), titel:"Mia und Ben", text:"**Mia** fährt jeden Tag mit dem Rad zur Schule – das verbessert sogar ihre Ausdauer, ist aber **nicht geplant**. **Ben** läuft **dreimal pro Woche nach Plan**, um in 8 Wochen 5 km zu schaffen: Das ist **Training**."},
+    {bild:ICON.faehigkeiten, titel:"Die motorischen Fähigkeiten", text:"Fitness besteht aus mehreren Fähigkeiten: **Ausdauer** (lange durchhalten), **Kraft** (z. B. Schnellkraft beim Springen, Kraftausdauer bei vielen Wiederholungen), **Schnelligkeit**, **Beweglichkeit** und **Koordination** (Bewegungen geschickt steuern)."},
+    {bild:FOTO("tr9-fitnesstest","Die fünf Stationen des Fitnesstests","⏱️"), titel:"Unser Fitnesstest", text:"**6-Minuten-Lauf** → Ausdauer · **Standweitsprung** → Schnellkraft der Beine · **Liegestütz in 40 s** → Kraftausdauer von Armen und Brust · **Unterarmstütz** → Kraftausdauer des Rumpfs · **Rumpfbeuge** (Sit-and-reach) → Beweglichkeit."},
+    {bild:ICON.faehigkeiten, titel:"Was fehlt im Test?", text:"Zwei Fähigkeiten testen wir nicht: **Schnelligkeit** (z. B. **20-m-Sprint**) und **Koordination** (z. B. **rückwärts balancieren** oder eine Seilspring-Kombination)."},
+    {bild:ICON.fair, titel:"Fair testen", text:"Ein Test sagt nur etwas aus, wenn alle unter **gleichen Bedingungen** und **genau** gemessen werden: gleiches **Aufwärmen**, gleicher **Ort**, gleiche **Übungs-Variante** und nur **saubere Wiederholungen** zählen."},
+    {bild:ICON.vergleich, titel:"Du mit dir selbst", text:"Im **Januar** machst du den Eingangstest, im **März** den Ausgangstest. Dazwischen trainierst du nach eigenem Plan. Verglichen wirst du nur **mit dir selbst** – deine Werte sind **persönlich**."}
+  ]},
+  superkomp: { titel:"Superkompensation", folien:[
+    {bild:SYM ? KARTE(300, 220, SYM.batterie(150, 80, 1, RO) + TX(150, 132, "Training = Reiz", {s:18, c:GE}) + TX(150, 160, "Speicher leer, Fasern belastet", {s:13.5, c:"#FFFFFF", w:600}) + TX(150, 182, "→ kurz weniger Leistung", {s:13.5, c:HG, w:600})) : "", titel:"Training ist ein Reiz", text:"Beim Training werden **Energiespeicher geleert** und **Muskelfasern belastet**. Direkt danach ist die Leistung **niedriger** als vorher – du bist **müde (Ermüdung)**."},
+    {bild:skDiagramm(false), titel:"Die Kurve", text:"**① Belastung & Ermüdung:** Die Leistung fällt unter das Ausgangsniveau. **② Erholung:** Der Körper repariert und füllt die Speicher bis zum alten Niveau. **③ Superkompensation:** Er baut **etwas mehr auf als vorher**. Kommt kein neuer Reiz, folgt die **Rückbildung**."},
+    {bild:skDiagramm(false), titel:"Der beste Zeitpunkt", text:"Das nächste Training sollte auf dem **Gipfel der Superkompensation** kommen. Dann setzt der neue Reiz auf das höhere Niveau auf – die Leistung steigt **Schritt für Schritt**. Besser wirst du also **in der Pause**, nicht im Training!"},
+    {bild:dreiKurven(), titel:"Zu früh, optimal, zu spät", text:"**Zu früh** (zu kurze Pausen): Die Ermüdung addiert sich, die Leistung **sinkt** immer weiter – **Übertraining**. **Optimal:** stetiger Anstieg. **Zu spät** (zu lange Pausen): Die Leistung fällt jedes Mal aufs **Ausgangsniveau** zurück, kein Fortschritt."},
+    {bild:ICON.erholung, titel:"Wie lange dauert Erholung?", text:"Richtwerte: **Puls und Atmung** nach einem Sprint: **Minuten**. Leere **Energiespeicher** nach einem harten Ausdauertraining: **1 bis 2 Tage**. **Muskeln** nach anstrengendem Krafttraining mit Muskelkater: **2 bis 3 Tage**. Das ist bei jedem etwas anders."},
+    {bild:ICON.pausen, titel:"Das Pausen-Experiment", text:"Dreimal 30 Sekunden Hockstrecksprünge: Nach nur **20 Sekunden** Pause schaffst du deutlich weniger, nach **2 Minuten** fast so viel wie frisch. Das zeigt die **kurze Erholung** in Minuten – die eigentliche Superkompensation braucht **Stunden bis Tage**."},
+    {bild:FOTO("tr9-uebertraining","Erschöpft durch zu viel Training","🥵"), titel:"Pausen gehören dazu", text:"Wer jeden Tag bis zur Erschöpfung trainiert, wird **schwächer statt stärker**. **Pausen** sind kein Faulsein, sondern ein **Teil des Trainings**."}
+  ]},
+  prinzipien: { titel:"Prinzipien & Methoden", folien:[
+    {bild:ICON.stellschrauben, titel:"Die 5 Stellschrauben", text:"Mit fünf Stellschrauben stellt man die **Belastung** ein: **Intensität** (wie hart? Tempo, Puls, Gewicht) · **Dauer** (wie lange am Stück?) · **Umfang** (wie viel insgesamt? Sätze × Wiederholungen, km) · **Dichte** (wie lang sind die Pausen?) · **Häufigkeit** (wie oft pro Woche?)."},
+    {bild:ICON.stellschrauben, titel:"Härter oder leichter?", text:"**Kürzere Pausen** → Dichte ↑ → härter. **Weniger Sätze** → Umfang ↓ → leichter. **Schneller laufen** → Intensität ↑. **Länger am Stück** → Dauer ↑. **Öfter pro Woche** → Häufigkeit ↑."},
+    {bild:ICON.progression, titel:"Progression", text:"Die Belastung wird **schrittweise gesteigert**. Wer immer dasselbe macht, wird irgendwann **nicht mehr besser**, weil der Körper sich schon angepasst hat."},
+    {bild:ICON.kontinuitaet, titel:"Kontinuität", text:"**Regelmäßig** trainieren, am besten an festen Tagen. Nach langen Pausen (z. B. Ferien ohne Sport) geht die Leistung **wieder zurück**."},
+    {bild:ICON.regeneration, titel:"Regeneration", text:"**Pausen einplanen** – zum Beispiel einen **Ruhetag** zwischen zwei harten Einheiten. Ohne Erholung keine Superkompensation."},
+    {bild:ICON.individualitaet, titel:"Individualität", text:"Der Plan muss **zur Person passen**: zu ihrem Ziel, ihrem Können und ihrem Körper. Zwei Menschen mit unterschiedlichen Zielen brauchen **unterschiedliche Pläne**."},
+    {bild:ICON.variation, titel:"Variation", text:"**Abwechslung** – zum Beispiel Laufen, Radfahren und Zirkel im Wechsel – hält das Training **spannend** und belastet den Körper vielseitig."},
+    {bild:methode("dauer"), titel:"Dauermethode", text:"**Lange, gleichmäßige** Belastung **ohne Pause**, z. B. **30 Minuten lockeres Joggen** in Zone 2. Trainiert vor allem die **Grundlagenausdauer**."},
+    {bild:methode("intervall"), titel:"Intervallmethode", text:"Wechsel von **Belastung** und **„lohnender Pause“** – man erholt sich **nicht ganz**. Beispiel: **4 × 4 Minuten zügig laufen**, dazwischen 2 Minuten gehen. Trainiert die **Ausdauer bei hohem Tempo**."},
+    {bild:methode("kraft"), titel:"Kraftausdauer-Methode", text:"**Viele Wiederholungen (15–25)** mit **leichtem Widerstand**, z. B. 3 × 20 Kniebeugen. Trainiert die **Kraftausdauer** – also lange gegen einen Widerstand durchzuhalten."},
+    {bild:methode("zirkel"), titel:"Zirkeltraining", text:"Mehrere **Stationen** mit **festen Belastungs- und Pausenzeiten**, z. B. **30 s Übung / 15 s Wechsel**. Trainiert die **allgemeine Fitness** und Kraftausdauer."}
+  ]},
+  plan: { titel:"Mein Plan & meine Bilanz", folien:[
+    {bild:ICON.smart, titel:"Ein SMART-Ziel", text:"**S**pezifisch (genau was?) · **M**essbar (mit Zahl) · **A**ttraktiv (ich will es wirklich) · **R**ealistisch (in 4–6 Wochen machbar) · **T**erminiert (bis wann?). „Ein Ziel ohne Plan ist nur ein Wunsch.“"},
+    {bild:ICON.plan, titel:"Der Plan für vier Wochen", text:"Mindestens **zwei Einheiten pro Woche**, je **20–30 Minuten**. Jede Einheit hat **Übung, Belastung und Pause**. Die Belastung **steigt von Woche zu Woche** (Progression), dazwischen liegen **Ruhetage** (Regeneration), an **festen Tagen** (Kontinuität)."},
+    {bild:FOTO("tr9-aufwaermen","Aufwärmen und Cool-down","🔥"), titel:"Auf- und Abwärmen", text:"Vor jeder Einheit etwa **5 Minuten aufwärmen** (locker laufen, Gelenke kreisen), danach ein **Cool-down** (auslaufen, lockern). Trainiere nur Übungen, die du **sicher** beherrschst – bei Schmerzen **sofort aufhören**."},
+    {bild:FOTO("tr9-tagebuch","Trainingstagebuch","📒"), titel:"Das Trainingstagebuch", text:"Nach jeder Einheit eintragen: **Datum**, **was** du trainiert hast, dein **Gefühl (1–10)** und Besonderheiten. Passt etwas nicht, **passt du den Plan an** – und begründest es, z. B. mit Superkompensation oder einem Trainingsprinzip."},
+    {bild:ICON.prozent, titel:"Hat es gewirkt? Rechnen!", text:"**Differenz = Ausgangswert − Eingangswert.** **Veränderung in % = Differenz : Eingangswert × 100.** Achtung, typischer Fehler: **durch den Eingangswert** teilen, nicht durch den Ausgangswert. Bei der Rumpfbeuge nur die Differenz in cm."},
+    {bild:ICON.ursachen, titel:"Warum hat sich etwas verändert?", text:"Nicht jede Verbesserung kommt vom Training: Es kann auch sein, dass du den **Test jetzt besser kennst**, die **Tagesform** anders war, ein **Messfehler** passiert ist oder du **gewachsen** bist. Und was du **kaum trainiert** hast, verändert sich meist wenig."},
+    {bild:ICON.vorsicht, titel:"Vorsicht bei kleinen Zahlen", text:"Von **4 auf 8 Liegestütze** sind **+100 %** – das klingt riesig, sind aber nur 4 Stück. Bei kleinen Ausgangswerten werden Prozente schnell groß. Darum immer **Differenz und Prozent** zusammen anschauen."},
+    {bild:ICON.vergleich, titel:"Gewirkt – am sichersten so", text:"Ob Training wirkt, zeigt ein Vergleich unter **gleichen Bedingungen**. Wer **regelmäßig (Kontinuität)** und **steigernd (Progression)** trainiert, verbessert sich am sichersten. Bewerte dein Training mit **Fachbegriffen**."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:ICON.merkmale, titel:"Training", text:"**„Plan und Ziel und immer dran – so fängt echtes Training an.“**"},
+    {bild:ICON.fair, titel:"Fair testen", text:"**„Gleich und genau – so misst man schlau.“**"},
+    {bild:skDiagramm(false), titel:"Superkompensation", text:"**„Im Training wirst du müd und schwach – stärker wirst du erst danach.“**"},
+    {bild:dreiKurven(), titel:"Zeitpunkt", text:"**„Trainierst du auf dem Gipfel wieder, geht’s nach oben, nicht hernieder.“**"},
+    {bild:ICON.progression, titel:"Progression", text:"**„Immer gleich, das bringt nichts ein – steigern muss schon sein!“**"},
+    {bild:ICON.regeneration, titel:"Regeneration", text:"**„Ohne Pause kein Gewinn – in der Pause steckt der Sinn.“**"},
+    {bild:ICON.smart, titel:"SMART", text:"**„Genau, mit Zahl und mit Termin – so kriegst du jedes Ziel gut hin.“**"}
+  ]}
+};
+
+// Belastungs-Zeit-Diagramme der Methoden
+function methode(m){
+  const ax = TX(30, 34, "Belastung", {s:12.5, a:"start", c:HG}) + `<line x1="30" y1="44" x2="30" y2="176" stroke="#5B6C93" stroke-width="2"/>` + PFEIL(30, 176, 300, 176, "#5B6C93", 2) + TX(296, 196, "Zeit", {s:12.5, a:"end", c:HG});
+  let s = "", t = "";
+  if(m === "dauer"){ s = `<rect x="36" y="96" width="250" height="80" fill="${BL}" opacity=".85"/>`; t = "lange · gleichmäßig · ohne Pause"; }
+  if(m === "intervall"){ for(let k = 0; k < 4; k++) s += `<rect x="${36 + k*64}" y="86" width="38" height="90" fill="${OR}"/><rect x="${74 + k*64}" y="142" width="26" height="34" fill="${OR}" opacity=".45"/>`;
+    s += TX(150, 58, "lohnende Pause", {s:13, c:GE}) + PFEIL(110, 64, 88, 136, GE, 2.5) + PFEIL(170, 64, 216, 136, GE, 2.5); t = "Belastung + lohnende Pause"; }
+  if(m === "kraft"){ for(let k = 0; k < 20; k++) s += `<rect x="${38 + k*12.4}" y="112" width="8" height="64" rx="2" fill="${GR}"/>`; t = "15–25 Wiederholungen · leichter Widerstand"; }
+  if(m === "zirkel"){ const P = 8; s = `<circle cx="160" cy="110" r="58" fill="none" stroke="#2E4472" stroke-width="6"/>` + [...Array(P)].map((_,k) => { const a = k/P*2*Math.PI - Math.PI/2;
+      return `<circle cx="${(160 + Math.cos(a)*58).toFixed(1)}" cy="${(110 + Math.sin(a)*58).toFixed(1)}" r="14" fill="#1E2C4D" stroke="${GE}" stroke-width="3"/>` + TX(+(160 + Math.cos(a)*58).toFixed(1), +(115 + Math.sin(a)*58).toFixed(1), k + 1, {s:13, c:GE}); }).join("") +
+      TX(160, 106, "30 s Übung", {s:13, c:"#FFFFFF"}) + TX(160, 124, "15 s Wechsel", {s:13, c:HG});
+    return KARTE(320, 220, s + TX(160, 205, "Stationen mit festen Zeiten", {s:14, c:"#FFFFFF"})); }
+  return KARTE(320, 220, ax + s + TX(165, 210, t, {s:13.5, c:"#FFFFFF"}));
+}
+
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const HERO = `
+<div class="sw-hero gym-hero">
+  <a class="welt-back" href="klasse9.html#o=muskel">🏙️ Athletopolis</a>
+  <svg class="hero-art" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <path d="M60 250 C120 250 130 200 170 200 C210 200 205 120 250 120 C290 120 300 60 350 50" fill="none" stroke="#5FE9FF" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+    <path d="M60 250 L60 270 L380 270" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="3"/>
+    ${[110,190,270].map(x => `<rect x="${x}" y="230" width="12" height="40" rx="3" fill="#E5484D"/>`).join("")}
+    <g class="hantel"><rect x="150" y="150" width="120" height="12" rx="5" fill="#C9D4E6"/><rect x="136" y="128" width="18" height="56" rx="5" fill="#FF9A3D"/><rect x="266" y="128" width="18" height="56" rx="5" fill="#FF9A3D"/><rect x="122" y="138" width="14" height="36" rx="4" fill="#FF9A3D"/><rect x="284" y="138" width="14" height="36" rx="4" fill="#FF9A3D"/></g>
+    <circle cx="300" cy="96" r="40" fill="#14223D" stroke="#FFC233" stroke-width="6"/><rect x="292" y="46" width="16" height="12" rx="3" fill="#FFC233"/><line class="zeiger" x1="300" y1="96" x2="300" y2="66" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><circle cx="300" cy="96" r="5" fill="#FFFFFF"/>
+  </svg>
+  <p class="kicker">Profil Sport · Klasse 9 · Sporttheorie</p>
+  <h1>Training &amp; Fitness</h1>
+  <p>Willkommen im Muskel-Fitnesscenter! Hier lernst du, wie Training wirkt, wann die beste Pause endet und wie du deinen eigenen Plan baust. Sammle Basketbälle 🏀 für deinen Rang in Athletopolis und erstelle am Ende deinen Ergebnis-Code.</p>
+</div>`;
+
+const TB = ["🏋️ Training","🚶 Kein Training"];
+LW.start({
+  id: "tr9",
+  titel: "Trainings-Lernwelt",
+  sprache: "de",
+  hero: HERO,
+  sammel: "🏀",
+  kartenSymbol: "🏋️",
+  rang: {k:"s9"},   // gemeinsame Basketbälle und Ränge in ganz Athletopolis
+  konfetti: ["#D9541A","#FFC233","#14223D","#5FE9FF","#FFFFFF"],
+  lob: {3:"Trainer-Niveau! Drei Sterne.", 2:"Starke Einheit! Schaffst du drei Sterne?", 1:"Guter Anfang – schau dir die Infokarten an und versuch es nochmal.", 0:"Noch im Aufwärmen: Lies die Infokarten und probier es nochmal."},
+  lernen: LERNEN,
+  levels: [
+    { id:"training", typ:"rush", lernen:"training", icon:"🏋️", titel:"Training oder nur Bewegung?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Ist das **Training** (geplant, regelmäßig, mit Ziel – linker Knopf) oder **nur Bewegung** (rechter Knopf)? **Ziel: 10 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:10, fest:true,
+      items:[
+        {q:"Ben läuft 3× pro Woche nach Plan, um in 8 Wochen 5 km zu schaffen.", o:TB, c:0},
+        {q:"Mia fährt jeden Tag mit dem Rad zur Schule.", o:TB, c:1, e:"Gesund und gut für die Ausdauer – aber nicht geplant und ohne Trainingsziel."},
+        {q:"Lea steigert nach Plan jede Woche die Wiederholungen ihrer Kräftigungsübungen.", o:TB, c:0},
+        {q:"Ali spielt am Wochenende mit Freunden Fußball.", o:TB, c:1},
+        {q:"Jonas läuft für den Stadtlauf dreimal pro Woche 4 × 4 Minuten zügig.", o:TB, c:0},
+        {q:"Emma tanzt auf einer Party die ganze Nacht.", o:TB, c:1},
+        {q:"Tim macht mit seiner Trainerin zweimal pro Woche Sprungkrafttraining nach Plan.", o:TB, c:0},
+        {q:"Sara geht mit dem Hund spazieren, wenn sie Lust hat.", o:TB, c:1},
+        {q:"Noah trainiert 6 Wochen nach Plan für den Fitnesstest und führt Tagebuch.", o:TB, c:0},
+        {q:"Lina trägt die Einkaufstaschen die Treppe hoch.", o:TB, c:1},
+        {q:"Paul übt montags und donnerstags, um bis zu den Ferien 30 s länger im Unterarmstütz zu halten.", o:TB, c:0},
+        {q:"Mehmet spielt in der Pause Tischtennis.", o:TB, c:1},
+        {q:"Elif schwimmt jeden Dienstag und Freitag nach Plan, um ihr Abzeichen zu schaffen.", o:TB, c:0},
+        {q:"Kai läuft zum Bus, weil er spät dran ist.", o:TB, c:1}
+      ]},
+    { id:"test", typ:"quiz", lernen:"training", icon:"⏱️", titel:"Was testet das?", art:"Quiz · 9 Fragen",
+      anleitung:"Welche **motorische Fähigkeit** wird bei der Testaufgabe vor allem gemessen? Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"6 Minuten lang möglichst weit laufen.", o:["Ausdauer","Beweglichkeit","Schnellkraft","Koordination"], c:0, e:"Wer lange durchhält, hat eine gute **Ausdauer**."},
+        {q:"Beidbeinig aus dem Stand möglichst weit springen.", o:["Ausdauer","Schnellkraft der Beine","Beweglichkeit","Kraftausdauer"], c:1, e:"Ein kurzer, explosiver Krafteinsatz: **Schnellkraft**."},
+        {q:"In 40 Sekunden so viele Liegestütze wie möglich, Brust bis zur Faust des Partners.", o:["Schnelligkeit","Koordination","Kraftausdauer","Beweglichkeit"], c:2, e:"Viele Wiederholungen gegen einen Widerstand: **Kraftausdauer** von Armen und Brust."},
+        {q:"Den Körper im Unterarmstütz gerade halten – bis zum Abbruch.", o:["Kraftausdauer des Rumpfs","Schnelligkeit","Beweglichkeit","Ausdauer"], c:0, e:"Haltekraft über lange Zeit: **Kraftausdauer** des Rumpfs."},
+        {q:"Im Sitzen mit gestreckten Beinen möglichst weit nach vorne beugen (Sit-and-reach).", o:["Kraft","Koordination","Ausdauer","Beweglichkeit"], c:3, e:"Gemessen wird, wie weit du dich dehnen kannst: **Beweglichkeit**."},
+        {q:"20 Meter so schnell wie möglich sprinten.", o:["Ausdauer","Schnelligkeit","Beweglichkeit","Kraftausdauer"], c:1, e:"Kurze Strecke, maximales Tempo: **Schnelligkeit**."},
+        {q:"Rückwärts über eine umgedrehte Langbank balancieren, ohne herunterzufallen.", o:["Kraft","Ausdauer","Koordination","Schnelligkeit"], c:2, e:"Gleichgewicht und Bewegungssteuerung: **Koordination**."},
+        {q:"12 Minuten laufen und die Strecke messen (Cooper-Test).", o:["Ausdauer","Schnelligkeit","Kraft","Beweglichkeit"], c:0, e:"Wie der 6-Minuten-Lauf: ein **Ausdauer**-Test."},
+        {q:"Welche zwei Fähigkeiten fehlen in unserem Fitnesstest?", o:["Ausdauer und Kraft","Beweglichkeit und Ausdauer","Schnelligkeit und Koordination","Kraftausdauer und Beweglichkeit"], c:2, e:"Für **Schnelligkeit** und **Koordination** gibt es bei uns keine Station – z. B. 20-m-Sprint und Balancieren rückwärts."}
+      ]},
+    { id:"fair", typ:"swipe", lernen:"training", icon:"⚖️", titel:"Fair gemessen?", art:"Wischen · 11 Karten",
+      anleitung:"Wird hier **fair** getestet? Wische nach **rechts = fair**, nach **links = unfair** – oder tippe auf die Knöpfe.",
+      links:{t:"Unfair", icon:"❌"}, rechts:{t:"Fair", icon:"✅"},
+      karten:[
+        {t:"Beim Eingangstest wärmen sich alle 15 Minuten auf, beim Ausgangstest gar nicht.", r:"l", e:"Regel: Beide Male **dasselbe Aufwärmprogramm**."},
+        {t:"Im Januar und im März wärmen sich alle gleich lange mit demselben Programm auf.", r:"r", e:"Gleiche Bedingungen – so lassen sich die Werte vergleichen."},
+        {t:"Toms Partner zählt jeden halben Liegestütz mit.", r:"l", e:"Regel: **Nur saubere Wiederholungen** zählen (Brust bis zur Faust)."},
+        {t:"Es zählen nur Liegestütze, bei denen die Brust die Faust des Partners berührt.", r:"r", e:"Eine klare Bewegungsvorgabe macht das Zählen genau."},
+        {t:"Lena macht im Januar Liegestütze auf den Knien, im März normale.", r:"l", e:"Variante gewechselt → nicht vergleichbar. Regel: **immer dieselbe Variante**."},
+        {t:"Lena macht im Januar und im März Liegestütze auf den Knien.", r:"r", e:"Gleiche Variante – fair, auch wenn es die leichtere ist."},
+        {t:"Gruppe A läuft den 6-Minuten-Lauf in der Halle, Gruppe B draußen bei Regen.", r:"l", e:"Regel: **gleicher Ort, gleiche Strecke** für alle."},
+        {t:"Beide Tests finden in derselben Halle auf derselben Runde statt.", r:"r", e:"Gleiche Bedingungen."},
+        {t:"Beim Standweitsprung zählt bei allen der bessere von zwei Versuchen.", r:"r", e:"Eine Regel für alle – fair."},
+        {t:"Beim Sprung misst der Partner einmal ab der Ferse, einmal ab den Zehenspitzen.", r:"l", e:"Regel: Immer an derselben Stelle messen – an der **hintersten Landestelle** (Ferse)."},
+        {t:"Das Maßband liegt straff und gerade am Boden.", r:"r", e:"Genau messen gehört zum fairen Test."}
+      ]},
+    { id:"kurve", typ:"bildzuordnen", bild:"skkurve", quer:true, lernen:"superkomp", icon:"📈", titel:"Kurven-Detektiv", art:"Antippen · 9 Karten",
+      anleitung:"Lies die Karte und **tippe auf die passende Stelle der Superkompensations-Kurve**. Jede richtige Antwort = **1 Punkt**.",
+      frage:"Wo auf der Kurve?", ziel:"die passende Phase",
+      zonen:[{id:"ausgang", name:"Ausgangsniveau"},{id:"ermuedung", name:"Belastung & Ermüdung"},{id:"erholung", name:"Erholung"},{id:"superkomp", name:"Superkompensation"},{id:"rueck", name:"Rückbildung"},{id:"zeitpunkt", name:"bester Zeitpunkt"}],
+      items:[
+        {t:"Die Speicher sind leer, die Muskelfasern belastet – die Leistung sinkt.", z:"ermuedung", e:"Direkt nach dem Training: **Belastung & Ermüdung**."},
+        {t:"Der Körper repariert und füllt die Speicher wieder auf – bis zum alten Niveau.", z:"erholung", e:"Das ist die **Erholung**."},
+        {t:"Der Körper baut etwas mehr auf als vorher – jetzt bist du leistungsfähiger.", z:"superkomp", e:"**Superkompensation**: Er bereitet sich auf die nächste Belastung vor."},
+        {t:"Kommt kein neuer Reiz, geht die Leistung wieder zurück.", z:"rueck", e:"Ohne neuen Reiz folgt die **Rückbildung**."},
+        {t:"Genau hier sollte das nächste Training kommen.", z:"zeitpunkt", e:"Auf dem **Gipfel** der Superkompensation."},
+        {t:"So leistungsfähig warst du vor dem Training.", z:"ausgang", e:"Das ist das **Ausgangsniveau**."},
+        {t:"Direkt nach dem Training schaffst du weniger als vorher.", z:"ermuedung", e:"Training macht erst einmal **müde**."},
+        {t:"Wer immer zu spät trainiert, landet jedes Mal wieder hier – ohne Fortschritt.", z:"ausgang", e:"Zu lange Pausen: zurück aufs **Ausgangsniveau**."},
+        {t:"In dieser Phase wirst du tatsächlich besser als vorher.", z:"superkomp", e:"Besser wird man **in der Pause** – in der Superkompensation."}
+      ]},
+    { id:"timing", typ:"timing", lernen:"superkomp", icon:"🎯", titel:"Timing-Coach", art:"Im richtigen Moment trainieren · 4 Runden",
+      anleitung:"Nach dem Training läuft die Zeit. Tippe auf **„Jetzt trainieren!“**, wenn der **beste Moment** für das nächste Training da ist. Perfektes Timing = **2 Punkte**, knapp daneben = 1 Punkt.", runden:4 },
+    { id:"erholung", typ:"sortieren", lernen:"superkomp", icon:"🔋", titel:"Wie lange erholen?", art:"Sortieren · 8 Karten",
+      anleitung:"Wie lange braucht die **Erholung** ungefähr? Ordne zu. (Richtwerte – bei jedem etwas anders.) Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"Minuten", info:"schnelle Erholung", tipp:"Puls und Atmung beruhigen sich nach kurzen Belastungen schon nach Minuten."},
+        {t:"1 bis 2 Tage", info:"Speicher auffüllen", tipp:"Leere Energiespeicher im Muskel brauchen etwa 1 bis 2 Tage."},
+        {t:"2 bis 3 Tage", info:"Muskeln reparieren", tipp:"Stark belastete Muskeln (z. B. mit Muskelkater) brauchen etwa 2 bis 3 Tage."}
+      ],
+      items:[
+        {t:"Puls und Atmung nach einem 50-m-Sprint", k:0},
+        {t:"Leere Energiespeicher nach einem harten Ausdauertraining", k:1},
+        {t:"Muskeln nach einem anstrengenden Krafttraining mit Muskelkater", k:2},
+        {t:"Puls nach drei schnellen Treppenläufen", k:0},
+        {t:"Energiespeicher nach einem langen, harten Fußballspiel", k:1},
+        {t:"Beinmuskeln mit starkem Muskelkater nach vielen ungewohnten Sprüngen", k:2},
+        {t:"Atmung nach einem Satz Hockstrecksprünge (Pausen-Experiment)", k:0},
+        {t:"Speicher nach einem 90-Minuten-Lauf", k:1}
+      ]},
+    { id:"schrauben", typ:"quiz", lernen:"prinzipien", icon:"🎛️", titel:"Stellschrauben-Profi", art:"Quiz · 10 Fragen",
+      anleitung:"Welche **Stellschraube** wird verändert – und wird die Belastung **größer (↑)** oder **kleiner (↓)**? Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Die Pause zwischen den Sätzen wird von 2 auf 1 Minute verkürzt.", o:["Dichte ↑","Dichte ↓","Dauer ↑","Intensität ↓"], c:0, e:"Kürzere Pausen = mehr Belastung pro Zeit: **Dichte ↑**."},
+        {q:"Statt 3 Sätzen machst du nur noch 2.", o:["Umfang ↑","Häufigkeit ↓","Umfang ↓","Dichte ↓"], c:2, e:"Weniger Sätze insgesamt: **Umfang ↓**."},
+        {q:"Du läufst die gleiche Strecke schneller.", o:["Dauer ↑","Intensität ↑","Umfang ↑","Dichte ↓"], c:1, e:"Höheres Tempo: **Intensität ↑**."},
+        {q:"Statt 20 Minuten läufst du 30 Minuten am Stück.", o:["Intensität ↑","Häufigkeit ↑","Dichte ↑","Dauer ↑"], c:3, e:"Länger am Stück: **Dauer ↑**."},
+        {q:"Du trainierst 3-mal statt 2-mal pro Woche.", o:["Häufigkeit ↑","Umfang ↓","Intensität ↑","Dauer ↑"], c:0, e:"Öfter pro Woche: **Häufigkeit ↑**."},
+        {q:"Bei den Kniebeugen nimmst du eine schwerere Hantel.", o:["Dichte ↑","Umfang ↑","Intensität ↑","Häufigkeit ↑"], c:2, e:"Mehr Gewicht = härter: **Intensität ↑**."},
+        {q:"Statt 4 Intervallen läufst du 5.", o:["Dauer ↓","Umfang ↑","Dichte ↓","Intensität ↓"], c:1, e:"Mehr Belastungen insgesamt: **Umfang ↑**."},
+        {q:"Die Gehpause zwischen den Intervallen dauert jetzt 3 statt 2 Minuten.", o:["Dichte ↓","Dichte ↑","Dauer ↑","Umfang ↑"], c:0, e:"Längere Pausen: **Dichte ↓**."},
+        {q:"Wegen der Prüfungen trainierst du nur noch einmal pro Woche.", o:["Intensität ↓","Dauer ↓","Dichte ↓","Häufigkeit ↓"], c:3, e:"Seltener: **Häufigkeit ↓**."},
+        {q:"Du joggst langsamer – Puls 140 statt 160.", o:["Umfang ↓","Intensität ↓","Häufigkeit ↓","Dichte ↑"], c:1, e:"Lockerer Puls: **Intensität ↓**."}
+      ]},
+    { id:"prinzip", typ:"quiz", lernen:"prinzipien", icon:"🧩", titel:"Trainer-Sprechstunde", art:"Fälle · 10 Fälle",
+      anleitung:"Welches **Trainingsprinzip** wird hier verletzt – oder gut umgesetzt? Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Fall",
+      fragen:[
+        {szene:"Mia läuft seit Wochen dieselben 2 km im gleichen Tempo. Sie wird nicht mehr besser.", q:"Welches Prinzip fehlt?", o:["Progression","Regeneration","Variation","Individualität"], c:0, e:"Die Belastung muss **schrittweise steigen** – Progression."},
+        {szene:"Ben trainiert nach den Ferien zum ersten Mal wieder. Seine Ausdauer ist deutlich schlechter.", q:"Welches Prinzip fehlte in den Ferien?", o:["Variation","Kontinuität","Individualität","Progression"], c:1, e:"Ohne **regelmäßiges** Training geht die Leistung zurück – Kontinuität."},
+        {szene:"Emre macht jeden Tag Liegestütze bis zur Erschöpfung. Seine Arme werden schwächer.", q:"Welches Prinzip fehlt?", o:["Progression","Variation","Regeneration","Kontinuität"], c:2, e:"Ohne **Pausen** keine Erholung und keine Superkompensation – Regeneration."},
+        {szene:"Lina will ausdauernder werden, Ali stärker. Beide nutzen genau denselben Plan.", q:"Welches Prinzip fehlt?", o:["Individualität","Kontinuität","Regeneration","Progression"], c:0, e:"Der Plan muss **zur Person und ihrem Ziel** passen – Individualität."},
+        {szene:"Paula wechselt zwischen Laufen, Radfahren und Zirkel, damit es spannend bleibt.", q:"Welches Prinzip setzt sie um?", o:["Regeneration","Individualität","Kontinuität","Variation"], c:3, e:"**Abwechslung**: Variation."},
+        {szene:"Nils trainiert nur, wenn er Lust hat: mal zweimal in einer Woche, dann drei Wochen gar nicht.", q:"Welches Prinzip fehlt?", o:["Kontinuität","Variation","Progression","Individualität"], c:0, e:"Unregelmäßig = keine Kontinuität."},
+        {szene:"Zwischen zwei harten Krafteinheiten plant Lea immer einen Ruhetag ein.", q:"Welches Prinzip setzt sie um?", o:["Progression","Regeneration","Variation","Individualität"], c:1, e:"Pause einplanen: **Regeneration**."},
+        {szene:"Tom läuft jede Woche 5 Minuten länger als in der Woche davor.", q:"Welches Prinzip setzt er um?", o:["Variation","Kontinuität","Progression","Regeneration"], c:2, e:"Schrittweise steigern: **Progression**."},
+        {szene:"Die Trainerin gibt der Sprinterin andere Übungen als dem Langstreckenläufer.", q:"Welches Prinzip setzt sie um?", o:["Regeneration","Progression","Kontinuität","Individualität"], c:3, e:"Passend zur Person und zum Ziel: **Individualität**."},
+        {szene:"Damit es nicht langweilig wird, baut Ali jede Woche neue Übungen in seinen Zirkel ein.", q:"Welches Prinzip setzt er um?", o:["Variation","Kontinuität","Regeneration","Progression"], c:0, e:"Neue Übungen = Abwechslung: **Variation**."}
+      ]},
+    { id:"methode", typ:"sortieren", lernen:"prinzipien", icon:"🧭", titel:"Methoden-Parcours", art:"Sortieren · 12 Karten",
+      anleitung:"Welche **Trainingsmethode** ist das? Ordne jede Karte zu. Jede richtige Zuordnung = 1 Punkt.",
+      koerbe:[
+        {t:"Dauermethode", info:"lange, gleichmäßig, ohne Pause", tipp:"Dauermethode: lange, gleichmäßige Belastung ohne Pause."},
+        {t:"Intervallmethode", info:"Belastung + lohnende Pause", tipp:"Intervallmethode: Wechsel von Belastung und lohnender Pause."},
+        {t:"Kraftausdauer", info:"15–25 Wdh., leichter Widerstand", tipp:"Kraftausdauer-Methode: viele Wiederholungen mit leichtem Widerstand."},
+        {t:"Zirkeltraining", info:"Stationen mit festen Zeiten", tipp:"Zirkeltraining: Stationen mit festen Belastungs- und Pausenzeiten."}
+      ],
+      items:[
+        {t:"30 Minuten lockeres Joggen ohne Pause, Puls gleichmäßig in Zone 2", k:0},
+        {t:"4 × 4 Minuten zügig laufen, dazwischen je 2 Minuten gehen", k:1},
+        {t:"3 × 20 Kniebeugen ohne Zusatzgewicht", k:2},
+        {t:"8 Stationen, je 30 s Übung und 15 s Wechsel", k:3},
+        {t:"45 Minuten gleichmäßig Rad fahren", k:0},
+        {t:"10 × 200 m schnell, dazwischen 1 Minute locker traben", k:1},
+        {t:"2 × 25 Wiederholungen mit einem leichten Theraband", k:2},
+        {t:"Liegestütz, Seilspringen, Sit-ups, Kniebeugen: je 40 s, dann Pfiff zum Wechseln", k:3},
+        {t:"20 Minuten gleichmäßig schwimmen", k:0},
+        {t:"Sechsmal 30 s Sprint auf dem Rad, dazwischen 90 s lockeres Treten", k:1},
+        {t:"3 × 15 Ausfallschritte mit einer leichten Wasserflasche in jeder Hand", k:2},
+        {t:"Fitnessparcours mit 6 Stationen in der Halle, an jeder Station 45 s", k:3}
+      ]},
+    { id:"memory", typ:"memory", icon:"🧠", titel:"Fachbegriff-Memory", art:"Memory · 8 Paare",
+      anleitung:"Finde die Paare: **Fachbegriff + Bedeutung**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Intensität", b:"Wie hart?"},
+        {a:"Dauer", b:"Wie lange am Stück?"},
+        {a:"Umfang", b:"Wie viel insgesamt?"},
+        {a:"Dichte", b:"Wie lang sind die Pausen?"},
+        {a:"Häufigkeit", b:"Wie oft pro Woche?"},
+        {a:"Progression", b:"Belastung steigern"},
+        {a:"Kontinuität", b:"Regelmäßig trainieren"},
+        {a:"Superkompensation", b:"Mehr aufbauen als vorher"}
+      ]},
+    { id:"smart", typ:"quiz", lernen:"plan", icon:"🎯", titel:"SMART-Check", art:"Ziele prüfen · 7 Ziele",
+      anleitung:"Ist das Ziel **SMART**? Finde heraus, **welches Kriterium fehlt** – oder ob alles passt. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„Bis zum 19.03. laufe ich im 6-Minuten-Lauf weiter.“", o:["Messbar fehlt","Terminiert fehlt","Attraktiv fehlt","Alles erfüllt"], c:0, e:"Wie viel weiter? Es fehlt eine **Zahl** – nicht messbar. Besser: „… 100 m weiter als im Januar.“"},
+        {q:"„Ich schaffe im 6-Minuten-Lauf 100 m mehr als im Januar.“", o:["Spezifisch fehlt","Messbar fehlt","Terminiert fehlt","Alles erfüllt"], c:2, e:"Bis **wann**? Es fehlt der **Termin**."},
+        {q:"„Bis zum 19.03. schaffe ich 100 Liegestütze in 40 Sekunden.“", o:["Realistisch fehlt","Messbar fehlt","Spezifisch fehlt","Alles erfüllt"], c:0, e:"100 in 40 Sekunden schafft niemand – **nicht realistisch**."},
+        {q:"„Bis zum 19.03. verbessere ich mich um 10 Prozent.“", o:["Terminiert fehlt","Spezifisch fehlt","Messbar fehlt","Alles erfüllt"], c:1, e:"Worin? Es fehlt, **genau was** besser werden soll – nicht spezifisch."},
+        {q:"„Mein Vater will, dass ich bis zum 19.03. im Unterarmstütz 20 Sekunden länger halte. Mir ist das eigentlich egal.“", o:["Messbar fehlt","Terminiert fehlt","Attraktiv fehlt","Alles erfüllt"], c:2, e:"Das Ziel muss **dir** wichtig sein – sonst ist es nicht attraktiv."},
+        {q:"„Bis zum 19.03. springe ich beim Standweitsprung 8 cm weiter als im Januar.“", o:["Realistisch fehlt","Spezifisch fehlt","Messbar fehlt","Alles erfüllt"], c:3, e:"Genau, mit Zahl, machbar und mit Termin: **SMART**."},
+        {q:"„Bis zu den Osterferien schaffe ich bei der Rumpfbeuge 3 cm mehr als im Januar.“", o:["Terminiert fehlt","Alles erfüllt","Messbar fehlt","Spezifisch fehlt"], c:1, e:"Alles drin: **SMART**."}
+      ]},
+    { id:"bilanz", typ:"eingabe", lernen:"plan", icon:"🧮", titel:"Bilanz-Rechner", art:"Rechnen & schreiben · 7 Aufgaben",
+      anleitung:"Rechne wie eine Trainerin: **Differenz = März − Januar**, **Veränderung in % = Differenz : Januar × 100**. Schreibe nur die Zahl (Taschenrechner erlaubt).",
+      mischen:false,
+      fragen:[
+        {szene:"Lena · 6-Minuten-Lauf: Januar 1 150 m, März 1 240 m.", q:"Wie groß ist die Differenz (in m)?", hilfe:"💡 März − Januar", a:["90"], re:["^\\+? ?90( ?m)?$"], e:"1 240 − 1 150 = **+90 m**."},
+        {szene:"Lena · 6-Minuten-Lauf: +90 m bei 1 150 m im Januar.", q:"Wie viel Prozent sind das? (eine Stelle nach dem Komma)", hilfe:"💡 90 : 1 150 × 100", a:["7,8"], re:["^\\+? ?7 8 ?%?$","^\\+? ?7 83 ?%?$"], e:"90 : 1 150 × 100 ≈ **7,8 %**."},
+        {szene:"Lena · Liegestütz: Januar 12, März 16.", q:"Veränderung in Prozent? (ganze Zahl)", hilfe:"💡 Differenz 4 : 12 × 100", a:["33"], re:["^\\+? ?33( 3)? ?%?$"], e:"4 : 12 × 100 ≈ **33 %**."},
+        {szene:"Lena · Unterarmstütz: Januar 55 s, März 80 s.", q:"Veränderung in Prozent? (ganze Zahl)", hilfe:"💡 Differenz 25 : 55 × 100", a:["45"], re:["^\\+? ?45( 5)? ?%?$"], e:"25 : 55 × 100 ≈ **45 %**."},
+        {szene:"Lena · Standweitsprung: Januar 172 cm, März 178 cm.", q:"Wie groß ist die Differenz (in cm)?", hilfe:"💡 März − Januar", a:["6"], re:["^\\+? ?6( ?cm)?$"], e:"178 − 172 = **+6 cm** (≈ 3,5 %)."},
+        {szene:"Ein Schüler schafft im Januar 4 Liegestütze, im März 8.", q:"Veränderung in Prozent?", hilfe:"💡 Differenz : Eingangswert × 100", a:["100"], re:["^\\+? ?100 ?%?$"], e:"4 : 4 × 100 = **100 %** – klingt riesig, sind aber nur 4 Liegestütze mehr."},
+        {q:"Durch welchen Wert teilst du beim Prozentrechnen – durch den Eingangs- oder den Ausgangswert?", hilfe:"💡 E… oder A…", a:["Eingangswert"], re:["^(durch )?(den )?eingangs?(wert|test)?$","^(den )?(wert )?(vom|aus dem|im) januar$","^januar(wert)?$"], e:"Immer durch den **Eingangswert** (Januar). Das ist der häufigste Fehler."}
+      ]},
+    { id:"ursachen", typ:"quiz", lernen:"plan", icon:"🔎", titel:"Warum besser?", art:"Fälle · 7 Fälle",
+      anleitung:"Was ist die **wahrscheinlichste Ursache** für die Veränderung? Jede richtige Antwort = **1 Punkt**.",
+      szenenLabel:"Fall",
+      fragen:[
+        {szene:"Lena hat vier Wochen lang Kraftausdauer trainiert: Liegestütz +33 %, Unterarmstütz +45 %.", q:"Woran liegt es vor allem?", o:["Training nach Plan (Anpassung)","Messfehler","Wachstum","Tagesform"], c:0, e:"Genau das hat sie trainiert – der Körper hat sich **angepasst**."},
+        {szene:"Ben hat Sprünge gar nicht trainiert. Im März weiß er aber, wie er die Arme mitschwingen muss – und springt 3 cm weiter.", q:"Woran liegt es vor allem?", o:["Wachstum","Er kennt den Test jetzt besser","Messfehler","Training nach Plan"], c:1, e:"Bessere **Technik** durch Erfahrung mit dem Test – kein Trainingseffekt."},
+        {szene:"Elif war am Tag des Ausgangstests erkältet und hat schlecht geschlafen. Ihr Lauf war schwächer als im Januar.", q:"Woran liegt es vor allem?", o:["Diese Fähigkeit nicht trainiert","Messfehler","Tagesform","Wachstum"], c:2, e:"Krankheit und wenig Schlaf: **Tagesform**."},
+        {szene:"Im März hat der Partner beim Standweitsprung von den Zehenspitzen statt von der Ferse gemessen.", q:"Woran liegt die „Verbesserung“?", o:["Training nach Plan","Tagesform","Wachstum","Messfehler"], c:3, e:"Anders gemessen = **Messfehler**. Der Wert ist nicht vergleichbar."},
+        {szene:"Jonas ist seit Januar 4 cm gewachsen. Er springt weiter, obwohl er keine Sprünge trainiert hat.", q:"Woran liegt es vor allem?", o:["Wachstum","Messfehler","Training nach Plan","Er kennt den Test besser"], c:0, e:"Längere Beine, mehr Kraft durch die **körperliche Entwicklung**."},
+        {szene:"Sara hat nur Ausdauer trainiert. Bei der Rumpfbeuge hat sich nichts verändert.", q:"Woran liegt es?", o:["Messfehler","Tagesform","Diese Fähigkeit kaum trainiert","Wachstum"], c:2, e:"Beweglichkeit hat sie **nicht trainiert** – also verändert sie sich kaum."},
+        {szene:"Kai hat nach zwei Wochen aufgehört, die Belastung zu steigern. Seine Werte sind kaum besser geworden.", q:"Welches Prinzip fehlte?", o:["Progression","Regeneration","Variation","Individualität"], c:0, e:"Ohne Steigerung (**Progression**) kein weiterer Fortschritt."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 7 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut – so bleibt er hängen. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"„______ und Ziel und immer dran – so fängt echtes Training an.“", o:["Plan","Spaß","Schweiß"], c:0, e:"Training ist **geplant**, regelmäßig und zielgerichtet."},
+        {q:"„Gleich und ______ – so misst man schlau.“", o:["genau","schnell","laut"], c:0, e:"Fair testen: gleiche Bedingungen und **genau** messen."},
+        {q:"„Im Training wirst du müd und schwach – ______ wirst du erst danach.“", o:["stärker","schneller","müder"], c:0, e:"Besser wird man **in der Pause**."},
+        {q:"„Trainierst du auf dem ______ wieder, geht’s nach oben, nicht hernieder.“", o:["Gipfel","Boden","Sofa"], c:0, e:"Auf dem **Gipfel** der Superkompensation."},
+        {q:"„Immer gleich, das bringt nichts ein – ______ muss schon sein!“", o:["steigern","schlafen","dehnen"], c:0, e:"**Progression**: Belastung steigern."},
+        {q:"„Ohne ______ kein Gewinn – in der Pause steckt der Sinn.“", o:["Pause","Plan","Ziel"], c:0, e:"**Regeneration** gehört zum Training."},
+        {q:"„Genau, mit Zahl und mit ______ – so kriegst du jedes Ziel gut hin.“", o:["Termin","Freund","Gewinn"], c:0, e:"**T** wie terminiert."}
+      ]},
+    { id:"mythos", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 11 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch** – oder tippe auf die Knöpfe.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Stärker wirst du während des Trainings.", r:"l", e:"Besser wirst du **in der Erholung danach** (Superkompensation)."},
+        {t:"Pausen gehören zum Training dazu.", r:"r", e:"Ohne Pausen keine Superkompensation."},
+        {t:"Am besten trainiert man jeden Tag bis zur Erschöpfung.", r:"l", e:"Zu kurze Pausen → Leistung sinkt → Übertraining."},
+        {t:"Wer nie steigert, wird irgendwann nicht mehr besser.", r:"r", e:"Prinzip **Progression**."},
+        {t:"Mit dem Rad zur Schule fahren ist Training.", r:"l", e:"Gesunde Bewegung – aber nicht geplant und ohne Trainingsziel."},
+        {t:"Nach langen Trainingspausen geht die Leistung wieder zurück.", r:"r", e:"Prinzip **Kontinuität**."},
+        {t:"Ein Fitnesstest ist nur fair, wenn alle unter gleichen Bedingungen gemessen werden.", r:"r", e:"Gleich und genau."},
+        {t:"+100 % bedeutet immer eine riesige Verbesserung.", r:"l", e:"Bei kleinen Ausgangswerten (4 → 8) sind 100 % nur wenig."},
+        {t:"Beim Intervalltraining erholt man sich in den Pausen vollständig.", r:"l", e:"Die Pause ist „lohnend“ – man erholt sich **nicht ganz**."},
+        {t:"Muskelkater zeigt, dass das Training besonders gut war.", r:"l", e:"Muskelkater entsteht vor allem bei **ungewohnten** Bewegungen. Training wirkt auch ohne Muskelkater."},
+        {t:"Zum Training gehören auch Aufwärmen und Cool-down.", r:"r", e:"Vorher aufwärmen, danach locker auslaufen."}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 9 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Training ist geplantes, regelmäßiges und … Üben. Welches Wort fehlt?", hilfe:"💡 z…", a:["zielgerichtetes"], re:["^ziel ?gerichtet(es|e)?$"], e:"**zielgerichtetes** Üben."},
+        {q:"Wie heißt die Phase, in der der Körper mehr aufbaut als vorher?", hilfe:"💡 S…", a:["Superkompensation"], re:["^(die )?superkompensation$"], e:"**Superkompensation**."},
+        {q:"Wie heißt das Prinzip „Belastung schrittweise steigern“?", hilfe:"💡 P…", a:["Progression"], re:["^(die )?progression$"], e:"**Progression**."},
+        {q:"Wie heißt das Prinzip „regelmäßig trainieren“?", hilfe:"💡 K…", a:["Kontinuität"], re:["^(die )?kontinuit(ä|ae|a)t$"], e:"**Kontinuität**."},
+        {q:"Welche Stellschraube beschreibt, wie lang die Pausen sind?", hilfe:"💡 D…", a:["Dichte"], re:["^(die )?dichte$"], e:"Die **Dichte**."},
+        {q:"Wie heißt die Methode mit langer, gleichmäßiger Belastung ohne Pause?", hilfe:"💡 D…", a:["Dauermethode"], re:["^(die )?dauer ?methode$"], e:"**Dauermethode**."},
+        {q:"Wie nennt man die Pause beim Intervalltraining, in der man sich nicht ganz erholt?", hilfe:"💡 l… P…", a:["lohnende Pause"], re:["^(die )?lohnende pause$"], e:"Die **lohnende Pause**."},
+        {q:"Wozu führen zu kurze Pausen über lange Zeit?", hilfe:"💡 Ü…", a:["Übertraining"], re:["^(zu |zum )?((ü|ue)bertraining)$"], e:"Zu **Übertraining** – die Leistung sinkt."},
+        {q:"Wofür steht das S in SMART?", hilfe:"💡 s…", a:["spezifisch"], re:["^spezifisch$"], e:"**Spezifisch** – genau was?"}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

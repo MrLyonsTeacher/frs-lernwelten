@@ -151,3 +151,152 @@ LW.addGame("zeigen", (l, A, done, K) => {
   const lauf = () => document.querySelectorAll(".ln-art svg").forEach(passeEin);
   new MutationObserver(() => requestAnimationFrame(lauf)).observe(document.documentElement, {childList:true, subtree:true});
 })();
+
+
+/* =========================================================
+   Schaubild-Helfer für Infokarten (selbst gezeichnet, gut lesbar)
+   ========================================================= */
+const GF = "Atkinson Hyperlegible, system-ui, sans-serif";
+// Text: o = {s:Größe, c:Farbe, a:Ausrichtung, w:Stärke}; Zeilenumbruch mit "|"
+const TX = (x, y, s, o={}) => { const z = String(s).split("|"), lh = (o.s||14) * (o.lh||1.18);
+  return `<text x="${x}" y="${y}" font-size="${o.s||14}" fill="${o.c||"#EAF0FA"}" text-anchor="${o.a||"middle"}" font-weight="${o.w||700}" font-family="${GF}"${o.st?` style="${o.st}"`:""}>${
+    z.map((t,k) => `<tspan x="${x}" dy="${k ? lh : 0}">${t}</tspan>`).join("")}</text>`; };
+// Karte mit dunklem Hintergrund
+const KARTE = (w, h, inner, bg="#101A33") => svgBox(`0 0 ${w} ${h}`, `<rect width="${w}" height="${h}" rx="22" fill="${bg}"/>${inner}`);
+// Pfeil von (x1,y1) nach (x2,y2)
+const PFEIL = (x1, y1, x2, y2, c="#FFD34D", w=4) => { const a = Math.atan2(y2-y1, x2-x1), L = 11 + w;
+  const p = (d) => `${(x2 - L*Math.cos(a+d)).toFixed(1)} ${(y2 - L*Math.sin(a+d)).toFixed(1)}`;
+  return `<line x1="${x1}" y1="${y1}" x2="${(x2 - (L*.6)*Math.cos(a)).toFixed(1)}" y2="${(y2 - (L*.6)*Math.sin(a)).toFixed(1)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/><path d="M${p(.45)} L${x2} ${y2} L${p(-.45)} Z" fill="${c}"/>`; };
+// abgerundetes Schild mit Text
+const SCHILD = (x, y, w, h, t, o={}) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.r ?? 10}" fill="${o.bg||"#1E2C4D"}" stroke="${o.rand||"none"}" stroke-width="${o.rw||2}"/>` + TX(x + w/2, y + h/2 + (o.s||14)*.36 - ((String(t).split("|").length-1) * (o.s||14)*.59), t, o);
+
+/* Superkompensation: Verlauf nach EINEM Trainingsreiz (vereinfachtes Modell, Zeit in Tagen) */
+const SK_R = d => d <= 0 ? 0 : (1 - Math.exp(-6*d)) * (9*Math.exp(-(((d-2.6)/.95)**2)) - 11.5*Math.exp(-(((d-.6)/.55)**2)));
+
+
+/* =========================================================
+   Eigener Spieltyp „bildzuordnen“: Karte lesen → im Schaubild auf den passenden Bereich tippen
+   l.bild = Name in FIG (SVG mit Bereichen <g data-z="…">), l.zonen = [{id, name}], l.items = [{t, z, z2?, e?, tipp?}]
+   ========================================================= */
+LW.addGame("bildzuordnen", (l, A, done, K) => {
+  const T = K.T(), P = l.punkte || 1, its = l.mischen === false ? l.items.slice() : K.noRuns(l.items, x => x.z, 2), res = [];
+  let i = 0, pts = 0, locked = false;
+  const zn = id => (l.zonen.find(z => z.id === id) || {}).name || id;
+  function fit(){ const s = A.querySelector(".bzfig svg"); if(!s) return; const vb = s.viewBox.baseVal, top = s.getBoundingClientRect().top, frei = innerHeight - top - 22;
+    if(vb.width > vb.height * 1.15){ s.style.width = "100%"; s.style.height = "auto"; s.style.maxHeight = Math.max(240, frei) + "px"; }
+    else s.style.height = Math.max(280, Math.min(720, frei)) + "px"; }
+  function show(){
+    K.closeSheet(); locked = false; const it = its[i];
+    A.innerHTML = K.progressBar(K.fill(res, its.length), i) + `<div class="zg bzg${l.quer ? " quer" : ""}">
+      <div class="panel zq"><p class="zk">${K.esc(l.frage || "Wohin gehört das?")}</p><p class="bzt">${K.rich(it.t)}</p>${it.tipp ? `<p class="hint">💡 ${K.rich(it.tipp)}</p>` : ""}
+        <p class="zoomhint">👆 Tippe im Bild auf ${K.esc(l.ziel || "den passenden Bereich")}.</p></div>
+      <div class="zfig bzfig">${FIG[l.bild]()}</div></div>`;
+    requestAnimationFrame(fit);
+  }
+  function answer(z, el){
+    if(locked) return; locked = true;
+    const it = its[i], ok = z === it.z || (it.z2 !== undefined && z === it.z2), svg = A.querySelector(".bzfig svg");
+    const mark = (id, c) => { const g = svg.querySelector(`[data-z="${id}"]`); if(g) g.classList.add(c); };
+    if(ok) mark(z, "z-ok"); else { mark(z, "z-no"); mark(it.z, "z-show"); }
+    res.push(ok);
+    if(ok){ pts += P; K.award([["b" + l.items.indexOf(it), P]], el); }
+    else { A.querySelector(".zq").classList.add("shake"); K.miss(it.t.replace(/\*\*/g, ""), zn(it.z), it.e); }
+    const head = ok ? `${l.richtigText || T.right} +${P}` : `${T.wrong} ${T.correctIs} „${zn(it.z)}“`;
+    K.sheet(ok ? "ok" : "no", K.esc(head), K.rich(it.e || ""), i < its.length - 1 ? T.next : T.result,
+      () => { i++; if(i < its.length) show(); else done(pts, T.correctN(res.filter(Boolean).length) + " / " + its.length); });
+  }
+  A.onclick = e => { const g = e.target.closest(".bzfig [data-z]"); if(g) answer(g.dataset.z, g); };
+  const onR = () => fit(); addEventListener("resize", onR); K.onCleanup(() => removeEventListener("resize", onR));
+  show();
+}, l => l.items.length * (l.punkte || 1));
+
+
+/* =========================================================
+   Eigener Spieltyp „timing“: Superkompensations-Coach
+   Nach jedem Training läuft die Zeit. Wer im richtigen Moment „Jetzt trainieren!“ drückt, steigert die Leistung.
+   Modell wie auf AB 11: zu früh → Leistung sinkt immer weiter, zu spät → zurück aufs Ausgangsniveau.
+   ========================================================= */
+LW.addGame("timing", (l, A, done, K) => {
+  const T = K.T(), R = l.runden || 4, TAG = (l.tempo || .95) * 1000, MAXT = 6;
+  const X0 = 64, X1 = 700, Y0 = 26, Y1 = 300, TAGE = 7, PX = (X1 - X0) / TAGE;
+  let runde = 0, pts = 0, res = [], hist = [{t:0, b:0}], raf = 0, tStart = 0, cursor = 0, laeuft = false;
+  K.onCleanup(() => cancelAnimationFrame(raf));
+  const lvl = t => { if(t <= 0) return 0; let k = hist.length - 1; while(k > 0 && hist[k].t > t) k--; return hist[k].b + SK_R(t - hist[k].t); };
+  const fmtL = v => (v > 0 ? "+" : "") + Math.round(v);
+  function bewerten(d){
+    if(d < 1.4) return {p:0, k:"no", h:"Zu früh!", e:"Du warst noch in der **Ermüdung**: Die Speicher sind noch nicht wieder voll. Der neue Reiz kommt auf einen müden Körper – die Leistung **sinkt** (auf Dauer: Übertraining)."};
+    if(d < 2.0) return {p:1, k:"mid", h:"Etwas früh", e:"Die **Erholung** war gerade erst fertig. Du hast nur wenig von der Superkompensation mitgenommen. Ein bisschen länger warten!"};
+    if(d <= 3.2) return {p:2, k:"ok", h:"Perfektes Timing!", e:"Genau in der **Superkompensation**: Der Körper hat mehr aufgebaut als vorher – darauf setzt dein neues Training auf. So steigt die Leistung **Schritt für Schritt**."};
+    if(d <= 3.9) return {p:1, k:"mid", h:"Etwas spät", e:"Die Superkompensation war schon wieder am **Abklingen**. Du hast nur noch einen Teil davon genutzt."};
+    return {p:0, k:"no", h:"Zu spät!", e:"Die Leistung ist schon wieder auf das **Ausgangsniveau** zurückgegangen – der Effekt ist **verpufft**. Ohne neuen Reiz baut der Körper wieder ab."};
+  }
+  // Diagramm des aktuellen Fensters: Tag t0−1 bis t0+6, Mitte = Niveau beim letzten Training
+  function chart(t0, bis, hilfe){
+    const b0 = lvl(t0), xs = t => X0 + (t - (t0 - 1)) * PX, ys = v => Math.max(Y0 + 4, Math.min(Y1 - 4, 178 - (v - b0) * 6.2));
+    let path = "", s = "";
+    for(let t = t0 - 1; t <= bis + 1e-9; t += .04) path += `${path ? "L" : "M"}${xs(t).toFixed(1)} ${ys(lvl(t)).toFixed(1)}`;
+    // Phasen (nur in der ersten Runde beschriftet)
+    if(hilfe){ const Z = [[0,.6,"①","Ermüdung","#FF6B6B"],[.6,1.3,"②","Erholung","#FFC65A"],[1.3,4.2,"③","Superkompensation","#5BE38C"],[4.2,6,"","Rückbildung","#8AA0C8"]];
+      Z.forEach(([a,b,n,t,c]) => { s += `<rect x="${xs(t0+a)}" y="${Y0}" width="${(b-a)*PX}" height="${Y1-Y0}" fill="${c}" opacity=".10"/>` +
+        TX(xs(t0+(a+b)/2), Y0 + 20, n ? n : "", {s:16, c}) + TX(xs(t0+(a+b)/2), Y1 - (n === "②" ? 34 : 12), t, {s:b-a < 1 ? 12.5 : 15, c}); });
+      s += `<path d="M${xs(t0+2.6)} ${ys(b0+9)-30} L${xs(t0+2.6)} ${ys(b0+9)-8}" stroke="#FFD34D" stroke-width="3"/><path d="M${xs(t0+2.6)-7} ${ys(b0+9)-16} L${xs(t0+2.6)} ${ys(b0+9)-6} L${xs(t0+2.6)+7} ${ys(b0+9)-16}" fill="#FFD34D"/>` +
+        TX(xs(t0+2.6), ys(b0+9)-36, "bester Zeitpunkt", {s:13, c:"#FFD34D"}); }
+    // Gitter, Tage
+    for(let d = 0; d <= TAGE; d++){ const x = X0 + d * PX, tag = Math.round(t0 - 1 + d);
+      s += `<line x1="${x}" y1="${Y0}" x2="${x}" y2="${Y1}" stroke="#24345A" stroke-width="1"/>` + TX(x, Y1 + 22, tag >= 0 ? "Tag " + tag : "", {s:13, c:"#9FB0CF", w:600}); }
+    // Start-Niveau
+    const yS = 178 + b0 * 6.2;
+    if(yS > Y0 && yS < Y1) s += `<line x1="${X0}" y1="${yS}" x2="${X1}" y2="${yS}" stroke="#9FB0CF" stroke-width="2" stroke-dasharray="7 6"/>` + TX(X1 - 6, yS - 7, "Start-Niveau", {s:12.5, c:"#9FB0CF", a:"end"});
+    else s += TX(X1 - 6, yS <= Y0 ? Y0 + 16 : Y1 - 30, yS <= Y0 ? "Start-Niveau ↑ weit darüber" : "Start-Niveau ↓ weit darunter", {s:12.5, c:"#9FB0CF", a:"end"});
+    // Trainings (rote Balken)
+    hist.forEach(h => { if(h.t >= t0 - 1 - 1e-9 && h.t <= bis + 1e-9) s += `<rect x="${xs(h.t)-6}" y="${Y0}" width="12" height="30" rx="3" fill="#E5484D"/><text x="${xs(h.t)}" y="${Y0+50}" font-size="18" text-anchor="middle">🏋️</text>`; });
+    s += `<path d="${path}" fill="none" stroke="#5FE9FF" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(bis > t0) s += `<line x1="${xs(bis)}" y1="${Y0}" x2="${xs(bis)}" y2="${Y1}" stroke="#FFFFFF" stroke-width="2.5" opacity=".9"/><circle cx="${xs(bis)}" cy="${ys(lvl(bis))}" r="8" fill="#FFFFFF" stroke="#5FE9FF" stroke-width="4"/>`;
+    s += TX(X0 - 10, Y0 + 14, "Leistung", {s:13, c:"#9FB0CF", a:"end", st:"writing-mode:initial"});
+    return `<svg class="tchart" viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Leistungskurve"><rect width="720" height="340" rx="18" fill="#101A33"/>${s}
+</svg>`;
+  }
+  function gesamt(){
+    const tE = hist[hist.length-1].t + 3, xs = t => 50 + (t + .5) / (tE + .5) * 640;
+    let mn = 0, mx = 0; for(let t = 0; t <= tE; t += .05){ const v = lvl(t); mn = Math.min(mn, v); mx = Math.max(mx, v); }
+    const ys = v => 290 - (v - mn) / Math.max(1, mx - mn) * 240; let p = "";
+    for(let t = -.5; t <= tE; t += .04) p += `${p ? "L" : "M"}${xs(t).toFixed(1)} ${ys(lvl(t)).toFixed(1)}`;
+    return `<svg class="tchart" viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gesamtverlauf"><rect width="720" height="340" rx="18" fill="#101A33"/>
+      <line x1="40" y1="${ys(0)}" x2="700" y2="${ys(0)}" stroke="#9FB0CF" stroke-width="2" stroke-dasharray="7 6"/>${TX(696, ys(0) - 8, "Ausgangsniveau", {s:13, c:"#9FB0CF", a:"end"})}
+      ${hist.map(h => `<rect x="${xs(h.t)-5}" y="300" width="10" height="26" rx="3" fill="#E5484D"/>`).join("")}
+      <path d="${p}" fill="none" stroke="#5FE9FF" stroke-width="5" stroke-linejoin="round"/>${TX(360, 26, "Dein Gesamtverlauf", {s:17, c:"#FFD34D"})}</svg>`;
+  }
+  function ui(msg){
+    const h = hist[hist.length-1];
+    A.innerHTML = K.progressBar(K.fill(res, R), runde) + `<div class="panel tpanel">
+      <div class="trow"><p class="zk">Training ${runde + 2} von ${R + 1}</p><p class="tlvl">Leistung <b>${fmtL(lvl(h.t + cursor))}</b></p></div>
+      <p class="tmsg">${msg}</p><div class="tfig">${chart(h.t, h.t + cursor, runde === 0)}</div>
+      <div class="row tbtns">${laeuft ? `<button class="btn big tgo" id="tgo">🏋️ Jetzt trainieren!</button>` : `<button class="btn big" id="tstart">▶ Zeit läuft los</button>`}</div></div>`;
+  }
+  function frame(now){
+    if(!laeuft) return; cursor = Math.min(MAXT, (now - tStart) / TAG);
+    const h = hist[hist.length-1], f = A.querySelector(".tfig"), lv = A.querySelector(".tlvl b");
+    if(f) f.innerHTML = chart(h.t, h.t + cursor, runde === 0); if(lv) lv.textContent = fmtL(lvl(h.t + cursor));
+    if(cursor >= MAXT) trainieren(); else raf = requestAnimationFrame(frame);
+  }
+  function trainieren(){
+    if(!laeuft) return; laeuft = false; cancelAnimationFrame(raf);
+    const h = hist[hist.length-1], d = cursor, t = h.t + d, b = lvl(t), r = bewerten(d);
+    hist.push({t, b}); res.push(r.p === 2 ? true : r.p === 1 ? "mid" : false); pts += r.p;
+    const btn = A.querySelector("#tgo"); if(btn) btn.disabled = true;
+    if(r.p) K.award([["r" + runde, r.p]], btn); else K.miss(`Training ${runde + 2}: Wann trainieren?`, "nach etwa 2–3 Tagen (in der Superkompensation)", r.e);
+    K.sheet(r.k, K.esc(`${r.h}${r.p ? " +" + r.p : ""} · nach ${d.toFixed(1).replace(".", ",")} Tagen`), K.rich(r.e), runde < R - 1 ? T.next : T.result, () => {
+      runde++; cursor = 0;
+      if(runde < R){ ui(runde === 1 ? "Jetzt <b>ohne Hilfe</b>: Erkennst du den richtigen Moment selbst?" : "Achte auf die Kurve: Wann ist sie am höchsten?"); }
+      else { K.closeSheet(); const g = Math.round(lvl(hist[hist.length-1].t));
+        A.innerHTML = `<div class="panel tpanel"><p class="tmsg">${g > 15 ? "Stark! Deine Leistung ist Schritt für Schritt gestiegen." : g > 0 ? "Deine Leistung ist gestiegen – mit besserem Timing geht noch mehr." : "Deine Leistung ist nicht gestiegen: Die Pausen haben nicht gepasst."} <b>Ende: ${fmtL(g)}</b> gegenüber dem Start.</p><div class="tfig">${gesamt()}</div></div>`;
+        K.sheet(g > 15 ? "ok" : "mid", K.esc("Auswertung"), K.rich("Kommt der neue Reiz in der **Superkompensation**, steigt die Leistung Schritt für Schritt. Zu kurze Pausen → Leistung sinkt, zu lange Pausen → kein Fortschritt."), T.result,
+          () => done(pts, T.correctN(res.filter(x => x === true).length) + " / " + R)); }
+    });
+  }
+  A.onclick = e => {
+    if(e.target.closest("#tstart")){ laeuft = true; cursor = 0; ui(runde === 0 ? "Die Zeit läuft – tippe im richtigen Moment!" : A.querySelector(".tmsg").innerHTML); tStart = performance.now(); raf = requestAnimationFrame(frame); return; }
+    if(e.target.closest("#tgo")) trainieren();
+  };
+  ui("Du hast gerade trainiert (roter Balken). Danach läuft die Zeit: <b>Tag für Tag</b>. Tippe auf <b>„Jetzt trainieren!“</b>, wenn der beste Moment für das nächste Training gekommen ist. In der ersten Runde helfen dir die Farben.");
+}, l => (l.runden || 4) * 2);
