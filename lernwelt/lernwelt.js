@@ -463,7 +463,7 @@ function learnScreen(l, fromHome){
     const y = e.target.closest("[data-yt]");
     if(y){ setAuto(false); const id = encodeURIComponent(y.dataset.yt);   // Datenschutz: kein Einbetten, erst nach bewusstem Klick öffnet sich YouTube in einem neuen Tab
       $("#lnV").innerHTML = `<div class="ln-vbox"><p>${T.videoExt}</p><a class="ln-play" style="text-decoration:none;display:inline-grid;place-items:center" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer">▶ YouTube</a></div>`; return; }
-    if(e.target.closest("#lnGo")){ stop(); if(!fromHome || ENDREACHED) S.seen[key] = 1; save(); location.hash = fromHome ? (W.pfad ? pfadNextHash("c:"+l.id) : "") : "l="+encodeURIComponent(l.id); }
+    if(e.target.closest("#lnGo")){ stop(); if(!fromHome || ENDREACHED || W.pfad) S.seen[key] = 1; save(); location.hash = fromHome ? (W.pfad ? pfadNextHash("c:"+l.id) : "") : "l="+encodeURIComponent(l.id); }
   };
   show(0);
 }
@@ -1103,7 +1103,7 @@ const LW = {
         const base = (!ex || ex.auto) ? autoNiveau(src, nv, world) : src; const out = Object.assign({}, base, ex||{}, {id: l.id+"-"+nv.toLowerCase()}), arr = out.typ==="memory" ? out.paare : (out.items||out.fragen||out.karten||out.saetze);
         if(out.art && arr) out.art = out.art.replace(/\b\d+(\s+(events|pairs|cards|questions|sentences|words))/, arr.length+"$1"); return out; });
       if(world[nv] && typeof world[nv]==="object") Object.assign(world, world[nv]); }
-    W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}, W.pfad?{map:W.sprache==="en"?"Overview":"Übersicht", toMap:W.sprache==="en"?"Overview":"Übersicht"}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
+    W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}, W.pfad?{map:W.sprache==="en"?"Lesson path":"Lernpfad", toMap:W.sprache==="en"?"Lesson path":"Lernpfad"}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
     MAX = W.levels.reduce((a,l)=>a+maxOf(l),0);
     load();
     try{ localStorage.setItem("lw-meta-"+W.id+(W.niveau&&W.niveau!=="M"?"-"+W.niveau:""), JSON.stringify({max:MAX, titel:W.titel, ids:W.levels.map(l=>l.id), maxima:W.levels.map(maxOf)})); }catch(e){}
