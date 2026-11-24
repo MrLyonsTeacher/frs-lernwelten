@@ -62,7 +62,7 @@ const FRS = {
         { id:"gre5", kat:"country", titel:"Hello Greenwich!", untertitel:"Greenwich, London & the UK", pfad:"englisch/klasse5/greenwich-london.html", icon:"🕰️", max:29 },
         { id:"sch5", kat:"country", titel:"School in England", untertitel:"Uniforms, tutor groups, school days", pfad:"englisch/klasse5/school-in-england.html", icon:"👔", max:38 },
         { id:"fest5", kat:"country", titel:"Special Days in Britain", untertitel:"Halloween, Bonfire Night, Christmas", pfad:"englisch/klasse5/special-days.html", icon:"🎃", max:39 },
-        { id:"pf5u1", kat:"lesson", titel:"Unit 1: Let’s start!", untertitel:"Zoom in & Way in · book p. 10–13", pfad:"englisch/klasse5/lernpfad-unit1.html", icon:"🧭", max:158 },
+        { id:"pf5u1", kat:"lesson", titel:"Unit 1: Let’s start!", untertitel:"Zoom in & Way in · book p. 10–13", pfad:"englisch/klasse5/lernpfad-unit1.html", icon:"🧭", max:168 },
         { id:"shop5", kat:"country", titel:"At the Corner Shop", untertitel:"Money, food & shopping", pfad:"englisch/klasse5/corner-shop.html", icon:"💷", max:42 }
       ] },
       { k:6,  id:"e6",  themen:[

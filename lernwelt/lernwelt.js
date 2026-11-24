@@ -127,7 +127,8 @@ function maxOf(lv){
     case "schaetzen": return lv.fragen.length*2;
     case "lueckentext": return (lv.text.match(/\[\[/g)||[]).length;
     case "eingabe": return lv.fragen.length*(lv.punkte||1);
-    case "auftrag": return lv.punkte||1;
+    case "auftrag": return lv.punkte===0 ? 0 : (lv.punkte||1);
+    case "tippbau": return lv.saetze.length*2;
   }
   if(EXTMAX[lv.typ]) return EXTMAX[lv.typ](lv);
   return 0;
@@ -345,12 +346,19 @@ function render(){
   if(!l){ APP.innerHTML = home(); document.title = W.titel; return; }
   CUR = l; TIER0 = topicTier();
   const again = deckOf(l) ? (!S.seen[deckKey(l)] ? `<button class="ln-again new" data-go="learn=${esc(l.id)}" title="${T.learnAgain}">📖 ${T.learn}</button>` : `<button class="ln-again" data-go="learn=${esc(l.id)}" aria-label="${T.learnAgain}" title="${T.learnAgain}">📖</button>`) : "";
-  APP.innerHTML = topbar({back:true, title:l.titel, icon:l.icon, art:l.art, pill:true}) + howBox(l.anleitung, l.anleitungDe, l.tipp, again) + `<div id="area"></div>`;
+  APP.innerHTML = topbar({back:true, title:l.titel, icon:l.icon, art:l.art, pill:true}) + (W.pfad ? "" : howBox(l.anleitung, l.anleitungDe, l.tipp, again)) + `<div id="area"></div>`;
   document.title = l.titel+" – "+W.titel;
   fit();
   const A = $("#area");
   GAMES[l.typ](l, A, (pts, info, pf)=>finish(l, A, pts, info, pf));
+  if(W.pfad && l.typ!=="auftrag" && l.anleitung){   // Lernpfad: Anweisung steht immer oben auf der Spielkarte (Spiele bauen ihre Karte oft neu)
+    const put = () => { if(A.querySelector(".pf-how") || A.querySelector(".res-wrap")) return; const t = A.querySelector(".panel"), h = pfHow(l);
+      if(t) t.insertAdjacentHTML("afterbegin", h); else A.insertAdjacentHTML("afterbegin", h); };
+    put(); const mo = new MutationObserver(put); mo.observe(A, {childList:true}); cleanups.push(()=>mo.disconnect()); }
 }
+function pfHow(l){ return `<div class="pf-how"><p class="pf-how-t"><span aria-hidden="true">📋</span> ${rich(l.anleitung)}</p>${l.anleitungDe?deBtn():""}
+  ${l.anleitungDe?`<p class="de pf-how-de">${rich(l.anleitungDe)}${l.tipp?`<br><b>${T.tip}</b> ${rich(l.tipp)}`:""}</p>`:""}</div>`; }
+const deBtn = () => `<button type="button" class="de-b" data-detoggle aria-pressed="${document.body.classList.contains("de-on")}" title="Deutsch anzeigen" aria-label="Deutsch anzeigen">${FLAG_DE}</button>`;
 
 /* ---------- Erst lernen: animierte Info-Folien vor einem Spiel ---------- */
 // level.lernen = { titel, folien:[{bild, jahr, titel, text, de} | {video:"YouTube-ID", titel, text, de}] }
@@ -431,7 +439,7 @@ function learnScreen(l, fromHome){
         ${f.text?`<p class="rl-x">${rich(f.text)}</p>`:""}
         ${[].concat(f.formel||[]).map(chips).join("")}
         ${f.bsp?`<ul class="rl-b">${f.bsp.map(b=>`<li><span class="rl-ok" aria-hidden="true">✔</span><span>${rich(b)}</span></li>`).join("")}${[].concat(f.falsch||[]).map(b=>`<li class="no"><span class="rl-no" aria-hidden="true">✘</span><span>${rich(b)}</span></li>`).join("")}</ul>`:""}
-        ${f.de?`<p class="rl-de">${FLAG_DE}<span>${rich(f.de)}</span></p>`:""}</div>`; }
+        ${f.de?(W.pfad?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:`<p class="rl-de">${FLAG_DE}<span>${rich(f.de)}</span></p>`):""}</div>`; }
     else st.innerHTML = f.video
       ? `<div class="ln-video"><div class="ln-vbox" id="lnV"><button class="ln-play" data-yt="${esc(f.video)}" aria-label="Play video">▶</button><p>${T.videoNote}</p></div>
           <div class="ln-body"><h2 class="disp ln-t">${rich(f.titel||"")}</h2><p class="ln-x">${rich(f.text||"")}</p>${f.de?`<details class="ln-de"><summary>${FLAG_DE} Deutsch</summary><p>${rich(f.de)}</p></details>`:""}</div></div>`
@@ -602,9 +610,9 @@ GAMES.swipe = (l, A, done) => {
 };
 
 GAMES.sortieren = (l, A, done) => {
-  const its = noRuns(l.items, x=>x.k, 3), res=[], cnt=l.koerbe.map(()=>0); let i=0, pts=0, lock=false, tm=null;
+  const its = noRuns(l.items, x=>x.k, 3), res=[], cnt=l.koerbe.map(()=>0), wrong=new Set(); let i=0, pts=0, lock=false, tm=null;
   cleanups.push(()=>clearTimeout(tm));
-  const nextItem = () => { i++; if(i<its.length) show(); else done(pts, T.correctN(pts)+" / "+its.length); };
+  const nextItem = () => { i++; if(i<its.length) show(); else done(pts, T.correctN(pts)+" / "+l.items.length); };
   function show(){
     closeSheet();
     const it = its[i];
@@ -617,6 +625,8 @@ GAMES.sortieren = (l, A, done) => {
     const b = e.target.closest("[data-b]"); if(!b || lock) return; lock=true;
     const j=+b.dataset.b, it=its[i], ok = j===it.k || j===it.k2, kk = ok ? j : it.k; cnt[kk]++; res.push(ok);   // k2: zweite richtige Antwort (Grauzone, z. B. Ente = Bauernhof oder wild)
     const right = A.querySelector(`[data-b="${kk}"]`); right.classList.add("hit"); right.querySelector(".cnt").textContent=cnt[kk];
+    if(l.bisRichtig && !ok){ wrong.add(it); its.push(it); cnt[kk]--; }   // kommt später nochmal
+    if(ok && wrong.has(it)){ sheet("ok", esc(T.right+" ✓"), rich(it.e||l.koerbe[kk].tipp||l.regel||""), T.next, nextItem); return; }   // beim zweiten Versuch richtig: keine Flagge
     if(ok){ pts++; award([["i"+l.items.indexOf(it), 1]], b);
       sheet("ok", esc((it.k2!==undefined?T.grey:T.right)+" +1"), rich(it.e||l.koerbe[kk].tipp||l.regel||""), i<its.length-1?T.next:T.result, nextItem);
     } else {
@@ -712,7 +722,7 @@ GAMES.satzbau = (l, A, done) => {
     closeSheet();
     const s=ss[i], full = picked.length>=s.w.length;
     A.innerHTML = progressBar(fill(res,ss.length), i) +
-      `<div class="panel"><p class="q sm">${rich(s.aufgabe||T.tiles)}</p>${s.hint?`<p class="hint">${rich(s.hint)}</p>`:""}
+      `<div class="panel"><p class="q sm">${rich(s.aufgabe||T.tiles)}</p>${s.hint?`<p class="hint${W.pfad?" de":""}">${rich(s.hint)}</p>`:""}
       <div class="answer${checked?(res[i]?" ok":" no"):""}" id="ans">${picked.map((t,p)=>`<button class="tile" ${checked?"disabled":`data-rm="${p}"`}>${esc(tiles[t].w)}</button>`).join("")}</div>
       <div class="pool">${tiles.map((t,k)=>picked.includes(k)?"":`<button class="tile" data-ad="${k}" ${checked?"disabled":""}>${esc(t.w)}</button>`).join("")}</div>
       ${checked?"":`<div class="row" style="margin-top:.8rem"><button class="btn big" id="chk" ${full?"":"disabled"}>${T.check}</button></div>`}</div>`;
@@ -898,23 +908,84 @@ function sayText(text, btn){
    { typ:"auftrag", bild:"✏️", buch:"page 10/11", aufgaben:[{en, de}], muster:{titel, zeilen:[…]}, loesung:{titel, zeilen:[…]}, warte:60, punkte:1 }
    „Erledigt“ wird erst nach warte Sekunden aktiv. Danach erscheint (falls vorhanden) die Lösung zum Vergleichen. */
 GAMES.auftrag = (l, A, done) => {
-  const P = l.punkte||1, again = played(l.id), en = W.sprache==="en";
+  const P = l.punkte===0 ? 0 : (l.punkte||1), again = played(l.id), en = W.sprache==="en";
   let left = again ? 0 : (l.warte||0), tId = null;
-  const box = (o, cls) => o ? `<div class="auf-box ${cls}"><b>${rich(o.titel||"")}</b>${o.de?`<small>${rich(o.de)}</small>`:""}<ul>${o.zeilen.map(z=>`<li>${rich(z)}</li>`).join("")}</ul></div>` : "";
+  const box = (o, cls) => o ? `<div class="auf-box ${cls}"><b>${rich(o.titel||"")}</b>${o.de?`<small class="de">${rich(o.de)}</small>`:""}<ul>${o.zeilen.map(z=>`<li>${rich(z)}</li>`).join("")}</ul></div>` : "";
+  // Heft-Vorlage: links Seite/Aufgabe, Mitte Überschrift, rechts Datum
+  const heute = () => { const d = new Date(); return d.toLocaleDateString("en-GB",{weekday:"long"})+", "+d.getDate()+" "+d.toLocaleDateString("en-GB",{month:"long"})+" "+d.getFullYear(); };
+  const kopf = l.kopf ? `<div class="heft"><div class="heft-line"><span class="heft-l">${rich(l.kopf.links||"")}</span><span class="heft-m">${rich(l.kopf.mitte||"")}</span><span class="heft-r">${rich((l.kopf.rechts||"{date}").replace("{date}", heute()))}</span></div>` : "";
+  // Tabelle aus einem Sortierspiel (l.tabelle = Level-ID): Gruppen als Spalten
+  const tl = l.tabelle ? (typeof pfLv==="function" ? pfLv(l.tabelle) : null) : null;
+  const tab = tl ? `<table class="heft-tab"><tr>${tl.koerbe.map(k=>`<th>${esc(k.t)}</th>`).join("")}</tr>${(()=>{ const cols = tl.koerbe.map((_,j)=>tl.items.filter(x=>x.k===j).map(x=>x.t)), n = Math.max(...cols.map(c=>c.length));
+      return [...Array(n).keys()].map(r=>`<tr>${cols.map(c=>`<td>${esc(c[r]||"")}</td>`).join("")}</tr>`).join(""); })()}</table>` : "";
+  const heft = kopf ? kopf + tab + `</div>` : tab ? `<div class="heft">${tab}</div>` : "";
   const label = () => left>0 ? `⏳ ${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}` : `✓ ${en?"Done!":"Erledigt!"}`;
   A.innerHTML = `<div class="panel auf">
-    <div class="auf-head"><span class="auf-ic" aria-hidden="true">${l.bild||"📝"}</span><div>${[].concat(l.material||[]).map(m=>`<span class="auf-tag">${rich(m)}</span>`).join("")}${l.buch?`<span class="auf-tag book">📖 ${rich(l.buch)}</span>`:""}</div></div>
-    <ol class="auf-list">${(l.aufgaben||[]).map(a=>`<li><span class="auf-en">${rich(a.en)}</span>${a.de?`<span class="auf-de">${FLAG_DE}<span>${rich(a.de)}</span></span>`:""}</li>`).join("")}</ol>
-    ${box(l.muster,"muster")}
+    <div class="auf-head"><span class="auf-ic" aria-hidden="true">${l.bild||"📝"}</span><div class="auf-tags">${[].concat(l.material||[]).map(m=>`<span class="auf-tag">${rich(m)}</span>`).join("")}${l.buch?`<span class="auf-tag book">📖 ${rich(l.buch)}</span>`:""}</div>${deBtn()}</div>
+    ${l.anleitung?`<p class="auf-how">${rich(l.anleitung)}</p>${l.anleitungDe?`<p class="auf-de de">${rich(l.anleitungDe)}</p>`:""}`:""}
+    <ol class="auf-list">${(l.aufgaben||[]).map(a=>`<li><span class="auf-en">${rich(a.en)}</span>${a.de?`<span class="auf-de de">${rich(a.de)}</span>`:""}</li>`).join("")}</ol>
+    ${heft}${box(l.muster,"muster")}
     <div class="row auf-row"><button class="btn big" id="aufOk" ${left>0?"disabled":""}>${label()}</button></div>
-    ${left>0?`<p class="auf-wait">${en?"Take your time – the button starts when the timer is over.":""}<br><small>Lass dir Zeit – der Knopf geht an, wenn die Zeit abgelaufen ist.</small></p>`:""}</div>`;
+    ${left>0?`<p class="auf-wait">${en?"Take your time – the button starts when the timer is over.":""}<small class="de"><br>Lass dir Zeit – der Knopf geht an, wenn die Zeit abgelaufen ist.</small></p>`:""}</div>`;
   if(left>0){ tId = setInterval(()=>{ left--; const b=$("#aufOk"); if(!b){ clearInterval(tId); return; } b.textContent = label(); if(left<=0){ clearInterval(tId); b.disabled=false; const w=A.querySelector(".auf-wait"); if(w) w.remove(); } }, 1000); cleanups.push(()=>clearInterval(tId)); }
   A.onclick = e => {
-    if(e.target.closest("#aufOk")){ const b=$("#aufOk"); if(b.disabled) return; b.disabled = true; award([["a",P]], b);
+    if(e.target.closest("#aufOk")){ const b=$("#aufOk"); if(b.disabled) return; b.disabled = true;
+      if(P===0){   // reiner Info-Schritt: keine Flaggen, keine Auswertung – nur „Los geht’s“ und „Übersicht“
+        const r = lvRec(l.id); r.runs = (r.runs||0)+1; save(); CUR = null;
+        const nx = W.pfad ? pfadNextHash("l:"+l.id) : "";
+        A.querySelector(".auf-row").outerHTML = `<div class="auf-go"><span></span><button class="btn big" data-go="${esc(nx)}">${en?"Let’s go":"Los geht’s"} ▸</button><button class="btn alt" data-go="">${esc(T.map)}</button></div>`;
+        return; }
+      award([["a",P]], b);
       if(l.loesung){ A.querySelector(".auf-row").outerHTML = box(l.loesung,"loesung") + `<div class="row auf-row"><button class="btn big" id="aufGo">${en?"I checked it – continue":"Verglichen – weiter"} ▸</button></div>`; const lb=A.querySelector(".auf-box.loesung"); if(lb) lb.scrollIntoView({behavior:"smooth", block:"center"}); }
       else setTimeout(()=>done(P), 500); return; }
     if(e.target.closest("#aufGo")) done(P);
   };
+};
+
+
+/* ---------- Tippbau: Satz selbst eintippen; nach 3 Fehlversuchen hintereinander „Need help?“ → Wortbausteine ----------
+   { typ:"tippbau", karte:"HTML (z. B. Steckbrief)", saetze:[{ aufgabe, hint (deutsch, nur auf Wunsch), w:[Wörter], alt:["andere richtige Sätze"] }] }
+   Selbst getippt = 2 Flaggen, mit Bausteinen = 1 Flagge. Kleine Tippfehler: gelbes „fast richtig“, kein Punkt. */
+GAMES.tippbau = (l, A, done) => {
+  const ss = l.saetze, en = W.sprache==="en", res = []; let i = 0, pts = 0, fails = 0, help = false, picked = [], tiles = [], checked = false;
+  const sol = s => s.w.join(" ").replace(/\s+([?.!,])/g,"$1"), oks = s => [sol(s)].concat(s.alt||[]);
+  const card = l.karte ? `<div class="tb-card">${l.karte}</div>` : "";
+  function head(s){ return progressBar(fill(res,ss.length), i) + `<div class="panel tb">${card}<p class="q sm">${rich(s.aufgabe||"")}</p>${s.hint?`<p class="hint de">${rich(s.hint)}</p>`:""}`; }
+  function showType(){
+    closeSheet(); const s = ss[i];
+    A.innerHTML = head(s) + `<div class="row type-row"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer" placeholder="${en?"Type the sentence …":"Satz eintippen …"}"><button class="btn big" id="chk">${T.check}</button></div>
+      ${fails>=3?`<div class="row tb-help"><button class="btn alt" id="help">🆘 ${en?"Need help?":"Hilfe?"}</button></div>`:""}${fails?`<p class="tb-f">${en?`Try ${fails+1}`:`Versuch ${fails+1}`}</p>`:""}</div>`;
+    const inp = $("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } });
+  }
+  function setupTiles(){ const s = ss[i]; picked = []; checked = false; do { tiles = shuffle(s.w.map((w,k)=>({w,k}))); } while(s.w.length>2 && tiles.every((t,k)=>t.k===k)); showTiles(); }
+  function showTiles(){
+    closeSheet(); const s = ss[i], full = picked.length>=s.w.length;
+    A.innerHTML = head(s) + `<p class="hint">🧩 ${en?"Put the words in the right order.":"Bring die Wörter in die richtige Reihenfolge."}</p>
+      <div class="answer${checked?(res[i]?" ok":" no"):""}" id="tAns">${picked.map((t,p)=>`<button class="tile" ${checked?"disabled":`data-rm="${p}"`}>${esc(tiles[t].w)}</button>`).join("")}</div>
+      <div class="pool">${tiles.map((t,k)=>picked.includes(k)?"":`<button class="tile" data-ad="${k}" ${checked?"disabled":""}>${esc(t.w)}</button>`).join("")}</div>
+      ${checked?"":`<div class="row" style="margin-top:.8rem"><button class="btn big" id="tchk" ${full?"":"disabled"}>${T.check}</button></div>`}</div>`;
+  }
+  const nextS = () => { i++; fails = 0; help = false; if(i<ss.length) showType(); else done(pts, T.correctN(res.filter(Boolean).length)+" / "+ss.length); };
+  A.onclick = e => {
+    const s = ss[i];
+    if(e.target.closest("#help")){ help = true; setupTiles(); return; }
+    if(help){
+      if(checked) return;
+      const a=e.target.closest("[data-ad]"); if(a){ picked.push(+a.dataset.ad); showTiles(); return; }
+      const r=e.target.closest("[data-rm]"); if(r){ picked.splice(+r.dataset.rm,1); showTiles(); return; }
+      if(e.target.closest("#tchk")){ const got = picked.map(k=>tiles[k].w).join(" "), ok = oks(s).some(x=>normA(x)===normA(got));
+        res.push(ok); checked = true; if(ok){ pts += 1; } showTiles(); if(ok) award([["s"+i, 1]], $("#tAns")); else miss(s.aufgabe, sol(s), s.e||"");
+        sheet(ok?"ok":"no", esc(ok ? T.right+" +1" : T.wrong), ok ? "" : `${T.solution} <strong>${esc(sol(s))}</strong>`, i<ss.length-1?T.next:T.result, nextS); }
+      return; }
+    if(!e.target.closest("#chk")) return;
+    const inp = $("#ans"), v = inp.value.trim(); if(!v){ inp.classList.add("shake"); setTimeout(()=>inp.classList.remove("shake"),400); return; }
+    inp.disabled = true; const ok = same(v, oks(s)), near = !ok && nearly(v, oks(s));
+    if(ok){ res.push(true); pts += 2; award([["s"+i, 2]], inp); sheet("ok", esc(T.right+" +2"), "", i<ss.length-1?T.next:T.result, nextS); return; }
+    fails++; A.querySelector(".tb").classList.add("shake");
+    sheet(near?"mid":"no", esc(near ? (en?"Almost! Check your spelling – no flag yet.":"Fast! Achte auf die Rechtschreibung – noch keine Flagge.") : (en?"Not quite – try again!":"Noch nicht – versuch es nochmal!")),
+      fails>=3 ? (en?"Tip: tap **🆘 Need help?** to get the words.":"Tipp: Tippe auf **🆘 Hilfe?**, dann bekommst du die Wörter.").replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>") : "", en?"Try again":"Nochmal", showType);
+  };
+  showType();
 };
 
 /* ---------- Lernpfad: Stationen nacheinander, mit Zeitplan (W.pfad) ----------
@@ -944,9 +1015,9 @@ function pfadHome(){
   const mins = W.pfad.map(s=>s.min||0), cum = mins.map((_,i)=>mins.slice(0,i).reduce((a,b)=>a+b,0)), sum = mins.reduce((a,b)=>a+b,0);
   const el = Math.max(0, Math.floor((Date.now()-pfadT0())/60000)), curSt = allDone ? W.pfad.length : st[cur].st;
   const should = Math.min(W.pfad.length-1, Math.max(0, cum.findIndex((c,i)=>el < c+mins[i])<0 ? W.pfad.length-1 : cum.findIndex((c,i)=>el < c+mins[i])));
-  const msg = allDone ? `🎉 <b>${en?"You finished the lesson path!":""}</b> ${en?"Now play the bonus games.":""}<small>Du hast den Lernpfad geschafft! Jetzt kannst du die Bonus-Spiele spielen.</small>`
-    : should > curSt ? `⏰ <b>${en?`Hurry up a little – you should be at station ${should+1} now.`:""}</b><small>Ein bisschen schneller – eigentlich solltest du jetzt bei Station ${should+1} sein.</small>`
-    : `👍 <b>${en?"You are on time. Keep going!":""}</b><small>Du liegst gut in der Zeit. Weiter so!</small>`;
+  const msg = allDone ? `🎉 <b>${en?"You finished the lesson path!":""}</b> ${en?"Now play the bonus games.":""}<small class="de">Du hast den Lernpfad geschafft! Jetzt kannst du die Bonus-Spiele spielen.</small>`
+    : should > curSt ? `⏰ <b>${en?`Hurry up a little – you should be at station ${should+1} now.`:""}</b><small class="de">Ein bisschen schneller – eigentlich solltest du jetzt bei Station ${should+1} sein.</small>`
+    : `👍 <b>${en?"You are on time. Keep going!":""}</b><small class="de">Du liegst gut in der Zeit. Weiter so!</small>`;
   const btn = (x, i) => { const open = i<=cur || (x.st<0 && allDone), isCur = i===cur, m = x.kind==="l" ? maxOf(x.lv) : 0, b = x.kind==="l" ? best(x.lv.id) : 0;
     return `<button class="pf-s${x.done?" ok":""}${isCur?" cur":""}" ${open?`data-go="${esc(x.hash)}"`:"disabled"}>
       <span class="pf-ic" aria-hidden="true">${open?x.icon:"🔒"}</span><span class="pf-t"><b>${esc(x.titel)}</b><small>${esc(x.art)}</small></span>
@@ -954,14 +1025,14 @@ function pfadHome(){
   setTimeout(()=>{ const c = document.querySelector(".pf-s.cur"); if(c && c.getBoundingClientRect().top > innerHeight*.7) c.scrollIntoView({behavior:reduced()?"auto":"smooth", block:"center"}); }, 350);
   const bonus = pfadBonus();
   return topbar({island:!!W.insel, pill:true}) + `<header class="hero">${W.hero}</header>
-  <div class="panel pf-top"><div class="pf-clock"><b>⏱ ${el}</b><small>/ ${sum} min</small></div>
+  <div class="panel pf-top">${deBtn()}<div class="pf-clock"><b>⏱ ${el}</b><small>/ ${sum} min</small></div>
     <div class="pf-msg">${msg}</div>
     <div class="pf-prog"><div class="meter"><i style="width:${Math.round(Math.min(cur,st.length)/Math.max(1,st.length)*100)}%"></i></div><small>${Math.min(cur,st.length)} / ${st.length} ${en?"steps":"Schritte"}</small></div></div>
   <ol class="pf">${W.pfad.map((s,i)=>{ const my = st.map((x,j)=>[x,j]).filter(([x])=>x.st===i), done = my.length && my.every(([x])=>x.done), now = i===curSt, lock = i>curSt;
     return `<li class="pf-st${done?" done":""}${now?" now":""}${lock?" lock":""}"><span class="pf-n" aria-hidden="true">${done?"✓":i+1}</span>
-      <div class="pf-b"><h3 class="disp">${s.icon||""} ${esc(s.titel)}</h3><p class="pf-sub">${s.de?esc(s.de)+" · ":""}<span class="pf-min">⏱ ${s.min} min${i?` · ${en?"from minute":"ab Minute"} ${cum[i]}`:""}</span></p>
+      <div class="pf-b"><h3 class="disp">${s.icon||""} ${esc(s.titel)}</h3><p class="pf-sub">${s.de?`<span class="de">${esc(s.de)} · </span>`:""}<span class="pf-min">⏱ ${s.min} min${i?` · ${en?"from minute":"ab Minute"} ${cum[i]}`:""}</span></p>
       <div class="pf-steps">${my.map(([x,j])=>btn(x,j)).join("")}</div></div></li>`; }).join("")}</ol>
-  ${bonus.length || (W.pfadLinks||[]).length ? `<section class="pf-bonus${allDone?"":" lock"}"><h2 class="sec-h">⭐ Bonus${allDone?"":" 🔒"}</h2><p class="pf-sub">${en?"Extra time? Practise the words!":""} <small>Noch Zeit? Übe die Vokabeln!${allDone?"":" (nach der letzten Station)"}</small></p>
+  ${bonus.length || (W.pfadLinks||[]).length ? `<section class="pf-bonus${allDone?"":" lock"}"><h2 class="sec-h">⭐ Bonus${allDone?"":" 🔒"}</h2><p class="pf-sub">${en?"Extra time? Practise the words!":""} <small class="de">Noch Zeit? Übe die Vokabeln!${allDone?"":" (nach der letzten Station)"}</small></p>
     <div class="pf-steps">${bonus.map(x=>btn(x, allDone ? -1 : 1e9)).join("")}${(W.pfadLinks||[]).map(k=>`<button class="pf-s" ${allDone?`data-href="${esc(k.href)}"`:"disabled"}><span class="pf-ic" aria-hidden="true">${allDone?k.icon||"🔗":"🔒"}</span><span class="pf-t"><b>${esc(k.titel)}</b><small>${esc(k.untertitel||"")}</small></span><span class="pf-r"></span></button>`).join("")}</div></section>` : ""}
   ${W.lehrer ? `<details class="panel pf-teach"><summary>👩‍🏫 Info für die Lehrkraft / Vertretung</summary><div class="pf-teach-b">${W.lehrer}</div></details>` : ""}
   <div class="foot"><span>${T.saved}</span><button id="lwReset">${T.reset}</button></div>`;
@@ -1032,7 +1103,7 @@ const LW = {
         const base = (!ex || ex.auto) ? autoNiveau(src, nv, world) : src; const out = Object.assign({}, base, ex||{}, {id: l.id+"-"+nv.toLowerCase()}), arr = out.typ==="memory" ? out.paare : (out.items||out.fragen||out.karten||out.saetze);
         if(out.art && arr) out.art = out.art.replace(/\b\d+(\s+(events|pairs|cards|questions|sentences|words))/, arr.length+"$1"); return out; });
       if(world[nv] && typeof world[nv]==="object") Object.assign(world, world[nv]); }
-    W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}, W.pfad?{map:W.sprache==="en"?"Lesson path":"Lernpfad", toMap:W.sprache==="en"?"Lesson path":"Lernpfad"}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
+    W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}, W.pfad?{map:W.sprache==="en"?"Overview":"Übersicht", toMap:W.sprache==="en"?"Overview":"Übersicht"}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
     MAX = W.levels.reduce((a,l)=>a+maxOf(l),0);
     load();
     try{ localStorage.setItem("lw-meta-"+W.id+(W.niveau&&W.niveau!=="M"?"-"+W.niveau:""), JSON.stringify({max:MAX, titel:W.titel, ids:W.levels.map(l=>l.id), maxima:W.levels.map(maxOf)})); }catch(e){}
@@ -1044,6 +1115,7 @@ const LW = {
       if(e.target.closest("[data-trx]")){ const p=e.target.closest(".tr-pop"); p.hidden=true; const f=p.parentElement.querySelector("[data-tr]"); f.setAttribute("aria-expanded","false"); f.focus(); return; }
       document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ if(!p.contains(e.target)){ p.hidden=true; p.parentElement.querySelector("[data-tr]").setAttribute("aria-expanded","false"); } });
       const hb = e.target.closest("[data-hear]"); if(hb){ hearClick(hb); return; }
+      if(e.target.closest("[data-detoggle]")){ const on = document.body.classList.toggle("de-on"); document.querySelectorAll("[data-detoggle]").forEach(b=>b.setAttribute("aria-pressed", on)); return; }
       const sb = e.target.closest("[data-say]"); if(sb){ sayText(sb.dataset.say, sb); return; }
       const st = e.target.closest("[data-showtxt]"); if(st){ const t = st.parentElement.querySelector(".say-txt"); if(t){ t.hidden = false; st.remove(); } return; }
       // Navigation

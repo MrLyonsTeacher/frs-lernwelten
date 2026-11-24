@@ -48,16 +48,17 @@ TH.start({
     <li><b>5 Minuten vor Schluss:</b> Alle tippen oben auf <b>🏁 Finished?</b>, tragen ihr Kürzel ein und zeigen den <b>QR-Code</b>. Bitte abfotografieren oder mit <i>ergebnisse.html</i> scannen.</li>
     <li>Wer früher fertig ist, macht die <b>Bonus-Spiele</b> (Vokabeln) unten auf der Seite.</li></ol>
     <table><tr><th>Min.</th><th>Station</th><th>Buch / Heft</th></tr>
-    <tr><td>0–3</td><td>1 Start</td><td>Heft: Überschrift + Datum</td></tr>
-    <tr><td>3–13</td><td>2 Zoom in: Look and find</td><td>Buch S. 10/11 · Heft: Tabelle mit 5 Spalten</td></tr>
+    <tr><td>0–3</td><td>1 Start</td><td>Infos zum Ablauf</td></tr>
+    <tr><td>3–13</td><td>2 Zoom in: Look and find</td><td>Buch S. 10/11 · Heft: Wörtertabelle (wird in der App angezeigt)</td></tr>
     <tr><td>13–21</td><td>3 Listen and find</td><td>Buch S. 10/11</td></tr>
     <tr><td>21–29</td><td>4 I spy</td><td>Heft: 3 „I spy“-Sätze</td></tr>
     <tr><td>29–39</td><td>5 What can you do in the park?</td><td>Heft: 4 Sätze „In the park I can …“</td></tr>
-    <tr><td>39–49</td><td>6 Way in: Meet the kids</td><td>Buch S. 12/13 · Heft: Aufgabe 1 und 2</td></tr>
+    <tr><td>39–49</td><td>6 Way in: Meet the kids</td><td>Buch S. 12/13 · Heft: S. 12, Aufgabe 1 und 2</td></tr>
     <tr><td>49–57</td><td>7 Ask a partner</td><td>Buch S. 13, Aufgabe 3 (Partner)</td></tr>
     <tr><td>57–69</td><td>8 My card</td><td>Heft: eigene Karte (Buch S. 13, Aufgabe 4a)</td></tr>
     <tr><td>69–75</td><td>9 Final challenge</td><td>–</td></tr>
     <tr><td>75–80</td><td>Ergebnis-Code zeigen</td><td>–</td></tr></table>
+    <p>Jede Heft-Aufgabe zeigt, wie der Kopf aussehen soll: links Seite und Aufgabe, in der Mitte die Überschrift, rechts das Datum.</p>
     <p><b>Falls die iPads nicht gehen:</b> Buch S. 10/11, Aufgabe 1, 3 und 4 schriftlich ins Heft, danach S. 12/13, Aufgabe 1, 2 und 4a.</p>`,
 
   lernen: {
@@ -88,27 +89,40 @@ TH.start({
 
   levels: [
     /* ---------- 1 Start ---------- */
-    { id:"start", typ:"auftrag", icon:"🚩", titel:"Get ready", art:"Exercise book", bild:"🎒", punkte:1, warte:30,
-      material:["✏️ Exercise book","📖 Book","🖊️ Pen"],
-      anleitung:"Welcome to the **Lava Trail**! Get ready for your English lesson.",
-      anleitungDe:"Willkommen auf dem **Lava Trail**! Mach dich bereit für die Englischstunde.",
+    { id:"start", typ:"auftrag", icon:"🚩", titel:"Get ready", art:"How it works", bild:"🎒", punkte:0, warte:20,
+      material:["📖 Book","✏️ Exercise book","🖊️ Pen"],
+      anleitung:"Welcome to the **Lava Trail**! This is how your English lesson works today.",
+      anleitungDe:"Willkommen auf dem **Lava Trail**! So läuft deine Englischstunde heute ab.",
       aufgaben:[
         {en:"Put your **book**, your **exercise book** and a **pen** on your desk.", de:"Leg dein **Buch**, dein **Heft** und einen **Stift** auf den Tisch."},
-        {en:"Open your exercise book. Write today’s **date** and the heading: **Unit 1 – I’m from Greenwich**", de:"Schreib das **Datum** und die Überschrift **Unit 1 – I’m from Greenwich** ins Heft."},
-        {en:"How it works: do the steps **one after the other**. The next step opens when you finish one. Look at the **clock ⏱** – try to stay on time!", de:"So geht’s: Mach die Schritte **nacheinander**. Der nächste Schritt geht auf, wenn du einen fertig hast. Achte auf die **Uhr ⏱**!"}
+        {en:"Do the steps **one after the other**. The next step opens when you finish one.", de:"Mach die Schritte **nacheinander**. Der nächste Schritt geht auf, wenn du einen fertig hast."},
+        {en:"📖 = work with your book · ✏️ = write in your exercise book · 🎮 = play and collect flags", de:"📖 = mit dem Buch arbeiten · ✏️ = ins Heft schreiben · 🎮 = spielen und Flaggen sammeln"},
+        {en:"Look at the **clock ⏱** on the overview – try to stay on time!", de:"Achte auf die **Uhr ⏱** in der Übersicht – versuch, in der Zeit zu bleiben!"},
+        {en:"Need German? Tap the **flag** 🇩🇪 on a card.", de:"Deutsche Hilfe bekommst du mit der **Flagge** auf jeder Karte."}
       ]},
 
     /* ---------- 2 Zoom in: Look and find ---------- */
-    { id:"look", typ:"auftrag", icon:"🔍", titel:"Look at the picture", art:"Book p. 10/11", bild:"🔍", buch:"page 10/11", punkte:1, warte:60,
-      anleitung:"Open your book at **page 10/11**. Look at the big picture.",
-      anleitungDe:"Schlag dein Buch auf **Seite 10/11** auf. Schau dir das große Bild an.",
-      aufgaben:[
-        {en:"Look at the picture for **one minute**. What can you see?", de:"Schau dir das Bild **eine Minute** lang genau an. Was siehst du?"},
-        {en:"Find: a **red bus**, a **dog**, a **policeman**, a **food stand** and a **family** on a picnic blanket.", de:"Suche: einen **roten Bus**, einen **Hund**, einen **Polizisten**, einen **Imbiss** und eine **Familie** beim Picknick."}
+    { id:"look", typ:"quiz", icon:"🔍", titel:"Look and find", art:"Book p. 10/11 · 12 questions",
+      anleitung:"Open your book at **page 10/11**. Look at the big picture and answer the questions.",
+      anleitungDe:"Schlag dein Buch auf **Seite 10/11** auf. Schau dir das große Bild an und beantworte die Fragen.",
+      tipp:"Such die Dinge im Bild – die Antwort steht nicht im Text.",
+      fragen:[
+        {q:"What colour is the **bus**?", o:["red","blue","green"], c:0, e:"The London bus is **red**."},
+        {q:"What number is on the **bus**?", o:["7","10","3"], c:1, e:"It’s bus number **10** to London Bridge."},
+        {q:"Where is the **policeman**?", o:["at the lake","at the food stand","next to the boys with skateboards"], c:2, e:"The policeman is **next to the boys with skateboards**."},
+        {q:"What can you buy at the **food stand**?", o:["hot dogs and hamburgers","pizza and chips","bikes and skateboards"], c:0, e:"“Hot and cold food”: **hot dogs, ice cream and hamburgers**."},
+        {q:"How many people are having a **picnic**?", o:["two","four","six"], c:1, e:"Mum, dad, a boy and a girl: **four** people."},
+        {q:"What colour is the **picnic blanket**?", o:["blue and white","green","red and white"], c:2, e:"The picnic blanket is **red and white**."},
+        {q:"What is the man on the grass doing?", o:["He’s sleeping.","He’s reading.","He’s eating."], c:0, e:"Zzz … he’s **sleeping**."},
+        {q:"What is the woman in the lake doing?", o:["She’s running.","She’s swimming.","She’s skating."], c:1, e:"She’s **swimming** in the lake."},
+        {q:"What is the girl on the bike wearing on her head?", o:["a red cap","a hat","a blue helmet"], c:2, e:"She has a **blue helmet**."},
+        {q:"What animals can you see on the **zoo poster**?", o:["an elephant, a lion and a tiger","a dog, a cat and a horse","a fox, a rabbit and a bird"], c:0, e:"Visit the zoo: an **elephant**, a **lion**, a **tiger** …"},
+        {q:"Where is the **cat**?", o:["in the lake","at the food stand","on the bench"], c:1, e:"The cat is at the **food stand**."},
+        {q:"What is the boy on the grass doing?", o:["He’s reading a book.","He’s playing tennis.","He’s eating an apple."], c:0, e:"He’s **reading a book**."}
       ]},
-    { id:"sort", typ:"sortieren", lernen:"park", icon:"🗂️", titel:"Five word groups", art:"Colours, animals … · sort",
-      anleitung:"Where does the word belong? Tap the right group. (Like exercise 1 on page 10.)",
-      anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf die richtige Gruppe. (Wie Aufgabe 1 auf Seite 10.)",
+    { id:"sort", typ:"sortieren", lernen:"park", icon:"🗂️", titel:"Five word groups", art:"Colours, animals … · sort", bisRichtig:true,
+      anleitung:"Where does the word belong? Tap the right group. Wrong words come back – play until **every word** is in the right group. (Like exercise 1 on page 10.)",
+      anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf die richtige Gruppe. Falsche Wörter kommen wieder – spiel, bis **alle Wörter** richtig sortiert sind. (Wie Aufgabe 1 auf Seite 10.)",
       tipp:"colours = Farben, animals = Tiere, activities = Aktivitäten, numbers = Zahlen, people = Leute.",
       koerbe:[ {t:"colours", info:"🎨", tipp:"Farben: blue, yellow, purple …"}, {t:"animals", info:"🐾", tipp:"Tiere: dog, cat, horse …"}, {t:"activities", info:"🎾", tipp:"Aktivitäten: tennis, football …"},
                {t:"numbers", info:"🔢", tipp:"Zahlen: seven, three, ten …"}, {t:"people", info:"🧑", tipp:"Leute: boy, girl, family …"} ],
@@ -117,17 +131,15 @@ TH.start({
               {t:"tennis", k:2}, {t:"football", k:2}, {t:"swimming", k:2},
               {t:"seven", k:3}, {t:"three", k:3}, {t:"ten", k:3},
               {t:"boy", k:4}, {t:"girl", k:4}, {t:"family", k:4} ]},
-    { id:"heft1", typ:"auftrag", icon:"✏️", titel:"Word table", art:"Exercise book", bild:"✏️", buch:"page 10/11", material:["✏️ Exercise book"], punkte:2, warte:150,
-      anleitung:"Now write in your **exercise book**.",
-      anleitungDe:"Jetzt schreibst du in dein **Heft**.",
+    { id:"heft1", typ:"auftrag", icon:"✏️", titel:"Word table", art:"Exercise book", bild:"✏️", buch:"page 10, exercise 1", material:["✏️ Exercise book"], punkte:2, warte:180,
+      anleitung:"Great – all words are in the right group! Now copy the **table** into your **exercise book**.",
+      anleitungDe:"Super – alle Wörter sind richtig sortiert! Schreib jetzt die **Tabelle** in dein **Heft** ab.",
+      kopf:{ links:"p. 10, ex. 1", mitte:"Zoom in – In a park" }, tabelle:"sort",
       aufgaben:[
-        {en:"Write the heading: **Zoom in – In a park**", de:"Schreib die Überschrift: **Zoom in – In a park**"},
-        {en:"Draw a table with **5 columns**: colours · animals · activities · numbers · people", de:"Zeichne eine Tabelle mit **5 Spalten**: colours · animals · activities · numbers · people"},
-        {en:"Look at the picture on page 10/11. Write **3 words** in every column.", de:"Schau ins Bild auf S. 10/11. Schreib in jede Spalte **3 Wörter**."}
-      ],
-      loesung:{ titel:"✅ Compare – for example:", de:"Vergleiche mit deinem Heft – andere richtige Wörter sind natürlich auch gut!", zeilen:[
-        "**colours:** red, green, yellow, white, orange …", "**animals:** dog, cat, horse, fox, rabbit, bird …", "**activities:** tennis, football, swimming, skateboarding, reading …",
-        "**numbers:** seven, three, eight, ten …", "**people:** boy, girl, man, woman, family, policeman …" ]}},
+        {en:"Write the **heading** in the middle: **Zoom in – In a park**. On the **left**: page and exercise. On the **right**: the date.", de:"Schreib die **Überschrift** in die Mitte. **Links**: Seite und Aufgabe. **Rechts**: das Datum."},
+        {en:"Copy the **table** with the 5 groups.", de:"Schreib die **Tabelle** mit den 5 Gruppen ab."},
+        {en:"Extra: find **one more word** for every group in the picture.", de:"Extra: Finde im Bild für jede Gruppe **noch ein Wort**."}
+      ]},
 
     /* ---------- 3 Listen and find ---------- */
     { id:"hoer", typ:"quiz", icon:"👂", titel:"Who is it?", art:"Listen or read · 8 scenes", szenenLabel:"Scene", E:{auto:false},
@@ -141,7 +153,7 @@ TH.start({
         {szene:"“Zzz … zzz … I’m so tired.”", sprich:"Zzz. Zzz. I'm so tired.", q:"Who is it?", o:["a man on the grass","a boy with a book","a woman with a hat"], c:0, e:"A man in a green T-shirt is **sleeping** on the grass."},
         {szene:"“Look, Dad! A squirrel! Can I have a sandwich, please?”", sprich:"Look, Dad! A squirrel! Can I have a sandwich, please?", q:"Who is it?", o:["a boy on the bench","a boy at the picnic","a boy at the food stand"], c:1, e:"The family is having a **picnic** – and there are squirrels on the grass."},
         {szene:"“Woof! Woof! I want the ball!”", sprich:"Woof! Woof! I want the ball!", q:"Who is it?", o:["the cat","the fox","the dog"], c:2, e:"Woof! is a **dog**. It runs after the boys with the football."},
-        {szene:"“Ding, dong! Ding, dong! It’s twelve o’clock.”", sprich:"Ding, dong! Ding, dong! It's twelve o'clock.", q:"What is it?", o:["the big clock tower","the red bus","the zoo poster"], c:0, e:"The big **clock tower** behind the trees is Big Ben."},
+        {szene:"“Ding, dong! Ding, dong!”", sprich:"Ding, dong! Ding, dong!", q:"What is it?", o:["the big clock tower","the red bus","the zoo poster"], c:0, e:"The big **clock tower** behind the trees is Big Ben."},
         {szene:"“I’m fast on my bike – and I have a blue helmet!”", sprich:"I'm fast on my bike, and I have a blue helmet!", q:"Who is it?", o:["a boy on skates","a girl on a bike","a girl with a racket"], c:1, e:"The **girl on the blue bike** has a blue helmet."}
       ]},
 
@@ -162,10 +174,11 @@ TH.start({
         {q:"I spy with my little eye something **red and white**. A family is sitting on it.", o:["a bench","a bus","a picnic blanket"], c:2, e:"The family is sitting on a red and white **picnic blanket** (Picknickdecke)."},
         {q:"I spy with my little eye something **purple**. A boy at the food stand is wearing it.", o:["a T-shirt","a cap","a helmet"], c:0, e:"The boy with the hamburger has a purple **T-shirt**."}
       ]},
-    { id:"heft2", typ:"auftrag", icon:"✏️", titel:"My I spy sentences", art:"Exercise book", bild:"✏️", buch:"page 10/11", material:["✏️ Exercise book"], punkte:2, warte:120,
+    { id:"heft2", typ:"auftrag", icon:"✏️", titel:"My I spy sentences", art:"Exercise book", bild:"✏️", buch:"page 11, exercise 3", material:["✏️ Exercise book"], punkte:2, warte:120, kopf:{ links:"p. 11, ex. 3", mitte:"I spy" },
       anleitung:"Now you! Write in your **exercise book**.",
       anleitungDe:"Jetzt du! Schreib in dein **Heft**.",
       aufgaben:[
+        {en:"Write the **heading** like this: page and exercise on the left, heading in the middle, date on the right.", de:"Schreib die **Überschrift** so: links Seite und Aufgabe, in der Mitte die Überschrift, rechts das Datum."},
         {en:"Find **3 things** in the picture on page 10/11.", de:"Suche dir **3 Dinge** im Bild auf S. 10/11 aus."},
         {en:"Write **3 sentences**: I spy with my little eye something … (colour)", de:"Schreib **3 Sätze**: I spy with my little eye something … (Farbe)"},
         {en:"Under every sentence write the answer: **It’s the …** / **It’s a …**", de:"Schreib unter jeden Satz die Lösung: **It’s the …** / **It’s a …**"}
@@ -187,11 +200,11 @@ TH.start({
         {w:["I","can","play","tennis","in","the","park"], hint:"Ich kann im Park Tennis spielen."},
         {w:["You","can","buy","a","hot dog","here"], hint:"Du kannst hier einen Hotdog kaufen."}
       ]},
-    { id:"heft3", typ:"auftrag", icon:"✏️", titel:"In the park I can …", art:"Exercise book", bild:"✏️", buch:"page 11, exercise 4", material:["✏️ Exercise book"], punkte:2, warte:150,
+    { id:"heft3", typ:"auftrag", icon:"✏️", titel:"In the park I can …", art:"Exercise book", bild:"✏️", buch:"page 11, exercise 4", material:["✏️ Exercise book"], punkte:2, warte:150, kopf:{ links:"p. 11, ex. 4", mitte:"What can you do in the park?" },
       anleitung:"What can **you** do in the park? Write in your **exercise book**.",
       anleitungDe:"Was kannst **du** im Park machen? Schreib in dein **Heft**.",
       aufgaben:[
-        {en:"Write the heading: **What can you do in the park?**", de:"Schreib die Überschrift: **What can you do in the park?**"},
+        {en:"Write the **heading** like this: page and exercise on the left, heading in the middle, date on the right.", de:"Schreib die **Überschrift** so: links Seite und Aufgabe, in der Mitte die Überschrift, rechts das Datum."},
         {en:"Write **4 sentences**: In the park I can …", de:"Schreib **4 Sätze**: In the park I can …"},
         {en:"Extra: draw a small picture for one sentence.", de:"Extra: Mal ein kleines Bild zu einem Satz."}
       ],
@@ -230,10 +243,11 @@ TH.start({
       tipp:"Haustiere, Alter und Herkunft der Kinder auf S. 12/13.",
       paare:[ {a:"Sherlock", b:"Luke’s dog"}, {a:"Fluff and Honey", b:"Holly’s guinea pigs"}, {a:"Sid", b:"Dave’s cat"},
               {a:"Luke", b:"eleven"}, {a:"Dave", b:"twelve"}, {a:"Holly", b:"from Greenwich"} ]},
-    { id:"heft4", typ:"auftrag", icon:"✏️", titel:"Exercises 1 and 2", art:"Exercise book", bild:"✏️", buch:"page 13, exercises 1 + 2", material:["✏️ Exercise book"], punkte:2, warte:150,
-      anleitung:"Do **exercise 1** and **exercise 2** on page 13 in your **exercise book**.",
-      anleitungDe:"Mach **Aufgabe 1** und **Aufgabe 2** auf S. 13 in deinem **Heft**.",
+    { id:"heft4", typ:"auftrag", icon:"✏️", titel:"Exercises 1 and 2", art:"Exercise book", bild:"✏️", buch:"page 12, exercises 1 + 2", material:["✏️ Exercise book"], punkte:2, warte:150, kopf:{ links:"p. 12, ex. 1 + 2", mitte:"Unit 1 – I’m from Greenwich" },
+      anleitung:"Do **exercise 1** and **exercise 2** on page 12 in your **exercise book**.",
+      anleitungDe:"Mach **Aufgabe 1** und **Aufgabe 2** auf S. 12 in deinem **Heft**.",
       aufgaben:[
+        {en:"Write the **heading** like this: page and exercise on the left, heading in the middle, date on the right.", de:"Schreib die **Überschrift** so: links Seite und Aufgabe, in der Mitte die Überschrift, rechts das Datum."},
         {en:"**Exercise 1 – Who is in the photos?** Write 4 sentences: Olivia is in photo 1. … is in photo 2. …", de:"**Aufgabe 1:** Schreib 4 Sätze: Olivia is in photo 1. … is in photo 2. …"},
         {en:"**Exercise 2 – Who says it?** Write the numbers **1–8** and the right name next to every number.", de:"**Aufgabe 2:** Schreib die Zahlen **1–8** untereinander und daneben den richtigen Namen."}
       ],
@@ -277,24 +291,24 @@ TH.start({
       ]},
 
     /* ---------- 8 My card ---------- */
-    { id:"card", typ:"satzbau", icon:"🪪", titel:"Build Mia’s card", art:"Sentence builder · 6 sentences",
-      anleitung:"This is Mia’s card. Build her sentences.",
-      anleitungDe:"Das ist Mias Steckbrief-Karte. Bilde ihre Sätze.",
-      tipp:"So ähnlich schreibst du gleich deine eigene Karte.",
-      mischen:false,
+    { id:"card", typ:"tippbau", icon:"🪪", titel:"Write Mia’s card", art:"Type the sentences · 6 sentences",
+      anleitung:"This is Mia. Write her card – **type** the sentences. You are Mia, so start with **I** or **My**. After 3 tries you can get help.",
+      anleitungDe:"Das ist Mia. Schreib ihre Karte – **tippe** die Sätze ein. Du bist Mia, also fang mit **I** oder **My** an. Nach 3 Versuchen kannst du Hilfe holen.",
+      tipp:"Selbst getippt = 2 Flaggen, mit Hilfe = 1 Flagge.",
+      karte:"🪪 <b>Mia</b> · 🎂 11 · 🏠 Offenburg (Germany) · ⚽ football fan · 🐱 pet: Bella",
       saetze:[
-        {w:["My","name","is","Mia."], hint:"Ich heiße Mia."},
-        {w:["I’m","eleven."], extra:["from"], hint:"Ich bin elf."},
-        {w:["I’m","from","Offenburg."], hint:"Ich komme aus Offenburg."},
-        {w:["That’s","in","Germany."], hint:"Das ist in Deutschland."},
-        {w:["I’m","a","football","fan."], hint:"Ich bin ein Fußballfan."},
-        {w:["This","is","my","pet,","Bella."], hint:"Das ist mein Haustier, Bella."}
+        {aufgabe:"Mia’s **name**", hint:"Ich heiße Mia.", w:["My","name","is","Mia."], alt:["I’m Mia.","I am Mia."]},
+        {aufgabe:"Mia’s **age** (11)", hint:"Ich bin elf.", w:["I’m","eleven."], alt:["I am eleven.","I’m 11.","I am 11."]},
+        {aufgabe:"Mia’s **town**", hint:"Ich komme aus Offenburg.", w:["I’m","from","Offenburg."], alt:["I am from Offenburg."]},
+        {aufgabe:"Mia’s **country**", hint:"Das ist in Deutschland.", w:["That’s","in","Germany."], alt:["That is in Germany.","It’s in Germany.","It is in Germany."]},
+        {aufgabe:"Mia and **football**", hint:"Ich bin ein Fußballfan.", w:["I’m","a","football","fan."], alt:["I am a football fan."]},
+        {aufgabe:"Mia’s **pet**", hint:"Das ist mein Haustier, Bella.", w:["This","is","my","pet,","Bella."], alt:["This is my cat, Bella.","My pet is Bella.","This is my pet Bella."]}
       ]},
-    { id:"heft5", typ:"auftrag", icon:"🪪", titel:"My card", art:"Exercise book", bild:"🪪", buch:"page 13, exercise 4a", material:["✏️ Exercise book","🖍️ Colours"], punkte:3, warte:300,
+    { id:"heft5", typ:"auftrag", icon:"🪪", titel:"My card", art:"Exercise book", bild:"🪪", buch:"page 13, exercise 4a", material:["✏️ Exercise book","🖍️ Colours"], punkte:3, warte:300, kopf:{ links:"p. 13, ex. 4a", mitte:"My card" },
       anleitung:"Now write **your own card** in your **exercise book**.",
       anleitungDe:"Jetzt schreibst du **deine eigene Karte** in dein **Heft**.",
       aufgaben:[
-        {en:"Write the heading: **My card**", de:"Schreib die Überschrift: **My card**"},
+        {en:"Write the **heading** like this: page and exercise on the left, heading in the middle, date on the right.", de:"Schreib die **Überschrift** so: links Seite und Aufgabe, in der Mitte die Überschrift, rechts das Datum."},
         {en:"Write **4 to 6 sentences** about you. Use the ideas in the box.", de:"Schreib **4 bis 6 Sätze** über dich. Die Ideen im Kasten helfen dir."},
         {en:"**Draw a picture** of you or your pet.", de:"**Mal ein Bild** von dir oder deinem Haustier."},
         {en:"Read your sentences quietly. Check: capital letters (I, names) and full stops (.)", de:"Lies deine Sätze leise durch. Prüfe: Großbuchstaben (I, Namen) und Punkte."}
