@@ -344,7 +344,7 @@ document.getElementById("copy").onclick = async ()=>{
 /* ---------- Freigabe (Lehrkraft): Bereiche je Klasse offen/gesperrt, Code als QR für die Schüler-iPads ---------- */
 const SELKEY = k => "frs-frei-sel-" + k;
 const selRaw = k => { try{ const v = JSON.parse(localStorage.getItem(SELKEY(k))||"null"); if(Array.isArray(v)) return {o:v, x:[]}; if(v && Array.isArray(v.o)) return {o:v.o, x:Array.isArray(v.x)?v.x:[], r:+v.r||0}; }catch(e){} return null; };
-const selGet = (k, bereiche) => { const v = selRaw(k); return v ? bereiche.filter(b=>v.o.includes(b)) : (k>100 ? freiCtx(k).def : bereiche.slice()); };
+const selGet = (k, bereiche) => { const v = selRaw(k); return v ? bereiche.filter(b=>v.o.includes(b)) : (k>100 ? freiCtx(k).def : bereiche.filter(b=>!(FREI.nurFreigabe||[]).includes(b))); };   // Lernpfade sind standardmäßig nicht angehakt
 /* Was die Freigabe für eine Klasse anzeigt: Englisch = Bereiche + Themen, Sport (Schlüssel 100 + Klasse) = Orte + Lernwelten */
 function freiCtx(k){
   if(k>100){ const w = FRS.sport.welten.find(x=>x.k===k-100), mats = FRS.listen.find(l=>l.id==="sport").materialien, ort = b => w.orte.find(o=>o.id===b);

@@ -7,7 +7,7 @@
     feuer:["#012169","#C8102E","#FFFFFF","#FFC24A","#E8430A"], wasser:["#012169","#C8102E","#FFFFFF","#FFD23F","#7FE3FF","#FF7A59"],
     stein:["#012169","#C8102E","#FFFFFF","#FFC24A","#B88AFF","#4AF0A0"], himmel:["#012169","#C8102E","#FFFFFF","#FFC24A","#7EC0FF"],
     wald:["#012169","#C8102E","#FFFFFF","#E8C24A","#4FAE3A"], eis:["#012169","#C8102E","#FFFFFF","#8AE6FF","#C8A0FF"] };
-  const KATNAME = { grammar:"Grammar", vocabulary:"Vocabulary", country:"Country & people", reading:"Reading", listening:"Listening", writing:"Writing", speaking:"Speaking", exam:"Exam" };
+  const KATNAME = { grammar:"Grammar", vocabulary:"Vocabulary", country:"Country & people", lesson:"Lesson path", reading:"Reading", listening:"Listening", writing:"Writing", speaking:"Speaking", exam:"Exam" };
   const FLAGDEFS = `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
     <clipPath id="uk-s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
     <g id="ukflag" clip-path="url(#uk-s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
@@ -44,7 +44,8 @@
         punkteName: "flags", kartenSymbol: c.kartenSymbol || c.icon || "⭐", konfetti: c.k==8 ? ["#B22234","#3C3B6E","#FFFFFF","#FFC24A"] : KONF[th],
         lob: c.lob || {3:"Amazing! You are a real expert.", 2:"Great job! Can you get three stars next time?", 1:"Good start – try again and you will get better.", 0:"Don’t give up! Read the tips and try again."},
         audio: `../audio/${c.id}/`, akzent: c.k==8 ? "en-US" : "en-GB",
-        lernen: c.lernen, levels: c.levels, kat: c.kat, thema: c.kat==="grammar" ? (c.untertitel||"") : "", G: c.G, E: c.E
+        lernen: c.lernen, levels: c.levels, kat: c.kat, thema: c.kat==="grammar" ? (c.untertitel||"") : "", G: c.G, E: c.E,
+        pfad: c.pfad, pfadBonus: c.pfadBonus, pfadLinks: c.pfadLinks, lehrer: c.lehrer
       });
     }
   };

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Unit 1: Let’s start! – Lesson path</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="../../lernwelt/themes.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+<script src="../../qrcode.js"></script>
+<script src="../../ergebnis.js"></script>
+<script src="../../lernwelt/lernwelt.js"></script>
+<script src="../../lernwelt/thema.js"></script>
+<script>
+/* Lernpfad Klasse 5 · Orange Line 1 · Zoom in (S. 10/11) + Unit 1 Way in (S. 12/13).
+   Geführte Doppelstunde (ca. 80 Min.) für Vertretungsstunden: Stationen werden nacheinander frei, Buch und Heft werden bewusst eingesetzt.
+   Bildbeschreibungen beziehen sich auf das Wimmelbild im Buch, die Hörszenen sind eigene Texte (keine Buch-CD). */
+TH.start({
+  k:5, kat:"lesson", id:"pf5u1", icon:"🧭", kartenSymbol:"🌋",
+  bild:"../welten/k5-country.jpg",
+  titel:"Unit 1: Let’s start!", untertitel:"Zoom in & Way in · book p. 10–13",
+  text:"Today you start your English book! Follow the Lava Trail station by station. You need your book, your exercise book and a pen.",
+
+  pfad:[
+    { titel:"Start", de:"Los geht’s", icon:"🚩", min:3, steps:["l:start"] },
+    { titel:"Zoom in: Look and find", de:"Schauen und finden · S. 10/11", icon:"🔍", min:10, steps:["l:look","c:sort","l:sort","l:heft1"] },
+    { titel:"Listen and find", de:"Hören oder lesen und finden", icon:"👂", min:8, steps:["l:hoer"] },
+    { titel:"I spy …", de:"Ich sehe was, was du nicht siehst", icon:"👀", min:8, steps:["c:spy","l:spy","l:heft2"] },
+    { titel:"What can you do in the park?", de:"Was kannst du im Park machen?", icon:"⚽", min:10, steps:["c:can","l:can","l:heft3"] },
+    { titel:"Way in: Meet the kids", de:"Lerne die Kinder kennen · S. 12/13", icon:"👋", min:10, steps:["l:read","l:who","l:pets","l:heft4"] },
+    { titel:"Ask a partner", de:"Frag deinen Partner", icon:"🗣️", min:8, steps:["c:ask","l:ask","l:answer","l:talk"] },
+    { titel:"My card", de:"Meine Steckbrief-Karte", icon:"🪪", min:12, steps:["l:card","l:heft5"] },
+    { titel:"Final challenge", de:"Abschluss-Challenge", icon:"🏆", min:6, steps:["l:final"] }
+  ],
+  pfadBonus:["l:vz","l:vw","l:vrush"],
+  pfadLinks:[ { icon:"📝", titel:"Vocab Trainer: Welcome", untertitel:"Welcome + Zoom in · Mock Test", href:"vokabeltrainer.html?u=0" },
+              { icon:"🏠", titel:"Vocab Trainer: Unit 1", untertitel:"I’m from Greenwich · Mock Test", href:"vokabeltrainer.html?u=1" } ],
+
+  lehrer:`<p><b>Worum geht es?</b> Die Klasse steigt heute ins Buch ein (Orange Line 1, S. 10–13: <i>Zoom in – In a park</i> und <i>Unit 1 Way in</i>). Die Schüler arbeiten allein mit dem iPad, dem Buch und dem Heft. Die App führt sie Schritt für Schritt; die nächste Station öffnet sich erst, wenn die vorige erledigt ist.</p>
+    <p><b>Was die Vertretung tun muss:</b></p>
+    <ol><li>Darauf achten, dass alle <b>Buch, Heft und Stift</b> auf dem Tisch haben.</li>
+    <li>Die Schüler arbeiten leise. Nur bei Station 7 („Ask a partner“) sprechen sie <b>flüsternd</b> mit dem Nachbarn.</li>
+    <li>Vorlesen (🔊) ist freiwillig – alle Texte stehen auch zum Lesen da. Ohne Kopfhörer bitte Ton aus.</li>
+    <li><b>5 Minuten vor Schluss:</b> Alle tippen oben auf <b>🏁 Finished?</b>, tragen ihr Kürzel ein und zeigen den <b>QR-Code</b>. Bitte abfotografieren oder mit <i>ergebnisse.html</i> scannen.</li>
+    <li>Wer früher fertig ist, macht die <b>Bonus-Spiele</b> (Vokabeln) unten auf der Seite.</li></ol>
+    <table><tr><th>Min.</th><th>Station</th><th>Buch / Heft</th></tr>
+    <tr><td>0–3</td><td>1 Start</td><td>Heft: Überschrift + Datum</td></tr>
+    <tr><td>3–13</td><td>2 Zoom in: Look and find</td><td>Buch S. 10/11 · Heft: Tabelle mit 5 Spalten</td></tr>
+    <tr><td>13–21</td><td>3 Listen and find</td><td>Buch S. 10/11</td></tr>
+    <tr><td>21–29</td><td>4 I spy</td><td>Heft: 3 „I spy“-Sätze</td></tr>
+    <tr><td>29–39</td><td>5 What can you do in the park?</td><td>Heft: 4 Sätze „In the park I can …“</td></tr>
+    <tr><td>39–49</td><td>6 Way in: Meet the kids</td><td>Buch S. 12/13 · Heft: Aufgabe 1 und 2</td></tr>
+    <tr><td>49–57</td><td>7 Ask a partner</td><td>Buch S. 13, Aufgabe 3 (Partner)</td></tr>
+    <tr><td>57–69</td><td>8 My card</td><td>Heft: eigene Karte (Buch S. 13, Aufgabe 4a)</td></tr>
+    <tr><td>69–75</td><td>9 Final challenge</td><td>–</td></tr>
+    <tr><td>75–80</td><td>Ergebnis-Code zeigen</td><td>–</td></tr></table>
+    <p><b>Falls die iPads nicht gehen:</b> Buch S. 10/11, Aufgabe 1, 3 und 4 schriftlich ins Heft, danach S. 12/13, Aufgabe 1, 2 und 4a.</p>`,
+
+  lernen: {
+    park: { titel:"Zoom in: In a park", folien:[
+      {bild:"🌳", titel:"In a park", text:"Look at the big picture on **page 10/11**. It’s a **park** in **London**. You can see lots of **people**, **animals** and **activities**.", de:"Schau dir das große Bild auf **Seite 10/11** an. Es ist ein **Park** in **London**. Du siehst viele **Leute**, **Tiere** und **Aktivitäten**."},
+      {bild:"🎨", titel:"Colours", text:"**red, green, blue, yellow, black, grey, brown, white, orange, purple, pink** – The bus is **red**. The trees are **green**.", de:"**Farben** (colour = Farbe): Der Bus ist **rot**. Die Bäume sind **grün**."},
+      {bild:"🐶", titel:"Animals", text:"Can you find a **dog**, a **cat**, a **horse**, a **fox**, a **rabbit** and some **birds** in the picture?", de:"**Tiere**: Hund, Katze, Pferd, Fuchs, Kaninchen, Vögel. Findest du sie im Bild?"},
+      {bild:"🎾", titel:"Activities", text:"Activities are things you **do**: **tennis, football, swimming, skateboarding, running, reading** …", de:"**Aktivitäten** sind Dinge, die man **macht**: Tennis, Fußball, Schwimmen, Skateboard fahren, Laufen, Lesen …"},
+      {bild:"🔢", titel:"Numbers", text:"Find the numbers in the picture: a **seven** on a T-shirt, a **three** on a cap, an **eight** on a skate and a **ten** on the bus.", de:"**Zahlen**: Finde die 7 auf einem T-Shirt, die 3 auf einer Mütze, die 8 auf einem Inliner und die 10 auf dem Bus."},
+      {bild:"🧑‍🤝‍🧑", titel:"People", text:"**people** = boys, girls, men, women … In the picture there is a **boy**, a **girl**, a **family** and a **policeman**.", de:"**people** heißt **Leute / Menschen**. Im Bild: ein Junge, ein Mädchen, eine Familie und ein Polizist."}
+    ]},
+    spy: { titel:"I spy with my little eye …", folien:[
+      {bild:"👀", titel:"A guessing game", text:"One person thinks of a thing in the picture and says: “**I spy with my little eye something red!**” The others guess.", de:"Ein Ratespiel: Einer denkt sich etwas im Bild aus und sagt die **Farbe**: „Ich sehe was, was du nicht siehst, und das ist rot!“ Die anderen raten."},
+      {bild:"❓", titel:"Guess!", text:"**Is it the bus?** – **Yes, it is!** / **No, it isn’t.**<br>When you find it, say: “**It’s here!**”", de:"Raten: **Ist es der Bus?** – **Ja!** / **Nein.** Wenn du es gefunden hast, sag: **„Es ist hier!“**"},
+      {bild:"🟡", titel:"Your turn", text:"**I spy with my little eye something yellow.** – Is it the T-shirt? – No, it isn’t. – Is it the bananas? – **Yes!**", de:"Jetzt du: Lies das Beispiel. Danach suchst du im Spiel die Dinge im Bild auf S. 10/11."}
+    ]},
+    can: { titel:"I can …", folien:[
+      {bild:"⚽", titel:"What can you do in the park?", formel:"I | can | play | football", bsp:["I can **play** tennis.","I can **buy** an ice cream.","I can **ride** my bike.","I can **read** a book.","I can **have** a picnic."], de:"**can** = kann. Nach **can** kommt gleich das Tunwort: I can **play** … (nicht: I can to play)."},
+      {bild:"🍦", titel:"Buy and eat", text:"At the food stand you can buy a **hot dog**, an **ice cream** or a **hamburger**. – **I can buy a hot dog.**", de:"Am Imbiss kannst du einen Hotdog, ein Eis oder einen Hamburger kaufen: **I can buy …** = Ich kann … kaufen."},
+      {bild:"🛹", titel:"More ideas", text:"I can **swim** in the lake. I can **run**. I can **play football** with my friends.", de:"Weitere Ideen: im See schwimmen, rennen, mit Freunden Fußball spielen."}
+    ]},
+    ask: { titel:"Ask a partner", folien:[
+      {bild:"👋", titel:"Your name", formel:"What’s | your | name? | → | Hello, I’m Leonie.", bsp:["What’s your name? – **I’m** Tom.","What’s your name? – **My name is** Tom."], de:"Nach dem Namen fragen: **What’s your name?** Antwort: **I’m …** oder **My name is …**"},
+      {bild:"🎂", titel:"Your age", formel:"How | old | are | you? | → | I’m ten.", bsp:["How old are you? – **I’m** eleven.","How old are you? – **I’m** ten."], de:"Nach dem Alter fragen: **How old are you?** Antwort: **I’m ten / eleven.**"},
+      {bild:"🗺️", titel:"Where are you from?", formel:"Where | are | you | from? | → | I’m from Kehl.", bsp:["I’m from **Kehl**. That’s in **Germany**.","I’m from **Greenwich**. That’s in **England**."], de:"Nach der Herkunft fragen: **Where are you from?** Antwort: **I’m from …** – **That’s in Germany.** (Das ist in Deutschland.)"}
+    ]}
+  },
+
+  levels: [
+    /* ---------- 1 Start ---------- */
+    { id:"start", typ:"auftrag", icon:"🚩", titel:"Get ready", art:"Exercise book", bild:"🎒", punkte:1, warte:30,
+      material:["✏️ Exercise book","📖 Book","🖊️ Pen"],
+      anleitung:"Welcome to the **Lava Trail**! Get ready for your English lesson.",
+      anleitungDe:"Willkommen auf dem **Lava Trail**! Mach dich bereit für die Englischstunde.",
+      aufgaben:[
+        {en:"Put your **book**, your **exercise book** and a **pen** on your desk.", de:"Leg dein **Buch**, dein **Heft** und einen **Stift** auf den Tisch."},
+        {en:"Open your exercise book. Write today’s **date** and the heading: **Unit 1 – I’m from Greenwich**", de:"Schreib das **Datum** und die Überschrift **Unit 1 – I’m from Greenwich** ins Heft."},
+        {en:"How it works: do the steps **one after the other**. The next step opens when you finish one. Look at the **clock ⏱** – try to stay on time!", de:"So geht’s: Mach die Schritte **nacheinander**. Der nächste Schritt geht auf, wenn du einen fertig hast. Achte auf die **Uhr ⏱**!"}
+      ]},
+
+    /* ---------- 2 Zoom in: Look and find ---------- */
+    { id:"look", typ:"auftrag", icon:"🔍", titel:"Look at the picture", art:"Book p. 10/11", bild:"🔍", buch:"page 10/11", punkte:1, warte:60,
+      anleitung:"Open your book at **page 10/11**. Look at the big picture.",
+      anleitungDe:"Schlag dein Buch auf **Seite 10/11** auf. Schau dir das große Bild an.",
+      aufgaben:[
+        {en:"Look at the picture for **one minute**. What can you see?", de:"Schau dir das Bild **eine Minute** lang genau an. Was siehst du?"},
+        {en:"Find: a **red bus**, a **dog**, a **policeman**, a **food stand** and a **family** on a picnic blanket.", de:"Suche: einen **roten Bus**, einen **Hund**, einen **Polizisten**, einen **Imbiss** und eine **Familie** beim Picknick."}
+      ]},
+    { id:"sort", typ:"sortieren", lernen:"park", icon:"🗂️", titel:"Five word groups", art:"Colours, animals … · sort",
+      anleitung:"Where does the word belong? Tap the right group. (Like exercise 1 on page 10.)",
+      anleitungDe:"Zu welcher Gruppe gehört das Wort? Tippe auf die richtige Gruppe. (Wie Aufgabe 1 auf Seite 10.)",
+      tipp:"colours = Farben, animals = Tiere, activities = Aktivitäten, numbers = Zahlen, people = Leute.",
+      koerbe:[ {t:"colours", info:"🎨", tipp:"Farben: blue, yellow, purple …"}, {t:"animals", info:"🐾", tipp:"Tiere: dog, cat, horse …"}, {t:"activities", info:"🎾", tipp:"Aktivitäten: tennis, football …"},
+               {t:"numbers", info:"🔢", tipp:"Zahlen: seven, three, ten …"}, {t:"people", info:"🧑", tipp:"Leute: boy, girl, family …"} ],
+      items:[ {t:"blue", k:0}, {t:"yellow", k:0}, {t:"purple", k:0},
+              {t:"dog", k:1}, {t:"cat", k:1}, {t:"horse", k:1},
+              {t:"tennis", k:2}, {t:"football", k:2}, {t:"swimming", k:2},
+              {t:"seven", k:3}, {t:"three", k:3}, {t:"ten", k:3},
+              {t:"boy", k:4}, {t:"girl", k:4}, {t:"family", k:4} ]},
+    { id:"heft1", typ:"auftrag", icon:"✏️", titel:"Word table", art:"Exercise book", bild:"✏️", buch:"page 10/11", material:["✏️ Exercise book"], punkte:2, warte:150,
+      anleitung:"Now write in your **exercise book**.",
+      anleitungDe:"Jetzt schreibst du in dein **Heft**.",
+      aufgaben:[
+        {en:"Write the heading: **Zoom in – In a park**", de:"Schreib die Überschrift: **Zoom in – In a park**"},
+        {en:"Draw a table with **5 columns**: colours · animals · activities · numbers · people", de:"Zeichne eine Tabelle mit **5 Spalten**: colours · animals · activities · numbers · people"},
+        {en:"Look at the picture on page 10/11. Write **3 words** in every column.", de:"Schau ins Bild auf S. 10/11. Schreib in jede Spalte **3 Wörter**."}
+      ],
+      loesung:{ titel:"✅ Compare – for example:", de:"Vergleiche mit deinem Heft – andere richtige Wörter sind natürlich auch gut!", zeilen:[
+        "**colours:** red, green, yellow, white, orange …", "**animals:** dog, cat, horse, fox, rabbit, bird …", "**activities:** tennis, football, swimming, skateboarding, reading …",
+        "**numbers:** seven, three, eight, ten …", "**people:** boy, girl, man, woman, family, policeman …" ]}},
+
+    /* ---------- 3 Listen and find ---------- */
+    { id:"hoer", typ:"quiz", icon:"👂", titel:"Who is it?", art:"Listen or read · 8 scenes", szenenLabel:"Scene", E:{auto:false},
+      anleitung:"Read the scene (or tap 🔊 **Listen**). Find the place in the picture on **page 10/11**. Then choose.",
+      anleitungDe:"Lies die Szene (oder tippe auf 🔊 **Listen**). Suche die Stelle im Bild auf **S. 10/11**. Dann wähle die Antwort.",
+      tipp:"Die Geräusche helfen dir: Splash! = Wasser, Zzz = schlafen, Woof! = Hund.",
+      fragen:[
+        {szene:"“A hot dog, please! … Mmm, yummy!”", sprich:"A hot dog, please! Mmm, yummy!", q:"Who is it?", o:["a boy at the food stand","a girl on a bike","a man on the grass"], c:0, e:"The boys at the **food stand** (Hot and cold food) eat hot dogs and hamburgers."},
+        {szene:"“Splash! The water is cold – but I love swimming!”", sprich:"Splash! The water is cold, but I love swimming!", q:"Who is it?", o:["a boy with a skateboard","a woman in the lake","a girl with a racket"], c:1, e:"A woman is **swimming** in the lake."},
+        {szene:"“Stop! Please be careful with your skateboard!”", sprich:"Stop! Please be careful with your skateboard!", q:"Who is it?", o:["the man at the food stand","the mum at the picnic","the policeman"], c:2, e:"The **policeman** is next to the boys with skateboards."},
+        {szene:"“Zzz … zzz … I’m so tired.”", sprich:"Zzz. Zzz. I'm so tired.", q:"Who is it?", o:["a man on the grass","a boy with a book","a woman with a hat"], c:0, e:"A man in a green T-shirt is **sleeping** on the grass."},
+        {szene:"“Look, Dad! A squirrel! Can I have a sandwich, please?”", sprich:"Look, Dad! A squirrel! Can I have a sandwich, please?", q:"Who is it?", o:["a boy on the bench","a boy at the picnic","a boy at the food stand"], c:1, e:"The family is having a **picnic** – and there are squirrels on the grass."},
+        {szene:"“Woof! Woof! I want the ball!”", sprich:"Woof! Woof! I want the ball!", q:"Who is it?", o:["the cat","the fox","the dog"], c:2, e:"Woof! is a **dog**. It runs after the boys with the football."},
+        {szene:"“Ding, dong! Ding, dong! It’s twelve o’clock.”", sprich:"Ding, dong! Ding, dong! It's twelve o'clock.", q:"What is it?", o:["the big clock tower","the red bus","the zoo poster"], c:0, e:"The big **clock tower** behind the trees is Big Ben."},
+        {szene:"“I’m fast on my bike – and I have a blue helmet!”", sprich:"I'm fast on my bike, and I have a blue helmet!", q:"Who is it?", o:["a boy on skates","a girl on a bike","a girl with a racket"], c:1, e:"The **girl on the blue bike** has a blue helmet."}
+      ]},
+
+    /* ---------- 4 I spy ---------- */
+    { id:"spy", typ:"quiz", lernen:"spy", icon:"👀", titel:"I spy in the park", art:"Find it in the picture · 10 questions",
+      anleitung:"I spy with my little eye … Look at the picture on **page 10/11**. What is it?",
+      anleitungDe:"Ich sehe was, was du nicht siehst … Schau ins Bild auf **S. 10/11**. Was ist es?",
+      tipp:"Achte auf die Farbe und den Hinweis. Suche dann im Bild.",
+      fragen:[
+        {q:"I spy with my little eye something **yellow**. It’s a fruit at the picnic.", o:["apples","bananas","carrots"], c:1, e:"The **bananas** are yellow. The apples are red, the carrots are orange."},
+        {q:"I spy with my little eye something **red**. You can see the number **10** on it.", o:["the bus","the bike","the football"], c:0, e:"The **bus** is red – it’s number 10 to London Bridge."},
+        {q:"I spy with my little eye something **orange**. It’s an animal next to the girl on the bike.", o:["a cat","a fox","a dog"], c:1, e:"The **fox** is orange. It’s next to the girl on the bike."},
+        {q:"I spy with my little eye something **white**. It’s a big animal. A person is on it.", o:["a horse","a dog","an elephant"], c:0, e:"The **horse** is white. Somebody is riding it."},
+        {q:"I spy with my little eye something **grey**. They’re small animals on the grass.", o:["birds","rabbits","squirrels"], c:2, e:"The **squirrels** (Eichhörnchen) are grey."},
+        {q:"I spy with my little eye something **black and white**. It’s round. The boys play with it.", o:["a tennis ball","a football","an apple"], c:1, e:"The **football** is black and white."},
+        {q:"I spy with my little eye something **brown**. It’s a small animal near the sleeping man.", o:["a rabbit","a cat","a horse"], c:0, e:"The **rabbit** (Kaninchen) is brown."},
+        {q:"I spy with my little eye something **blue**. A boy on the grass is reading it.", o:["a poster","a book","a T-shirt"], c:1, e:"The boy is reading a **book**."},
+        {q:"I spy with my little eye something **red and white**. A family is sitting on it.", o:["a bench","a bus","a picnic blanket"], c:2, e:"The family is sitting on a red and white **picnic blanket** (Picknickdecke)."},
+        {q:"I spy with my little eye something **purple**. A boy at the food stand is wearing it.", o:["a T-shirt","a cap","a helmet"], c:0, e:"The boy with the hamburger has a purple **T-shirt**."}
+      ]},
+    { id:"heft2", typ:"auftrag", icon:"✏️", titel:"My I spy sentences", art:"Exercise book", bild:"✏️", buch:"page 10/11", material:["✏️ Exercise book"], punkte:2, warte:120,
+      anleitung:"Now you! Write in your **exercise book**.",
+      anleitungDe:"Jetzt du! Schreib in dein **Heft**.",
+      aufgaben:[
+        {en:"Find **3 things** in the picture on page 10/11.", de:"Suche dir **3 Dinge** im Bild auf S. 10/11 aus."},
+        {en:"Write **3 sentences**: I spy with my little eye something … (colour)", de:"Schreib **3 Sätze**: I spy with my little eye something … (Farbe)"},
+        {en:"Under every sentence write the answer: **It’s the …** / **It’s a …**", de:"Schreib unter jeden Satz die Lösung: **It’s the …** / **It’s a …**"}
+      ],
+      muster:{ titel:"📌 Example", zeilen:["I spy with my little eye something **green**. – **It’s a tree.**","I spy with my little eye something **pink**. – **It’s a T-shirt.**"] }},
+
+    /* ---------- 5 What can you do in the park? ---------- */
+    { id:"can", typ:"satzbau", lernen:"can", icon:"⚽", titel:"I can …", art:"Sentence builder · 7 sentences",
+      anleitung:"What can you do in the park? Tap the words in the right order.",
+      anleitungDe:"Was kannst du im Park machen? Tippe die Wörter in der richtigen Reihenfolge an.",
+      tipp:"Ein Satz beginnt mit **I can** + Tunwort.",
+      regel:"**I can** + Tunwort: I can play / buy / ride / read …",
+      saetze:[
+        {w:["I","can","play","football"], hint:"Ich kann Fußball spielen."},
+        {w:["I","can","buy","an","ice cream"], hint:"Ich kann ein Eis kaufen."},
+        {w:["I","can","ride","my","bike"], hint:"Ich kann mit meinem Fahrrad fahren."},
+        {w:["I","can","read","a","book"], hint:"Ich kann ein Buch lesen."},
+        {w:["I","can","have","a","picnic"], hint:"Ich kann ein Picknick machen."},
+        {w:["I","can","play","tennis","in","the","park"], hint:"Ich kann im Park Tennis spielen."},
+        {w:["You","can","buy","a","hot dog","here"], hint:"Du kannst hier einen Hotdog kaufen."}
+      ]},
+    { id:"heft3", typ:"auftrag", icon:"✏️", titel:"In the park I can …", art:"Exercise book", bild:"✏️", buch:"page 11, exercise 4", material:["✏️ Exercise book"], punkte:2, warte:150,
+      anleitung:"What can **you** do in the park? Write in your **exercise book**.",
+      anleitungDe:"Was kannst **du** im Park machen? Schreib in dein **Heft**.",
+      aufgaben:[
+        {en:"Write the heading: **What can you do in the park?**", de:"Schreib die Überschrift: **What can you do in the park?**"},
+        {en:"Write **4 sentences**: In the park I can …", de:"Schreib **4 Sätze**: In the park I can …"},
+        {en:"Extra: draw a small picture for one sentence.", de:"Extra: Mal ein kleines Bild zu einem Satz."}
+      ],
+      muster:{ titel:"📌 Example", zeilen:["In the park I can **play football**.","In the park I can **buy a hot dog**."] }},
+
+    /* ---------- 6 Way in: Meet the kids ---------- */
+    { id:"read", typ:"auftrag", icon:"📖", titel:"Read about the kids", art:"Book p. 12/13", bild:"📖", buch:"page 12/13", punkte:1, warte:90,
+      anleitung:"Turn the page! Open your book at **page 12/13**: Unit 1 – I’m from Greenwich.",
+      anleitungDe:"Blätter um! Schlag das Buch auf **Seite 12/13** auf: Unit 1 – I’m from Greenwich.",
+      aufgaben:[
+        {en:"Look at the **4 photos**. Read the **speech bubbles** (Sprechblasen).", de:"Schau dir die **4 Fotos** an. Lies die **Sprechblasen**."},
+        {en:"Find out: What are their **names**? How **old** are they? Do they have a **pet**?", de:"Finde heraus: Wie **heißen** die Kinder? Wie **alt** sind sie? Haben sie ein **Haustier**?"},
+        {en:"New words: **pet** = Haustier · **guinea pig** = Meerschweinchen · **lucky number** = Glückszahl · **crazy** = verrückt", de:"Diese Wörter helfen dir beim Lesen."}
+      ]},
+    { id:"who", typ:"quiz", icon:"🧒", titel:"Who is it?", art:"Olivia, Luke, Holly or Dave? · 12 questions", fest:true, mischen:false,
+      anleitung:"Look at **page 12/13**. Olivia, Luke, Holly or Dave?",
+      anleitungDe:"Schau auf **S. 12/13**. Olivia, Luke, Holly oder Dave?",
+      tipp:"Lies die Sprechblasen noch einmal genau.",
+      fragen:[
+        {q:"Who is in **photo 1**?", o:["Olivia","Luke","Holly","Dave"], c:0, e:"**Olivia** is in photo 1 – with her bike."},
+        {q:"Who is a **football fan**?", o:["Olivia","Luke","Holly","Dave"], c:1, e:"**Luke** is a football fan."},
+        {q:"Who has two **guinea pigs**?", o:["Olivia","Luke","Holly","Dave"], c:2, e:"**Holly** has two guinea pigs: Fluff and Honey."},
+        {q:"Who has a **cat**?", o:["Olivia","Luke","Holly","Dave"], c:3, e:"**Dave** has a cat. Its name is Sid."},
+        {q:"Who is **eleven**?", o:["Olivia","Luke","Holly","Dave"], c:1, e:"**Luke** is eleven."},
+        {q:"Who has a **bike**?", o:["Olivia","Luke","Holly","Dave"], c:0, e:"**Olivia** has a bike. She thinks it’s cool."},
+        {q:"Who is **twelve**?", o:["Olivia","Luke","Holly","Dave"], c:3, e:"**Dave** is twelve."},
+        {q:"Who is from **Greenwich** in London?", o:["Olivia","Luke","Holly","Dave"], c:2, e:"**Holly** is from Greenwich. That’s in London, in England."},
+        {q:"Who has a crazy **dog**?", o:["Olivia","Luke","Holly","Dave"], c:1, e:"**Luke** has a dog. Its name is Sherlock."},
+        {q:"Who is in **photo 4**?", o:["Olivia","Luke","Holly","Dave"], c:3, e:"**Dave** is in photo 4 – with his cat."},
+        {q:"Whose **lucky number** is six?", o:["Olivia","Luke","Holly","Dave"], c:3, e:"**Dave’s** lucky number is six."},
+        {q:"Who is in **photo 3**?", o:["Olivia","Luke","Holly","Dave"], c:2, e:"**Holly** is in photo 3 – with her guinea pigs."}
+      ]},
+    { id:"pets", typ:"memory", icon:"🐹", titel:"Kids and pets", art:"Pairs · memory", E:{},
+      anleitung:"Find the pairs: who or what belongs together? Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: Was gehört zusammen? Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Haustiere, Alter und Herkunft der Kinder auf S. 12/13.",
+      paare:[ {a:"Sherlock", b:"Luke’s dog"}, {a:"Fluff and Honey", b:"Holly’s guinea pigs"}, {a:"Sid", b:"Dave’s cat"},
+              {a:"Luke", b:"eleven"}, {a:"Dave", b:"twelve"}, {a:"Holly", b:"from Greenwich"} ]},
+    { id:"heft4", typ:"auftrag", icon:"✏️", titel:"Exercises 1 and 2", art:"Exercise book", bild:"✏️", buch:"page 13, exercises 1 + 2", material:["✏️ Exercise book"], punkte:2, warte:150,
+      anleitung:"Do **exercise 1** and **exercise 2** on page 13 in your **exercise book**.",
+      anleitungDe:"Mach **Aufgabe 1** und **Aufgabe 2** auf S. 13 in deinem **Heft**.",
+      aufgaben:[
+        {en:"**Exercise 1 – Who is in the photos?** Write 4 sentences: Olivia is in photo 1. … is in photo 2. …", de:"**Aufgabe 1:** Schreib 4 Sätze: Olivia is in photo 1. … is in photo 2. …"},
+        {en:"**Exercise 2 – Who says it?** Write the numbers **1–8** and the right name next to every number.", de:"**Aufgabe 2:** Schreib die Zahlen **1–8** untereinander und daneben den richtigen Namen."}
+      ],
+      loesung:{ titel:"✅ Check your answers", de:"Vergleiche mit deinem Heft und verbessere mit einer anderen Farbe.", zeilen:[
+        "**Exercise 1:** Olivia – photo 1 · Luke – photo 2 · Holly – photo 3 · Dave – photo 4",
+        "**Exercise 2:** 1 Holly · 2 Luke · 3 Olivia · 4 Dave · 5 Holly · 6 Dave · 7 Dave · 8 Luke" ]}},
+
+    /* ---------- 7 Ask a partner ---------- */
+    { id:"ask", typ:"satzbau", lernen:"ask", icon:"❓", titel:"Build the questions", art:"Sentence builder · 6 sentences",
+      anleitung:"Tap the words in the right order. Build the questions and answers.",
+      anleitungDe:"Tippe die Wörter in der richtigen Reihenfolge an. Bilde die Fragen und Antworten.",
+      tipp:"Fragen beginnen mit dem Fragewort: What / How / Where.",
+      saetze:[
+        {w:["What’s","your","name?"], hint:"Wie heißt du?"},
+        {w:["How","old","are","you?"], hint:"Wie alt bist du?"},
+        {w:["Where","are","you","from?"], hint:"Woher kommst du?"},
+        {w:["My","name","is","Mia."], hint:"Ich heiße Mia."},
+        {w:["I’m","from","Kehl."], hint:"Ich komme aus Kehl."},
+        {w:["That’s","in","Germany."], hint:"Das ist in Deutschland."}
+      ]},
+    { id:"answer", typ:"quiz", icon:"💬", titel:"The right answer", art:"Quiz · 6 questions", E:{auto:false},
+      anleitung:"Somebody asks you a question. Choose the right answer.",
+      anleitungDe:"Jemand stellt dir eine Frage. Wähle die passende Antwort.",
+      tipp:"What = Was/Wie, How old = Wie alt, Where = Wo/Woher.",
+      fragen:[
+        {q:"“**How old are you?**”", o:["I’m from Berlin.","I’m eleven.","My name is Tim."], c:1, e:"How old …? asks for your **age**: I’m eleven."},
+        {q:"“**Where are you from?**”", o:["I’m from Stuttgart.","I’m ten.","I’m Mia."], c:0, e:"Where … from? → **I’m from** Stuttgart."},
+        {q:"“**What’s your name?**”", o:["I’m twelve.","That’s in Germany.","My name is Lena."], c:2, e:"What’s your name? → **My name is** Lena. / I’m Lena."},
+        {q:"I’m from Paris. That’s in …", o:["Germany","France","England"], c:1, e:"Paris is in **France**."},
+        {q:"I’m from Greenwich. That’s in …", o:["England","Germany","France"], c:0, e:"Greenwich is in London – in **England**."},
+        {q:"“Hi! I’m Leonie. **And you?**”", o:["I’m eleven.","Hello, I’m Ben.","I’m from Kehl."], c:1, e:"She tells you her name – so you say **your name**: Hello, I’m Ben."}
+      ]},
+    { id:"talk", typ:"auftrag", icon:"🗣️", titel:"Talk to your partner", art:"Partner · speaking", bild:"🗣️", buch:"page 13, exercise 3", material:["👥 Partner"], punkte:1, warte:120,
+      anleitung:"Work with your **partner** next to you. Please **whisper**! 🤫",
+      anleitungDe:"Arbeite mit deinem **Nachbarn** zusammen. Bitte **leise sprechen**! 🤫",
+      aufgaben:[
+        {en:"**A** asks the 3 questions: What’s your name? · How old are you? · Where are you from?", de:"**A** stellt die 3 Fragen."},
+        {en:"**B** answers: Hello, I’m … · I’m … · I’m from … That’s in Germany.", de:"**B** antwortet."},
+        {en:"Then **swap** (tauscht): B asks, A answers.", de:"Dann tauscht ihr die Rollen."},
+        {en:"No partner? Say the questions and answers **quietly** to yourself.", de:"Kein Partner? Sprich Fragen und Antworten **leise** für dich."}
+      ]},
+
+    /* ---------- 8 My card ---------- */
+    { id:"card", typ:"satzbau", icon:"🪪", titel:"Build Mia’s card", art:"Sentence builder · 6 sentences",
+      anleitung:"This is Mia’s card. Build her sentences.",
+      anleitungDe:"Das ist Mias Steckbrief-Karte. Bilde ihre Sätze.",
+      tipp:"So ähnlich schreibst du gleich deine eigene Karte.",
+      mischen:false,
+      saetze:[
+        {w:["My","name","is","Mia."], hint:"Ich heiße Mia."},
+        {w:["I’m","eleven."], extra:["from"], hint:"Ich bin elf."},
+        {w:["I’m","from","Offenburg."], hint:"Ich komme aus Offenburg."},
+        {w:["That’s","in","Germany."], hint:"Das ist in Deutschland."},
+        {w:["I’m","a","football","fan."], hint:"Ich bin ein Fußballfan."},
+        {w:["This","is","my","pet,","Bella."], hint:"Das ist mein Haustier, Bella."}
+      ]},
+    { id:"heft5", typ:"auftrag", icon:"🪪", titel:"My card", art:"Exercise book", bild:"🪪", buch:"page 13, exercise 4a", material:["✏️ Exercise book","🖍️ Colours"], punkte:3, warte:300,
+      anleitung:"Now write **your own card** in your **exercise book**.",
+      anleitungDe:"Jetzt schreibst du **deine eigene Karte** in dein **Heft**.",
+      aufgaben:[
+        {en:"Write the heading: **My card**", de:"Schreib die Überschrift: **My card**"},
+        {en:"Write **4 to 6 sentences** about you. Use the ideas in the box.", de:"Schreib **4 bis 6 Sätze** über dich. Die Ideen im Kasten helfen dir."},
+        {en:"**Draw a picture** of you or your pet.", de:"**Mal ein Bild** von dir oder deinem Haustier."},
+        {en:"Read your sentences quietly. Check: capital letters (I, names) and full stops (.)", de:"Lies deine Sätze leise durch. Prüfe: Großbuchstaben (I, Namen) und Punkte."}
+      ],
+      muster:{ titel:"📌 Ideas for your card", zeilen:["My name is … / I’m …","I’m ten. / I’m eleven.","I’m from … That’s in Germany.","I’m a … fan.","This is my pet, …","My lucky number is …"] }},
+
+    /* ---------- 9 Final challenge ---------- */
+    { id:"final", typ:"quiz", icon:"🏆", titel:"Final challenge", art:"Quiz · 11 questions · 2 flags each", punkte:2,
+      anleitung:"Show what you learned today! Every right answer gives **2 flags**.",
+      anleitungDe:"Zeig, was du heute gelernt hast! Jede richtige Antwort gibt **2 Flaggen**.",
+      tipp:"Alles aus den Stationen 2 bis 8.",
+      fragen:[
+        {q:"Which word is an **animal**?", o:["tennis","fox","purple"], c:1, e:"**fox** = Fuchs. Tennis is an activity, purple is a colour."},
+        {q:"Which word is an **activity**?", o:["seven","grey","football"], c:2, e:"**football** is an activity."},
+        {q:"What colour is the **bus** in the park?", o:["red","blue","green"], c:0, e:"The bus is **red**."},
+        {q:"**people** means …", o:["Tiere","Leute","Farben"], c:1, e:"**people** = Leute / Menschen."},
+        {q:"In the park I ___ play football.", o:["am","is","can"], c:2, e:"**I can** play football. = Ich kann Fußball spielen."},
+        {q:"I spy with my little eye something yellow. – Is it the bananas? – Yes, …!", o:["it is","I am","it isn’t"], c:0, e:"**Yes, it is!** / No, it isn’t."},
+        {q:"“How old are you?” – “…”", o:["I’m eleven.","I’m from Bonn.","I’m Tom."], c:0, e:"How old …? → **I’m eleven.**"},
+        {q:"“Where are you from?” – “I’m ___ Hamburg.”", o:["in","from","at"], c:1, e:"**I’m from** Hamburg."},
+        {q:"Holly has two …", o:["cats","dogs","guinea pigs"], c:2, e:"Holly has two **guinea pigs**: Fluff and Honey."},
+        {q:"Luke is a … fan.", o:["tennis","football","music"], c:1, e:"Luke is a **football** fan."},
+        {q:"Greenwich is in …", o:["London","Berlin","Paris"], c:0, e:"Greenwich is in **London**."}
+      ]},
+
+    /* ---------- Bonus: Vokabeln ---------- */
+    { id:"vz", typ:"memory", icon:"🌳", titel:"Zoom in words", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Wörter von Zoom in – In a park.",
+      paare:[ {a:"colour", b:"Farbe"}, {a:"activity", b:"Aktivität"}, {a:"people", b:"Leute"}, {a:"number", b:"Zahl"},
+              {a:"something", b:"etwas"}, {a:"here", b:"hier"}, {a:"boy", b:"Junge"}, {a:"purple", b:"lila"} ]},
+    { id:"vw", typ:"memory", icon:"🐹", titel:"Way in words", art:"English – German · memory",
+      anleitung:"Find the pairs: **English + German**. Fewer moves = more flags.",
+      anleitungDe:"Finde die Paare: **Englisch + Deutsch**. Je weniger Züge, desto mehr Flaggen.",
+      tipp:"Wörter von Unit 1 – Way in.",
+      paare:[ {a:"pet", b:"Haustier"}, {a:"guinea pig", b:"Meerschweinchen"}, {a:"lucky number", b:"Glückszahl"}, {a:"crazy", b:"verrückt"},
+              {a:"bike", b:"Fahrrad"}, {a:"photo", b:"Foto"}, {a:"twelve", b:"zwölf"}, {a:"Germany", b:"Deutschland", gross:true} ]},
+    { id:"vrush", typ:"rush", icon:"⚡", titel:"Word rush", art:"German → English · 60 seconds", ziel:10, zeit:60,
+      anleitung:"What’s the English word? Be fast! **Goal: 10** in 60 seconds.",
+      anleitungDe:"Wie heißt das Wort auf Englisch? Sei schnell! **Ziel: 10** in 60 Sekunden.",
+      tipp:"Wörter von Zoom in und Way in.",
+      items:[
+        {q:"Fahrrad", o:["bike","bus","boy"], c:0}, {q:"Haustier", o:["park","pet","photo"], c:1}, {q:"Glückszahl", o:["lucky number","crazy number","number ten"], c:0},
+        {q:"Meerschweinchen", o:["guinea pig","cat","dog"], c:0}, {q:"verrückt", o:["cool","crazy","nice"], c:1}, {q:"Leute", o:["people","parents","pets"], c:0},
+        {q:"Farbe", o:["number","colour","activity"], c:1}, {q:"etwas", o:["something","here","this"], c:0}, {q:"hier", o:["here","there","the"], c:0},
+        {q:"zwölf", o:["twenty","eleven","twelve"], c:2}, {q:"elf", o:["eleven","seven","eight"], c:0}, {q:"Deutschland", o:["England","Germany","Greenwich"], c:1},
+        {q:"grau", o:["green","grey","brown"], c:1}, {q:"lila", o:["pink","purple","blue"], c:1}, {q:"Junge", o:["boy","bike","bus"], c:0},
+        {q:"Woher kommst du?", o:["Where are you from?","How old are you?","What’s your name?"], c:0}, {q:"Wie alt bist du?", o:["How old are you?","Where are you from?","Who are you?"], c:0}
+      ]}
+  ]
+});
+</script>
+</body>
+</html>

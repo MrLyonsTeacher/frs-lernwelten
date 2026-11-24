@@ -18,7 +18,8 @@ const FRS = {
     writing:    { name:"Writing",          de:"Schreiben",             icon:"✏️", ort:"Pencil Peak" },
     speaking:   { name:"Speaking",         de:"Sprechen",              icon:"🎤", ort:"Speakers’ Stage" },
     country:    { name:"Country & people", de:"Land & Leute",          icon:"⚓", ort:"Culture Harbour" },
-    exam:       { name:"Exam Prep",        de:"Prüfungsvorbereitung",  icon:"🏆", ort:"Exam Summit" }
+    exam:       { name:"Exam Prep",        de:"Prüfungsvorbereitung",  icon:"🏆", ort:"Exam Summit" },
+    lesson:     { name:"Lesson Path",      de:"Lernpfad",              icon:"🧭", ort:"Lava Trail", nurFreigabe:true }   // geführte Stunden (z. B. Vertretung): nur sichtbar, wenn per 🔑-Freigabe geöffnet
   },
   // Zurzeit aktive Bereiche (weitere wie Reading, Listening … lassen sich später wieder einschalten)
   grundBereiche: ["grammar","vocabulary","country"],
@@ -61,6 +62,7 @@ const FRS = {
         { id:"gre5", kat:"country", titel:"Hello Greenwich!", untertitel:"Greenwich, London & the UK", pfad:"englisch/klasse5/greenwich-london.html", icon:"🕰️", max:29 },
         { id:"sch5", kat:"country", titel:"School in England", untertitel:"Uniforms, tutor groups, school days", pfad:"englisch/klasse5/school-in-england.html", icon:"👔", max:38 },
         { id:"fest5", kat:"country", titel:"Special Days in Britain", untertitel:"Halloween, Bonfire Night, Christmas", pfad:"englisch/klasse5/special-days.html", icon:"🎃", max:39 },
+        { id:"pf5u1", kat:"lesson", titel:"Unit 1: Let’s start!", untertitel:"Zoom in & Way in · book p. 10–13", pfad:"englisch/klasse5/lernpfad-unit1.html", icon:"🧭", max:158 },
         { id:"shop5", kat:"country", titel:"At the Corner Shop", untertitel:"Money, food & shopping", pfad:"englisch/klasse5/corner-shop.html", icon:"💷", max:42 }
       ] },
       { k:6,  id:"e6",  themen:[
@@ -239,7 +241,8 @@ const FRS = {
 };
 
 // Hilfsfunktionen
-FRS.bereicheFuer = k => FRS.grundBereiche.slice();
+// Grundbereiche + Zusatzbereiche (z. B. Lernpfad), sobald die Klasse dort Themen hat
+FRS.bereicheFuer = k => { const c = FRS.englisch.klassen.find(x => x.k === +k), extra = Object.keys(FRS.kategorien).filter(b => !FRS.grundBereiche.includes(b) && FRS.kategorien[b].nurFreigabe && c && c.themen.some(t => t.kat === b)); return FRS.grundBereiche.concat(extra); };
 FRS.welt = k => FRS.welten[+k];
 FRS.klasse = k => FRS.englisch.klassen.find(x => x.k === +k);
 FRS.find = id => {

@@ -110,7 +110,8 @@ export function build(A){
   const S = {
     grammar:   {x:60, z:52, col:0xB56CFF, ort:"Ember Palace"},
     vocabulary:{x:24, z:60, col:0xFF4A6A, ort:"Dome Library"},
-    country:   {x:98, z:58, col:0xFFE14A, ort:"Ember Market Tower"}
+    country:   {x:98, z:58, col:0xFFE14A, ort:"Ember Market Tower"},
+    lesson:    {x:60, z:-6, col:0xFF7A1A, ort:"Lava Trail · Volcano Cathedral"}   // Lernpfad: die Kathedrale vor dem Vulkan (nur sichtbar, wenn freigegeben)
   };
 
   // ---------- Grammar: großer Kuppelpalast (Gold-Violett) ----------
@@ -191,6 +192,7 @@ export function build(A){
   // ---------- Burg vor dem Vulkan (Kulisse) ----------
   { const x=60, z=-6, top=50; pillar(x,z,top,22,{taper:1, falls:[[Math.PI/2-.6,2],[Math.PI/2+.7,2]], fallDrop:2});
     const y=top;
+    S.lesson.top=[x, y+36, z-2]; S.lesson.base=y; S.lesson.lift=2; S.lesson.cam={pos:[x+26,y+30,z+84], look:[x+14,y+18,z-2]};
     // Kathedrale: langes Schiff mit Strebepfeilern, Querhaus, Fassade mit Rosette, viele Spitztürme
     hall(x-6,y,z-8,13,16,3,{fh:5});
     for(let k=-6;k<=6;k+=3) for(const s of [-1,1]){ const sx=x+s*8; fill(sx,y,z+k,sx,y+10,z+k,"stoneD"); spire(sx,y+11,z+k,0,1,3); }

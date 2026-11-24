@@ -327,7 +327,7 @@ async function main(){
   }
   function draw(fx){
     const played = [], rows = []; let tot = 0, pmax = 0, games = 0;
-    BER.forEach(b=>{ const list = byKat(b).filter(FLAGQ); if(!list.length) return;
+    BER.forEach(b=>{ const list = byKat(b).filter(FLAGQ); if(!list.length) return; if(FREI.locked(K,b) && !list.some(t=>prog(t))) return;   // gesperrter Bereich (z. B. Lernpfad) nur, wenn schon gespielt
       rows.push(`<tr><th colspan="3">${FRS.kategorien[b].icon} ${esc(FRS.kategorien[b].name)}</th></tr>`);
       list.forEach(t=>{ const p=prog(t); if(p){ played.push(`${t.id}-${p.pts}-${p.pmax}-${p.n}`); tot+=p.pts; pmax+=p.pmax; games+=p.n; }
         const tier = p ? (p.plat ? 4 : LW.tierOf(p.pts,p.max)) : 0;

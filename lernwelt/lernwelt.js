@@ -34,7 +34,7 @@ const TXT = {
       rankNew:"Neuer Rang!",allRanks:"Alle Ränge",rankNext:(n,name)=>`noch ${n} bis ${name}`,rankTop:"Höchster Rang!",today:"heute",rankOk:"Weiter!",
       review:"Lerne aus deinen Fehlern",gap:"Lücke",learn:"Erst lernen",learnAgain:"Infos nochmal ansehen",cardsHow:"Lies die Infokarten in Ruhe durch. Tipp: Tippe auf **Abspielen** und **Vorlesen**.",cardsHead:"Infokarten",gamesHead:"Spiele",cardsN:n=>`${n} Karten`,cardsDone:"✓ Fertig",cardsRead:"gelesen",cardsNew:"noch nicht gelesen",startGame:"Zum Spiel ▸",read:"Vorlesen",auto:"Abspielen",pause:"Pause",prev:"Zurück",
       capHint:"🔠 **Achte auf Groß- und Kleinschreibung!** Sie zählt hier.",capMiss:"Fast! Die Großschreibung zählt – so ist es richtig:",almost:"Fast richtig – achte auf die Rechtschreibung! Kein Punkt. Richtig ist:",
-      videoNote:"Das Video liegt bei YouTube. Mit dem Klick öffnet sich YouTube (Google) in einem neuen Tab.",videoExt:"Du verlässt jetzt diese Seite: Das Video liegt bei YouTube (Google).",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
+      pfadNext:"Nächster Schritt",pfadBack:"Zurück zum Lernpfad",videoNote:"Das Video liegt bei YouTube. Mit dem Klick öffnet sich YouTube (Google) in einem neuen Tab.",videoExt:"Du verlässt jetzt diese Seite: Das Video liegt bei YouTube (Google).",learnFirst:"Schau dir zuerst die Infos an – danach startet das Spiel. Tipp: **Abspielen** und **Vorlesen** antippen."},
   en:{map:"Games",pts:"points",stars:"stars",next:"Next",check:"Check",again:"Play again",nextLvl:"Next game",
       toMap:"All games",right:"Correct!",wrong:"Not quite.",correctIs:"Correct answer:",forExample:"For example:",timeUp:"Time’s up!",
       start:"Start",record:"New best score!",best:"Best",open:"not played yet",result:"See results",
@@ -61,7 +61,7 @@ const TXT = {
       rankNew:"New rank!",allRanks:"All ranks",rankNext:(n,name)=>`${n} more to ${name}`,rankTop:"Top rank!",today:"today",rankOk:"Keep going!",
       review:"Learn from your mistakes",gap:"Gap",learn:"Learn first",learnAgain:"Learn again",cardsHow:"Read the cards in your own time. Tip: tap **Play** and **Read aloud**.",cardsHead:"Learn the facts",gamesHead:"Games",cardsN:n=>`${n} cards`,cardsDone:"✓ Done",cardsRead:"read",cardsNew:"not read yet",startGame:"Start the game ▸",read:"Read aloud",auto:"Play",pause:"Pause",prev:"Back",
       capHint:"🔠 **Capital letters count here!** · Achte auf Groß- und Kleinschreibung.",capMiss:"Almost! Capital letters count – it is written:",almost:"Almost! Check your spelling – no point this time. Correct:",
-      videoNote:"The video is on YouTube. Clicking opens YouTube (Google) in a new tab.",videoExt:"You are leaving this page: the video is on YouTube (Google).",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
+      pfadNext:"Next step",pfadBack:"Back to the lesson path",videoNote:"The video is on YouTube. Clicking opens YouTube (Google) in a new tab.",videoExt:"You are leaving this page: the video is on YouTube (Google).",learnFirst:"First learn the facts – then play the game. Tip: tap **Play** and **Read aloud**."}
 };
 
 /* ---------- Medaillen ---------- */
@@ -127,6 +127,7 @@ function maxOf(lv){
     case "schaetzen": return lv.fragen.length*2;
     case "lueckentext": return (lv.text.match(/\[\[/g)||[]).length;
     case "eingabe": return lv.fragen.length*(lv.punkte||1);
+    case "auftrag": return lv.punkte||1;
   }
   if(EXTMAX[lv.typ]) return EXTMAX[lv.typ](lv);
   return 0;
@@ -298,6 +299,7 @@ function fit(){
 
 function decks(){ const seen = new Set(), out = []; LV().forEach(l=>{ const D = deckOf(l); if(!D || !D.folien || !D.folien.length) return; const k = deckKey(l); if(seen.has(k)) return; seen.add(k); out.push({k, D, l}); }); return out; }
 function home(){
+  if(W.pfad) return pfadHome();
   const dk = decks();
   const lvls = LV();
   const st = lvls.reduce((a,l)=>a+starsFor(best(l.id),maxOf(l)),0);
@@ -334,6 +336,7 @@ function render(){
     APP.innerHTML = topbar({back:true, title:T.codeTitle, icon:"🏁"}) + howBox(T.codeHow, W.sprache==="en"?TXT.de.codeHow:null) + `<div id="area"></div>`;
     document.title = T.codeTitle+" – "+W.titel; fit(); finale($("#area")); return;
   }
+  if(W.pfad && h && !pfadOpenHash(h)){ location.replace(location.pathname+location.search+"#"); return; }
   const lm = h.match(/^learn=(.+)$/), ll = lm && LV().find(x=>x.id===decodeURIComponent(lm[1]));
   if(ll && deckOf(ll)){ learnScreen(ll); return; }
   const cm = h.match(/^cards=(.+)$/), cl = cm && LV().find(x=>x.id===decodeURIComponent(cm[1]));
@@ -371,7 +374,7 @@ function learnScreen(l, fromHome){
       ${canSpeak?`<button class="btn alt ln-b" id="lnVoice" aria-pressed="false">🔊 ${T.read}</button>`:""}
       <button class="btn alt ln-b" id="lnNext" aria-label="${T.next}">${T.next} ▸</button>
       <span class="sp"></span>
-      <button class="btn big" id="lnGo" ${seen||fromHome?"":"disabled"}>${fromHome?T.cardsDone:T.startGame}</button>
+      <button class="btn big" id="lnGo" ${seen||(fromHome&&!W.pfad)?"":"disabled"}>${fromHome?T.cardsDone:T.startGame}</button>
     </div></div>`;
   let i = -1, auto = false, voice = false, tm = null, raf = null, ENDREACHED = false;
   const hush = () => { hearStop(); if(player){ player.onended = player.onerror = null; try{ player.pause(); }catch(e){} player = null; } try{ hasTTS && speechSynthesis.cancel(); }catch(e){} };
@@ -452,7 +455,7 @@ function learnScreen(l, fromHome){
     const y = e.target.closest("[data-yt]");
     if(y){ setAuto(false); const id = encodeURIComponent(y.dataset.yt);   // Datenschutz: kein Einbetten, erst nach bewusstem Klick öffnet sich YouTube in einem neuen Tab
       $("#lnV").innerHTML = `<div class="ln-vbox"><p>${T.videoExt}</p><a class="ln-play" style="text-decoration:none;display:inline-grid;place-items:center" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer">▶ YouTube</a></div>`; return; }
-    if(e.target.closest("#lnGo")){ stop(); if(!fromHome || ENDREACHED) S.seen[key] = 1; save(); location.hash = fromHome ? "" : "l="+encodeURIComponent(l.id); }
+    if(e.target.closest("#lnGo")){ stop(); if(!fromHome || ENDREACHED) S.seen[key] = 1; save(); location.hash = fromHome ? (W.pfad ? pfadNextHash("c:"+l.id) : "") : "l="+encodeURIComponent(l.id); }
   };
   show(0);
 }
@@ -465,7 +468,7 @@ function finish(l, A, pts, info, perfectRun){
   r.runs = (r.runs||0) + 1; r.best = best(l.id); save();
   const plat = first && perfect, tierAfter = topicTier(), gain = RUNGAIN;
   CUR = null; RUN = 0; updateChip(false);
-  const lvScore = best(l.id), st = starsFor(lvScore, m), idx = LV().indexOf(l), nx = LV()[idx+1];
+  const lvScore = best(l.id), st = starsFor(lvScore, m), idx = LV().indexOf(l), nx = W.pfad ? null : LV()[idx+1], pnx = W.pfad ? pfadNextStep("l:"+l.id) : null;
   const msg = (W.lob||{})[starsFor(pts, m)] || "", rv = MISS.slice(0, 40);
   const rvHtml = rv.length ? `<section class="panel review" aria-label="${T.review}"><h3 class="rv-h">📚 ${T.review}</h3><ul class="rv-list">${rv.map(x=>`<li>${x.q?`<span class="rv-q">${rich(x.q)}</span>`:""}<span class="rv-a">✔ ${rich(x.a)}</span>${x.e?`<span class="rv-e">${rich(x.e)}</span>`:""}</li>`).join("")}</ul></section>` : "";
   A.innerHTML = `<div class="res-wrap${rv.length?" has-rv":""}"><div class="panel result" role="status">
@@ -475,7 +478,7 @@ function finish(l, A, pts, info, perfectRun){
     <p class="res-gain${gain?"":" none"}">${gain ? `${W.sammel||"⭐"} ${T.newFlags(gain)}` : T.noNew}</p>
     <p class="res-info">${T.thisRound}: ${pts} / ${m}${info?` · ${esc(info)}`:""}</p>
     ${msg?`<p class="res-msg">${esc(msg)}</p>`:""}
-    <div class="row">${nx?`<button class="btn big" data-go="l=${esc(nx.id)}">${T.nextLvl}: ${esc(nx.titel)}</button>`:""}
+    <div class="row">${nx?`<button class="btn big" data-go="l=${esc(nx.id)}">${T.nextLvl}: ${esc(nx.titel)}</button>`:""}${pnx?`<button class="btn big" data-go="${esc(pnx.hash)}">${esc(T.pfadNext)}: ${esc(pnx.titel)}</button>`:W.pfad?`<button class="btn big" data-go="">🧭 ${esc(T.pfadBack)}</button>`:""}
       <button class="btn alt" data-again>${T.again}</button><button class="btn alt" data-go="">${T.toMap}</button></div></div>${rvHtml}</div>`;
   if(plat || perfect || st===3) confetti(plat?200:140); else if(gain && st===2) confetti(45);
   if(tierAfter > TIER0) setTimeout(()=>medalPop(tierAfter), perfect||st===3 ? 1300 : 600);
@@ -534,7 +537,7 @@ GAMES.quiz = (l, A, done) => {
       `<div class="panel qpanel">
         ${l.zeit?`<div class="timer" id="tm"><i></i></div>`:""}
         ${q.szene?`<p class="scene"><span class="scene-n">${esc(l.szenenLabel||"")} ${i+1}/${qs.length}</span>${rich(q.szene)}</p>`:""}
-        ${q.hoeren?hearRow(q.hoeren):""}<p class="q">${rich(q.q)}</p>
+        ${q.hoeren?hearRow(q.hoeren):""}${q.sprich?sayBtn(q.sprich, l.textVersteckt):""}<p class="q">${rich(q.q)}</p>
         ${q.tippen ? `${q.hilfe?`<p class="hint">${rich(q.hilfe)}</p>`:""}${q.gross?capHintHTML():""}<div class="row type-row"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer" placeholder="…"><button class="btn big" id="chk">${T.check}</button></div>`
           : `<div class="opts g2">${order.map(j=>`<button class="opt" data-j="${j}">${esc(q.o[j])}</button>`).join("")}</div>`}</div>`;
     if(q.tippen){ const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } }); }
@@ -783,7 +786,7 @@ GAMES.eingabe = (l, A, done) => {
   function show(){
     closeSheet(); locked=false; const q=qs[i];
     A.innerHTML = progressBar(fill(res,qs.length), i) + `<div class="panel qpanel">
-      ${q.szene?`<p class="scene">${rich(q.szene)}</p>`:""}<p class="q">${rich(q.q)}</p>${q.hilfe?`<p class="hint">${rich(q.hilfe)}</p>`:""}${q.gross?capHintHTML():""}
+      ${q.szene?`<p class="scene">${rich(q.szene)}</p>`:""}${q.sprich?sayBtn(q.sprich):""}<p class="q">${rich(q.q)}</p>${q.hilfe?`<p class="hint">${rich(q.hilfe)}</p>`:""}${q.gross?capHintHTML():""}
       <div class="row type-row"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer" placeholder="…"><button class="btn big" id="chk">${T.check}</button></div></div>`;
     const inp=$("#ans"); setTimeout(()=>inp.focus({preventScroll:true}),40); inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#chk").click(); } });
   }
@@ -878,6 +881,92 @@ function typable(q){ const a=String(q.o[q.c]), w=a.split(/\s+/).length; if(q.hoe
   const FWT=/^(have|has|had|haven't|hasn't|is|are|am|was|were|do|does|did|don't|doesn't|didn't|will|won't|would|can|can't|could|must|should|a|an|the|some|any|me|him|her|us|them|my|your|his|its|our|their|mine|yours|hers|ours|theirs|who|what|where|when|why|how|which|whose|in|on|at|to|for|from|by|with|since|ago|than|then|and|but|or|because|if|unless)$/i;
   return (gap && (gapHint(q) || (w===1 && FWT.test(a.replace(/’/g,"'"))))) || (prompt && w<=3); }
 
+
+/* ---------- Vorlesen einzelner Sätze (Systemstimme, optional – der Text steht immer auch da) ---------- */
+function sayBtn(text){ return `<div class="say"><button type="button" class="say-b" data-say="${esc(text)}"><span aria-hidden="true">🔊</span> ${W.sprache==="en"?"Listen":"Anhören"}</button></div>`; }
+function sayText(text, btn){
+  try{ if(!("speechSynthesis" in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(plain(text)), ACC = W.akzent || "en-GB";
+    const vs = speechSynthesis.getVoices().filter(v=>v.lang && v.lang.replace("_","-").toLowerCase().startsWith(ACC.slice(0,2).toLowerCase()));
+    const same = vs.filter(v=>v.lang.replace("_","-").toLowerCase()===ACC.toLowerCase()), pool = same.length ? same : vs;
+    const sc = v => (/premium|enhanced|natural|neural/i.test(v.name)?100:0) + (/daniel|serena|kate|arthur|martha|google/i.test(v.name)?20:0) - (/compact|novelty|whisper|bells|boing|jester|organ|zarvox|trinoids|albert|fred|junior|ralph/i.test(v.name)?100:0);
+    const v = pool.sort((a,b)=>sc(b)-sc(a))[0]; if(v) u.voice = v; u.lang = v ? v.lang : ACC; u.rate = .9;
+    if(btn){ btn.classList.add("on"); u.onend = u.onerror = () => btn.classList.remove("on"); }
+    speechSynthesis.speak(u); }catch(e){}
+}
+
+/* ---------- Auftrag: Arbeit mit Buch / Heft / Partner (Lernpfad) ----------
+   { typ:"auftrag", bild:"✏️", buch:"page 10/11", aufgaben:[{en, de}], muster:{titel, zeilen:[…]}, loesung:{titel, zeilen:[…]}, warte:60, punkte:1 }
+   „Erledigt“ wird erst nach warte Sekunden aktiv. Danach erscheint (falls vorhanden) die Lösung zum Vergleichen. */
+GAMES.auftrag = (l, A, done) => {
+  const P = l.punkte||1, again = played(l.id), en = W.sprache==="en";
+  let left = again ? 0 : (l.warte||0), tId = null;
+  const box = (o, cls) => o ? `<div class="auf-box ${cls}"><b>${rich(o.titel||"")}</b>${o.de?`<small>${rich(o.de)}</small>`:""}<ul>${o.zeilen.map(z=>`<li>${rich(z)}</li>`).join("")}</ul></div>` : "";
+  const label = () => left>0 ? `⏳ ${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}` : `✓ ${en?"Done!":"Erledigt!"}`;
+  A.innerHTML = `<div class="panel auf">
+    <div class="auf-head"><span class="auf-ic" aria-hidden="true">${l.bild||"📝"}</span><div>${[].concat(l.material||[]).map(m=>`<span class="auf-tag">${rich(m)}</span>`).join("")}${l.buch?`<span class="auf-tag book">📖 ${rich(l.buch)}</span>`:""}</div></div>
+    <ol class="auf-list">${(l.aufgaben||[]).map(a=>`<li><span class="auf-en">${rich(a.en)}</span>${a.de?`<span class="auf-de">${FLAG_DE}<span>${rich(a.de)}</span></span>`:""}</li>`).join("")}</ol>
+    ${box(l.muster,"muster")}
+    <div class="row auf-row"><button class="btn big" id="aufOk" ${left>0?"disabled":""}>${label()}</button></div>
+    ${left>0?`<p class="auf-wait">${en?"Take your time – the button starts when the timer is over.":""}<br><small>Lass dir Zeit – der Knopf geht an, wenn die Zeit abgelaufen ist.</small></p>`:""}</div>`;
+  if(left>0){ tId = setInterval(()=>{ left--; const b=$("#aufOk"); if(!b){ clearInterval(tId); return; } b.textContent = label(); if(left<=0){ clearInterval(tId); b.disabled=false; const w=A.querySelector(".auf-wait"); if(w) w.remove(); } }, 1000); cleanups.push(()=>clearInterval(tId)); }
+  A.onclick = e => {
+    if(e.target.closest("#aufOk")){ const b=$("#aufOk"); if(b.disabled) return; b.disabled = true; award([["a",P]], b);
+      if(l.loesung){ A.querySelector(".auf-row").outerHTML = box(l.loesung,"loesung") + `<div class="row auf-row"><button class="btn big" id="aufGo">${en?"I checked it – continue":"Verglichen – weiter"} ▸</button></div>`; const lb=A.querySelector(".auf-box.loesung"); if(lb) lb.scrollIntoView({behavior:"smooth", block:"center"}); }
+      else setTimeout(()=>done(P), 500); return; }
+    if(e.target.closest("#aufGo")) done(P);
+  };
+};
+
+/* ---------- Lernpfad: Stationen nacheinander, mit Zeitplan (W.pfad) ----------
+   W.pfad = [{ titel, de, icon, min, steps:["c:<level-id>" (Infokarten des Spiels), "l:<level-id>" (Spiel/Auftrag)] }]
+   W.pfadBonus = ["l:<id>", …] (nach dem Pfad frei), W.pfadLinks = [{icon, titel, untertitel, href}], W.lehrer = HTML für die Lehrkraft */
+const pfLv = id => LV().find(x=>x.id===id) || LV().find(x=>x.id===id+"-"+String(W.niveau||"").toLowerCase());
+function pfStep(key, st){ const kind = key[0], lv = pfLv(key.slice(2)); if(!lv) return null; const D = deckOf(lv);
+  if(kind==="c"){ if(!D) return null; return { key:"c:"+lv.id, kind, lv, st, hash:"cards="+lv.id, titel:D.titel||lv.titel, icon:"📖", art:T.cardsN(D.folien.length), done:!!S.seen[deckKey(lv)] }; }
+  return { key:"l:"+lv.id, kind, lv, st, hash:"l="+lv.id, titel:lv.titel, icon:lv.icon||"🎯", art:lv.art||"", done:played(lv.id) }; }
+function pfadSteps(){ const out=[]; W.pfad.forEach((s,i)=>s.steps.forEach(k=>{ const x = pfStep(k,i); if(x) out.push(x); })); return out; }
+function pfadBonus(){ return (W.pfadBonus||[]).map(k=>pfStep(k,-1)).filter(Boolean); }
+function pfadCur(){ const st = pfadSteps(), i = st.findIndex(x=>!x.done); return i<0 ? st.length : i; }
+function pfadOpenHash(h){
+  const m = h.match(/^(l|cards|learn)=(.+)$/); if(!m) return true;
+  const id = decodeURIComponent(m[2]), st = pfadSteps(), cur = pfadCur();
+  const i = st.findIndex(x=>x.lv.id===id && (m[1]==="cards" ? x.kind==="c" : m[1]==="learn" ? true : x.kind==="l"));
+  if(i>=0) return i<=cur;
+  if(pfadBonus().some(x=>x.lv.id===id)) return cur>=st.length;
+  return !st.some(x=>x.lv.id===id);
+}
+function pfadNextStep(key){ const st = pfadSteps(), i = st.findIndex(x=>x.key===key), cur = pfadCur(); const nx = st.slice(i+1).find(x=>!x.done) || (cur>=st.length ? null : st[cur]);
+  return nx && nx.key!==key ? nx : null; }
+function pfadNextHash(key){ const n = pfadNextStep(key); return n ? n.hash : ""; }
+function pfadT0(){ const k = KEY.replace(/-v1$/,"")+"-t0"; let t = 0; try{ t = +localStorage.getItem(k) || 0; if(!t){ t = Date.now(); localStorage.setItem(k, String(t)); } }catch(e){ t = Date.now(); } return t; }
+function pfadHome(){
+  const st = pfadSteps(), cur = pfadCur(), allDone = cur>=st.length, en = W.sprache==="en";
+  const mins = W.pfad.map(s=>s.min||0), cum = mins.map((_,i)=>mins.slice(0,i).reduce((a,b)=>a+b,0)), sum = mins.reduce((a,b)=>a+b,0);
+  const el = Math.max(0, Math.floor((Date.now()-pfadT0())/60000)), curSt = allDone ? W.pfad.length : st[cur].st;
+  const should = Math.min(W.pfad.length-1, Math.max(0, cum.findIndex((c,i)=>el < c+mins[i])<0 ? W.pfad.length-1 : cum.findIndex((c,i)=>el < c+mins[i])));
+  const msg = allDone ? `🎉 <b>${en?"You finished the lesson path!":""}</b> ${en?"Now play the bonus games.":""}<small>Du hast den Lernpfad geschafft! Jetzt kannst du die Bonus-Spiele spielen.</small>`
+    : should > curSt ? `⏰ <b>${en?`Hurry up a little – you should be at station ${should+1} now.`:""}</b><small>Ein bisschen schneller – eigentlich solltest du jetzt bei Station ${should+1} sein.</small>`
+    : `👍 <b>${en?"You are on time. Keep going!":""}</b><small>Du liegst gut in der Zeit. Weiter so!</small>`;
+  const btn = (x, i) => { const open = i<=cur || (x.st<0 && allDone), isCur = i===cur, m = x.kind==="l" ? maxOf(x.lv) : 0, b = x.kind==="l" ? best(x.lv.id) : 0;
+    return `<button class="pf-s${x.done?" ok":""}${isCur?" cur":""}" ${open?`data-go="${esc(x.hash)}"`:"disabled"}>
+      <span class="pf-ic" aria-hidden="true">${open?x.icon:"🔒"}</span><span class="pf-t"><b>${esc(x.titel)}</b><small>${esc(x.art)}</small></span>
+      <span class="pf-r">${x.done ? (x.kind==="l" && x.lv.typ!=="auftrag" ? `${b}/${m} ${starHtml(starsFor(b,m))}` : "✓") : isCur ? `<span class="pf-go">${en?"Start":"Los"} ▸</span>` : ""}</span></button>`; };
+  setTimeout(()=>{ const c = document.querySelector(".pf-s.cur"); if(c && c.getBoundingClientRect().top > innerHeight*.7) c.scrollIntoView({behavior:reduced()?"auto":"smooth", block:"center"}); }, 350);
+  const bonus = pfadBonus();
+  return topbar({island:!!W.insel, pill:true}) + `<header class="hero">${W.hero}</header>
+  <div class="panel pf-top"><div class="pf-clock"><b>⏱ ${el}</b><small>/ ${sum} min</small></div>
+    <div class="pf-msg">${msg}</div>
+    <div class="pf-prog"><div class="meter"><i style="width:${Math.round(Math.min(cur,st.length)/Math.max(1,st.length)*100)}%"></i></div><small>${Math.min(cur,st.length)} / ${st.length} ${en?"steps":"Schritte"}</small></div></div>
+  <ol class="pf">${W.pfad.map((s,i)=>{ const my = st.map((x,j)=>[x,j]).filter(([x])=>x.st===i), done = my.length && my.every(([x])=>x.done), now = i===curSt, lock = i>curSt;
+    return `<li class="pf-st${done?" done":""}${now?" now":""}${lock?" lock":""}"><span class="pf-n" aria-hidden="true">${done?"✓":i+1}</span>
+      <div class="pf-b"><h3 class="disp">${s.icon||""} ${esc(s.titel)}</h3><p class="pf-sub">${s.de?esc(s.de)+" · ":""}<span class="pf-min">⏱ ${s.min} min${i?` · ${en?"from minute":"ab Minute"} ${cum[i]}`:""}</span></p>
+      <div class="pf-steps">${my.map(([x,j])=>btn(x,j)).join("")}</div></div></li>`; }).join("")}</ol>
+  ${bonus.length || (W.pfadLinks||[]).length ? `<section class="pf-bonus${allDone?"":" lock"}"><h2 class="sec-h">⭐ Bonus${allDone?"":" 🔒"}</h2><p class="pf-sub">${en?"Extra time? Practise the words!":""} <small>Noch Zeit? Übe die Vokabeln!${allDone?"":" (nach der letzten Station)"}</small></p>
+    <div class="pf-steps">${bonus.map(x=>btn(x, allDone ? -1 : 1e9)).join("")}${(W.pfadLinks||[]).map(k=>`<button class="pf-s" ${allDone?`data-href="${esc(k.href)}"`:"disabled"}><span class="pf-ic" aria-hidden="true">${allDone?k.icon||"🔗":"🔒"}</span><span class="pf-t"><b>${esc(k.titel)}</b><small>${esc(k.untertitel||"")}</small></span><span class="pf-r"></span></button>`).join("")}</div></section>` : ""}
+  ${W.lehrer ? `<details class="panel pf-teach"><summary>👩‍🏫 Info für die Lehrkraft / Vertretung</summary><div class="pf-teach-b">${W.lehrer}</div></details>` : ""}
+  <div class="foot"><span>${T.saved}</span><button id="lwReset">${T.reset}</button></div>`;
+}
+
 /* ---------- Niveau G/M/E: automatische Anpassung, wenn ein Spiel keine eigene Fassung hat ---------- */
 function autoNiveau(l, nv, world){
   const c = JSON.parse(JSON.stringify(l)), cut = (a,n) => a.length<=n ? a : a.filter((_,i)=> i < n);
@@ -903,7 +992,7 @@ function autoNiveau(l, nv, world){
     switch(c.typ){
       case "lueckentext": c.tippen = true; c.anleitung = "Read the text. Tap a gap and **type** the right word."; c.anleitungDe = "Lies den Text. Tippe auf eine Lücke und **schreibe** das richtige Wort."; break;
       case "quiz": { const ok = c.fragen.every(q => { const a=String(q.o[q.c]); return a.length<=24 && a.split(/\s+/).length<=4; });
-        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, gross:!!q.gross, hilfe: gapHint(q), strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:String(q.o[q.c]).split(/\s+\/\s+/).concat(q.alt||[]), e:q.e}));
+        if(ok && kat!=="country"){ c.typ="eingabe"; c.art="Type the answer"; c.fragen = c.fragen.map(q=>({q:q.q, szene:q.szene, sprich:q.sprich, gross:!!q.gross, hilfe: gapHint(q), strict: q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c])), a:String(q.o[q.c]).split(/\s+\/\s+/).concat(q.alt||[]), e:q.e}));
           c.anleitung = (c.anleitung||"")+" **Type** the answer – no choices this time!"; c.anleitungDe = (c.anleitungDe||"")+" Schreibe die Antwort selbst – diesmal ohne Auswahl!"; }
         else { let n=0; if(kat!=="country") c.fragen = c.fragen.map(q=>{ if(!typable(q)) return q; n++; return Object.assign({}, q, {tippen:true, hilfe:gapHint(q), strict:q.o.some((o,j)=>j!==q.c && normA(o)===normA(q.o[q.c]))}); });
           if(n){ c.anleitung = (c.anleitung||"")+" Some answers you have to **type** yourself!"; c.anleitungDe = (c.anleitungDe||"")+" Manche Antworten musst du selbst **schreiben**!"; }
@@ -943,7 +1032,7 @@ const LW = {
         const base = (!ex || ex.auto) ? autoNiveau(src, nv, world) : src; const out = Object.assign({}, base, ex||{}, {id: l.id+"-"+nv.toLowerCase()}), arr = out.typ==="memory" ? out.paare : (out.items||out.fragen||out.karten||out.saetze);
         if(out.art && arr) out.art = out.art.replace(/\b\d+(\s+(events|pairs|cards|questions|sentences|words))/, arr.length+"$1"); return out; });
       if(world[nv] && typeof world[nv]==="object") Object.assign(world, world[nv]); }
-    W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
+    W = world; T = Object.assign({}, TXT[W.sprache||"de"], W.punkteName?{pts:W.punkteName}:{}, W.pfad?{map:W.sprache==="en"?"Lesson path":"Lernpfad", toMap:W.sprache==="en"?"Lesson path":"Lernpfad"}:{}); KEY = "lw-"+W.id+"-v1"; APP = document.getElementById("app");
     MAX = W.levels.reduce((a,l)=>a+maxOf(l),0);
     load();
     try{ localStorage.setItem("lw-meta-"+W.id+(W.niveau&&W.niveau!=="M"?"-"+W.niveau:""), JSON.stringify({max:MAX, titel:W.titel, ids:W.levels.map(l=>l.id), maxima:W.levels.map(maxOf)})); }catch(e){}
@@ -955,6 +1044,8 @@ const LW = {
       if(e.target.closest("[data-trx]")){ const p=e.target.closest(".tr-pop"); p.hidden=true; const f=p.parentElement.querySelector("[data-tr]"); f.setAttribute("aria-expanded","false"); f.focus(); return; }
       document.querySelectorAll(".tr-pop:not([hidden])").forEach(p=>{ if(!p.contains(e.target)){ p.hidden=true; p.parentElement.querySelector("[data-tr]").setAttribute("aria-expanded","false"); } });
       const hb = e.target.closest("[data-hear]"); if(hb){ hearClick(hb); return; }
+      const sb = e.target.closest("[data-say]"); if(sb){ sayText(sb.dataset.say, sb); return; }
+      const st = e.target.closest("[data-showtxt]"); if(st){ const t = st.parentElement.querySelector(".say-txt"); if(t){ t.hidden = false; st.remove(); } return; }
       // Navigation
       const hr = e.target.closest("[data-href]");
       if(hr){ location.href = hr.dataset.href; return; }

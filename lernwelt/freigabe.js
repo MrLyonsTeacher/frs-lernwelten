@@ -8,6 +8,7 @@
   try{ const m=(location.hash||"").match(/[#&]k=([^&]+)/); if(m){ localStorage.setItem("frs-vk", decodeURIComponent(m[1])); history.replaceState(null,"",location.pathname+location.search); } }catch(e){}
   const PWHASH = "0611c7aebf739bf54950c8a449d1b58ca01d3cbe4a3bb2acd4bfe9a9384610a9";
   const STANDARD_GESPERRT = {};            // z. B. { 6:["vocabulary"] } – dann sind diese Bereiche ohne Code gesperrt
+  const NUR_FREIGABE = ["lesson"];         // Bereiche, die IMMER nur per Freigabe-Code offen sind (Lernpfade für Vertretungsstunden)
   const KEY = k => "frs-frei-" + k;
   const hex = buf => [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
   const sha = async s => hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)));
@@ -15,7 +16,7 @@
   const unb64 = s => decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
   function state(k){ try{ const v = JSON.parse(localStorage.getItem(KEY(k)) || "null"); return v && Array.isArray(v.open) ? v : null; }catch(e){ return null; } }
   function lockedThema(k, id){ const s = state(k); return !!(s && Array.isArray(s.x) && s.x.includes(id)); }
-  function locked(k, kat){ const s = state(k); return s ? !s.open.includes(kat) : (STANDARD_GESPERRT[k]||[]).includes(kat); }
+  function locked(k, kat){ const s = state(k); return s ? !s.open.includes(kat) : (NUR_FREIGABE.includes(kat) || (STANDARD_GESPERRT[k]||[]).includes(kat)); }
   /* Freigabe (🔑) öffnet mit dem bisherigen Freigabe-Passwort ODER mit dem Startseiten-Passwort (ein Passwort für alles).
      PWHASH bleibt unverändert, weil damit die QR-Codes unterschrieben sind – so bleiben alle alten Codes gültig. */
   async function checkPw(pw){ try{ const v = String(pw).trim();
@@ -102,5 +103,5 @@
     });
   }
   const resetIn = () => { try{ const t = +localStorage.getItem(RKEY); return t ? Math.max(0, t - Date.now()) : 0; }catch(e){ return 0; } };
-  window.FREI = { gate, allowed, zToken, wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT };
+  window.FREI = { gate, allowed, zToken, wipe, closeTab, resetIn, state, locked, lockedThema, checkPw, makeCode, apply, clear, standard:()=>STANDARD_GESPERRT, nurFreigabe:NUR_FREIGABE };
 })();
