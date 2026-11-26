@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16281F">
+<title>Fair Play & Emotionen – Camp Start</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
+<script>
+/* =========================================================
+   Schaubilder (selbst gezeichnet)
+   ========================================================= */
+// Gesichter: Freude, Stolz, Enttäuschung, Wut, Nervosität
+function gesicht(x, y, r, art, c){
+  const aug = (dx, form) => form === "zu" ? `<path d="M${x+dx-5} ${y-5} q5 4 10 0" stroke="${CB}" stroke-width="2.6" fill="none" stroke-linecap="round"/>` : `<circle cx="${x+dx}" cy="${y-5}" r="${form === "gross" ? 4 : 3.2}" fill="${CB}"/>`;
+  const F = {
+    freude: aug(-10) + aug(10) + `<path d="M${x-13} ${y+5} Q${x} ${y+22} ${x+13} ${y+5} Z" fill="${CB}"/>`,
+    stolz: aug(-10, "zu") + aug(10, "zu") + `<path d="M${x-11} ${y+8} Q${x} ${y+17} ${x+11} ${y+8}" stroke="${CB}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M${x-16} ${y-14} l7 -3 M${x+16} ${y-14} l-7 -3" stroke="${CB}" stroke-width="2.4" stroke-linecap="round"/>`,
+    enttaeuscht: aug(-10) + aug(10) + `<path d="M${x-11} ${y+14} Q${x} ${y+5} ${x+11} ${y+14}" stroke="${CB}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M${x-15} ${y-10} l8 -4 M${x+15} ${y-10} l-8 -4" stroke="${CB}" stroke-width="2.4" stroke-linecap="round"/><path d="M${x+14} ${y+1} q3 6 0 9 q-3 -3 0 -9" fill="${BL}"/>`,
+    wut: aug(-10) + aug(10) + `<path d="M${x-16} ${y-15} l10 5 M${x+16} ${y-15} l-10 5" stroke="${CB}" stroke-width="3" stroke-linecap="round"/><rect x="${x-11}" y="${y+7}" width="22" height="8" rx="2" fill="${HELL}" stroke="${CB}" stroke-width="2.4"/><path d="M${x-4} ${y+7} v8 M${x+4} ${y+7} v8" stroke="${CB}" stroke-width="1.6"/>`,
+    nervoes: aug(-10, "gross") + aug(10, "gross") + `<path d="M${x-11} ${y+11} q4 -4 7 0 t7 0 t7 0" stroke="${CB}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M${x+18} ${y-16} q4 7 0 10 q-4 -3 0 -10" fill="${BL}"/>`
+  };
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>${F[art]}`;
+}
+const GEF = [["freude","Freude",GE],["stolz","Stolz",GR],["enttaeuscht","Enttäuschung",BL],["wut","Wut",RO],["nervoes","Nervosität",LI]];
+function gefuehle(k){
+  return CK(380, 200, TX(190, 28, "Gefühle im Wettkampf", {s:16.5, c:HELL}) + GEF.map(([a, n, c], i) => { const x = 42 + i * 74, an = k < 0 || k === i;
+    return `<g opacity="${an ? 1 : .3}">${k === i ? `<circle cx="${x}" cy="100" r="35" fill="none" stroke="${GE}" stroke-width="3"/>` : ""}${gesicht(x, 100, 28, a, c)}${TX(x, 156, n, {s:n.length > 9 ? 10.5 : 12.5, c:k === i ? GE : HELL})}</g>`; }).join("") +
+    TX(190, 186, "Alle Gefühle sind erlaubt. Entscheidend ist, was du tust.", {s:12, c:HG, w:600}));
+}
+// „Wie stark kocht es?“: Skala 1–5
+const SKALA = CK(380, 230, TX(190, 28, "Wie stark kocht es in dir?", {s:16.5, c:HELL}) +
+  [GR, "#B9C95B", GE, OR, RO].map((c, i) => { const x = 46 + i * 72; return `<rect x="${x - 30}" y="58" width="60" height="${40 + i * 18}" rx="10" fill="${c}" transform="translate(0 ${72 - i * 18})"/>` + TX(x, 166, i + 1, {s:20, c:CB}); }).join("") +
+  TX(46, 200, "ganz ruhig", {s:12, c:GR, w:700}) + TX(334, 200, "ich koche", {s:12, c:RO, w:700}) + `<path d="M100 196 H280" stroke="${HG}" stroke-width="2"/><path d="M272 190 L282 196 L272 202" fill="none" stroke="${HG}" stroke-width="2"/>`);
+// STOPP-Regel
+const STOPP = [["S","Stehen bleiben","nicht sofort reagieren"],["T","Tief durchatmen","dreimal langsam ein und aus"],["O","Ordnen","Was ist eigentlich passiert?"],["P","Positiv handeln","eine faire Lösung wählen"],["P","Partner holen","Mitspieler, Schiri oder Lehrkraft"]];
+function stopp(k){
+  const okt = (cx, cy, r) => Array.from({length:8}, (_, i) => { const a = Math.PI / 8 + i * Math.PI / 4; return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`; }).join(" ");
+  let s = `<polygon points="${okt(74, 160, 58)}" fill="${RO}" stroke="${HELL}" stroke-width="5"/>` + TX(74, 170, "STOPP", {s:21, c:HELL, st:"letter-spacing:1px"});
+  STOPP.forEach(([b, t, e], i) => { const y = 58 + i * 46, an = k < 0 || k === i;
+    s += `<g opacity="${an ? 1 : .3}"><rect x="148" y="${y - 18}" width="218" height="40" rx="10" fill="${k === i ? GE : CB2}" stroke="${CL}" stroke-width="1.5"/>` +
+      `<circle cx="168" cy="${y + 2}" r="13" fill="${RO}"/>` + TX(168, y + 8, b, {s:16, c:HELL}) + TX(188, y - 1, t, {s:13.5, c:k === i ? CB : HELL, a:"start"}) + TX(188, y + 14, e, {s:10.5, c:k === i ? CB : HG, a:"start", w:600}) + `</g>`; });
+  return CK(380, 300, TX(190, 24, "Wenn’s kocht: die STOPP-Regel", {s:16, c:HELL}) + s);
+}
+// Gefühl und Verhalten
+const GV = CK(380, 240, TX(190, 28, "Gefühl ≠ Verhalten", {s:17, c:HELL}) +
+  `<rect x="14" y="44" width="170" height="170" rx="16" fill="${CB2}" stroke="${RO}" stroke-width="3"/><rect x="196" y="44" width="170" height="170" rx="16" fill="${CB2}" stroke="${GR}" stroke-width="3"/>` +
+  gesicht(99, 104, 30, "wut", RO) + TX(99, 160, "Gefühl", {s:16, c:RO}) + TX(99, 180, "„Ich bin wütend.“", {s:12, c:HELL, w:600}) + TX(99, 198, "darf da sein", {s:11.5, c:HG, w:600}) +
+  PIKTO({k:[260,78], h:[260,90], b:[260,128], ea:[278,104], ha:[298,94], eb:[244,108], hb:[236,124], ka:[264,148], fa:[264,170], kb:[254,148], fb:[252,170]}, GR, 7) +
+  PIKTO({k:[322,82], h:[322,94], b:[322,130], ea:[306,104], ha:[300,94], eb:[334,110], hb:[340,124], ka:[318,150], fa:[318,170], kb:[328,150], fb:[330,170]}, "#3E7CB1", 7) +
+  TX(281, 190, "Verhalten", {s:16, c:GR}) + TX(281, 206, "muss fair bleiben", {s:11.5, c:HG, w:600}));
+// Fair-Play-Vertrag
+const VERTRAG = CK(380, 250, TX(190, 28, "Unser Fair-Play-Vertrag", {s:16.5, c:HELL}) +
+  `<path d="M80 44 H300 V232 H80 Z" fill="#F4EBD5" stroke="${SA}" stroke-width="2"/>` + TX(190, 74, "Fair-Play-Vertrag", {s:16, c:CB, st:"font-family:Georgia,serif"}) +
+  [1,2,3].map(i => `<circle cx="102" cy="${96 + i * 26}" r="8" fill="${GR}"/>` + TX(102, 100 + i * 26, i, {s:11, c:CB}) + `<path d="M118 ${100 + i * 26} H280" stroke="#9C8F74" stroke-width="2"/>`).join("") +
+  `<path d="M104 206 c14 -18 22 6 34 -6 c8 -8 14 4 24 -4" stroke="#2E6A85" stroke-width="2.4" fill="none"/><path d="M200 206 c10 -14 18 4 30 -8 c10 -6 14 6 24 -2" stroke="#B4602E" stroke-width="2.4" fill="none"/><path d="M100 214 H280" stroke="#9C8F74" stroke-width="1.4"/>`);
+
+/* =========================================================
+   Inhalte (abgestimmt auf Camp-Logbuch Etappe 6)
+   ========================================================= */
+const LERNEN = {
+  gefuehle: { titel:"Gefühle im Wettkampf", folien:[
+    {bild:gefuehle(-1), titel:"Sport ist voller Gefühle", text:"Im Wettkampf spüren wir **starke Gefühle**: **Freude** und **Stolz** nach einem Sieg, **Enttäuschung** nach einer Niederlage, **Wut** über einen Pfiff, **Nervosität** vor dem Start. Das ist **normal** und gehört zum Sport."},
+    {bild:GV, titel:"Gefühl und Verhalten", text:"Ein **Gefühl** ist da, ob man will oder nicht: „Ich bin wütend.“ Das **Verhalten** dagegen **wählst du**: Werfe ich den Ball weg, oder atme ich durch? **Gefühle dürfen sein, das Verhalten muss fair bleiben.**"},
+    {bild:SKALA, titel:"Wie stark kocht es?", text:"Gefühle haben unterschiedliche **Stärken**. Wer merkt, dass es bei **4 oder 5** ist, sollte **reagieren, bevor** etwas Unfaires passiert. Typische Warnzeichen bei Wut: Herzklopfen, heißes Gesicht, geballte Fäuste."},
+    {bild:gefuehle(1), titel:"Sieg mit Haltung", text:"Freuen ist erlaubt, aber **nicht auf Kosten anderer**: Kein Auslachen, kein Provozieren vor den Verlierern. Faire Sieger **klatschen ab** und loben auch den Gegner."},
+    {bild:gefuehle(2), titel:"Niederlage mit Haltung", text:"Verlieren tut weh. Faire Verlierer **gratulieren** trotzdem, suchen **keine Ausreden** und schieben die Schuld nicht auf den Schiri oder Mitspieler. Aus Niederlagen **lernt** man am meisten."}
+  ]},
+  stopp: { titel:"Die STOPP-Regel", folien:[
+    {bild:stopp(-1), titel:"Fünf Schritte, wenn’s kocht", text:"Wenn die Wut hochsteigt, hilft ein fester Ablauf: die **STOPP-Regel**. Jeder Buchstabe steht für einen Schritt. So gewinnst du Zeit und **entscheidest selbst**, was du tust."},
+    {bild:stopp(0), titel:"S · Stehen bleiben", text:"**Nicht sofort reagieren.** Kurz innehalten, die Hände bei dir lassen, nichts sagen, was du später bereust."},
+    {bild:stopp(1), titel:"T · Tief durchatmen", text:"**Dreimal langsam** ein- und ausatmen. Das beruhigt den Körper: Der Puls sinkt, der Kopf wird wieder klarer."},
+    {bild:stopp(2), titel:"O · Ordnen", text:"**Was ist eigentlich passiert?** War es Absicht oder ein Versehen? Hat der Schiri vielleicht recht? Oft sieht die Lage nach einem Moment anders aus."},
+    {bild:stopp(3), titel:"P · Positiv handeln", text:"**Eine faire Lösung wählen**: die Entscheidung akzeptieren, ruhig nachfragen, weiterspielen, sich entschuldigen."},
+    {bild:stopp(4), titel:"P · Partner holen", text:"Allein schaffst du es nicht? **Hilfe holen** bei Mitspielern, beim Schiri oder bei der Lehrkraft. Das ist **keine Schwäche**, sondern fair."}
+  ]},
+  werte: { titel:"Fair-Play-Werte", folien:[
+    {bild:FOTO("fp8-regeln","📏","Regeln einhalten"), titel:"Regeln einhalten", text:"Das kennst du aus Etappe 2: **formelles Fair Play**. Ich halte mich an die Regeln, **auch wenn niemand hinschaut**."},
+    {bild:FOTO("fp8-respekt","🤝","Respekt vor dem Gegner"), titel:"Respekt", text:"Der Gegner ist **Partner**, nicht Feind: ohne ihn kein Spiel. Respekt gilt auch gegenüber **Schiri, Mitspielern und Zuschauern**."},
+    {bild:FOTO("fp8-ehrlich","🙋","Ehrlichkeit"), titel:"Ehrlichkeit", text:"Fehler zugeben, **richtig zählen**, keine Schwalben, nicht schummeln. Ehrlichkeit macht Spiele erst fair."},
+    {bild:FOTO("fp8-chancen","⚖️","Gleiche Chancen"), titel:"Chancengleichheit", text:"Alle sollen **gleiche Chancen** haben: faire Teams wählen, **alle einbeziehen**, auch Schwächere anspielen."},
+    {bild:FOTO("fp8-team","👏","Teamgeist"), titel:"Teamgeist", text:"Mitspieler **ermutigen** statt beschimpfen, nach Fehlern trösten, **gemeinsam** gewinnen und verlieren."}
+  ]},
+  vertrag: { titel:"Ein guter Fair-Play-Vertrag", folien:[
+    {bild:VERTRAG, titel:"Regeln, die man sehen kann", text:"Gute Vertragsregeln sind **konkret** und **beobachtbar**: Man kann sehen, ob sich jemand daran hält. „Wir sind nett“ ist zu ungenau. „**Nach jedem Spiel klatschen wir mit allen ab**“ kann man überprüfen."},
+    {bild:VERTRAG, titel:"Positiv formulieren", text:"Besser sagen, **was man tun will**, als was verboten ist: „Wir ermutigen Mitspieler nach Fehlern“ statt „Nicht beschimpfen“. Und: Alle **unterschreiben**, damit der Vertrag für alle gilt."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:GV, titel:"Gefühl und Verhalten", text:"**„Gefühle dürfen ruhig sein – doch fair zu handeln, das musst du allein.“**"},
+    {bild:stopp(-1), titel:"STOPP", text:"**„Stehen, atmen, ordnen, schau: positiv und Partner – fair genau.“**"},
+    {bild:gefuehle(1), titel:"Siegen", text:"**„Wer gewinnt, der lacht nicht aus – der klatscht ab und geht nach Haus.“**"},
+    {bild:gefuehle(2), titel:"Verlieren", text:"**„Verloren? Gratulier mit Stil – auch das gehört zum fairen Spiel.“**"}
+  ]}
+};
+
+const GVK = ["Gefühl","Verhalten"];
+LW.start(Object.assign({}, CAMP, {
+  id: "fp8",
+  titel: "Fair Play & Emotionen – Lernwelt",
+  hero: campHero({ ort:"leuchtturm", symbol:"leuchtturm", etappe:"Etappe 6", titel:"Fair Play & Emotionen",
+    text:"Der Leuchtturm zeigt den Weg, wenn es im Wettkampf stürmisch wird: Freude, Frust und Wut, die STOPP-Regel und euer Fair-Play-Vertrag. Sammle Holzscheite 🪵 für dein Camp-Feuer." }),
+  kartenSymbol: "🗼",
+  lernen: LERNEN,
+  levels: [
+    { id:"fair", typ:"quiz", lernen:"gefuehle", icon:"🌊", titel:"Was wäre fair?", art:"Situationen · 8 Fälle",
+      anleitung:"Lies die Situation: **Welche Reaktion ist fair?** Jede richtige Antwort = **2 Punkte**.", punkte:2, szenenLabel:"Situation",
+      ab:"Bearbeite **Aufgabe 1**: Wie stark kocht es in dir, und was tust du dann?",
+      fragen:[
+        {szene:"Dein Team verliert in der letzten Sekunde.", q:"Was ist fair?", o:["Dem Gegner gratulieren, auch wenn es wehtut","Den Schiri beschimpfen","Sofort in die Kabine gehen","Dem Mitspieler die Schuld geben"], c:0},
+        {szene:"Der Schiri pfeift ein Foul, das keins war.", q:"Was ist fair?", o:["Den Ball wegschießen","Die Entscheidung akzeptieren oder ruhig nachfragen","Den Schiri auslachen","Absichtlich zurückfoulen"], c:1},
+        {szene:"Jemand lacht über deinen Fehlwurf.", q:"Was ist fair?", o:["Zurück lachen, wenn er danebenwirft","Ihn schubsen","Ruhig sagen, dass das nicht okay ist, und weiterspielen","Das Spiel abbrechen"], c:2},
+        {szene:"Ihr gewinnt deutlich gegen ein schwaches Team.", q:"Was ist fair?", o:["Laut über die Gegner lästern","Vor den Verlierern provozierend jubeln","Absichtlich nicht mehr spielen","Freuen, abklatschen und die Gegner loben"], c:3},
+        {szene:"Kurz vor dem Start bist du total nervös.", q:"Was hilft?", o:["Tief durchatmen und an deinen Plan denken","Weglaufen","Andere ablenken und stören","Den Start absichtlich verpassen"], c:0},
+        {szene:"Dein Mitspieler verliert den Ball zum dritten Mal.", q:"Was ist fair?", o:["Ihn anschreien","Ihn ermutigen: „Nächstes Mal klappt’s!“","Ihn nie mehr anspielen","Die Lehrkraft bitten, ihn auszuwechseln"], c:1},
+        {szene:"Beim Zirkel zählt dein Partner bei dir eine Wiederholung zu viel.", q:"Was ist fair?", o:["Freuen und nichts sagen","Bei ihm auch zu viel zählen","Die richtige Zahl sagen","Gar nicht mehr mitzählen"], c:2},
+        {szene:"Du bist so wütend, dass du den Ball wegwerfen willst.", q:"Was ist fair?", o:["Werfen, dann ist es raus","Den Gegner anschreien","Das Spielfeld verlassen, ohne Bescheid zu sagen","Stehen bleiben, tief durchatmen"], c:3}
+      ]},
+    { id:"gv", typ:"rush", lernen:"gefuehle", icon:"⚡", titel:"Gefühl oder Verhalten?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Ist das ein **Gefühl** (linker Knopf) oder ein **Verhalten** (rechter Knopf)? **Ziel: 10 Treffer**.",
+      zeit:60, ziel:10, fest:true,
+      items:[
+        {q:"Ich bin wütend.", o:GVK, c:0}, {q:"Ich werfe den Ball weg.", o:GVK, c:1}, {q:"Ich bin enttäuscht.", o:GVK, c:0}, {q:"Ich gratuliere dem Gegner.", o:GVK, c:1},
+        {q:"Ich bin stolz.", o:GVK, c:0}, {q:"Ich klatsche mit allen ab.", o:GVK, c:1}, {q:"Ich bin nervös.", o:GVK, c:0}, {q:"Ich atme dreimal tief durch.", o:GVK, c:1},
+        {q:"Ich freue mich riesig.", o:GVK, c:0}, {q:"Ich beschimpfe den Schiri.", o:GVK, c:1}, {q:"Ich habe Angst zu verlieren.", o:GVK, c:0}, {q:"Ich helfe einem Gegner auf.", o:GVK, c:1},
+        {q:"Ich bin frustriert.", o:GVK, c:0}, {q:"Ich jubele vor den Verlierern.", o:GVK, c:1}
+      ]},
+    { id:"reihe", typ:"zeitstrahl", lernen:"stopp", icon:"🛑", titel:"STOPP in der richtigen Reihenfolge", art:"Ordnen · 5 Schritte",
+      anleitung:"Tippe die Schritte der **STOPP-Regel** in der richtigen Reihenfolge an. Jeder richtige Platz = 1 Punkt.",
+      ab:"Ergänze in **Aufgabe 2** die Lücken in der STOPP-Regel.",
+      items:STOPP.map(([b, t, e]) => ({j:b, t:`${t}: ${e}`}))},
+    { id:"stoppmemory", typ:"memory", lernen:"stopp", icon:"🧠", titel:"STOPP-Memory", art:"Memory · 5 Paare",
+      anleitung:"Finde zu jedem **Schritt** die passende **Erklärung**. Jedes Paar = 1 Punkt.",
+      paare:STOPP.map(([b, t, e]) => ({a:`${b} · ${t}`, b:e}))},
+    { id:"szenen", typ:"quiz", lernen:"stopp", icon:"🎭", titel:"Welcher Schritt hilft?", art:"Szenen · 6 Fälle",
+      anleitung:"In jeder Szene hilft **vor allem ein Schritt** der STOPP-Regel. Welcher? Jede richtige Antwort = **2 Punkte**.", punkte:2, szenenLabel:"Szene",
+      ab:"Spielt in **Aufgabe 3** eure Szene zweimal: erst unfair, dann mit der STOPP-Regel.",
+      fragen:[
+        {szene:"Tim will nach dem Pfiff sofort losbrüllen. Er hält inne und sagt erst einmal gar nichts.", q:"Welcher Schritt?", o:["S · Stehen bleiben","O · Ordnen","P · Partner holen","T · Tief durchatmen"], c:0},
+        {szene:"Lea merkt ihr Herzklopfen und atmet dreimal ganz langsam ein und aus.", q:"Welcher Schritt?", o:["P · Positiv handeln","T · Tief durchatmen","S · Stehen bleiben","O · Ordnen"], c:1},
+        {szene:"Ben überlegt: War das Foul Absicht oder war der Gegner einfach zu langsam?", q:"Welcher Schritt?", o:["T · Tief durchatmen","P · Partner holen","O · Ordnen","S · Stehen bleiben"], c:2},
+        {szene:"Mia entscheidet sich, die Entscheidung zu akzeptieren und einfach weiterzuspielen.", q:"Welcher Schritt?", o:["O · Ordnen","S · Stehen bleiben","T · Tief durchatmen","P · Positiv handeln"], c:3},
+        {szene:"Der Streit wird zu groß. Elif geht zur Lehrkraft und bittet um Hilfe.", q:"Welcher Schritt?", o:["P · Partner holen","P · Positiv handeln","O · Ordnen","S · Stehen bleiben"], c:0},
+        {szene:"Das Siegerteam jubelt vor den Verlierern. Jonas, der Kapitän, sagt: „Kommt, wir klatschen alle ab.“", q:"Welcher Schritt?", o:["T · Tief durchatmen","P · Positiv handeln","O · Ordnen","S · Stehen bleiben"], c:1}
+      ]},
+    { id:"werte", typ:"quiz", lernen:"werte", icon:"💎", titel:"Welcher Wert?", art:"Quiz · 7 Fragen",
+      anleitung:"Welcher **Fair-Play-Wert** wird hier gelebt? Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Nico gibt zu, dass er den Ball zuletzt berührt hat.", o:["Ehrlichkeit","Teamgeist","Chancengleichheit","Regeln einhalten"], c:0},
+        {q:"Beim Teamwählen achtet Ayse darauf, dass in beiden Teams ähnlich gute Spieler sind.", o:["Respekt","Chancengleichheit","Ehrlichkeit","Teamgeist"], c:1},
+        {q:"Nach einem Fehler sagt Paul zu seiner Mitspielerin: „Kein Problem, weiter geht’s!“", o:["Ehrlichkeit","Regeln einhalten","Teamgeist","Chancengleichheit"], c:2},
+        {q:"Emma hilft einem gestürzten Gegner auf.", o:["Chancengleichheit","Ehrlichkeit","Regeln einhalten","Respekt"], c:3},
+        {q:"Lukas läuft nie absichtlich drei Schritte mit dem Ball, auch wenn der Schiri gerade wegschaut.", o:["Regeln einhalten","Teamgeist","Respekt","Chancengleichheit"], c:0},
+        {q:"Sara spielt auch den schwächsten Mitspieler immer wieder an.", o:["Ehrlichkeit","Chancengleichheit","Regeln einhalten","Respekt"], c:1},
+        {q:"Nach dem Spiel bedankt sich das ganze Team beim Schiri.", o:["Chancengleichheit","Ehrlichkeit","Respekt","Regeln einhalten"], c:2}
+      ]},
+    { id:"vertrag", typ:"swipe", lernen:"vertrag", icon:"✍️", titel:"Gute Vertragsregel?", art:"Wischen · 8 Regeln",
+      anleitung:"Ist das eine **gute** Regel für euren Fair-Play-Vertrag (konkret, beobachtbar, positiv), wische nach **rechts**. Ist sie zu **ungenau**, nach **links**.",
+      links:{t:"Zu ungenau", icon:"🌫️"}, rechts:{t:"Gute Regel", icon:"✍️"},
+      ab:"Einigt euch in **Aufgabe 4** auf drei Regeln für euren Fair-Play-Vertrag und unterschreibt.",
+      karten:[
+        {t:"Wir sind immer nett.", r:"l", e:"Was heißt „nett“? Das kann man nicht beobachten."},
+        {t:"Nach jedem Spiel klatschen wir mit allen ab.", r:"r", e:"Konkret und gut zu überprüfen."},
+        {t:"Fair sein.", r:"l", e:"Viel zu allgemein."},
+        {t:"Nach einem Fehler ermutigen wir den Mitspieler mit einem Satz.", r:"r"},
+        {t:"Keiner ist doof.", r:"l", e:"Negativ und ungenau. Besser sagen, was ihr **tun** wollt."},
+        {t:"Wir zählen beim Zirkel ehrlich mit und sagen die echte Zahl.", r:"r"},
+        {t:"Wir benehmen uns gut.", r:"l"},
+        {t:"Wenn es kocht, nutzen wir die STOPP-Regel.", r:"r"}
+      ]},
+    { id:"wahr", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 10 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch**.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Im Sport darf man keine Wut spüren.", r:"l", e:"Gefühle sind erlaubt. Das Verhalten muss fair bleiben."},
+        {t:"Tief durchatmen kann helfen, ruhiger zu werden.", r:"r"},
+        {t:"Fair Play gilt nur, wenn der Schiri hinschaut.", r:"l"},
+        {t:"Hilfe holen ist bei der STOPP-Regel ein eigener Schritt.", r:"r", e:"Das zweite P: **Partner holen**."},
+        {t:"Ein fairer Sieger provoziert die Verlierer.", r:"l"},
+        {t:"Gefühl und Verhalten sind dasselbe.", r:"l", e:"Das Gefühl ist da, das **Verhalten** wählst du."},
+        {t:"Wer verliert, kann dem Gegner trotzdem gratulieren.", r:"r"},
+        {t:"Eine gute Vertragsregel kann man beobachten.", r:"r"},
+        {t:"Nervosität vor dem Wettkampf ist völlig normal.", r:"r"},
+        {t:"Wer schummelt, hat am Ende ehrlich gewonnen.", r:"l"}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 4 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut, so bleibt er hängen.",
+      fragen:[
+        {q:"„______ dürfen ruhig sein – doch fair zu handeln, das musst du allein.“", o:["Gefühle","Fouls","Pfiffe"], c:0},
+        {q:"„Stehen, ______, ordnen, schau: positiv und Partner – fair genau.“", o:["laufen","atmen","schreien"], c:1},
+        {q:"„Wer gewinnt, der lacht nicht aus – der ______ ab und geht nach Haus.“", o:["haut","zieht","klatscht"], c:2},
+        {q:"„Verloren? ______ mit Stil – auch das gehört zum fairen Spiel.“", o:["Gratulier","Schimpf","Verschwind"], c:0}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 6 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie heißt die Regel mit fünf Schritten, wenn es kocht?", hilfe:"💡 S…", a:["STOPP"], re:["^(die )?stop(p)?(-regel| regel)?$"], e:"Die **STOPP**-Regel."},
+        {q:"Wofür steht das T in STOPP?", hilfe:"💡 T… d…", a:["Tief durchatmen"], re:["^tief durch ?atmen$","^durchatmen$"], e:"**Tief durchatmen**."},
+        {q:"Wofür steht das O in STOPP?", hilfe:"💡 O…", a:["Ordnen"], re:["^ordnen$"], e:"**Ordnen**: Was ist eigentlich passiert?"},
+        {q:"Was muss fair bleiben, auch wenn man wütend ist?", hilfe:"💡 V…", a:["Verhalten"], re:["^(das |mein )?verhalten$"], e:"Das **Verhalten**."},
+        {q:"Wie nennt man Fair Play, das über die Regeln hinausgeht? (aus Etappe 2)", hilfe:"💡 i…", a:["informell"], re:["^(das )?informell(es)?( fair play)?$"], e:"**Informelles** Fair Play."},
+        {q:"Nenne ein Gefühl, das man nach einer Niederlage oft spürt.", hilfe:"💡 E… oder W…", a:["Enttäuschung"], re:["^(die )?(enttäuschung|enttaeuschung|wut|trauer|frust|ärger|aerger)$","^(enttäuscht|wütend|traurig|frustriert|sauer)$"], e:"Zum Beispiel **Enttäuschung**, Wut oder Frust."}
+      ]}
+  ]
+}));
+</script>
+</body>
+</html>

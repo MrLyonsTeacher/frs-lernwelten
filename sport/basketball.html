@@ -4,39 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#13296B">
-<title>Basketball-Lernwelt</title>
+<meta name="theme-color" content="#16281F">
+<title>Spielregeln & Fairness – Camp Start</title>
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../lernwelt/lernwelt.css">
-<style>
-:root{
-  color-scheme:light;
-  --bg:#E7ECF4; --surface:#FFFFFF; --surface-2:#F2F5FA; --ink:#0E1A3D; --muted:#55627E; --line:#CBD4E3;
-  --accent:#EE5F17; --accent-ink:#FFFFFF; --accent-2:#FFD35C; --mid-bg:#FFF1CC;
-  --ok:#14834F; --ok-bg:#DCF2E5; --bad:#C8352A; --bad-bg:#FBE2DE;
-  --court:#13296B; --maple:#E2B77A;
-  --radius:18px; --radius-btn:14px; --radius-ic:14px;
-  --border:1px solid #D5DCE9; --shadow:0 3px 0 #CBD4E3; --border-opt:2px solid #D5DCE9;
-  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
-  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
-  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
-  --ic-bg:var(--court); --card-back:var(--court); --tile-bg:#FFE3D1; --tile-ink:#0E1A3D;
-  --chip-bg:var(--court); --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #D5DCE9;
-  --track:#DCE2EC; --star:#F2A50C; --star-off:#D3DAE6;
-}
-body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(238,95,23,.08),transparent 40%)}
-.lhead h1,.disp{font-style:italic}
-.chip{border:0}
-
-/* Startbild: das Spielfeld */
-.court-hero{position:relative;overflow:hidden;border-radius:24px;background:var(--court);color:#fff;padding:clamp(1.4rem,4vw,2.4rem);min-height:250px;isolation:isolate}
-.court-hero svg.lines{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.9}
-.court-hero .kicker{font-family:var(--font-display);font-weight:800;font-style:italic;font-size:1.3rem;color:var(--accent-2);margin:0}
-.court-hero h1{font-family:var(--font-display);font-weight:800;font-style:italic;text-transform:uppercase;font-size:clamp(2.8rem,10vw,5.4rem);line-height:.9;margin:.3rem 0 .7rem;max-width:9ch}
-.court-hero p{margin:0;max-width:40ch;color:#D6DEF5;font-size:1.08rem}
-.court-hero .ball{position:absolute;right:clamp(-30px,2vw,30px);bottom:-40px;width:clamp(150px,30vw,250px);z-index:-1}
-@media (max-width:560px){ .court-hero .ball{opacity:.5} }
-</style>
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
 </head>
 <body>
 <main class="lw" id="app"></main>
@@ -44,40 +17,143 @@ body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(238,95,23,.08),t
 <script src="../qrcode.js"></script>
 <script src="../ergebnis.js"></script>
 <script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
 <script>
-const HERO = `
-<div class="court-hero">
-  <svg class="lines" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <g fill="none" stroke="rgba(255,255,255,.18)" stroke-width="4">
-      <rect x="560" y="70" width="240" height="160"/><circle cx="560" cy="150" r="80"/>
-      <path d="M800 20 H700 A190 190 0 0 0 700 280 H800"/><line x1="300" y1="0" x2="300" y2="300"/><circle cx="300" cy="150" r="70"/>
-    </g>
-  </svg>
-  <svg class="ball" viewBox="0 0 200 200" aria-hidden="true">
-    <circle cx="100" cy="100" r="96" fill="#EE5F17"/>
-    <g fill="none" stroke="#5A1F05" stroke-width="5">
-      <circle cx="100" cy="100" r="96"/><path d="M4 100 H196"/><path d="M100 4 V196"/>
-      <path d="M36 30 C70 70 70 130 36 170"/><path d="M164 30 C130 70 130 130 164 170"/>
-    </g>
-  </svg>
-  <p class="kicker">Profil Sport · Klasse 8</p>
-  <h1>Regeln & Fairness</h1>
-  <p>Acht Spiele rund um den Basketball. Sammle Holzscheite 🪵 für dein Camp-Lagerfeuer und steig im Rang auf. Wenn du fertig bist, erstellst du deinen Ergebnis-Code.</p>
-</div>`;
+/* =========================================================
+   Schaubilder (selbst gezeichnet, Maße nach FIBA-Regeln)
+   ========================================================= */
+// Spielfeld. o.halb = 3x3-Halbfeld (15 × 11 m), sonst ganzes Feld (28 × 15 m).
+// o.hl: "zone" (Zone/3-Sekunden-Raum), "drei" (Bereich hinter der Dreierlinie), "linie" (Dreierlinie), "mitte" (Mittellinie), "aus" (Auslinien), "korb"
+// o.sp = [Anzahl Team A, Anzahl Team B] Spielerpunkte, o.titel, o.notiz
+const HOLZ = "#D9A566", HOLZ2 = "#C98F52", LINIE = "#FFFFFF";
+function feld(o){
+  o = o || {}; const hl = o.hl || [], halb = !!o.halb;
+  const S = halb ? 21 : 12, L = halb ? 11 : 28, B = 15, x0 = halb ? 32 : 22, y0 = 50;
+  const X = m => +(x0 + m * S).toFixed(1), Y = m => +(y0 + m * S).toFixed(1), W = (L) * S, H = B * S;
+  const on = id => hl.includes(id), gelb = "#F2C14E";
+  // eine Korbseite; m = Spiegel (Abstand von der linken Grundlinie → von der rechten)
+  const seite = (rechts) => {
+    const fx = m => rechts ? X(L - m) : X(m), dir = rechts ? -1 : 1;
+    const ax = fx(2.99), r3 = 6.75 * S, rk = 1.575;
+    const drei = `M${fx(0)} ${Y(.9)} L${ax} ${Y(.9)} A${r3} ${r3} 0 0 ${rechts ? 0 : 1} ${ax} ${Y(14.1)} L${fx(0)} ${Y(14.1)}`;
+    let g = "";
+    if(on("drei")) g += `<path d="M${fx(0)} ${Y(0)} L${fx(0)} ${Y(.9)} L${ax} ${Y(.9)} A${r3} ${r3} 0 0 ${rechts ? 0 : 1} ${ax} ${Y(14.1)} L${fx(0)} ${Y(14.1)} L${fx(0)} ${Y(15)} L${halb ? X(L) : fx(14)} ${Y(15)} L${halb ? X(L) : fx(14)} ${Y(0)} Z" fill="${gelb}" opacity=".45"/>`;
+    g += `<rect x="${Math.min(fx(0), fx(5.8))}" y="${Y(5.05)}" width="${5.8 * S}" height="${4.9 * S}" fill="${on("zone") ? gelb : "#B5633A"}" opacity="${on("zone") ? .85 : .55}" stroke="${LINIE}" stroke-width="2"/>`;
+    g += `<path d="M${fx(5.8)} ${Y(5.7)} A${1.8 * S} ${1.8 * S} 0 0 ${rechts ? 0 : 1} ${fx(5.8)} ${Y(9.3)}" fill="none" stroke="${LINIE}" stroke-width="2"/>`;
+    g += `<path d="M${fx(5.8)} ${Y(5.7)} A${1.8 * S} ${1.8 * S} 0 0 ${rechts ? 1 : 0} ${fx(5.8)} ${Y(9.3)}" fill="none" stroke="${LINIE}" stroke-width="2" stroke-dasharray="4 4"/>`;
+    g += `<path d="${drei}" fill="none" stroke="${on("linie") ? gelb : LINIE}" stroke-width="${on("linie") ? 5 : 2}"/>`;
+    g += `<path d="M${fx(rk)} ${Y(6.25)} A${1.25 * S} ${1.25 * S} 0 0 ${rechts ? 0 : 1} ${fx(rk)} ${Y(8.75)}" fill="none" stroke="${LINIE}" stroke-width="1.6"/>`;
+    g += `<path d="M${fx(1.2)} ${Y(6.6)} L${fx(1.2)} ${Y(8.4)}" stroke="#2B2B2B" stroke-width="4"/>`;
+    g += `<circle cx="${fx(rk)}" cy="${Y(7.5)}" r="${.3 * S}" fill="none" stroke="${on("korb") ? gelb : "#E8833A"}" stroke-width="${on("korb") ? 4 : 3}"/>`;
+    return g;
+  };
+  let f = `<rect x="${X(0) - 8}" y="${Y(0) - 8}" width="${W + 16}" height="${H + 16}" rx="6" fill="${HOLZ2}"/>`;
+  f += `<rect x="${X(0)}" y="${Y(0)}" width="${W}" height="${H}" fill="${HOLZ}"/>`;
+  for(let k = 1; k < (halb ? 14 : 16); k++) f += `<path d="M${X(0)} ${Y(k * (halb ? 15/14 : 15/16))} H${X(L)}" stroke="${HOLZ2}" stroke-width="1" opacity=".6"/>`;
+  f += seite(false);
+  if(!halb){ f += seite(true) + `<path d="M${X(14)} ${Y(0)} V${Y(15)}" stroke="${on("mitte") ? "#F2C14E" : LINIE}" stroke-width="${on("mitte") ? 5 : 2}"/><circle cx="${X(14)}" cy="${Y(7.5)}" r="${1.8 * S}" fill="none" stroke="${LINIE}" stroke-width="2"/>`; }
+  f += `<rect x="${X(0)}" y="${Y(0)}" width="${W}" height="${H}" fill="none" stroke="${on("aus") ? "#E2574C" : LINIE}" stroke-width="${on("aus") ? 5 : 2.5}"/>`;
+  // Spieler
+  const sp = o.sp || [0, 0], dots = (n, farbe, seite) => {
+    const P = halb ? [[7,4],[4.5,11],[8.5,9],[6,7]] : [[5,4],[9,7.5],[5,11],[12,3],[12,12]];
+    return P.slice(0, n).map(([mx, my]) => { const xx = seite ? (halb ? X(mx - 1.6) : X(28 - mx)) : X(mx), yy = Y(seite && halb ? my + .8 : my);
+      return `<circle cx="${xx}" cy="${yy}" r="${halb ? 9 : 7}" fill="${farbe}" stroke="#1A1A1A" stroke-width="2"/>`; }).join(""); };
+  f += dots(sp[0], "#E8833A", false) + dots(sp[1], "#3E7CB1", true);
+  const h = Y(15) + 36;
+  return CK(380, Math.round(h), TX(190, 28, o.titel || (halb ? "3x3: halbes Feld, ein Korb" : "Basketball 5 gegen 5"), {s:16, c:HELL}) + f +
+    (o.notiz ? TX(190, Math.round(h) - 12, o.notiz, {s:12.5, c:HG, w:600}) : ""));
+}
 
-LW.start({
+// Wurfuhr (Shot Clock)
+const uhr = (zahl, sub) => CK(380, 230, TX(190, 30, sub, {s:15, c:HELL}) +
+  `<rect x="120" y="54" width="140" height="110" rx="14" fill="#111" stroke="${HG}" stroke-width="4"/><rect x="132" y="66" width="116" height="86" rx="6" fill="#1D0F0F"/>` +
+  TX(190, 140, zahl, {s:70, c:"#FF4B3E", st:"font-family:'Barlow Condensed',sans-serif"}) + `<path d="M150 164 v26 M230 164 v26" stroke="${HG}" stroke-width="6"/>` + TX(190, 216, "Ist die Zeit um, bekommt der Gegner den Ball.", {s:12.5, c:HG, w:600}));
+
+// Vier Aufgaben von Regeln
+const sym = {
+  schild: `<path d="M85 18 L120 30 C120 62 106 82 85 94 C64 82 50 62 50 30 Z" fill="${GR}"/><path d="M70 54 l11 11 l20 -22" stroke="${CB}" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  waage: `<path d="M85 20 V86 M60 90 h50" stroke="${SA}" stroke-width="5" stroke-linecap="round"/><path d="M40 36 H130" stroke="${SA}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M40 36 L26 66 H54 Z M130 36 L116 66 H144 Z" fill="none" stroke="${BL}" stroke-width="3"/><path d="M26 66 a14 7 0 0 0 28 0 Z M116 66 a14 7 0 0 0 28 0 Z" fill="${BL}"/><circle cx="85" cy="20" r="6" fill="${GE}"/>`,
+  fluss: `<path d="M26 66 C50 30 70 90 96 56 C112 36 128 44 140 52" stroke="${BL}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M132 40 L146 54 L128 60" fill="none" stroke="${BL}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="44" cy="40" r="11" fill="${OR}"/><path d="M33 40 h22 M44 29 v22" stroke="${CB}" stroke-width="2"/>`,
+  mass: `<rect x="26" y="50" width="118" height="22" rx="4" fill="${GE}"/>${Array.from({length:12}, (_, k) => `<path d="M${34 + k * 9.5} 50 v${k % 2 ? 7 : 12}" stroke="${CB}" stroke-width="2"/>`).join("")}
+    <path d="M85 20 V44" stroke="${HELL}" stroke-width="3"/><path d="M60 26 h50" stroke="${HELL}" stroke-width="3"/><circle cx="85" cy="26" r="9" fill="none" stroke="${OR}" stroke-width="4"/>`
+};
+const AUFGABEN = [["Sicherheit", sym.schild], ["Chancengleichheit", sym.waage], ["Spielfluss", sym.fluss], ["Vergleichbarkeit", sym.mass]];
+const wozu = k => KACHELN("Wozu gibt es Regeln?", AUFGABEN, k);
+
+// Formelles und informelles Fair Play
+function fairplay(k){
+  const sp = (x, c) => `<circle cx="${x}" cy="0" r="10" fill="${c}"/><path d="M${x} 10 v28 M${x} 38 l-9 20 M${x} 38 l9 20" stroke="${c}" stroke-width="6" stroke-linecap="round" fill="none"/>`;
+  const links = `<g transform="translate(0 100)"><rect x="14" y="-58" width="170" height="210" rx="16" fill="${CB2}" stroke="${k === 0 ? GE : CL}" stroke-width="${k === 0 ? 4 : 2}"/>
+    <rect x="60" y="-36" width="78" height="96" rx="6" fill="${SA}"/>${[0,1,2,3,4].map(j => `<path d="M72 ${-20 + j * 15} h54" stroke="${CB}" stroke-width="4" stroke-linecap="round"/>`).join("")}
+    <circle cx="128" cy="52" r="16" fill="${GR}"/><path d="M120 52 l6 6 l11 -12" stroke="${CB}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    ${TX(99, 104, "formell", {s:17, c:k === 0 ? GE : HELL})}${TX(99, 126, "Regeln einhalten", {s:12.5, c:HG, w:600})}</g>`;
+  const rechts = `<g transform="translate(182 100)"><rect x="14" y="-58" width="170" height="210" rx="16" fill="${CB2}" stroke="${k === 1 ? GE : CL}" stroke-width="${k === 1 ? 4 : 2}"/>
+    <g transform="translate(0 -20)">${sp(70, "#E8833A")}${sp(128, "#3E7CB1")}<path d="M70 20 L99 32 L128 20" stroke="${HELL}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="99" cy="32" r="5" fill="${GE}"/></g>
+    <path d="M99 -30 c-6 -10 -18 -4 -12 6 l12 12 l12 -12 c6 -10 -6 -16 -12 -6 z" fill="${RO}"/>
+    ${TX(99, 104, "informell", {s:17, c:k === 1 ? GE : HELL})}${TX(99, 126, "Gegner als Partner achten", {s:12.5, c:HG, w:600})}</g>`;
+  return CK(380, 270, TX(190, 28, "Zwei Seiten von Fair Play", {s:17, c:HELL}) + `<g opacity="${k === 1 ? .45 : 1}">${links}</g><g opacity="${k === 0 ? .45 : 1}">${rechts}</g>`);
+}
+
+/* =========================================================
+   Inhalte (abgestimmt auf Camp-Logbuch Etappe 2)
+   ========================================================= */
+const LERNEN = {
+  regeln: { titel:"Die wichtigsten Basketball-Regeln", folien:[
+    {bild:feld({sp:[5,5]}), titel:"Das Spiel", text:"Zwei Teams mit je **fünf Spielern** auf dem Feld. Ziel: den Ball in den **Korb** des Gegners werfen und den eigenen Korb verteidigen. Gespielt werden **4 × 10 Minuten**. Der Ball wird mit der Hand **gedribbelt oder gepasst**, nie getreten."},
+    {bild:feld({hl:["drei","linie"], titel:"Punkte"}), titel:"Punkte", text:"Ein Korb **innerhalb** der Dreierlinie zählt **2 Punkte**, ein Korb von **hinter** der Linie (gelb) **3 Punkte**, ein **Freiwurf** 1 Punkt. Wer auf der Linie steht, wirft noch für 2 Punkte."},
+    {bild:FOTO("bb2-schrittfehler","👟","Schrittfehler"), titel:"Schrittfehler & Doppeldribbling", text:"Mit dem Ball in der Hand darfst du **höchstens zwei Schritte** machen (**Schrittfehler**). Wer das Dribbling beendet und den Ball festhält, darf **nicht noch einmal dribbeln** (**Doppeldribbling**). Folge: **Ballverlust**, der Gegner bekommt den Ball."},
+    {bild:feld({hl:["zone"], titel:"Die Zone"}), titel:"3 Sekunden in der Zone", text:"Ein Angreifer darf höchstens **3 Sekunden** am Stück in der **Zone** (gelb) unter dem gegnerischen Korb stehen. Sonst gibt es **Ballverlust**. So bleibt der Raum unter dem Korb nicht dauerhaft zugestellt."},
+    {bild:uhr("24", "Die Wurfuhr (Shot Clock)"), titel:"24 und 8 Sekunden", text:"Ein Team hat **24 Sekunden** Zeit für einen Wurf, der den Ring berührt. Den Ball aus der eigenen Hälfte über die Mittellinie bringen muss es in **8 Sekunden**. Danach darf der Ball nicht mehr in die eigene Hälfte zurück (**Rückspiel**)."},
+    {bild:FOTO("bb2-foul","🛑","Foul im Zweikampf"), titel:"Fouls", text:"Halten, Stoßen, Schlagen und Rempeln sind **Fouls**. Jeder Spieler hat einen unsichtbaren **Zylinder** um sich: Wer hineindrängt, foult. Nach einem Foul gibt es **Einwurf**, beim Wurf **Freiwürfe**. Nach dem **5. Foul** muss ein Spieler vom Feld."},
+    {bild:feld({hl:["aus"], titel:"Aus"}), titel:"Aus und Einwurf", text:"Die **Linien gehören zum Aus**. Berührt der Ball die Linie oder den Boden dahinter, bekommt der Gegner einen **Einwurf**. Für den Einwurf hat man **5 Sekunden**."}
+  ]},
+  dreier: { titel:"3x3: Basketball in klein", folien:[
+    {bild:feld({halb:true, sp:[3,3], titel:"3x3: halbes Feld, ein Korb"}), titel:"Was ist 3x3?", text:"3x3 ist eine schnelle Variante auf einen **einzigen Korb**: **drei gegen drei** auf einem **halben Feld** (15 × 11 m), dazu **ein Auswechselspieler**. Seit den Spielen in **Tokio** ist 3x3 **olympisch**. Bei uns in der Halle spielen wir so auf allen drei Körben gleichzeitig."},
+    {bild:feld({halb:true, hl:["drei","linie"], titel:"Punkte beim 3x3"}), titel:"Andere Punkte", text:"Beim 3x3 zählt alles **einen Punkt weniger**: ein Korb **innerhalb** des Bogens **1 Punkt**, von **hinter** dem Bogen (gelb) **2 Punkte**. Ein Freiwurf zählt 1 Punkt."},
+    {bild:uhr("12", "Wurfuhr beim 3x3"), titel:"12 Sekunden", text:"Ein 3x3-Team hat nur **12 Sekunden** für einen Angriff, halb so viel wie beim großen Spiel. Es gibt keinen Weg über die Mittellinie, und das Feld ist klein. So bleibt das Spiel **schnell und spannend**."},
+    {bild:FOTO("bb2-check","🔄","Ball hinter den Bogen bringen"), titel:"Erst raus, dann rein", text:"Nach einem **Korb** bekommt die Verteidigung den Ball direkt **unter dem Korb** und muss ihn erst **hinter den Bogen** dribbeln oder passen. Das gilt auch nach einem **Rebound** oder Ballgewinn der Verteidigung. Erst dann darf sie selbst auf den Korb werfen."},
+    {bild:FOTO("bb2-21","🏁","Spielende beim 3x3"), titel:"Bis 21 oder 10 Minuten", text:"Ein 3x3-Spiel dauert **10 Minuten**. Hat ein Team vorher **21 Punkte**, ist das Spiel sofort zu Ende. Statt Sprungball entscheidet zu Beginn ein **Münzwurf**, wer anfängt."}
+  ]},
+  wozu: { titel:"Wozu gibt es Regeln?", folien:[
+    {bild:FOTO("bb2-pfirsichkorb","🧺","Erstes Basketballspiel mit Pfirsichkörben"), titel:"13 Regeln für ein neues Spiel", text:"**1891** erfand der Sportlehrer **James Naismith** in Springfield (USA) ein Spiel für den Winter in der Halle. Als Körbe hingen zwei **Pfirsichkörbe** an der Galerie. Sein Spiel hatte **13 Regeln**. Heute ist das Regelwerk viel länger. Warum eigentlich?"},
+    {bild:wozu(0), titel:"A · Sicherheit", text:"Regeln **schützen** die Spieler: Halten, Stoßen und Schlagen sind verboten. Grobe Fouls werden besonders hart bestraft."},
+    {bild:wozu(1), titel:"B · Chancengleichheit", text:"Beide Teams haben **die gleichen Chancen**: gleich viele Spieler, gleiche Zeit, gleiche Körbe. Niemand bekommt einen Vorteil."},
+    {bild:wozu(2), titel:"C · Spielfluss", text:"Regeln halten das Spiel **in Bewegung**: Die **Wurfuhr** zwingt zum Werfen, die **3-Sekunden-Regel** verhindert, dass jemand den Korb zustellt."},
+    {bild:wozu(3), titel:"D · Vergleichbarkeit", text:"Überall auf der Welt gelten **dieselben Maße**: Der Korb hängt in **3,05 m** Höhe. So kann man Spiele und Leistungen überall **vergleichen**."}
+  ]},
+  fair: { titel:"Fair Play: mehr als Regeln", folien:[
+    {bild:fairplay(0), titel:"Formelles Fair Play", text:"Formelles Fair Play heißt: Ich **halte mich an die Regeln**, auch wenn der Schiri gerade nicht hinschaut. Ein **Regelverstoß** wie Trikot festhalten oder Schrittfehler ist unfair."},
+    {bild:fairplay(1), titel:"Informelles Fair Play", text:"Informelles Fair Play geht **über die Regeln hinaus**: Ich achte meinen Gegner als **Partner**, ohne den es gar kein Spiel gäbe. Jemanden auslachen ist zum Beispiel nicht verboten, aber **unfair**."},
+    {bild:FOTO("bb2-hilfe","🤝","Spiel unterbrechen und helfen"), titel:"Mehr als die Regel verlangt", text:"Fair ist, wer **mehr tut, als die Regel verlangt**: zugeben, dass man den Ball zuletzt berührt hat, das Spiel unterbrechen, wenn sich jemand verletzt, oder **alle Mitspieler** einbeziehen."},
+    {bild:FOTO("bb2-streetball","🏀","Streetball ohne Schiri"), titel:"Call your own foul", text:"Im **Streetball** gibt es oft keinen Schiri. Dort ruft man **sein eigenes Foul**. Das funktioniert nur, wenn alle **ehrlich** sind. Genau das ist Fair Play."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:FOTO("bb2-schrittfehler","👟"), titel:"Schrittfehler", text:"**„Zwei Schritte nur mit Ball in der Hand, beim dritten Schritt ist der Ball verbrannt.“**"},
+    {bild:feld({hl:["zone"], titel:"Die Zone"}), titel:"Zone", text:"**„Drei Sekunden in der Zone, länger stehen gibt’s nicht – ohne!“**"},
+    {bild:uhr("12", "Wurfuhr beim 3x3"), titel:"3x3", text:"**„Drei gegen drei auf einen Korb, zwölf Sekunden – und schon ist’s fort.“**"},
+    {bild:wozu(-1), titel:"Vier Aufgaben", text:"**„Sicher, gleich, im Fluss, vergleichbar – so macht Regeln Sinn, ganz klar.“**"},
+    {bild:fairplay(1), titel:"Fair Play", text:"**„Regeln halten ist formell – den Gegner achten informell.“**"}
+  ]}
+};
+
+const HERO = campHero({ ort:"spielfeld", symbol:"turm", etappe:"Etappe 2", titel:"Spielregeln & Fairness",
+  text:"Vom Schiri-Turm hast du das ganze Feld im Blick: Basketball, 3x3 und die Frage, warum es Regeln gibt und was fair ist. Sammle Holzscheite 🪵 für dein Camp-Feuer." });
+
+const FV = ["5 gegen 5", "3x3"];
+LW.start(Object.assign({}, CAMP, {
   id: "bb2",
-  titel: "Basketball-Lernwelt",
-  sprache: "de",
+  titel: "Spielregeln & Fairness – Lernwelt",
   hero: HERO,
-  sammel: "🪵",
   kartenSymbol: "🏀",
-  rang: {k:"s8"},   // gemeinsame Holzscheite und Ränge in ganz Camp Start
-  konfetti: ["#EE5F17","#FFD35C","#13296B","#FFFFFF","#14834F"],
-  lob: {3:"Swish! Das war ein Dreier.", 2:"Gut gespielt! Schaffst du beim nächsten Mal drei Sterne?", 1:"Guter Anfang – probier es gleich nochmal.", 0:"Nicht aufgeben: Lies die Erklärungen und versuch es nochmal."},
+  lob: {3:"Swish! Das war ein Dreier.", 2:"Gut gespielt! Schaffst du beim nächsten Mal drei Sterne?", 1:"Guter Anfang – lies die Infokarten und probier es gleich nochmal.", 0:"Nicht aufgeben: Lies die Erklärungen und versuch es nochmal."},
+  lernen: LERNEN,
   levels: [
-    { id:"memory", typ:"memory", icon:"🧠", titel:"Regel-Memory", art:"Memory · 8 Paare",
+    { id:"memory", lernen:"regeln", typ:"memory", icon:"🧠", titel:"Regel-Memory", art:"Memory · 8 Paare",
       anleitung:"Finde **Regel + Erklärung**. Je weniger Züge du brauchst, desto mehr Punkte.",
+      ab:"Notiere in **Aufgabe 1** fünf Regeln und was bei einem Verstoß passiert.",
       paare:[
         {a:"Doppel­dribbling", b:"Dribbeln, Ball festhalten, wieder dribbeln"},
         {a:"Schritt­fehler", b:"Mehr als zwei Schritte mit dem Ball in der Hand"},
@@ -88,7 +164,7 @@ LW.start({
         {a:"Aus", b:"Der Ball berührt die Linie oder den Boden dahinter"},
         {a:"Frei­wurf", b:"1 Punkt – ungestörter Wurf von der Linie"}
       ]},
-    { id:"shotclock", typ:"quiz", icon:"⏱️", titel:"Shot Clock", art:"Quiz · 24 Sekunden pro Frage",
+    { id:"shotclock", lernen:"regeln", typ:"quiz", icon:"⏱️", titel:"Shot Clock", art:"Quiz · 24 Sekunden pro Frage",
       anleitung:"**24 Sekunden** pro Frage – wie im echten Spiel. Jede richtige Antwort ist ein Korb: **2 Punkte**.",
       zeit:24, punkte:2, richtigText:"Korb!",
       fragen:[
@@ -101,8 +177,9 @@ LW.start({
         {q:"Wie viel Zeit hast du für einen Einwurf?", o:["3 Sekunden","5 Sekunden","8 Sekunden","10 Sekunden"], c:1, e:"Nach 5 Sekunden ohne Einwurf bekommt der Gegner den Ball."},
         {q:"Eine Spielerin wird beim Wurf gefoult – und trifft trotzdem. Was passiert?", o:["Nur der Korb zählt","Korb zählt nicht, 2 Freiwürfe","Korb zählt + 1 Freiwurf","Sprungball"], c:2, e:"Das nennt man „And one“: Der Korb zählt und es gibt einen Freiwurf dazu."}
       ]},
-    { id:"schiri", typ:"quiz", icon:"🧑‍⚖️", titel:"Du bist der Schiri", art:"Spielsituationen entscheiden",
+    { id:"schiri", lernen:"regeln", typ:"quiz", icon:"🧑‍⚖️", titel:"Du bist der Schiri", art:"Spielsituationen entscheiden",
       anleitung:"Lies die Situation und entscheide wie ein Schiri. Richtig = **2 Punkte**.",
+      ab:"Ergänze in **Aufgabe 1** deine Tabelle mit den Regeln, die du als Schiri gerade gepfiffen hast.",
       punkte:2, szenenLabel:"Situation",
       fragen:[
         {szene:"Lena dribbelt zum Korb. Ein Gegner kommt, sie hält den Ball kurz mit beiden Händen fest – und dribbelt dann weiter.", q:"Deine Entscheidung?", o:["Weiterspielen","Doppeldribbling","Schrittfehler","Foul des Gegners"], c:1, e:"Wer das Dribbling beendet hat, darf nicht noch einmal dribbeln. Der Gegner bekommt den Ball."},
@@ -114,7 +191,40 @@ LW.start({
         {szene:"Emma ist beim Schnellangriff allein auf dem Weg zum Korb. Ein Verteidiger zieht sie von hinten am Trikot – ohne den Ball spielen zu wollen.", q:"Deine Entscheidung?", o:["Persönliches Foul","Unsportliches Foul","Kein Foul","Technisches Foul"], c:1, e:"Wer gar nicht versucht, den Ball zu spielen, begeht ein unsportliches Foul: 2 Freiwürfe und Ballbesitz für Emmas Team."},
         {szene:"Ben wirft von weit draußen und trifft. Sein linker Fuß stand beim Absprung auf der Dreierlinie.", q:"Wie viele Punkte gibst du?", o:["3 Punkte","2 Punkte","1 Punkt","Korb zählt nicht"], c:1, e:"Die Linie gehört zum Zwei-Punkte-Bereich."}
       ]},
-    { id:"fairplay", typ:"swipe", icon:"🤝", titel:"Fair-Play-Check", art:"Wischen: fair oder unfair?",
+    { id:"dreier", typ:"rush", lernen:"dreier", icon:"⚡", titel:"5 gegen 5 oder 3x3?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Gehört die Regel zum **großen Spiel 5 gegen 5** (linker Knopf) oder zum **3x3** (rechter Knopf)? **Ziel: 10 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:10, fest:true,
+      ab:"Ergänze in **Aufgabe 2** die Spalte **3x3** und erkläre, warum ein 3x3-Team nur 12 Sekunden hat.",
+      items:[
+        {q:"24 Sekunden für einen Angriff", o:FV, c:0}, {q:"12 Sekunden für einen Angriff", o:FV, c:1},
+        {q:"Ein Korb hinter der Linie zählt 3 Punkte", o:FV, c:0}, {q:"Ein Korb hinter der Linie zählt 2 Punkte", o:FV, c:1},
+        {q:"Gespielt wird auf zwei Körbe", o:FV, c:0}, {q:"Gespielt wird auf einen Korb", o:FV, c:1},
+        {q:"Fünf Spieler pro Team auf dem Feld", o:FV, c:0}, {q:"Drei Spieler pro Team auf dem Feld", o:FV, c:1},
+        {q:"Spielzeit 4 × 10 Minuten", o:FV, c:0}, {q:"Spielende nach 10 Minuten oder bei 21 Punkten", o:FV, c:1},
+        {q:"8 Sekunden, um über die Mittellinie zu kommen", o:FV, c:0}, {q:"Nach dem Korb muss der Ball erst hinter den Bogen", o:FV, c:1},
+        {q:"Ein Korb innerhalb der Linie zählt 2 Punkte", o:FV, c:0}, {q:"Ein Korb innerhalb des Bogens zählt 1 Punkt", o:FV, c:1},
+        {q:"Spielbeginn mit Sprungball", o:FV, c:0}, {q:"Spielbeginn mit Münzwurf", o:FV, c:1}
+      ]},
+    { id:"wozu", typ:"sortieren", lernen:"wozu", icon:"⚖️", titel:"Wozu die Regel?", art:"Sortieren · 12 Regeln",
+      anleitung:"Welche **Aufgabe** hat diese Regel vor allem? Ordne sie einem der vier Körbe zu. Jede richtige Karte = **1 Punkt**.",
+      ab:"Ordne in **Aufgabe 3** jedem Beispiel den passenden Buchstaben A bis D zu.",
+      koerbe:[ {t:"A Sicherheit", info:"schützt die Spieler"}, {t:"B Chancengleichheit", info:"gleiche Chancen"}, {t:"C Spielfluss", info:"hält das Spiel am Laufen"}, {t:"D Vergleichbarkeit", info:"überall gleich"} ],
+      items:[
+        {t:"Schlagen, Halten und Stoßen sind verboten.", k:0}, {t:"Schmuck und Uhren werden vor dem Spiel abgelegt.", k:0}, {t:"Ein unsportliches Foul wird besonders hart bestraft.", k:0},
+        {t:"Beide Teams haben gleich viele Spieler auf dem Feld.", k:1}, {t:"Zur Halbzeit werden die Körbe gewechselt.", k:1}, {t:"Zu Beginn entscheidet ein Münzwurf oder Sprungball.", k:1},
+        {t:"Nach 24 Sekunden muss geworfen werden.", k:2}, {t:"Ein Angreifer darf nur 3 Sekunden in der Zone stehen.", k:2}, {t:"Für einen Einwurf hat man 5 Sekunden.", k:2},
+        {t:"Der Korb hängt überall in 3,05 m Höhe.", k:3}, {t:"In allen FIBA-Ländern ist die Dreierlinie 6,75 m vom Korb entfernt.", k:3}, {t:"Ein Spielfeld ist nach FIBA-Regeln überall 28 × 15 m groß.", k:3}
+      ]},
+    { id:"dreifach", typ:"sortieren", lernen:"fair", icon:"🧭", titel:"Fair, unfair oder mehr als fair?", art:"Sortieren · 12 Karten",
+      anleitung:"Ist das ein **Regelverstoß**, **erlaubt, aber unfair** oder sogar **mehr als fair**? Jede richtige Karte = **1 Punkt**.",
+      ab:"Schneide in **Aufgabe 4** die Karten aus und klebe sie in die passende Spalte.",
+      koerbe:[ {t:"Regelverstoß", info:"formell unfair"}, {t:"erlaubt, aber unfair", info:"informell unfair"}, {t:"mehr als fair", info:"mehr, als die Regel verlangt"} ],
+      items:[
+        {t:"Du hältst deinen Gegner am Trikot fest.", k:0}, {t:"Du läufst mit dem Ball in der Hand drei Schritte.", k:0}, {t:"Du stößt einen Gegner beim Rebound weg.", k:0}, {t:"Du beleidigst den Schiri.", k:0},
+        {t:"Du lachst einen Gegner aus, weil er den Korb verfehlt.", k:1}, {t:"Du spielst den schwächsten Mitspieler absichtlich nie an.", k:1}, {t:"Du jubelst provozierend direkt vor dem Gesicht des Gegners.", k:1, e:"Das kann sogar als technisches Foul gepfiffen werden. Auf jeden Fall ist es unfair."}, {t:"Du meckerst nach jedem Pfiff.", k:1},
+        {t:"Du gibst zu, dass du den Ball zuletzt berührt hast.", k:2}, {t:"Ein Gegner hat sich verletzt. Du hörst sofort auf und holst Hilfe.", k:2}, {t:"Du hilfst einem gestürzten Gegner wieder auf.", k:2}, {t:"Im Streetball rufst du selbst dein Foul.", k:2}
+      ]},
+    { id:"fairplay", lernen:"fair", typ:"swipe", icon:"🤝", titel:"Fair-Play-Check", art:"Wischen: fair oder unfair?",
       anleitung:"Wische nach **rechts = fair**, nach **links = unfair** – oder tippe auf die Knöpfe. Eine Karte ist eine Grauzone.",
       links:{t:"Unfair", icon:"👎"}, rechts:{t:"Fair", icon:"👍"},
       karten:[
@@ -128,6 +238,20 @@ LW.start({
         {t:"Nach einem Korb jubelst du direkt vor dem Gesicht deines Gegners und machst eine abfällige Geste.", r:"l", e:"Freuen ja, verhöhnen nein. Provozieren kann als technisches Foul gepfiffen werden."},
         {t:"Beim Wählen der Mannschaften achtest du darauf, dass beide Teams ungefähr gleich stark sind.", r:"r", e:"Ausgeglichene Teams machen das Spiel für alle spannend."},
         {t:"Nach einer Niederlage klatschst du mit allen Gegnern und dem Schiri ab.", r:"r", e:"Das Spiel ist vorbei, der Respekt bleibt."}
+      ]},
+    { id:"erfinder", typ:"swipe", lernen:"fair", icon:"💡", titel:"Regel-Erfinder", art:"Wischen · 8 Ideen",
+      anleitung:"Eure Klasse sammelt Ideen für eine neue Regel, die das 3x3 **fairer** macht. Macht die Regel das Spiel **fairer** (rechts) oder **nicht** (links)?",
+      links:{t:"Nicht fairer", icon:"👎"}, rechts:{t:"Fairer", icon:"👍"},
+      ab:"Erfindet in **Aufgabe 5** eure eigene Regel und plant, wie ihr sie testet.",
+      karten:[
+        {t:"Ein Korb zählt erst, wenn jeder im Team den Ball berührt hat.", r:"r", e:"So werden alle einbezogen."},
+        {t:"Das Team mit den größten Spielern bekommt 5 Sekunden mehr Zeit.", r:"l", e:"Das bevorzugt ein Team: keine Chancengleichheit."},
+        {t:"Nach jedem Spiel klatschen alle miteinander ab.", r:"r", e:"Respekt gehört zum informellen Fair Play."},
+        {t:"Wer am lautesten meckert, bekommt den Ball.", r:"l", e:"Das belohnt unfaires Verhalten."},
+        {t:"Mädchen und Jungen sind in jedem Team gemischt.", r:"r", e:"Ausgeglichene Teams machen das Spiel spannender."},
+        {t:"Fouls zählen nur, wenn der Schiri sie sieht – sonst ist alles erlaubt.", r:"l", e:"Fair Play gilt auch, wenn niemand hinschaut."},
+        {t:"Jeder ruft sein eigenes Foul, wie im Streetball.", r:"r", e:"Funktioniert nur mit Ehrlichkeit, genau das soll geübt werden."},
+        {t:"Ein Team darf einen vierten Spieler einwechseln, wenn es hinten liegt.", r:"beide", e:"**Grauzone:** Das kann ein Spiel ausgleichen, ist aber ungleich. Probiert es aus und diskutiert!"}
       ]},
     { id:"masse", typ:"schaetzen", icon:"📏", titel:"Maß nehmen", art:"Schätzen mit dem Regler",
       anleitung:"Schieb den Regler auf deine Schätzung. Volltreffer = **2 Punkte**, knapp daneben = 1 Punkt.",
@@ -181,9 +305,29 @@ LW.start({
         {q:"„Ein teurer Markenschuh macht mich zum besseren Spieler.“ Stimmt das?", o:["Ja, auf jeden Fall","Nein – Training zählt, der Schuh muss gut passen","Nur bei Profis","Nur beim Dunking"], c:1, e:"Wichtig sind guter Halt und eine rutschfeste Sohle. Ein teures Logo macht dich nicht besser."},
         {q:"Warum gibt es manche Sneaker nur als „Limited Edition“?", o:["Weil das Material knapp ist","Was selten ist, wollen viele haben – das treibt den Preis","Weil es ein Gesetz so will","Damit nur Profis sie kaufen dürfen"], c:1, e:"Mit künstlicher Knappheit steigern Marken die Nachfrage. Manche Modelle werden danach viel teurer weiterverkauft."},
         {q:"Fairness abseits des Spielfelds: Wofür wurden große Sportmarken oft kritisiert?", o:["Für zu bunte Schuhe","Für Arbeitsbedingungen und Löhne in Zulieferfabriken","Für zu leichte Bälle","Für zu viele Logos"], c:1, e:"Viele Sportartikel werden in Fabriken in Asien hergestellt. Dort wurden oft schlechte Arbeitsbedingungen kritisiert. Die Firmen haben Regeln für ihre Zulieferer eingeführt – ob die reichen, wird weiter diskutiert."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 5 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut, so bleibt er hängen.",
+      fragen:[
+        {q:"„Zwei Schritte nur mit Ball in der Hand, beim ______ Schritt ist der Ball verbrannt.“", o:["dritten","vierten","zweiten"], c:0},
+        {q:"„Drei ______ in der Zone, länger stehen gibt’s nicht – ohne!“", o:["Minuten","Sekunden","Schritte"], c:1},
+        {q:"„Drei gegen drei auf einen Korb, ______ Sekunden – und schon ist’s fort.“", o:["vierundzwanzig","acht","zwölf"], c:2},
+        {q:"„Sicher, gleich, im ______, vergleichbar – so macht Regeln Sinn, ganz klar.“", o:["Fluss","Korb","Team"], c:0},
+        {q:"„Regeln halten ist formell – den Gegner ______ informell.“", o:["schlagen","achten","foulen"], c:1}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 7 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie viele Sekunden hat ein 3x3-Team für einen Angriff?", hilfe:"💡 Zahl", a:["12"], re:["^(12|zwölf|zwoelf)( sekunden| s)?$"], e:"**12 Sekunden**."},
+        {q:"Wie viele Punkte zählt beim 3x3 ein Korb von hinter dem Bogen?", hilfe:"💡 Zahl", a:["2"], re:["^(2|zwei)( punkte)?$"], e:"**2 Punkte**."},
+        {q:"Wie heißt der Fehler, wenn man mit dem Ball in der Hand zu viele Schritte macht?", hilfe:"💡 S…", a:["Schrittfehler"], re:["^(ein |der )?schrittfehler$"], e:"**Schrittfehler**."},
+        {q:"In welcher Höhe hängt der Korb (in Metern)?", hilfe:"💡 z. B. 2,50", a:["3,05"], re:["^3[,.]05( ?m| meter)?$"], e:"**3,05 m**."},
+        {q:"Wie nennt man Fair Play, das über die Regeln hinausgeht?", hilfe:"💡 i…", a:["informell"], re:["^(das )?informell(es)?( fair play)?$"], e:"**Informelles** Fair Play."},
+        {q:"Welche Aufgabe von Regeln steckt in „Halten und Stoßen sind verboten“?", hilfe:"💡 S…", a:["Sicherheit"], re:["^(die )?sicherheit$"], e:"**Sicherheit**."},
+        {q:"Bei wie vielen Punkten ist ein 3x3-Spiel sofort zu Ende?", hilfe:"💡 Zahl", a:["21"], re:["^(21|einundzwanzig)( punkte(n)?)?$"], e:"Bei **21 Punkten**."}
       ]}
   ]
-});
+}));
 </script>
 </body>
 </html>

@@ -183,10 +183,10 @@ const FRS = {
   // orte = Orte der Welt (gleiche ids wie in der Welt-Datei!), offen = ohne Freigabe sichtbar. Lernwelten: Material mit welt:N und Thema-id.
   sport: { welten: [
     { k:8, name:"Camp Start", pfad:"sport/klasse8.html", bild:"sport/welt8/vorschau.jpg", info:"Klasse 8 · Profil Sport",
-      orte:[ {id:"feuer", name:"Lagerfeuer", icon:"🔥", e:"T1 Was ist Sport?", offen:true}, {id:"spielfeld", name:"Schiri-Turm", icon:"🧑‍⚖️", e:"T5 Spielregeln & Fairness", offen:true, themen:["bb2"]},
-             {id:"wiese", name:"Sonnen-Wiese", icon:"🌅", e:"T3 Aufwärmen & Stretching", offen:true}, {id:"muehle", name:"Muskel-Mühle", icon:"⚙️", e:"T4 Muskeln & Gegenspieler", offen:true},
-             {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"T2 Motorische Fähigkeiten", offen:true}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"T6 Fair Play & Emotionen", offen:true},
-             {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"T7 Reflexion & Portfolio", offen:true} ] },
+      orte:[ {id:"feuer", name:"Lagerfeuer", icon:"🔥", e:"Etappe 1 Was ist Sport?", offen:true, themen:["ws8"]}, {id:"spielfeld", name:"Schiri-Turm", icon:"🧑‍⚖️", e:"Etappe 2 Spielregeln & Fairness", offen:true, themen:["bb2"]},
+             {id:"wiese", name:"Sonnen-Wiese", icon:"🌅", e:"Etappe 3 Aufwärmen & Stretching", offen:true, themen:["aw8"]}, {id:"muehle", name:"Muskel-Mühle", icon:"⚙️", e:"Etappe 4 Muskeln & Gegenspieler", offen:true, themen:["mu8"]},
+             {id:"parcours", name:"Abenteuer-Parcours", icon:"🧗", e:"Etappe 5 Motorische Fähigkeiten", offen:true, themen:["mf8"]}, {id:"leuchtturm", name:"Leuchtturm der Gefühle", icon:"🗼", e:"Etappe 6 Fair Play & Emotionen", offen:true, themen:["fp8"]},
+             {id:"huette", name:"Logbuch-Hütte", icon:"📖", e:"Etappe 7 Mein Profiljahr", offen:true, themen:["rb8"]} ] },
     { k:9, name:"Athletopolis", pfad:"sport/klasse9.html", bild:"sport/welt9/vorschau.jpg", info:"Klasse 9 · Profil Sport",
       orte:[ {id:"herz", name:"Herz-Kraftwerk", icon:"❤️", e:"E1 Herz-Kreislauf & Energie", offen:true, themen:["hz9"]}, {id:"werft", name:"Skelett-Werft", icon:"🦴", e:"E2 Knochen & Gelenke", offen:true, themen:["kn9","ge9"]},
              {id:"stadion", name:"Flutlicht-Stadion", icon:"🏟️", e:"E2 Sportverletzungen & Ursachen", offen:true, themen:["vl9"]}, {id:"bergwacht", name:"Bergwacht-Station", icon:"🚁", e:"E2 Erste Hilfe & Vorbeugen", offen:true, themen:["eh9"]},
@@ -197,8 +197,20 @@ const FRS = {
   // Fächer ohne Inseln: einfache Liste
   listen: [
     { id:"sport", name:"Sport", icon:"🏀", materialien:[
-      { id:"bb2", welt:8, titel:"Basketball-Lernwelt: Regeln & Fairness", info:"Profil Sport Kl. 8 · Schiri-Turm (T5) · 8 Spiele", pfad:"sport/basketball.html",
-        stationen:["Memory","Shot Clock","Schiri","Fair Play","Maße","Zeitreise","NBA/FIBA","Sneaker"], stationenMax:[8,16,16,10,10,7,12,8] },
+      { id:"ws8", welt:8, titel:"Was-ist-Sport-Lernwelt: Merkmale, Motive & Bewegungsmangel", info:"Profil Sport Kl. 8 · Lagerfeuer (Etappe 1) · 4 Infokarten-Stapel · 9 Spiele", pfad:"sport/camp-sport.html",
+        stationen:["Merkmale", "Sport?", "Memory", "Motive", "Mangel", "Zahlen", "Wahr/Falsch", "Reime", "Profi"], stationenMax:[8, 10, 7, 8, 11, 8, 10, 5, 6] },
+      { id:"bb2", welt:8, titel:"Basketball-Lernwelt: Regeln, 3x3 & Fair Play", info:"Profil Sport Kl. 8 · Schiri-Turm (Etappe 2) · 5 Infokarten-Stapel · 14 Spiele", pfad:"sport/basketball.html",
+        stationen:["Memory", "Shot Clock", "Schiri", "5er/3x3", "Wozu?", "Fair-Stufen", "Fair Play", "Regel-Erfinder", "Maße", "Zeitreise", "NBA/FIBA", "Sneaker", "Reime", "Profi"], stationenMax:[8, 16, 16, 10, 12, 12, 10, 8, 10, 7, 12, 8, 5, 7] },
+      { id:"aw8", welt:8, titel:"Aufwärm-Lernwelt: Aufwärmen, Cool-down & Stretching", info:"Profil Sport Kl. 8 · Sonnen-Wiese (Etappe 3) · 5 Infokarten-Stapel · 9 Spiele", pfad:"sport/camp-aufwaermen.html",
+        stationen:["Warum?", "Reihenfolge", "Programm", "Dyn./Stat.", "Coach", "Puls", "Wahr/Falsch", "Reime", "Profi"], stationenMax:[8, 5, 15, 10, 14, 6, 10, 4, 6] },
+      { id:"mu8", welt:8, titel:"Muskel-Lernwelt: Muskeln, Muskelpaare & Turnen", info:"Profil Sport Kl. 8 · Muskel-Mühle (Etappe 4) · 5 Infokarten-Stapel · 10 Spiele", pfad:"sport/camp-muskeln.html",
+        stationen:["Wer zieht?", "Agonist?", "Karte", "Gegenspieler", "Memory", "Lückentext", "Turnen", "Wahr/Falsch", "Reime", "Profi"], stationenMax:[10, 10, 10, 10, 5, 8, 14, 10, 4, 7] },
+      { id:"mf8", welt:8, titel:"Fähigkeiten-Lernwelt: Die 5 motorischen Fähigkeiten", info:"Profil Sport Kl. 8 · Abenteuer-Parcours (Etappe 5) · 5 Infokarten-Stapel · 10 Spiele", pfad:"sport/camp-faehigkeiten.html",
+        stationen:["Memory", "Bingo", "Sportarten", "Kond./Koord.", "Unterformen", "Tests", "Zirkel", "Wahr/Falsch", "Reime", "Profi"], stationenMax:[5, 15, 8, 10, 14, 6, 8, 10, 4, 6] },
+      { id:"fp8", welt:8, titel:"Fair-Play-Lernwelt: Gefühle, STOPP-Regel & Vertrag", info:"Profil Sport Kl. 8 · Leuchtturm der Gefühle (Etappe 6) · 5 Infokarten-Stapel · 10 Spiele", pfad:"sport/camp-fairplay.html",
+        stationen:["Fair?", "Gefühl/Verhalten", "STOPP", "Memory", "Szenen", "Werte", "Vertrag", "Wahr/Falsch", "Reime", "Profi"], stationenMax:[16, 10, 5, 5, 12, 7, 8, 10, 4, 6] },
+      { id:"rb8", welt:8, titel:"Rückblick-Lernwelt: Mein Profiljahr & Camp-Quiz", info:"Profil Sport Kl. 8 · Logbuch-Hütte (Etappe 7) · 1 Infokarten-Stapel · 5 Spiele", pfad:"sport/camp-rueckblick.html",
+        stationen:["Marathon", "Memory", "Etappe?", "Wahr/Falsch", "Profi"], stationenMax:[12, 8, 12, 12, 8] },
       { id:"hz9", welt:9, titel:"Herz-Lernwelt: Herz, Kreislauf, Pulskurve & Ausdauer", info:"Profil Sport Kl. 9 · Herz-Kraftwerk (E1, AB 01–02) · 5 Infokarten-Stapel inkl. Merk-Reime · 14 Spiele", pfad:"sport/herz.html",
         stationen:["Kreislauf","Rot/Blau","Herz-Quiz","Zonen","Energiewege","Lückentext","Puls-Kette","Rechner","Memory","Ruhepuls","Zahlen","Reime","Wahr/Falsch","Profi"], stationenMax:[12,10,8,10,12,5,5,8,8,8,10,6,12,9] },
       { id:"kn9", welt:9, titel:"Knochen-Lernwelt: Skelett, Aufbau & starke Knochen", info:"Profil Sport Kl. 9 · Skelett-Werft, Röntgen-Klinik (E2) · 4 Infokarten-Stapel inkl. Merk-Reime · 13 Spiele", pfad:"sport/knochen.html",

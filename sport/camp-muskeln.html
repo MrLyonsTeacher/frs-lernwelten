@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16281F">
+<title>Muskeln & Gegenspieler – Camp Start</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
+<script>
+/* =========================================================
+   Muskelkarte: Körper von vorn (links) und hinten (rechts)
+   ========================================================= */
+// rechte Körperhälfte als Umriss (Abstand von der Mitte, Höhe); wird gespiegelt
+const HALB = [[8,50],[22,57],[37,63],[45,72],[49,90],[51,112],[53,138],[57,166],[60,194],[63,212],[57,226],[50,214],[48,196],[44,168],[40,142],[36,110],[32,92],[30,112],[27,140],[31,164],[32,198],[28,248],[29,278],[20,328],[25,345],[9,348],[8,334],[8,290],[8,252],[5,204],[0,180]];
+const MZ = "#C65A4B", MZR = "#7E2E25", MK = "#5D3F3A", MKR = "#3E2A26";
+const MUSKELN = {
+  bizeps:"Bizeps (Armbeuger)", trizeps:"Trizeps (Armstrecker)", bauch:"Bauchmuskeln", ruecken:"Rückenmuskeln",
+  hueft:"Hüftbeuger", gesaess:"Gesäßmuskel", vorn:"vordere Oberschenkelmuskeln", hinten:"hintere Oberschenkelmuskeln", schien:"Schienbeinmuskel", wade:"Wadenmuskel" };
+const PAARE = [["bizeps","trizeps"],["bauch","ruecken"],["hueft","gesaess"],["vorn","hinten"],["schien","wade"]];
+function koerper(cx){
+  const pts = HALB.map(([x, y]) => [cx + x, y]).concat(HALB.slice(0, -1).reverse().map(([x, y]) => [cx - x, y]));
+  return `<path d="${GLATT(pts, true)}" fill="${CB2}" stroke="${HG}" stroke-width="2" stroke-linejoin="round"/><ellipse cx="${cx}" cy="34" rx="14" ry="17" fill="${CB2}" stroke="${HG}" stroke-width="2"/>`;
+}
+const beide = (cx, f) => f(x => cx + x) + f(x => cx - x);
+const ell = (x, y, rx, ry, rot, fill, st) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${x} ${y})" fill="${fill}" stroke="${st}" stroke-width="1.6"/>`;
+const faser = (x, y, ry, rot) => `<path d="M${x} ${y - ry * .7} L${x} ${y + ry * .7}" transform="rotate(${rot} ${x} ${y})" stroke="#E9A397" stroke-width="1" opacity=".6"/>`;
+// m(id, inner): Zone zum Antippen
+function muskelkarte(hl, tippbar){
+  hl = hl || [];
+  const z = (id, inner) => tippbar ? `<g data-z="${id}">${inner}</g>` : `<g opacity="${hl.length && !hl.includes(id) ? .35 : 1}">${inner.replace(new RegExp(MZ, "g"), hl.includes(id) ? GE : MZ)}</g>`;
+  const F = 105, B = 315;
+  let s = koerper(F) + koerper(B);
+  // Vorderseite: Zusammenhang (Schulter, Brust, Unterarm)
+  s += beide(F, X => ell(X(41), 76, 9, 12, X(1) > F ? -14 : 14, MK, MKR) + `<path d="M${X(3)} 70 C${X(18)} 66 ${X(31)} 72 ${X(31)} 86 C${X(29)} 98 ${X(15)} 100 ${X(3)} 96 Z" fill="${MK}" stroke="${MKR}" stroke-width="1.6"/>` + ell(X(51), 166, 5.5, 21, X(1) > F ? -6 : 6, MK, MKR) + `<circle cx="${X(17)}" cy="250" r="5" fill="${MK}" stroke="${MKR}" stroke-width="1.4"/>`);
+  s += z("bizeps", beide(F, X => ell(X(45), 110, 6.5, 20, X(1) > F ? -5 : 5, MZ, MZR) + faser(X(45), 110, 20, X(1) > F ? -5 : 5)));
+  s += z("bauch", `<rect x="${F - 12}" y="100" width="24" height="62" rx="9" fill="${MZ}" stroke="${MZR}" stroke-width="1.6"/>` + [116, 132, 147].map(y => `<path d="M${F - 11} ${y} H${F + 11}" stroke="${MZR}" stroke-width="1.4"/>`).join("") + `<path d="M${F} 101 V161" stroke="${MZR}" stroke-width="1.4"/>`);
+  s += z("hueft", beide(F, X => ell(X(15), 170, 4.5, 12, X(1) > F ? -38 : 38, MZ, MZR)));
+  s += z("vorn", beide(F, X => `<path d="${GLATT([[X(9),180],[X(26),182],[X(31),206],[X(27),236],[X(20),246],[X(11),238],[X(8),210]], true)}" fill="${MZ}" stroke="${MZR}" stroke-width="1.6"/>` + faser(X(19), 212, 28, 0)));
+  s += z("schien", beide(F, X => ell(X(21), 292, 4.6, 27, X(1) > F ? 5 : -5, MZ, MZR)));
+  // Rückseite: Zusammenhang (Nacken, Schulter, Unterarm)
+  s += `<path d="M${B} 48 L${B + 26} 62 L${B} 104 L${B - 26} 62 Z" fill="${MK}" stroke="${MKR}" stroke-width="1.6"/>`;
+  s += beide(B, X => ell(X(41), 76, 9, 12, X(1) > B ? -14 : 14, MK, MKR) + ell(X(51), 166, 5.5, 21, X(1) > B ? -6 : 6, MK, MKR));
+  s += z("trizeps", beide(B, X => ell(X(46), 112, 7.2, 20, X(1) > B ? -5 : 5, MZ, MZR) + faser(X(46), 112, 20, X(1) > B ? -5 : 5)));
+  s += z("ruecken", beide(B, X => `<path d="${GLATT([[X(6),96],[X(28),104],[X(29),122],[X(20),146],[X(6),156]], true)}" fill="${MZ}" stroke="${MZR}" stroke-width="1.6"/>`) + `<rect x="${B - 9}" y="112" width="7" height="54" rx="3.5" fill="${MZ}" stroke="${MZR}" stroke-width="1.4"/><rect x="${B + 2}" y="112" width="7" height="54" rx="3.5" fill="${MZ}" stroke="${MZR}" stroke-width="1.4"/>`);
+  s += z("gesaess", beide(B, X => ell(X(15), 183, 15, 15, 0, MZ, MZR)));
+  s += z("hinten", beide(B, X => ell(X(19), 228, 11, 29, X(1) > B ? 3 : -3, MZ, MZR) + faser(X(19), 228, 29, 0)));
+  s += z("wade", beide(B, X => `<path d="${GLATT([[X(12),262],[X(27),266],[X(29),286],[X(22),308],[X(14),300],[X(10),280]], true)}" fill="${MZ}" stroke="${MZR}" stroke-width="1.6"/>`));
+  s += TX(F, 382, "vorne", {s:14, c:HG}) + TX(B, 382, "hinten", {s:14, c:HG});
+  return s;
+}
+const MK_KARTE = (hl, titel) => CK(420, 410, TX(210, 24, titel || "Muskelpaare", {s:16, c:HELL}) + `<g transform="translate(0 6)">${muskelkarte(hl)}</g>`);
+FIG.muskeln = () => `<svg class="mk" viewBox="0 0 420 392" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Muskeln von vorn und hinten"><rect width="420" height="392" rx="18" fill="${CB}"/>${muskelkarte([], true)}</svg>`;
+
+/* Seilzug-Modell: Gelenk als Scharnier, zwei Seile (Muskeln) auf beiden Seiten */
+function seilzug(beugen){
+  const ox = 120, oy = 150, ang = beugen ? -58 : 90, r = ang * Math.PI / 180, L = 96, top = 46;
+  const P = (lx, ly) => [+(ox + lx * Math.cos(r) - ly * Math.sin(r)).toFixed(1), +(oy + lx * Math.sin(r) + ly * Math.cos(r)).toFixed(1)];
+  const [ex, ey] = P(L, 0), bi = P(34, -9), tri = P(-14, 17), biO = [ox + 13, top + 8], triO = [ox - 17, top + 8];
+  const straff = (a, b, c) => `<path d="M${a[0]} ${a[1]} L${b[0]} ${b[1]}" stroke="${c}" stroke-width="10" stroke-linecap="round"/>`;
+  const locker = (a, b, c, aus) => { const mx = (a[0] + b[0]) / 2 + aus, my = (a[1] + b[1]) / 2; return `<path d="M${a[0]} ${a[1]} Q${mx} ${my} ${b[0]} ${b[1]}" stroke="${c}" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/>`; };
+  const unterarm = `<g transform="rotate(${ang} ${ox} ${oy})"><rect x="${ox - 18}" y="${oy - 9}" width="${L + 18}" height="18" rx="8" fill="${SA}"/></g>`;
+  return CK(380, 300, TX(190, 26, beugen ? "Beugen: vorne zieht, hinten gibt nach" : "Strecken: hinten zieht, vorne gibt nach", {s:14.5, c:HELL}) +
+    `<rect x="${ox - 9}" y="${top}" width="18" height="${oy - top}" rx="8" fill="${SA}"/>` + unterarm + `<circle cx="${ox}" cy="${oy}" r="14" fill="${CB2}" stroke="${SA}" stroke-width="5"/>` +
+    (beugen ? straff(biO, bi, RO) + locker(triO, tri, BL, -42) : locker(biO, bi, RO, 40) + straff(triO, tri, BL)) +
+    `<circle cx="${ex}" cy="${ey}" r="12" fill="${OR}"/>` +
+    TX(286, 92, "Beuger (Bizeps)", {s:14, c:RO}) + TX(286, 110, beugen ? "zieht · Agonist" : "gibt nach · Antagonist", {s:12.5, c:HELL, w:600}) +
+    TX(286, 190, "Strecker (Trizeps)", {s:14, c:BL}) + TX(286, 208, beugen ? "gibt nach · Antagonist" : "zieht · Agonist", {s:12.5, c:HELL, w:600}) +
+    TX(190, 286, "Muskeln können nur ziehen, nie drücken.", {s:13, c:GE}));
+}
+
+/* Ungleichgewicht: ein starker und ein schwacher Muskel ziehen am Gelenk */
+const DYSBALANCE = CK(380, 250, TX(190, 26, "Muskuläres Ungleichgewicht", {s:16, c:HELL}) +
+  `<path d="M60 200 H320" stroke="${CL}" stroke-width="3"/><g transform="rotate(10 190 150)"><rect x="180" y="70" width="20" height="130" rx="8" fill="${SA}"/></g>` +
+  `<circle cx="190" cy="150" r="13" fill="${CB2}" stroke="${SA}" stroke-width="4"/>` +
+  `<path d="M196 96 L300 132" stroke="${RO}" stroke-width="16" stroke-linecap="round"/><path d="M184 96 L80 132" stroke="${BL}" stroke-width="5" stroke-linecap="round"/>` +
+  TX(300, 160, "stark", {s:14, c:RO}) + TX(80, 160, "schwach", {s:14, c:BL}) + `<path d="M226 64 q20 -12 36 2" stroke="${GE}" stroke-width="3" fill="none"/><path d="M256 58 l8 8 l-11 3" fill="none" stroke="${GE}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` +
+  TX(190, 232, "Das Gelenk wird zur starken Seite gezogen.", {s:12.5, c:HG, w:600}));
+
+/* =========================================================
+   Inhalte (abgestimmt auf Camp-Logbuch Etappe 4)
+   ========================================================= */
+const LERNEN = {
+  prinzip: { titel:"Spieler & Gegenspieler", folien:[
+    {bild:BILD("mu8-oberarm.webp", "Oberarm mit Bizeps und Trizeps"), titel:"Muskeln ziehen nur", text:"Ein Muskel kann nur eines: sich **zusammenziehen** und dabei am Knochen **ziehen**. Über **Sehnen** ist er an den Knochen befestigt und spannt sich **über ein Gelenk**. Drücken kann ein Muskel nicht."},
+    {bild:seilzug(true), titel:"Beugen", text:"Beim **Beugen** des Arms zieht sich der **Bizeps** auf der Vorderseite zusammen. Er ist der **Agonist**, der „Spieler“, der die Bewegung ausführt. Der **Trizeps** auf der Rückseite gibt nach und wird gedehnt: Er ist der **Antagonist**, der „Gegenspieler“."},
+    {bild:seilzug(false), titel:"Strecken", text:"Beim **Strecken** tauschen die beiden die Rollen: Jetzt zieht der **Trizeps** (Agonist), und der **Bizeps** wird gedehnt (Antagonist). Weil Muskeln nur ziehen können, braucht jede Bewegung einen **Partner auf der anderen Seite**."},
+    {bild:FOTO("mu8-muehle","⚙️","Zwei Mühlräder"), titel:"Wie die Mühlräder am Camp", text:"Spieler und Gegenspieler arbeiten **immer im Team**: Einer zieht, der andere gibt **gleichmäßig** nach. So werden Bewegungen **weich und kontrolliert**. Ohne den Gegenspieler würde der Arm einfach wegschnellen."}
+  ]},
+  paare: { titel:"Muskelpaare im Körper", folien:[
+    {bild:MK_KARTE([], "Muskeln von vorn und hinten"), titel:"Überall Paare", text:"Nicht nur am Oberarm: Überall im Körper arbeiten Muskeln **paarweise**. Meist liegt einer **vorne**, sein Gegenspieler **hinten**."},
+    {bild:MK_KARTE(["bizeps","trizeps"], "Arm"), titel:"Bizeps ↔ Trizeps", text:"Der **Bizeps** (zweiköpfiger Armmuskel) **beugt** den Arm, der **Trizeps** (dreiköpfiger Armmuskel) **streckt** ihn."},
+    {bild:MK_KARTE(["vorn","hinten"], "Oberschenkel"), titel:"Vorne ↔ hinten am Oberschenkel", text:"Die **vorderen Oberschenkelmuskeln** (Quadrizeps, „vierköpfig“) **strecken** das Knie, zum Beispiel beim Absprung. Die **hinteren Oberschenkelmuskeln** **beugen** das Knie, wenn die Ferse zum Po geht."},
+    {bild:MK_KARTE(["bauch","ruecken"], "Rumpf"), titel:"Bauch ↔ Rücken", text:"Die **Bauchmuskeln** beugen den Oberkörper nach vorn, wie beim Sit-up oder in der **Rolle**. Die **Rückenmuskeln** richten ihn wieder auf. Zusammen sorgen sie für **Körperspannung**."},
+    {bild:MK_KARTE(["hueft","gesaess"], "Hüfte"), titel:"Hüftbeuger ↔ Gesäßmuskel", text:"Der **Hüftbeuger** liegt tief vorne in der Leiste und **hebt das Bein nach vorn**. Der **Gesäßmuskel** **streckt die Hüfte**, zum Beispiel beim Treppensteigen oder Sprinten."},
+    {bild:MK_KARTE(["schien","wade"], "Unterschenkel"), titel:"Schienbeinmuskel ↔ Wade", text:"Der **Schienbeinmuskel** **hebt den Fuß** an (Fußspitze hoch). Der **Wadenmuskel** bringt dich in den **Zehenstand** und gibt Kraft beim Abdruck."}
+  ]},
+  turnen: { titel:"Muskeln beim Turnen", folien:[
+    {bild:FOTO("mu8-tau","🪢","Hangeln am Tau"), titel:"Hangeln am Tau", text:"Beim Hochziehen am Tau arbeiten vor allem die **Armbeuger (Bizeps)** und der breite **Rückenmuskel**. Die Hände greifen fest zu."},
+    {bild:FOTO("mu8-barren","🤸","Stütz am Barren"), titel:"Stütz am Barren", text:"Im **Stütz** halten die **Armstrecker (Trizeps)** den Körper oben, die Arme bleiben gestreckt. Dazu arbeiten die **Schultermuskeln**."},
+    {bild:FOTO("mu8-sprung","⬆️","Strecksprung vom Minitrampolin"), titel:"Strecksprung", text:"Beim Absprung **strecken** sich Hüfte, Knie und Fuß kraftvoll: **Gesäß**, **vordere Oberschenkelmuskeln** und **Waden** sind die Spieler."},
+    {bild:FOTO("mu8-handstand","🙃","Handstand mit Körperspannung"), titel:"Handstand & Rolle", text:"Im **Handstand** sorgen **Bauch und Gesäß** für Körperspannung, damit kein **Hohlkreuz** entsteht. Für die **Rolle** machst du dich mit den **Bauchmuskeln** rund."}
+  ]},
+  balance: { titel:"Warum beide trainieren?", folien:[
+    {bild:DYSBALANCE, titel:"Muskuläres Ungleichgewicht", text:"Trainiert man nur **einen** Muskel eines Paares, wird er **viel stärker** als sein Gegenspieler. Er zieht das Gelenk dann in eine Richtung. Das nennt man **muskuläre Dysbalance**."},
+    {bild:FOTO("mu8-haltung","🧍","Fehlhaltung"), titel:"Die Folgen", text:"Ein Ungleichgewicht kann zu **Fehlhaltungen** führen, zum Beispiel zum **Hohlkreuz** bei schwachen Bauchmuskeln, und erhöht das **Verletzungsrisiko**, etwa Zerrungen der Oberschenkelrückseite bei Sprintern."},
+    {bild:MK_KARTE(["bauch","ruecken"], "Rumpf"), titel:"Die Lösung", text:"Im Training immer **beide Seiten** kräftigen: Bauch **und** Rücken, Beuger **und** Strecker. Und die Muskeln, die viel arbeiten, auch **dehnen**."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:seilzug(true), titel:"Ziehen", text:"**„Ein Muskel zieht, doch drückt er nie – drum braucht er einen Partner, sieh!“**"},
+    {bild:seilzug(true), titel:"Agonist", text:"**„Der Agonist, der zieht und macht, der Antagonist gibt nach mit Bedacht.“**"},
+    {bild:MK_KARTE(["bizeps","trizeps"], "Arm"), titel:"Bizeps & Trizeps", text:"**„Bizeps beugt, Trizeps streckt – so wird der Arm bewegt, gecheckt!“**"},
+    {bild:DYSBALANCE, titel:"Training", text:"**„Trainier nicht nur die eine Seit’, sonst zieht’s dich schief – und das tut leid.“**"}
+  ]}
+};
+
+const MN = {bizeps:"Bizeps", trizeps:"Trizeps", bauch:"Bauchmuskeln", ruecken:"Rückenmuskeln", hueft:"Hüftbeuger", gesaess:"Gesäßmuskel", vorn:"vordere Oberschenkelmuskeln", hinten:"hintere Oberschenkelmuskeln", schien:"Schienbeinmuskel", wade:"Wadenmuskel"};
+const M = MUSKELN, AA = ["Agonist (zieht)","Antagonist (gibt nach)"];
+LW.start(Object.assign({}, CAMP, {
+  id: "mu8",
+  titel: "Muskeln – Lernwelt",
+  hero: campHero({ ort:"muehle", symbol:"muehle", etappe:"Etappe 4", titel:"Muskeln & Gegenspieler",
+    text:"An der Muskel-Mühle drehen sich zwei Räder gegeneinander, genau wie Beuger und Strecker in deinem Körper. Finde die Muskelpaare und lerne, wer beim Turnen die Arbeit macht. Sammle Holzscheite 🪵." }),
+  kartenSymbol: "⚙️",
+  lernen: LERNEN,
+  levels: [
+    { id:"wer", typ:"quiz", lernen:"prinzip", icon:"🦾", titel:"Wer zieht?", art:"Quiz · 10 Bewegungen",
+      anleitung:"Welcher Muskel **zieht** bei dieser Bewegung, ist also der Spieler (Agonist)? Jede richtige Antwort = **1 Punkt**.",
+      ab:"Füllt in **Aufgabe 2** die Tabelle zum Selbstversuch aus: Welcher Muskel wird hart, welcher wird gedehnt?",
+      fragen:[
+        {q:"Du beugst den Arm und hebst eine Hantel an.", o:[MN.bizeps, MN.trizeps, MN.bauch, MN.wade], c:0},
+        {q:"Du streckst den Arm im Liegestütz nach oben.", o:[MN.bizeps, MN.trizeps, MN.gesaess, MN.schien], c:1},
+        {q:"Du ziehst die Ferse zum Po.", o:[MN.vorn, MN.hinten, MN.hueft, MN.wade], c:1},
+        {q:"Du streckst beim Absprung das Knie.", o:[MN.hinten, MN.schien, MN.vorn, MN.bizeps], c:2},
+        {q:"Beim Sit-up rollst du den Oberkörper nach vorn.", o:[MN.ruecken, MN.gesaess, MN.trizeps, MN.bauch], c:3},
+        {q:"Du richtest dich aus dem Vorbeugen wieder auf.", o:[MN.ruecken, MN.bauch, MN.bizeps, MN.schien], c:0},
+        {q:"Du ziehst die Fußspitze zum Schienbein hoch.", o:[MN.wade, MN.schien, MN.hinten, MN.hueft], c:1},
+        {q:"Du gehst in den Zehenstand.", o:[MN.schien, MN.vorn, MN.wade, MN.bauch], c:2},
+        {q:"Du hebst das gestreckte Bein nach vorn an.", o:[MN.gesaess, MN.ruecken, MN.wade, MN.hueft], c:3},
+        {q:"Du streckst beim Sprint die Hüfte kraftvoll nach hinten.", o:[MN.gesaess, MN.hueft, MN.bauch, MN.schien], c:0}
+      ]},
+    { id:"rollen", typ:"rush", lernen:"prinzip", icon:"⚡", titel:"Agonist oder Antagonist?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Zieht der Muskel bei dieser Bewegung (**Agonist**, linker Knopf) oder gibt er nach (**Antagonist**, rechter Knopf)? **Ziel: 10 Treffer**.",
+      zeit:60, ziel:10, fest:true,
+      ab:"Ergänze in **Aufgabe 3** den Lückentext zum Video.",
+      items:[
+        {q:"Arm beugen: Bizeps", o:AA, c:0}, {q:"Arm beugen: Trizeps", o:AA, c:1}, {q:"Arm strecken: Trizeps", o:AA, c:0}, {q:"Arm strecken: Bizeps", o:AA, c:1},
+        {q:"Knie strecken: vordere Oberschenkelmuskeln", o:AA, c:0}, {q:"Knie strecken: hintere Oberschenkelmuskeln", o:AA, c:1},
+        {q:"Sit-up: Bauchmuskeln", o:AA, c:0}, {q:"Sit-up: Rückenmuskeln", o:AA, c:1},
+        {q:"Zehenstand: Wadenmuskel", o:AA, c:0}, {q:"Zehenstand: Schienbeinmuskel", o:AA, c:1},
+        {q:"Knie beugen: hintere Oberschenkelmuskeln", o:AA, c:0}, {q:"Knie beugen: vordere Oberschenkelmuskeln", o:AA, c:1},
+        {q:"Bein nach vorn heben: Hüftbeuger", o:AA, c:0}, {q:"Bein nach vorn heben: Gesäßmuskel", o:AA, c:1}
+      ]},
+    { id:"karte", typ:"bildzuordnen", bild:"muskeln", lernen:"paare", icon:"🗺️", titel:"Muskel-Karte", art:"Antippen · 10 Muskeln", quer:true,
+      anleitung:"Lies, was der Muskel macht, und **tippe ihn auf der Muskelkarte an** (vorne oder hinten). Jede richtige Antwort = **1 Punkt**.",
+      frage:"Welcher Muskel ist das?", ziel:"den passenden Muskel",
+      zonen:Object.keys(M).map(id => ({id, name:M[id]})),
+      items:[
+        {t:"Beugt den Arm im Ellenbogen.", z:"bizeps"}, {t:"Streckt den Arm, zum Beispiel im Stütz.", z:"trizeps"},
+        {t:"Beugt den Oberkörper nach vorn, wichtig für die Rolle.", z:"bauch"}, {t:"Richtet den Oberkörper wieder auf.", z:"ruecken"},
+        {t:"Hebt das Bein nach vorn an, liegt tief in der Leiste.", z:"hueft"}, {t:"Streckt die Hüfte, zum Beispiel beim Treppensteigen.", z:"gesaess"},
+        {t:"Streckt das Knie beim Absprung.", z:"vorn"}, {t:"Beugt das Knie, die Ferse geht zum Po.", z:"hinten"},
+        {t:"Zieht die Fußspitze nach oben.", z:"schien"}, {t:"Bringt dich in den Zehenstand.", z:"wade"}
+      ]},
+    { id:"gegen", typ:"bildzuordnen", bild:"muskeln", lernen:"paare", icon:"🔁", titel:"Finde den Gegenspieler", art:"Antippen · 10 Muskeln", quer:true,
+      anleitung:"Jetzt umgekehrt: **Tippe den Gegenspieler** des genannten Muskels an. Jede richtige Antwort = **1 Punkt**.",
+      frage:"Wo ist der Gegenspieler?", ziel:"den Gegenspieler",
+      ab:"Ergänze in **Aufgabe 4** bei jedem Muskelpaar die fehlende Seite.",
+      zonen:Object.keys(M).map(id => ({id, name:M[id]})),
+      items:[
+        {t:"Gegenspieler vom **Bizeps**", z:"trizeps"}, {t:"Gegenspieler vom **Trizeps**", z:"bizeps"},
+        {t:"Gegenspieler der **Bauchmuskeln**", z:"ruecken"}, {t:"Gegenspieler der **Rückenmuskeln**", z:"bauch"},
+        {t:"Gegenspieler des **Hüftbeugers**", z:"gesaess"}, {t:"Gegenspieler des **Gesäßmuskels**", z:"hueft"},
+        {t:"Gegenspieler des **Quadrizeps**, der das Knie streckt", z:"hinten"}, {t:"Gegenspieler der Muskeln, die das **Knie beugen**", z:"vorn"},
+        {t:"Gegenspieler des **Schienbeinmuskels**", z:"wade"}, {t:"Gegenspieler des **Wadenmuskels**", z:"schien"}
+      ]},
+    { id:"memory", typ:"memory", lernen:"paare", icon:"🧠", titel:"Muskelpaar-Memory", art:"Memory · 5 Paare",
+      anleitung:"Finde die **Muskelpaare**: Ein Paar sind zwei Muskeln, die Gegenspieler sind. Jedes Paar = 1 Punkt.",
+      paare:PAARE.map(([a, b]) => ({a:M[a], b:M[b]}))},
+    { id:"luecke", typ:"lueckentext", lernen:"prinzip", icon:"📝", titel:"Lückentext", art:"Lücken füllen · 8 Lücken",
+      anleitung:"Tippe auf eine Lücke und wähle das passende Wort. Jede richtige Lücke = **1 Punkt**.",
+      ueberschrift:"Spieler und Gegenspieler",
+      text:"Muskeln können nur [[ziehen|drücken|schieben]]. Sie sind über [[Sehnen|Bänder|Nerven]] an den Knochen befestigt. Der Muskel, der die Bewegung ausführt, heißt [[Agonist|Antagonist|Gelenk]]. Sein Gegenspieler heißt [[Antagonist|Agonist|Partner]] und wird dabei [[gedehnt|gebrochen|kürzer]]. Beim Beugen des Arms ist der [[Bizeps|Trizeps|Bauch]] der Spieler, beim Strecken der [[Trizeps|Bizeps|Wadenmuskel]]. Deshalb arbeiten Muskeln immer in [[Paaren|Reihen|Kreisen]]."},
+    { id:"turn", typ:"quiz", lernen:"turnen", icon:"🤸", titel:"Turn-Check", art:"Quiz · 7 Übungen",
+      anleitung:"Welche Muskeln leisten bei der Turnübung die **Hauptarbeit**? Jede richtige Antwort = **2 Punkte**.", punkte:2,
+      ab:"Bearbeite **Aufgabe 5**: Turn-Check und die Frage, warum man beide Muskeln eines Paares trainiert.",
+      fragen:[
+        {q:"Hangeln am Tau: Du ziehst dich mit den Armen hoch.", o:["Armbeuger (Bizeps) und Rücken","Armstrecker (Trizeps)","Waden","Schienbeinmuskel"], c:0},
+        {q:"Stütz am Barren: Die Arme bleiben gestreckt.", o:["Bizeps","Trizeps und Schultermuskeln","Hüftbeuger","Hintere Oberschenkelmuskeln"], c:1},
+        {q:"Strecksprung vom Minitrampolin", o:["Bauch und Bizeps","Rücken und Trizeps","Gesäß, vordere Oberschenkel und Waden","Schienbeinmuskel"], c:2},
+        {q:"Rolle vorwärts: Du machst dich ganz rund.", o:["Rückenmuskeln","Wadenmuskel","Trizeps","Bauchmuskeln"], c:3},
+        {q:"Handstand ohne Hohlkreuz", o:["Bauch und Gesäß halten Spannung","Nur die Waden","Nur der Bizeps","Gar keine"], c:0},
+        {q:"Klimmzug an der Reckstange", o:["Trizeps","Bizeps und Rücken","Waden","Hüftbeuger"], c:1},
+        {q:"Bankdrücken oder Liegestütz nach oben", o:["Bizeps","Hintere Oberschenkelmuskeln","Trizeps und Brust","Schienbeinmuskel"], c:2}
+      ]},
+    { id:"wahr", typ:"swipe", lernen:"balance", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 10 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch**.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Ein Muskel kann ziehen und drücken.", r:"l", e:"Muskeln können **nur ziehen**."},
+        {t:"Muskeln sind über Sehnen am Knochen befestigt.", r:"r"},
+        {t:"Beim Armbeugen ist der Trizeps der Agonist.", r:"l", e:"Beim Beugen zieht der **Bizeps**."},
+        {t:"Agonist und Antagonist tauschen je nach Bewegung die Rollen.", r:"r"},
+        {t:"Wer nur die Bauchmuskeln trainiert, bekommt automatisch einen starken Rücken.", r:"l", e:"Beide Seiten müssen trainiert werden."},
+        {t:"Ein muskuläres Ungleichgewicht kann zu Fehlhaltungen führen.", r:"r"},
+        {t:"Der Quadrizeps liegt auf der Rückseite des Oberschenkels.", r:"l", e:"Er liegt **vorne** und streckt das Knie."},
+        {t:"Der Wadenmuskel bringt dich in den Zehenstand.", r:"r"},
+        {t:"Beim Handstand helfen Bauch und Gesäß gegen das Hohlkreuz.", r:"r"},
+        {t:"Ohne Gegenspieler wären Bewegungen genauso weich und kontrolliert.", r:"l", e:"Der Gegenspieler bremst und steuert die Bewegung mit."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 4 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut, so bleibt er hängen.",
+      fragen:[
+        {q:"„Ein Muskel ______, doch drückt er nie – drum braucht er einen Partner, sieh!“", o:["zieht","springt","wächst"], c:0},
+        {q:"„Der ______, der zieht und macht, der Antagonist gibt nach mit Bedacht.“", o:["Antagonist","Agonist","Bizeps"], c:1},
+        {q:"„Bizeps beugt, ______ streckt – so wird der Arm bewegt, gecheckt!“", o:["Wade","Bauch","Trizeps"], c:2},
+        {q:"„Trainier nicht nur die eine ______, sonst zieht’s dich schief – und das tut leid.“", o:["Seit’","Zeit","Hand"], c:0}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 7 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie heißt der Muskel, der die Bewegung ausführt (Fachwort)?", hilfe:"💡 A…", a:["Agonist"], re:["^(der )?agonist$"], e:"**Agonist**."},
+        {q:"Wie heißt sein Gegenspieler (Fachwort)?", hilfe:"💡 A…", a:["Antagonist"], re:["^(der )?antagonist$"], e:"**Antagonist**."},
+        {q:"Welcher Muskel streckt den Arm?", hilfe:"💡 T…", a:["Trizeps"], re:["^(der )?(trizeps|triceps)$"], e:"Der **Trizeps**."},
+        {q:"Wer ist der Gegenspieler der Bauchmuskeln?", hilfe:"💡 R…", a:["Rückenmuskeln"], re:["^(die )?(rücken|ruecken)(muskeln|muskel|strecker)?$"], e:"Die **Rückenmuskeln**."},
+        {q:"Wer ist der Gegenspieler des Schienbeinmuskels?", hilfe:"💡 W…", a:["Wadenmuskel"], re:["^(der |die )?waden?(muskel|muskulatur)?$"], e:"Der **Wadenmuskel**."},
+        {q:"Wie nennt man ein Ungleichgewicht zwischen zwei Muskeln (Fachwort)?", hilfe:"💡 D…", a:["Dysbalance"], re:["^(eine |die )?(muskuläre )?dysbalance$"], e:"**Dysbalance**."},
+        {q:"Womit sind Muskeln am Knochen befestigt?", hilfe:"💡 S…", a:["Sehnen"], re:["^(mit )?(den )?sehne(n)?$"], e:"Mit **Sehnen**."}
+      ]}
+  ]
+}));
+</script>
+</body>
+</html>

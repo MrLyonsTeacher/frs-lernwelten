@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16281F">
+<title>Was ist Sport? – Camp Start</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
+<script>
+/* =========================================================
+   Schaubilder (selbst gezeichnet)
+   ========================================================= */
+// Die vier Merkmale von Sport: 2 × 2 Kacheln, k = hervorgehobene Kachel (−1 = alle gleich)
+function merkmale(k){
+  const tile = (i, x, y, titel, bild) => { const an = k < 0 || k === i;
+    return `<g opacity="${an ? 1 : .32}"><rect x="${x}" y="${y}" width="170" height="124" rx="16" fill="${CB2}" stroke="${k === i ? GE : CL}" stroke-width="${k === i ? 4 : 2}"/>
+      <g transform="translate(${x} ${y})">${bild}</g>${TX(x + 85, y + 112, titel, {s:14.5, c:k === i ? GE : HELL})}
+      <circle cx="${x + 18}" cy="${y + 18}" r="12" fill="${k === i ? GE : CL}"/>${TX(x + 18, y + 23, i + 1, {s:13, c:CB})}</g>`; };
+  const laeufer = `<g stroke="${HELL}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="96" cy="26" r="9" fill="${HELL}" stroke="none"/><path d="M92 38 L84 62 L98 74 L92 92 M84 62 L66 84 M90 44 L108 54 L116 46 M90 44 L72 50 L64 62"/></g>
+    <g stroke="${GR}" stroke-width="3.5" stroke-linecap="round"><path d="M30 46 h22 M24 58 h28 M34 70 h18"/></g>`;
+  const ziel = `${[34,25,16,7].map((r,j)=>`<circle cx="64" cy="54" r="${r}" fill="${j % 2 ? HELL : RO}"/>`).join("")}
+    <path d="M64 54 L112 26" stroke="${SA}" stroke-width="4" stroke-linecap="round"/><path d="M112 26 l12 -6 l-4 12 z M106 20 l14 -2 l-6 10 z" fill="${OR}"/>
+    <g transform="translate(126 70)"><rect x="-14" y="-10" width="30" height="20" rx="10" fill="${GE}"/><circle cx="-6" cy="0" r="5" fill="${CB2}"/><path d="M14 -6 h14 v8 h-14" fill="${GE}"/><path d="M-12 -10 q-8 -14 4 -22" stroke="${HG}" stroke-width="2.5" fill="none"/></g>`;
+  const frei = `<g stroke="${HELL}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="62" cy="30" r="10" fill="${HELL}" stroke="none"/><path d="M62 42 V76 M62 76 L50 98 M62 76 L74 98 M62 48 L44 64 M62 48 L82 22"/></g>
+    <path d="M96 20 h56 a10 10 0 0 1 10 10 v22 a10 10 0 0 1 -10 10 h-34 l-12 12 v-12 h-10 a10 10 0 0 1 -10 -10 v-22 a10 10 0 0 1 10 -10 z" fill="${GE}"/>
+    ${TX(124, 47, "Ich will!", {s:14, c:CB})}`;
+  const froh = `<circle cx="78" cy="54" r="38" fill="${GE}"/><circle cx="64" cy="46" r="5" fill="${CB}"/><circle cx="92" cy="46" r="5" fill="${CB}"/>
+    <path d="M58 62 Q78 84 98 62" stroke="${CB}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M118 22 C112 34 110 40 118 44 C126 40 124 34 118 22 Z" fill="${BL}"/><path d="M130 50 C126 58 125 62 130 65 C135 62 134 58 130 50 Z" fill="${BL}"/>
+    <path d="M28 30 l8 6 M24 46 h10" stroke="${OR}" stroke-width="3.5" stroke-linecap="round"/>`;
+  return CK(380, 296, TX(190, 26, "Woran erkennt man Sport?", {s:17, c:HELL}) +
+    tile(0, 14, 40, "Bewegung", laeufer) + tile(1, 196, 40, "Ziel oder Regeln", ziel) +
+    tile(2, 14, 168, "Freiwilligkeit", frei) + tile(3, 196, 168, "Anstrengung & Freude", froh));
+}
+
+// Motiv-Rad: 7 Motive, k = hervorgehobenes Motiv (−1 = alle)
+const MOTIVE = [["Gesundheit","& Fitness",RO],["Spaß","& Freude",GE],["Gemeinschaft","& Freunde",BL],["Leistung","& Wettkampf",OR],["Ausgleich","& Entspannung",GR],["Körpergefühl","& Aussehen",LI],["Abenteuer","& Risiko","#E59A6B"]];
+function motivRad(k){
+  const cx = 190, cy = 180, R = 146, r0 = 34, n = MOTIVE.length;
+  const pt = (a, r) => [cx + r * Math.sin(a), cy - r * Math.cos(a)];
+  const icon = (i, x, y, c) => {
+    const s = `stroke="${c}" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+    return [
+      `<path d="M${x} ${y+9} C${x-16} ${y-2} ${x-12} ${y-16} ${x} ${y-7} C${x+12} ${y-16} ${x+16} ${y-2} ${x} ${y+9} Z" fill="${c}"/><path d="M${x-4} ${y-3} h8 M${x} ${y-7} v8" stroke="${CB}" stroke-width="2.4"/>`,
+      `<circle cx="${x}" cy="${y}" r="11" ${s}/><path d="M${x-6} ${y+2} q6 7 12 0" ${s}/><circle cx="${x-4}" cy="${y-3}" r="1.6" fill="${c}"/><circle cx="${x+4}" cy="${y-3}" r="1.6" fill="${c}"/>`,
+      `<circle cx="${x-6}" cy="${y-5}" r="4.5" fill="${c}"/><circle cx="${x+6}" cy="${y-5}" r="4.5" fill="${c}"/><path d="M${x-14} ${y+10} c0 -10 14 -10 14 0 M${x-2} ${y+10} c0 -10 14 -10 14 0" ${s}/>`,
+      `<path d="M${x-8} ${y-11} h16 v6 a8 8 0 0 1 -16 0 z" fill="${c}"/><path d="M${x-8} ${y-8} h-5 a5 5 0 0 0 6 7 M${x+8} ${y-8} h5 a5 5 0 0 1 -6 7 M${x} ${y+3} v5 M${x-6} ${y+10} h12" ${s}/>`,
+      `<path d="M${x-11} ${y+8} C${x-12} ${y-8} ${x+2} ${y-12} ${x+11} ${y-11} C${x+11} ${y+2} ${x} ${y+10} ${x-11} ${y+8} Z" fill="${c}"/><path d="M${x-11} ${y+8} L${x+4} ${y-4}" stroke="${CB}" stroke-width="2"/>`,
+      `<ellipse cx="${x}" cy="${y-3}" rx="8" ry="10" ${s}/><path d="M${x} ${y+7} v6 M${x-5} ${y+13} h10" ${s}/><path d="M${x-3} ${y-8} q-2 4 0 8" stroke="${c}" stroke-width="2" fill="none"/>`,
+      `<path d="M${x-13} ${y+9} L${x-3} ${y-9} L${x+3} ${y} L${x+7} ${y-5} L${x+14} ${y+9} Z" fill="${c}"/><path d="M${x-6} ${y-4} l3 -5 l3 5" stroke="${HELL}" stroke-width="2" fill="none"/>`
+    ][i];
+  };
+  let s = "";
+  MOTIVE.forEach(([a, b, c], i) => {
+    const a0 = i * 2 * Math.PI / n, a1 = (i + 1) * 2 * Math.PI / n, am = (a0 + a1) / 2, an = k < 0 || k === i;
+    const [x0, y0] = pt(a0, R), [x1, y1] = pt(a1, R), [x2, y2] = pt(a1, r0), [x3, y3] = pt(a0, r0);
+    s += `<path d="M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1} L${x2} ${y2} A${r0} ${r0} 0 0 0 ${x3} ${y3} Z" fill="${an ? c : CB2}" fill-opacity="${an ? (k === i ? 1 : .82) : 1}" stroke="${CB}" stroke-width="3"/>`;
+    const [ix, iy] = pt(am, 118), [tx, ty] = pt(am, 78);
+    s += icon(i, ix, iy, an ? CB : HG);
+    s += TX(tx, ty + 4, a, {s:a.length > 10 ? 9.6 : 11, c:an ? CB : HELL});
+  });
+  s += `<circle cx="${cx}" cy="${cy}" r="${r0 - 3}" fill="${CB}"/>` + TX(cx, cy - 1, "Warum", {s:11, c:HELL}) + TX(cx, cy + 12, "Sport?", {s:11, c:HELL});
+  return CK(380, 340, TX(190, 24, k < 0 ? "Sieben Motive" : MOTIVE[k][0] + " " + MOTIVE[k][1], {s:16.5, c:k < 0 ? HELL : MOTIVE[k][2]}) + s);
+}
+
+// WHO-Empfehlung: Uhr mit 60 Minuten + Wochenleiste
+const WHO = CK(380, 250, TX(190, 28, "Empfehlung der WHO für 5- bis 17-Jährige", {s:14.5, c:HELL}) +
+  `<circle cx="96" cy="140" r="70" fill="${CB2}" stroke="${HG}" stroke-width="3"/><circle cx="96" cy="140" r="58" fill="${GR}" opacity=".9"/>` +
+  Array.from({length:12}, (_, k) => { const a = k * Math.PI / 6; return `<path d="M${96 + Math.sin(a) * 62} ${140 - Math.cos(a) * 62} L${96 + Math.sin(a) * 68} ${140 - Math.cos(a) * 68}" stroke="${HELL}" stroke-width="3"/>`; }).join("") +
+  `<path d="M96 140 V96 M96 140 L122 152" stroke="${CB}" stroke-width="5" stroke-linecap="round"/><circle cx="96" cy="140" r="5" fill="${CB}"/>` +
+  TX(250, 98, "mindestens", {s:15, c:HG, w:600}) + TX(250, 132, "60 Minuten", {s:28, c:GE}) + TX(250, 156, "Bewegung pro Tag", {s:15, c:HELL}) +
+  TX(250, 196, "davon an 3 Tagen pro Woche", {s:12.5, c:HG, w:600}) + TX(250, 214, "anstrengend: Muskeln & Knochen", {s:12.5, c:HG, w:600}) + TX(250, 232, "kräftigen", {s:12.5, c:HG, w:600}));
+
+// Folgen von Bewegungsmangel: Körper von vorn mit Herz, Wirbelsäule, Muskeln, Knochen und Gehirn
+const KOERPER = `M182 98 C176 104 152 104 141 112 C131 118 129 130 128 142 L121 200 C119 212 127 215 131 205 L139 152 L144 150 C142 175 146 196 150 214 C150 238 152 256 158 290 C160 300 172 300 174 290 L184 228 L196 228 L206 290 C208 300 220 300 222 290 C228 256 230 238 230 214 C234 196 238 175 236 150 L241 152 L249 205 C253 215 261 212 259 200 L252 142 C251 130 249 118 239 112 C228 104 204 104 198 98 Z`;
+function folgen(kopf){
+  const herz = `<path d="M202 138 C202 130 192 128 190 134 C188 128 178 130 178 138 C178 146 188 150 190 156 C192 150 202 146 202 138 Z" fill="${RO}"/>`;
+  const wirbel = Array.from({length:11}, (_, k) => `<rect x="185" y="${112 + k*9}" width="10" height="6.5" rx="2" fill="${SA}" opacity=".85"/>`).join("");
+  const muskel = `<path d="M150 160 C144 176 146 196 152 212 C158 196 160 176 156 160 Z" fill="${OR}" opacity=".9"/><path d="M160 232 C156 246 156 262 160 276 C166 262 168 246 166 232 Z" fill="${OR}" opacity=".9"/>`;
+  const knochen = `<path d="M214 236 L216 284" stroke="${HELL}" stroke-width="5" stroke-linecap="round"/><circle cx="214" cy="236" r="4.5" fill="${HELL}"/><circle cx="216" cy="284" r="4.5" fill="${HELL}"/>`;
+  const gehirn = `<path d="M178 60 C176 48 188 42 194 46 C200 40 210 46 208 54 C214 58 212 68 204 68 C202 74 192 74 188 70 C180 72 174 66 178 60 Z" fill="#E8A6B8"/><path d="M186 52 q4 4 0 8 M196 50 q-3 5 2 9 M202 58 q-4 2 -2 6" stroke="#B7687F" stroke-width="1.8" fill="none"/>`;
+  const fig = `<ellipse cx="190" cy="62" rx="22" ry="25" fill="${CB2}" stroke="${HG}" stroke-width="2.5"/><path d="M183 86 h14 v14 h-14 z" fill="${CB2}"/><path d="${KOERPER}" fill="${CB2}" stroke="${HG}" stroke-width="2.5" stroke-linejoin="round"/>`;
+  const k = (x, y, tx, ty, t, c, a="end") => `<path d="M${x} ${y} L${tx} ${ty}" stroke="${c}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="4" fill="${c}"/>` + TX(tx + (a === "end" ? -4 : 4), ty + 4, t, {s:12.5, c, a});
+  const body = k(184, 140, 116, 112, "Herz & Kreislauf|schwächer", RO) + k(152, 186, 116, 168, "Muskeln bauen ab", OR) + k(190, 196, 116, 206, "Rücken & Haltung leiden", SA) + k(216, 262, 246, 262, "Knochen weniger stabil", HELL, "start") + k(226, 176, 254, 168, "mehr Gewicht", GE, "start");
+  const head = k(206, 50, 246, 40, "Konzentration sinkt", BL, "start") + k(208, 64, 246, 70, "schlechtere Stimmung", LI, "start") + k(196, 70, 246, 100, "schlechterer Schlaf", GR, "start") + k(178, 56, 134, 56, "mehr Stress", "#E8A6B8");
+  return CK(380, 304, TX(190, 24, kopf ? "Folgen für den Kopf" : "Folgen für den Körper", {s:16, c:HELL}) + fig +
+    `<g opacity="${kopf ? .25 : 1}">${wirbel}${herz}${muskel}${knochen}${body}</g><g opacity="${kopf ? 1 : .3}">${gehirn}${kopf ? head : ""}</g>`);
+}
+
+/* =========================================================
+   Inhalte (abgestimmt auf Camp-Logbuch Etappe 1)
+   ========================================================= */
+const LERNEN = {
+  sport: { titel:"Was ist Sport?", folien:[
+    {bild:FOTO("ws8-vielfalt","🏅","Viele verschiedene Sportarten"), titel:"Mehr als Fußball", text:"Fußball, Turnen, Klettern, Tanzen, Schwimmen, Schach, E-Sport … Ob etwas **Sport** ist, entscheidet nicht, wie bekannt es ist. Es gibt **vier Merkmale**, an denen man Sport erkennt."},
+    {bild:merkmale(0), titel:"1 · Bewegung", text:"Beim Sport **bewegt man sich selbst**: mal mit dem ganzen Körper wie beim Marathon, mal ganz fein und genau wie beim Bogenschießen. Wer nur zuschaut, treibt keinen Sport."},
+    {bild:merkmale(1), titel:"2 · Ziel oder Regeln", text:"Man will **etwas erreichen**: gewinnen, eine Bestzeit laufen, einen neuen Trick schaffen, besser werden. Dafür gibt es **Regeln**, die für alle gleich gelten. So kann man Leistungen **vergleichen**."},
+    {bild:merkmale(2), titel:"3 · Freiwilligkeit", text:"Sport macht man, **weil man es will**. Wer zur Strafe Runden laufen muss oder beim Umzug Kisten schleppt, bewegt sich zwar, aber das ist **Pflicht oder Arbeit**, kein Sport."},
+    {bild:merkmale(3), titel:"4 · Anstrengung & Freude", text:"Beim Sport **strengt man sich an**, man kommt ins Schwitzen. Und meistens hat man dabei **Freude**: am Spiel, am Erfolg, am Zusammensein. Die Bewegung ist kein Mittel zum Zweck, sondern das Ziel selbst."},
+    {bild:merkmale(-1), titel:"Grenzfälle", text:"Bei manchen Tätigkeiten fehlt **ein Merkmal**, dann kann man streiten: **Schach** hat Regeln und Wettkämpfe, aber kaum Bewegung. **E-Sport** auch. **Mit dem Hund gehen** ist Bewegung, aber ohne Ziel. **Mit dem Rad zur Schule** ist anstrengend, aber der Zweck ist der Weg. Wichtig ist, dass du mit den **Merkmalen begründest**."}
+  ]},
+  motive: { titel:"Warum treiben Menschen Sport?", folien:[
+    {bild:motivRad(-1), titel:"Sieben Motive", text:"Ein **Motiv** ist ein **Grund**, warum jemand etwas tut. Beim Sport gibt es viele Motive. Die meisten Menschen haben **mehrere gleichzeitig**, und sie können sich im Leben ändern."},
+    {bild:motivRad(0), titel:"Gesundheit & Fitness", text:"„Ich will fit bleiben und etwas für mein Herz tun.“ Bewegung stärkt **Herz, Lunge, Muskeln und Knochen** und hilft, gesund zu bleiben."},
+    {bild:motivRad(1), titel:"Spaß & Freude", text:"„Es macht einfach Spaß!“ Für viele ist das der **wichtigste Grund**: Freude an der Bewegung, am Spiel, an einem gelungenen Trick."},
+    {bild:motivRad(2), titel:"Gemeinschaft & Freunde", text:"„Meine Freunde sind im Verein.“ Sport verbindet: **Team, Freundschaften**, gemeinsam gewinnen und verlieren."},
+    {bild:motivRad(3), titel:"Leistung & Wettkampf", text:"„Ich will gewinnen und meine Bestzeit knacken.“ Manche lieben den **Vergleich mit anderen** oder mit sich selbst."},
+    {bild:motivRad(4), titel:"Ausgleich & Entspannung", text:"„Nach der Schule bekomme ich beim Laufen den Kopf frei.“ Sport baut **Stress** ab und ist ein Ausgleich zum vielen Sitzen."},
+    {bild:motivRad(5), titel:"Körpergefühl & Aussehen", text:"„Ich will mich in meinem Körper wohlfühlen.“ Sport kann das **Selbstbewusstsein** stärken. Wichtig: gesund bleiben und keinem unrealistischen Ideal hinterherlaufen."},
+    {bild:motivRad(6), titel:"Abenteuer & Risiko", text:"„Ich liebe das Kribbeln im Bauch.“ Klettern, Mountainbiken, Skaten: Manche suchen **Spannung, Mut und Natur**."}
+  ]},
+  mangel: { titel:"Wenn Bewegung fehlt", folien:[
+    {bild:WHO, titel:"60 Minuten am Tag", text:"Die **Weltgesundheitsorganisation (WHO)** empfiehlt Kindern und Jugendlichen **mindestens 60 Minuten Bewegung pro Tag**, davon an **drei Tagen pro Woche** anstrengend, damit Muskeln und Knochen kräftiger werden. Viele Jugendliche schaffen das nicht."},
+    {bild:folgen(false), titel:"Folgen für den Körper", text:"Wer sich über lange Zeit kaum bewegt, wird schneller **aus der Puste** sein: **Herz und Kreislauf** werden schwächer, **Muskeln** bauen ab, **Rücken und Haltung** leiden, das **Gewicht** steigt leichter und die **Knochen** werden weniger stabil."},
+    {bild:folgen(true), titel:"Folgen für den Kopf", text:"Bewegungsmangel wirkt auch auf die **Psyche**: Die **Konzentration** lässt nach, man ist öfter **schlecht gelaunt** und gestresst und **schläft schlechter**. Bewegung hilft dem Gehirn: Es wird besser durchblutet."},
+    {bild:FOTO("ws8-alltag","🚲","Bewegung im Alltag"), titel:"Mehr Bewegung im Alltag", text:"Es muss nicht immer Training sein: **mit dem Rad zur Schule**, Treppe statt Aufzug, in der Pause **aktiv sein**, mit Freunden draußen etwas unternehmen. Jede Minute zählt."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:merkmale(-1), titel:"Vier Merkmale", text:"**„Bewegt, mit Regeln, freiwillig, froh – vier Merkmale, und Sport ist so!“**"},
+    {bild:merkmale(0), titel:"Zuschauen", text:"**„Wer nur im Stadion sitzt und schreit, ist vom Sport noch meilenweit.“**"},
+    {bild:merkmale(2), titel:"Pflicht", text:"**„Musst du zur Strafe Runden drehn, ist’s nicht freiwillig – das kann man sehn.“**"},
+    {bild:WHO, titel:"60 Minuten", text:"**„Sechzig Minuten jeden Tag – so viel Bewegung der Körper mag.“**"},
+    {bild:folgen(false), titel:"Bewegungsmangel", text:"**„Wer immer sitzt und nie sich regt, dem fehlt die Kraft, die ihn bewegt.“**"}
+  ]}
+};
+
+/* =========================================================
+   Lernwelt
+   ========================================================= */
+const MK = ["Bewegung","Ziel oder Regeln","Freiwilligkeit","Anstrengung & Freude"];
+LW.start(Object.assign({}, CAMP, {
+  id: "ws8",
+  titel: "Was ist Sport? – Lernwelt",
+  hero: campHero({ ort:"feuer", symbol:"feuer", etappe:"Etappe 1", titel:"Was ist Sport?",
+    text:"Am Lagerfeuer beginnt das Profiljahr. Finde heraus, woran man Sport erkennt, warum Menschen sich bewegen und was passiert, wenn Bewegung fehlt. Sammle Holzscheite 🪵 für dein Camp-Feuer." }),
+  kartenSymbol: "🔥",
+  lernen: LERNEN,
+  levels: [
+    { id:"merkmal", typ:"quiz", lernen:"sport", icon:"🔍", titel:"Merkmal-Detektiv", art:"Quiz · 8 Fragen",
+      anleitung:"Um welches **Merkmal von Sport** geht es? Jede richtige Antwort = **1 Punkt**.",
+      ab:"Notiere in **Aufgabe 2a** die vier Merkmale von Sport.",
+      fragen:[
+        {q:"Beim 100-m-Lauf hat jeder seine eigene Bahn, und es gewinnt, wer zuerst im Ziel ist.", o:MK, c:1, e:"Ein klares **Ziel** und **Regeln**, die für alle gleich sind."},
+        {q:"Niemand hat Lea zum Klettern gezwungen. Sie hat es sich selbst ausgesucht.", o:MK, c:2, e:"Sie macht es, weil sie es will: **Freiwilligkeit**."},
+        {q:"Nach dem Spiel ist Tom völlig verschwitzt, aber er strahlt über das ganze Gesicht.", o:MK, c:3, e:"**Anstrengung** und **Freude** gehören beim Sport oft zusammen."},
+        {q:"Beim Bogenschießen arbeiten Arme, Schultern und Rumpf ganz fein und kontrolliert.", o:MK, c:0, e:"Auch feine, genaue Bewegungen sind **Bewegung**."},
+        {q:"Ben sitzt im Stadion und feuert sein Team an. Welches Merkmal fehlt?", o:MK, c:0, e:"Er bewegt sich nicht selbst: Zuschauen ist kein Sport."},
+        {q:"Mia muss zur Strafe zehn Runden um den Platz laufen. Welches Merkmal fehlt?", o:MK, c:2, e:"Sie läuft nicht, weil sie will: Die **Freiwilligkeit** fehlt."},
+        {q:"Beim Weitsprung wird jeder Sprung gleich gemessen, damit man die Weiten vergleichen kann.", o:MK, c:1, e:"Gleiche **Regeln** machen Leistungen **vergleichbar**."},
+        {q:"Ein Opa fährt im Auto zum Bäcker. Welches Merkmal fehlt vor allem?", o:MK, c:0, e:"Er bewegt sich nicht selbst, das Auto fährt."}
+      ]},
+    { id:"sportodernicht", typ:"swipe", lernen:"sport", icon:"🏕️", titel:"Sport oder nicht?", art:"Wischen · 10 Karten",
+      anleitung:"Ist das **Sport**? Wische nach **rechts = Sport**, nach **links = kein Sport**. Bei **Grenzfällen** zählen beide Seiten, lies dann die Begründung.",
+      links:{t:"Kein Sport", icon:"✋"}, rechts:{t:"Sport", icon:"🏅"},
+      ab:"Bearbeite **Aufgabe 2b und 2c**: Prüfe die Beispiele mit den vier Merkmalen und begründe einen Grenzfall.",
+      karten:[
+        {t:"Im Verein Handball spielen", r:"r", e:"Alle vier Merkmale treffen zu."},
+        {t:"Auf dem Sofa ein Fußballspiel anschauen", r:"l", e:"Keine eigene Bewegung."},
+        {t:"Mit dem Hund spazieren gehen", r:"beide", e:"**Grenzfall:** Bewegung ja, aber kaum Anstrengung und kein sportliches Ziel."},
+        {t:"Im Freibad 20 Bahnen schwimmen", r:"r", e:"Bewegung, Ziel, freiwillig, anstrengend."},
+        {t:"Schach im Schachclub", r:"beide", e:"**Grenzfall:** Regeln und Wettkampf, aber kaum Bewegung. Der Schachbund gehört trotzdem zum Deutschen Olympischen Sportbund."},
+        {t:"Zur Strafe Liegestütze machen", r:"l", e:"Bewegung schon, aber **nicht freiwillig**."},
+        {t:"FIFA bei einem E-Sport-Turnier", r:"beide", e:"**Grenzfall:** Regeln, Training und Wettkampf, aber kaum Ganzkörperbewegung. Darüber wird viel gestritten."},
+        {t:"Beim Umzug Kisten tragen", r:"l", e:"Anstrengend, aber **Arbeit**, kein Sport."},
+        {t:"Mit dem Rad zur Schule fahren", r:"beide", e:"**Grenzfall:** Bewegung und Anstrengung, aber der Zweck ist der Schulweg."},
+        {t:"Mit Freunden im Park Frisbee spielen", r:"r", e:"Bewegung, Spielregeln, freiwillig und mit Freude."}
+      ]},
+    { id:"motivmemory", typ:"memory", lernen:"motive", icon:"🧠", titel:"Motiv-Memory", art:"Memory · 7 Paare",
+      anleitung:"Finde zu jedem **Motiv** die passende **Aussage**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Gesundheit & Fitness", b:"„Ich will etwas für mein Herz tun.“"},
+        {a:"Spaß & Freude", b:"„Es macht einfach riesig Spaß!“"},
+        {a:"Gemeinschaft", b:"„Meine Freunde sind auch im Team.“"},
+        {a:"Leistung & Wettkampf", b:"„Ich will die Bestzeit knacken.“"},
+        {a:"Ausgleich", b:"„Beim Laufen bekomme ich den Kopf frei.“"},
+        {a:"Körpergefühl", b:"„Ich will mich in meinem Körper wohlfühlen.“"},
+        {a:"Abenteuer", b:"„Ich liebe das Kribbeln im Bauch.“"}
+      ]},
+    { id:"motive", typ:"quiz", lernen:"motive", icon:"💬", titel:"Wer will was?", art:"Quiz · 8 Aussagen",
+      anleitung:"Welches **Motiv** steckt hinter der Aussage? Jede richtige Antwort = **1 Punkt**.",
+      ab:"Fülle in **Aufgabe 3** die Motiv-Tabelle aus und kreuze deine drei wichtigsten Motive an.",
+      fragen:[
+        {q:"„Mein Arzt hat gesagt, Joggen tut meinem Herzen gut.“", o:["Gesundheit & Fitness","Abenteuer & Risiko","Leistung & Wettkampf","Gemeinschaft"], c:0},
+        {q:"„Ich spiele im Verein, weil meine beste Freundin auch da ist.“", o:["Ausgleich & Entspannung","Gemeinschaft & Freunde","Gesundheit & Fitness","Körpergefühl & Aussehen"], c:1},
+        {q:"„Bei den Bundesjugendspielen will ich eine Ehrenurkunde.“", o:["Spaß & Freude","Ausgleich & Entspannung","Leistung & Wettkampf","Abenteuer & Risiko"], c:2},
+        {q:"„Nach einem langen Schultag gehe ich schwimmen, damit ich runterkomme.“", o:["Leistung & Wettkampf","Gemeinschaft & Freunde","Abenteuer & Risiko","Ausgleich & Entspannung"], c:3},
+        {q:"„Mit dem Mountainbike steil bergab – da bin ich hellwach!“", o:["Abenteuer & Risiko","Gesundheit & Fitness","Ausgleich & Entspannung","Gemeinschaft & Freunde"], c:0},
+        {q:"„Seit ich trainiere, fühle ich mich in meinem Körper viel wohler.“", o:["Leistung & Wettkampf","Körpergefühl & Aussehen","Abenteuer & Risiko","Spaß & Freude"], c:1},
+        {q:"„Tanzen? Mach ich einfach, weil ich es liebe.“", o:["Gesundheit & Fitness","Leistung & Wettkampf","Spaß & Freude","Ausgleich & Entspannung"], c:2},
+        {q:"„Ich will meinen eigenen Rekord im Weitsprung brechen.“", o:["Gemeinschaft & Freunde","Ausgleich & Entspannung","Körpergefühl & Aussehen","Leistung & Wettkampf"], c:3, e:"Man kann sich auch mit **sich selbst** messen."}
+      ]},
+    { id:"folgen", typ:"sortieren", lernen:"mangel", icon:"🛋️", titel:"Wenn Bewegung fehlt", art:"Sortieren · 11 Karten",
+      anleitung:"Ist das eine Folge von Bewegungsmangel für den **Körper** oder für den **Kopf**? Jede richtige Karte = **1 Punkt**.",
+      ab:"Bearbeite **Aufgabe 4**: Nenne drei Folgen von Bewegungsmangel, für Körper und Kopf.",
+      koerbe:[ {t:"Körper", info:"Herz, Muskeln, Knochen …"}, {t:"Kopf", info:"Denken, Gefühle, Schlaf …"} ],
+      items:[
+        {t:"Man ist schneller aus der Puste.", k:0}, {t:"Die Muskeln bauen ab.", k:0}, {t:"Der Rücken schmerzt öfter.", k:0}, {t:"Das Gewicht steigt leichter.", k:0},
+        {t:"Die Knochen werden weniger stabil.", k:0}, {t:"Das Herz arbeitet weniger kräftig.", k:0},
+        {t:"Man kann sich schlechter konzentrieren.", k:1}, {t:"Man ist öfter schlecht gelaunt.", k:1}, {t:"Man schläft schlechter.", k:1}, {t:"Man fühlt sich gestresster.", k:1}, {t:"Das Selbstvertrauen sinkt.", k:1}
+      ]},
+    { id:"zahlen", typ:"schaetzen", icon:"📏", titel:"Camp-Zahlen", art:"Schätzen mit dem Regler",
+      anleitung:"Schieb den Regler auf deine Schätzung. Volltreffer = **2 Punkte**, knapp daneben = 1 Punkt.",
+      fragen:[
+        {q:"Wie viele Minuten Bewegung pro Tag empfiehlt die WHO Jugendlichen mindestens?", min:0, max:180, step:5, start:20, unit:"Minuten", dec:0, ans:60, tol:5, e:"Mindestens **60 Minuten** pro Tag."},
+        {q:"An wie vielen Tagen pro Woche sollten Muskeln und Knochen zusätzlich richtig gefordert werden?", min:0, max:7, step:1, start:1, unit:"Tage", dec:0, ans:3, tol:0, e:"An **drei Tagen** pro Woche."},
+        {q:"Wie viele Muskeln hat der Mensch ungefähr?", min:100, max:1000, step:10, start:200, unit:"Muskeln", dec:0, ans:650, tol:60, e:"Je nach Zählweise **über 600**, oft wird etwa **650** genannt."},
+        {q:"Wie viele Sportarten standen 2024 in Paris auf dem Programm der Olympischen Sommerspiele?", min:5, max:60, step:1, start:12, unit:"Sportarten", dec:0, ans:32, tol:3, e:"**32 Sportarten**, darunter zum ersten Mal Breaking."}
+      ]},
+    { id:"wahr", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 10 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch**.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Sport ist nur, was im Fernsehen übertragen wird.", r:"l", e:"Auch Frisbee im Park oder Klettern im Wald kann Sport sein."},
+        {t:"Die WHO empfiehlt Jugendlichen mindestens 60 Minuten Bewegung am Tag.", r:"r"},
+        {t:"Wer am Sportunterricht teilnimmt, erreicht damit schon die WHO-Empfehlung.", r:"l", e:"Zwei oder drei Stunden Sport pro Woche reichen nicht für 60 Minuten **jeden Tag**."},
+        {t:"Die meisten Menschen haben mehrere Motive, Sport zu treiben.", r:"r"},
+        {t:"Rasenmähen ist Sport, weil man sich dabei bewegt.", r:"l", e:"Das ist **Arbeit**: Es fehlen Ziel und Freiwilligkeit im sportlichen Sinn."},
+        {t:"Bewegung kann helfen, sich besser zu konzentrieren.", r:"r", e:"Das Gehirn wird besser durchblutet."},
+        {t:"Bewegungsmangel schadet nur dem Körper, nicht der Psyche.", r:"l", e:"Auch Stimmung, Stress und Schlaf leiden."},
+        {t:"Regelmäßige Bewegung macht auch die Knochen stärker.", r:"r"},
+        {t:"Schach ist in Deutschland Mitglied im Olympischen Sportbund.", r:"r", e:"Der Deutsche Schachbund gehört zum DOSB, obwohl kaum Bewegung dabei ist."},
+        {t:"Beim Sport geht es immer nur ums Gewinnen.", r:"l", e:"Spaß, Gemeinschaft, Gesundheit oder Ausgleich sind für viele wichtiger."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 5 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut, so bleibt er hängen.",
+      fragen:[
+        {q:"„Bewegt, mit Regeln, ______, froh – vier Merkmale, und Sport ist so!“", o:["freiwillig","verschwitzt","im Team"], c:0},
+        {q:"„Wer nur im Stadion sitzt und schreit, ist vom ______ noch meilenweit.“", o:["Sport","Ziel","Sieg"], c:0},
+        {q:"„Musst du zur Strafe Runden drehn, ist’s nicht ______ – das kann man sehn.“", o:["anstrengend","freiwillig","gesund"], c:1},
+        {q:"„______ Minuten jeden Tag – so viel Bewegung der Körper mag.“", o:["Dreißig","Neunzig","Sechzig"], c:2},
+        {q:"„Wer immer sitzt und nie sich regt, dem fehlt die ______, die ihn bewegt.“", o:["Kraft","Uhr","Zeit"], c:0}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 6 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie nennt man einen Grund, warum jemand Sport treibt?", hilfe:"💡 M…", a:["Motiv"], re:["^(ein |das )?motiv(e)?$"], e:"Ein **Motiv**."},
+        {q:"Welches Merkmal fehlt, wenn jemand zur Strafe laufen muss?", hilfe:"💡 F…", a:["Freiwilligkeit"], re:["^(die )?freiwilligkeit$","^freiwillig$"], e:"Die **Freiwilligkeit**."},
+        {q:"Welches Merkmal fehlt beim Zuschauen im Stadion?", hilfe:"💡 B…", a:["Bewegung"], re:["^(die )?(eigene )?bewegung$"], e:"Die **Bewegung**."},
+        {q:"Wie viele Minuten Bewegung pro Tag empfiehlt die WHO mindestens?", hilfe:"💡 Zahl", a:["60"], re:["^60( minuten| min)?$","^sechzig( minuten)?$"], e:"**60 Minuten**."},
+        {q:"Wie viele Merkmale von Sport gibt es auf deinem Logbuch-Blatt?", hilfe:"💡 Zahl", a:["4"], re:["^(4|vier)( merkmale)?$"], e:"**Vier**: Bewegung, Ziel oder Regeln, Freiwilligkeit, Anstrengung und Freude."},
+        {q:"Nenne ein Motiv, bei dem es um Kribbeln und Mut geht.", hilfe:"💡 A…", a:["Abenteuer"], re:["^(das )?abenteuer( (&|und) risiko)?$","^risiko$"], e:"**Abenteuer & Risiko**."}
+      ]}
+  ]
+}));
+</script>
+</body>
+</html>

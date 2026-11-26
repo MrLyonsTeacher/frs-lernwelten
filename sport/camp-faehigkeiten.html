@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16281F">
+<title>Die 5 motorischen Fähigkeiten – Camp Start</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
+<script>
+/* =========================================================
+   Schaubilder (selbst gezeichnet)
+   ========================================================= */
+const FAEH = [
+  {n:"Ausdauer", c:GR, i:(x, y, c) => PIKTO({k:[x+4,y-20], h:[x+2,y-13], b:[x-2,y+2], ea:[x+9,y-6], ha:[x+13,y-11], eb:[x-6,y-8], hb:[x-10,y-2], ka:[x+6,y+10], fa:[x+2,y+19], kb:[x-8,y+11], fb:[x-15,y+14]}, c, 3.6) +
+    `<path d="M${x-26} ${y+22} C${x-10} ${y+30} ${x+10} ${y+14} ${x+28} ${y+22}" stroke="${c}" stroke-width="2" stroke-dasharray="3 3" fill="none"/>`},
+  {n:"Kraft", c:RO, i:(x, y, c) => `<rect x="${x-20}" y="${y-2}" width="40" height="5" rx="2" fill="${c}"/>${[-1,1].map(d => `<rect x="${x+d*20-(d>0?0:8)}" y="${y-12}" width="8" height="25" rx="2" fill="${c}"/><rect x="${x+d*29-(d>0?0:6)}" y="${y-8}" width="6" height="17" rx="2" fill="${c}"/>`).join("")}`},
+  {n:"Schnelligkeit", c:OR, i:(x, y, c) => `<circle cx="${x-4}" cy="${y+2}" r="15" fill="none" stroke="${c}" stroke-width="3.5"/><rect x="${x-8}" y="${y-20}" width="8" height="5" rx="1.5" fill="${c}"/><path d="M${x-4} ${y+2} L${x-4} ${y-8} M${x-4} ${y+2} L${x+4} ${y+6}" stroke="${c}" stroke-width="3" stroke-linecap="round"/><path d="M${x+20} ${y-16} L${x+12} ${y+2} H${x+19} L${x+14} ${y+18} L${x+28} ${y-2} H${x+21} L${x+26} ${y-16} Z" fill="${c}"/>`},
+  {n:"Beweglichkeit", c:BL, i:(x, y, c) => PIKTO({k:[x+16,y+4], h:[x+10,y-2], b:[x-6,y-10], ea:[x+16,y+8], ha:[x+22,y+16], eb:[x+12,y+10], hb:[x+20,y+18], ka:[x+6,y+2], fa:[x+24,y+18], kb:[x-18,y+4], fb:[x-28,y+18]}, c, 3.6) +
+    `<path d="M${x-32} ${y+20} H${x+30}" stroke="${c}" stroke-width="2"/>`},
+  {n:"Koordination", c:LI, i:(x, y, c) => PIKTO({k:[x,y-6], h:[x,y+1], b:[x,y+14], ea:[x-8,y+6], ha:[x-12,y-2], eb:[x+8,y+6], hb:[x+12,y-2], ka:[x-2,y+20], fa:[x-2,y+27], kb:[x+6,y+20], fb:[x+14,y+16]}, c, 3.2) +
+    [[-14,-20],[0,-30],[14,-20]].map(([dx, dy]) => `<circle cx="${x+dx}" cy="${y+dy}" r="4.5" fill="${c}"/>`).join("") + `<path d="M${x-14} ${y-16} C${x-12} ${y-34} ${x+12} ${y-34} ${x+14} ${y-16}" stroke="${c}" stroke-width="1.6" stroke-dasharray="2 3" fill="none"/><path d="M${x-22} ${y+28} H${x+22}" stroke="${c}" stroke-width="3"/>`}
+];
+function fuenf(k){
+  const cx = 190, cy = 188, R = 110, pt = i => [cx + R * Math.sin(i * 2 * Math.PI / 5), cy - R * Math.cos(i * 2 * Math.PI / 5)];
+  let s = "";
+  for(let a = 0; a < 5; a++) for(let b = a + 1; b < 5; b++){ const [x1, y1] = pt(a), [x2, y2] = pt(b); s += `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${CL}" stroke-width="${(b - a) % 4 === 1 || (b - a) === 4 ? 3 : 1.5}" ${(b - a) % 4 === 1 || (b - a) === 4 ? "" : 'stroke-dasharray="4 5"'}/>`; }
+  s += `<circle cx="${cx}" cy="${cy}" r="40" fill="${CB}" stroke="${CL}" stroke-width="2"/>` + TX(cx, cy - 4, "motorische", {s:12, c:HG, w:600}) + TX(cx, cy + 12, "Fähigkeiten", {s:12.5, c:HELL});
+  FAEH.forEach((f, i) => { const [x, y] = pt(i), an = k < 0 || k === i;
+    s += `<g opacity="${an ? 1 : .3}"><circle cx="${x}" cy="${y}" r="38" fill="${CB2}" stroke="${k === i ? GE : f.c}" stroke-width="${k === i ? 5 : 3}"/>${f.i(x, y - 6, f.c)}` +
+      TX(x, y + (i === 0 ? -46 : 56), f.n, {s:13.5, c:k === i ? GE : f.c}) + `</g>`; });
+  return CK(380, 360, s);
+}
+// konditionell – koordinativ
+const GRUPPEN = CK(380, 280, TX(190, 26, "Zwei Gruppen", {s:17, c:HELL}) +
+  `<rect x="14" y="44" width="196" height="200" rx="16" fill="${CB2}" stroke="${OR}" stroke-width="3"/><rect x="222" y="44" width="144" height="200" rx="16" fill="${CB2}" stroke="${LI}" stroke-width="3"/>` +
+  TX(112, 70, "konditionell", {s:16, c:OR}) + TX(112, 88, "Energie, Muskeln, Herz", {s:11.5, c:HG, w:600}) +
+  [["Ausdauer", GR, 116], ["Kraft", RO, 150], ["Schnelligkeit", OR, 184]].map(([t, c, y]) => `<rect x="34" y="${y - 20}" width="156" height="28" rx="14" fill="${c}"/>` + TX(112, y - 1, t, {s:14, c:CB})).join("") +
+  TX(294, 70, "koordinativ", {s:16, c:LI}) + TX(294, 88, "Steuerung durch", {s:11.5, c:HG, w:600}) + TX(294, 102, "Gehirn und Nerven", {s:11.5, c:HG, w:600}) +
+  `<rect x="236" y="130" width="116" height="28" rx="14" fill="${LI}"/>` + TX(294, 149, "Koordination", {s:14, c:CB}) +
+  `<rect x="128" y="214" width="124" height="28" rx="14" fill="${BL}" stroke="${CB}" stroke-width="3"/>` + TX(190, 233, "Beweglichkeit", {s:14, c:CB}) +
+  TX(190, 268, "Sonderstellung: hängt von Gelenken und Muskeln ab", {s:11.5, c:HG, w:600}));
+// Zirkel: Belastung und Pause
+const ZIRKEL = CK(380, 250, TX(190, 26, "So läuft ein Fitness-Zirkel", {s:16, c:HELL}) +
+  Array.from({length:6}, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 3, x = 120 + 76 * Math.cos(a), y = 140 + 76 * Math.sin(a), f = FAEH[i % 5];
+    return `<circle cx="${x}" cy="${y}" r="24" fill="${CB2}" stroke="${f.c}" stroke-width="3"/>` + TX(x, y + 5, i + 1, {s:15, c:f.c}); }).join("") +
+  Array.from({length:6}, (_, i) => { const a = -Math.PI / 2 + (i + .5) * Math.PI / 3, x = 120 + 80 * Math.cos(a), y = 140 + 80 * Math.sin(a), d = a * 180 / Math.PI + 90;
+    return `<path d="M-5 -6 L4 0 L-5 6" transform="translate(${x} ${y}) rotate(${d})" fill="none" stroke="${GE}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`; }).join("") +
+  `<rect x="232" y="88" width="66" height="30" rx="6" fill="${RO}"/>` + TX(265, 108, "30 s", {s:14, c:CB}) + TX(265, 136, "Belastung", {s:12, c:HELL, w:600}) +
+  `<rect x="304" y="88" width="56" height="30" rx="6" fill="${BL}"/>` + TX(332, 108, "30 s", {s:14, c:CB}) + TX(332, 136, "Pause", {s:12, c:HELL, w:600}) +
+  TX(296, 176, "dann zur nächsten", {s:12, c:HG, w:600}) + TX(296, 192, "Station wechseln", {s:12, c:HG, w:600}));
+
+/* =========================================================
+   Inhalte (abgestimmt auf Camp-Logbuch Etappe 5)
+   ========================================================= */
+const LERNEN = {
+  fuenf: { titel:"Die fünf Fähigkeiten", folien:[
+    {bild:fuenf(-1), titel:"Hinter jeder Bewegung", text:"Ob Sprint, Rolle oder Korbleger: Hinter jeder Bewegung stecken **fünf motorische Fähigkeiten**. Sie sind zum Teil **angeboren**, **beeinflussen sich gegenseitig** und lassen sich **alle trainieren**."},
+    {bild:fuenf(0), titel:"Ausdauer", text:"**Lange durchhalten**, ohne zu ermüden, und sich **schnell erholen**. Beispiele: Dauerlauf, Radtour, ein ganzes Basketballspiel. Es gibt **Grundlagenausdauer** (locker und lang) und **Kraftausdauer** (viele Wiederholungen mit Kraft)."},
+    {bild:fuenf(1), titel:"Kraft", text:"Einen **Widerstand überwinden oder halten**: das eigene Körpergewicht, eine Hantel, einen Gegner. **Maximalkraft** ist die größte Kraft (z. B. Gewichtheben), **Schnellkraft** die Kraft in kürzester Zeit (z. B. Absprung), **Kraftausdauer** viele Wiederholungen (z. B. Liegestütze)."},
+    {bild:fuenf(2), titel:"Schnelligkeit", text:"Bewegungen oder Reaktionen **möglichst schnell** ausführen. **Reaktionsschnelligkeit**: schnell auf ein Signal reagieren (Startschuss). **Aktionsschnelligkeit**: die Bewegung selbst schnell ausführen (Sprint, schneller Pass)."},
+    {bild:fuenf(3), titel:"Beweglichkeit", text:"Der **Bewegungsspielraum** deiner **Gelenke** und die **Dehnfähigkeit** deiner **Muskeln**. Wichtig zum Beispiel beim Turnen, Tanzen oder Hürdenlauf. Beweglichkeit **geht schnell verloren**, wenn man sie nicht übt."},
+    {bild:fuenf(4), titel:"Koordination", text:"Bewegungen **gezielt steuern**, gesteuert von **Gehirn und Nerven**. Dazu gehören **Gleichgewicht**, **Rhythmus**, **Orientierung** im Raum, **Reaktion** und das genaue **Dosieren** von Kraft. Beispiele: Balancieren, Jonglieren, Dribbeln."}
+  ]},
+  gruppen: { titel:"Zusammenspiel der Fähigkeiten", folien:[
+    {bild:GRUPPEN, titel:"Konditionell und koordinativ", text:"**Ausdauer, Kraft und Schnelligkeit** hängen vor allem von der **Energie** im Körper ab, von Muskeln, Herz und Lunge: Man nennt sie **konditionelle Fähigkeiten**. Die **Koordination** dagegen ist **Steuerung** durch Gehirn und Nerven. Die **Beweglichkeit** hat eine **Sonderstellung**."},
+    {bild:fuenf(-1), titel:"Selten allein", text:"In fast jeder Sportart wirken **mehrere Fähigkeiten zusammen**. Beim **Basketball**: Koordination fürs Dribbeln, Schnelligkeit im Konter, Ausdauer für 40 Minuten. Beim **Turnen**: Kraft, Beweglichkeit und Koordination."},
+    {bild:FOTO("mf8-sportarten","🏅","Verschiedene Sportarten"), titel:"Jede Sportart hat Schwerpunkte", text:"Der **Marathon** braucht vor allem **Ausdauer**, das **Gewichtheben** **Kraft**, der **100-m-Sprint** **Schnelligkeit** (und Schnellkraft). Wer seine Stärken kennt, findet leichter „seine“ Sportart."}
+  ]},
+  testen: { titel:"Fähigkeiten testen", folien:[
+    {bild:FOTO("mf8-ausdauertest","🏃","Ausdauertest"), titel:"Ausdauer testen", text:"Zum Beispiel mit einem **Dauerlauf über eine feste Zeit** (etwa 12 Minuten, Cooper-Test) oder einem **Pendellauf**, der immer schneller wird. Gemessen wird die **Strecke** oder die erreichte **Stufe**."},
+    {bild:FOTO("mf8-sprungtest","🦘","Standweitsprung"), titel:"Kraft testen", text:"Der **Standweitsprung** aus dem Stand misst die **Schnellkraft** der Beine. **Liegestütze oder Sit-ups in 30 Sekunden** messen die **Kraftausdauer**."},
+    {bild:FOTO("mf8-sprinttest","⏱️","20-m-Sprint"), titel:"Schnelligkeit & Beweglichkeit", text:"Ein **20-m-Sprint** aus dem Stand misst die **Schnelligkeit**. Die **Rumpfbeuge** im Stand oder Sitz (Wie weit kommen die Hände?) misst die **Beweglichkeit**."},
+    {bild:FOTO("mf8-balance","🤹","Balancieren rückwärts"), titel:"Koordination testen", text:"**Rückwärts über einen Balken balancieren**, **seitlich hin und her springen** oder Bälle **jonglieren**: Gemessen wird, wie viele Schritte oder Sprünge **ohne Fehler** gelingen."}
+  ]},
+  zirkel: { titel:"Eine Zirkelstation planen", folien:[
+    {bild:ZIRKEL, titel:"Der Fitness-Zirkel", text:"Beim **Zirkeltraining** gibt es mehrere **Stationen**. An jeder wird eine Übung gemacht, zum Beispiel **30 Sekunden Belastung**, dann **30 Sekunden Pause** und **Wechsel** zur nächsten Station."},
+    {bild:fuenf(-1), titel:"Eine gute Station …", text:"… trainiert **eine Fähigkeit gezielt**, ist **sicher** aufgebaut, wird **verständlich beschrieben** (am besten mit Skizze) und hat eine klare **Dosierung**: Zeit oder Wiederholungen. Und sie lässt sich **leichter oder schwerer** machen."},
+    {bild:FOTO("mf8-station","📋","Stationskarte"), titel:"Sicherheit zuerst", text:"Genug **Abstand** zu Wänden und anderen Stationen, **Matten** unter Sprüngen, nichts Rutschiges, Geräte **fest** aufgebaut. Lieber eine einfache Übung, die alle **sauber** ausführen können."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:fuenf(-1), titel:"Die fünf", text:"**„Ausdauer, Kraft und Schnelligkeit, Beweglichkeit, Koordination – fünf Fähigkeiten, eine Station!“**"},
+    {bild:fuenf(0), titel:"Ausdauer", text:"**„Wer lange läuft und nicht ermüdet, hat Ausdauer gut ausgebrütet.“**"},
+    {bild:fuenf(4), titel:"Koordination", text:"**„Balancieren, jonglieren, fein – Koordination muss es sein.“**"},
+    {bild:GRUPPEN, titel:"Konditionell", text:"**„Kraft, Ausdauer, Tempo schnell – das nennt man auch konditionell.“**"}
+  ]}
+};
+
+const FN = FAEH.map(f => f.n), KK = ["konditionell","koordinativ"];
+LW.start(Object.assign({}, CAMP, {
+  id: "mf8",
+  titel: "Motorische Fähigkeiten – Lernwelt",
+  hero: campHero({ ort:"parcours", symbol:"parcours", etappe:"Etappe 5", titel:"Die 5 motorischen Fähigkeiten",
+    text:"Fünf Stationen hat der Abenteuer-Parcours, und jede verlangt etwas anderes. Lerne die fünf Fähigkeiten kennen, ordne Übungen zu und plane deine eigene Zirkelstation. Sammle Holzscheite 🪵." }),
+  kartenSymbol: "🧗",
+  lernen: LERNEN,
+  levels: [
+    { id:"steckbrief", typ:"memory", lernen:"fuenf", icon:"🧠", titel:"Fähigkeiten-Memory", art:"Memory · 5 Paare",
+      anleitung:"Finde zu jeder **Fähigkeit** die passende **Erklärung**. Jedes Paar = 1 Punkt.",
+      ab:"Fülle in **Aufgabe 1** den Steckbrief in eigenen Worten aus.",
+      paare:[
+        {a:"Ausdauer", b:"lange durchhalten und sich schnell erholen"}, {a:"Kraft", b:"einen Widerstand überwinden oder halten"},
+        {a:"Schnelligkeit", b:"möglichst schnell reagieren und bewegen"}, {a:"Beweglichkeit", b:"großer Spielraum in Gelenken und Muskeln"},
+        {a:"Koordination", b:"Bewegungen gezielt steuern"}
+      ]},
+    { id:"bingo", typ:"sortieren", lernen:"fuenf", icon:"🎯", titel:"Fitness-Bingo", art:"Sortieren · 15 Übungen",
+      anleitung:"Welche **Fähigkeit** trainiert die Übung **vor allem**? Jede richtige Karte = **1 Punkt**.",
+      ab:"Macht in **Aufgabe 3** das Fitness-Bingo und notiert unter jeder Übung die Fähigkeit.",
+      koerbe:FN.map(t => ({t})),
+      items:[
+        {t:"1 Minute auf der Stelle joggen", k:0}, {t:"12 Minuten locker laufen", k:0}, {t:"Seilspringen, 3 Minuten ohne Pause", k:0, e:"Lange durchhalten: Ausdauer. Seilspringen braucht natürlich auch Koordination."},
+        {t:"5 Liegestütze", k:1}, {t:"30 Sekunden Wandsitz", k:1, e:"Halten gegen das eigene Gewicht: Kraft (genauer Kraftausdauer)."}, {t:"Klimmzug an der Stange", k:1},
+        {t:"20 Sekunden Skippings, so schnell du kannst", k:2}, {t:"Auf ein Signal hin klatschen", k:2, e:"Schnell auf ein Signal reagieren: Reaktionsschnelligkeit."}, {t:"10-m-Sprint", k:2},
+        {t:"Rumpfbeuge: Hände Richtung Boden", k:3}, {t:"Schmetterlingssitz", k:3}, {t:"Brücke aus der Rückenlage", k:3},
+        {t:"Standwaage, 10 Sekunden je Bein", k:4}, {t:"Papierknäuel von Hand zu Hand werfen", k:4}, {t:"Rückwärts über die Langbank balancieren", k:4}
+      ]},
+    { id:"sportart", typ:"quiz", lernen:"gruppen", icon:"🏅", titel:"Was braucht die Sportart?", art:"Quiz · 8 Sportarten",
+      anleitung:"Welche Fähigkeit ist bei dieser Sportart **am wichtigsten**? Jede richtige Antwort = **1 Punkt**.",
+      ab:"Kreuze in **Aufgabe 4** bei jeder Sportart die ein bis zwei wichtigsten Fähigkeiten an.",
+      fragen:[
+        {q:"Marathon (über 42 km)", o:FN.slice(0, 4), c:0},
+        {q:"Gewichtheben", o:[FN[0], FN[1], FN[3], FN[4]], c:1},
+        {q:"100-m-Sprint", o:[FN[1], FN[3], FN[2], FN[4]], c:2},
+        {q:"Rhythmische Sportgymnastik mit Band und Reifen", o:[FN[0], FN[1], FN[2], FN[3]], c:3, e:"Sehr viel **Beweglichkeit**, dazu jede Menge Koordination."},
+        {q:"Jonglieren", o:[FN[4], FN[0], FN[1], FN[2]], c:0},
+        {q:"Slackline (auf dem Band balancieren)", o:[FN[2], FN[4], FN[1], FN[0]], c:1},
+        {q:"Tour de France (Radrennen über drei Wochen)", o:[FN[3], FN[2], FN[0], FN[4]], c:2},
+        {q:"Basketball: Welche Fähigkeit braucht man fürs Dribbeln?", o:[FN[0], FN[1], FN[3], FN[4]], c:3, e:"Dribbeln ist **Koordination**. Basketball als Ganzes braucht mehrere Fähigkeiten."}
+      ]},
+    { id:"gruppe", typ:"rush", lernen:"gruppen", icon:"⚡", titel:"Konditionell oder koordinativ?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Gehört das eher zu den **konditionellen** (linker Knopf) oder den **koordinativen** Fähigkeiten (rechter Knopf)? **Ziel: 10 Treffer**.",
+      zeit:60, ziel:10, fest:true,
+      items:[
+        {q:"Ausdauer", o:KK, c:0}, {q:"Gleichgewicht halten", o:KK, c:1}, {q:"Kraft", o:KK, c:0}, {q:"Rhythmus finden", o:KK, c:1},
+        {q:"Schnelligkeit", o:KK, c:0}, {q:"Sich im Raum orientieren", o:KK, c:1}, {q:"Maximalkraft", o:KK, c:0}, {q:"Jonglieren", o:KK, c:1},
+        {q:"12 Minuten durchlaufen", o:KK, c:0}, {q:"Auf der Slackline balancieren", o:KK, c:1}, {q:"Kraftausdauer", o:KK, c:0}, {q:"Den Ball gefühlvoll in den Korb werfen", o:KK, c:1},
+        {q:"Eine schwere Kiste hochheben", o:KK, c:0}, {q:"Arme und Beine im Takt bewegen", o:KK, c:1}
+      ]},
+    { id:"unterformen", typ:"quiz", lernen:"fuenf", icon:"🔬", titel:"Genauer hingeschaut", art:"Quiz · 7 Fragen",
+      anleitung:"Welche **Unterform** ist gemeint? Jede richtige Antwort = **2 Punkte**.", punkte:2,
+      fragen:[
+        {q:"Beim Gewichtheben stemmst du einmal das größte Gewicht, das du schaffst.", o:["Maximalkraft","Kraftausdauer","Schnellkraft","Grundlagenausdauer"], c:0},
+        {q:"Du machst so viele Liegestütze wie möglich am Stück.", o:["Maximalkraft","Kraftausdauer","Reaktionsschnelligkeit","Beweglichkeit"], c:1},
+        {q:"Beim Weitsprung drückst du dich in Sekundenbruchteilen vom Balken ab.", o:["Grundlagenausdauer","Maximalkraft","Schnellkraft","Gleichgewicht"], c:2},
+        {q:"Beim Startschuss sprintest du sofort los.", o:["Kraftausdauer","Beweglichkeit","Grundlagenausdauer","Reaktionsschnelligkeit"], c:3},
+        {q:"Du joggst 30 Minuten locker durch den Wald.", o:["Grundlagenausdauer","Schnellkraft","Maximalkraft","Aktionsschnelligkeit"], c:0},
+        {q:"Beim Turnen hältst du dich auf einem Bein auf dem Balken.", o:["Schnellkraft","Gleichgewicht (Koordination)","Maximalkraft","Kraftausdauer"], c:1},
+        {q:"Im Konter sprintest du so schnell du kannst übers Feld.", o:["Reaktionsschnelligkeit","Beweglichkeit","Aktionsschnelligkeit","Kraftausdauer"], c:2}
+      ]},
+    { id:"tests", typ:"quiz", lernen:"testen", icon:"📏", titel:"Welcher Test?", art:"Quiz · 6 Tests",
+      anleitung:"Welche **Fähigkeit** misst dieser Test vor allem? Jede richtige Antwort = **1 Punkt**.",
+      ab:"Schätze dich in **Aufgabe 2** im Fähigkeiten-Radar ein, am besten nach dem Eingangstest.",
+      fragen:[
+        {q:"12 Minuten laufen und die Strecke messen", o:FN.slice(0, 4), c:0},
+        {q:"Standweitsprung aus dem Stand", o:[FN[0], FN[1], FN[3], FN[4]], c:1, e:"Er misst die **Schnellkraft** der Beine."},
+        {q:"20-m-Sprint aus dem Stand", o:[FN[1], FN[3], FN[2], FN[4]], c:2},
+        {q:"Rumpfbeuge: Wie weit kommen die Hände Richtung Boden?", o:[FN[0], FN[1], FN[2], FN[3]], c:3},
+        {q:"Rückwärts über einen Balken balancieren", o:[FN[4], FN[0], FN[1], FN[2]], c:0},
+        {q:"Sit-ups in 30 Sekunden", o:[FN[2], FN[1], FN[4], FN[3]], c:1, e:"Viele Wiederholungen: **Kraftausdauer** der Bauchmuskeln."}
+      ]},
+    { id:"zirkel", typ:"swipe", lernen:"zirkel", icon:"📋", titel:"Gute Station?", art:"Wischen · 8 Stationen",
+      anleitung:"Eure Klasse plant Zirkelstationen. Ist die Idee **gut** (rechts) oder **muss sie verbessert werden** (links)?",
+      links:{t:"Verbessern", icon:"🛠️"}, rechts:{t:"Gute Station", icon:"👍"},
+      ab:"Plant in **Aufgabe 5** eure eigene Zirkelstation mit Skizze.",
+      karten:[
+        {t:"„Kastensprung“: über den hohen Kasten springen, aber ohne Matte dahinter.", r:"l", e:"Ohne Matte ist das **unsicher**."},
+        {t:"„Wandsitz“: 30 Sekunden mit dem Rücken an der Wand sitzen, Knie im rechten Winkel. Trainiert Kraft.", r:"r", e:"Sicher, klar beschrieben, eine Fähigkeit, klare Dosierung."},
+        {t:"„Irgendwas mit Bällen“: Jeder macht, was er will.", r:"l", e:"Ohne klare Beschreibung weiß niemand, was zu tun ist."},
+        {t:"„Balance-Bank“: rückwärts über die umgedrehte Langbank balancieren, so oft wie möglich in 30 Sekunden.", r:"r"},
+        {t:"„Sprint“: Zwei Teams rennen gleichzeitig aufeinander zu.", r:"l", e:"Zusammenstöße: **gefährlich**."},
+        {t:"„Seilspringen“: 30 Sekunden durchspringen, Leichtere Variante: auf der Stelle hüpfen ohne Seil.", r:"r", e:"Sogar mit leichterer Variante, super!"},
+        {t:"„Liegestütze“: so viele wie möglich, bis man nicht mehr kann, ohne Zeitlimit.", r:"l", e:"Es fehlt eine **klare Dosierung** (Zeit oder Wiederholungen)."},
+        {t:"„Rumpfbeuge-Brücke“: 3 × 20 Sekunden die Brücke halten, auf der Matte.", r:"r"}
+      ]},
+    { id:"wahr", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 10 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch**.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Es gibt fünf motorische Fähigkeiten.", r:"r"},
+        {t:"Motorische Fähigkeiten sind angeboren und lassen sich nicht trainieren.", r:"l", e:"Sie sind **zum Teil** angeboren, aber **alle trainierbar**."},
+        {t:"Koordination wird von Gehirn und Nerven gesteuert.", r:"r"},
+        {t:"Beim Basketball braucht man nur Kraft.", r:"l", e:"Koordination, Schnelligkeit, Ausdauer … fast alle Fähigkeiten."},
+        {t:"Der Standweitsprung misst die Schnellkraft der Beine.", r:"r"},
+        {t:"Beweglichkeit geht schnell verloren, wenn man sie nicht übt.", r:"r"},
+        {t:"Ausdauer, Kraft und Schnelligkeit nennt man koordinative Fähigkeiten.", r:"l", e:"Das sind die **konditionellen** Fähigkeiten."},
+        {t:"Die Fähigkeiten beeinflussen sich gegenseitig.", r:"r", e:"Wer kräftiger ist, kann zum Beispiel oft auch schneller sprinten."},
+        {t:"Bei einer guten Zirkelstation ist Sicherheit egal, Hauptsache anstrengend.", r:"l"},
+        {t:"Jonglieren trainiert vor allem die Ausdauer.", r:"l", e:"Jonglieren ist **Koordination**."}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 4 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut, so bleibt er hängen.",
+      fragen:[
+        {q:"„Ausdauer, Kraft und Schnelligkeit, Beweglichkeit, ______ – fünf Fähigkeiten, eine Station!“", o:["Koordination","Konzentration","Motivation"], c:0},
+        {q:"„Wer lange läuft und nicht ______, hat Ausdauer gut ausgebrütet.“", o:["springt","ermüdet","balanciert"], c:1},
+        {q:"„Balancieren, jonglieren, fein – ______ muss es sein.“", o:["Kraft","Ausdauer","Koordination"], c:2},
+        {q:"„Kraft, Ausdauer, Tempo schnell – das nennt man auch ______.“", o:["konditionell","koordinativ","speziell"], c:0}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 6 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Welche Fähigkeit brauchst du, um lange durchzuhalten?", hilfe:"💡 A…", a:["Ausdauer"], re:["^(die )?ausdauer$"], e:"**Ausdauer**."},
+        {q:"Welche Fähigkeit steuert Bewegungen über Gehirn und Nerven?", hilfe:"💡 K…", a:["Koordination"], re:["^(die )?koordination$"], e:"**Koordination**."},
+        {q:"Wie heißt die Kraft, die in kürzester Zeit wirkt, z. B. beim Absprung?", hilfe:"💡 S…", a:["Schnellkraft"], re:["^(die )?schnellkraft$"], e:"**Schnellkraft**."},
+        {q:"Wie nennt man Ausdauer, Kraft und Schnelligkeit zusammen?", hilfe:"💡 k… Fähigkeiten", a:["konditionell"], re:["^(die )?konditionell(e|en)?( fähigkeiten)?$"], e:"**Konditionelle** Fähigkeiten."},
+        {q:"Welche Fähigkeit misst die Rumpfbeuge?", hilfe:"💡 B…", a:["Beweglichkeit"], re:["^(die )?beweglichkeit$"], e:"**Beweglichkeit**."},
+        {q:"Wie viele Sekunden Belastung sind an einer Zirkelstation üblich? (Zahl)", hilfe:"💡 Zahl", a:["30"], re:["^(30|20|40|45|60)( sekunden| s)?$"], e:"Oft **30 Sekunden**, je nach Übung auch etwas mehr oder weniger."}
+      ]}
+  ]
+}));
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+/* Camp Start (Profil Sport Kl. 8): gemeinsames Aussehen aller Lernwelten am See */
+:root{
+  color-scheme:light;
+  --bg:#EEF0E6; --surface:#FFFFFF; --surface-2:#F4F5EE; --ink:#18261E; --muted:#56645B; --line:#CBD3C6;
+  --accent:#2F6B4F; --accent-ink:#FFFFFF; --accent-2:#F2C14E; --mid-bg:#FFF3D1;
+  --ok:#1E7F4E; --ok-bg:#DCF2E4; --bad:#C2412F; --bad-bg:#FBE3DC;
+  --radius:16px; --radius-btn:12px; --radius-ic:12px;
+  --border:1px solid #D3DACE; --shadow:0 3px 0 #C5CDBF; --border-opt:2px solid #D3DACE;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  --font-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --display-weight:800; --display-transform:uppercase; --display-tracking:.01em;
+  --ic-bg:#DCEBDD; --card-back:#16281F; --tile-bg:#F7E7C2; --tile-ink:#18261E;
+  --chip-bg:#16281F; --chip-ink:#fff; --how-bg:#FFFFFF; --border-soft:1px solid #D3DACE;
+  --track:#DEE3D8; --star:#E8833A; --star-off:#D3DACE;
+}
+body{background:var(--bg) radial-gradient(circle at 100% 0,rgba(242,193,78,.16),transparent 42%)}
+.chip{border:0}
+
+/* Startbild: Abend am See, rechts das Symbol der Station */
+.camp-hero{position:relative;overflow:hidden;border-radius:22px;color:#fff;padding:clamp(1.4rem,4vw,2.4rem);min-height:270px;isolation:isolate;
+  background:linear-gradient(180deg,#1B3A4B 0%,#2E5B5E 38%,#E7A65A 74%,#F3C77A 100%)}
+.camp-hero .kicker{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--accent-2);margin:0;letter-spacing:.04em;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.camp-hero h1{font-family:var(--font-display);font-weight:800;text-transform:uppercase;font-size:clamp(2.3rem,8vw,4.4rem);line-height:.92;margin:.3rem 0 .7rem;max-width:13ch;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.camp-hero p{margin:0 0 .6rem;max-width:36ch;color:#F4F1E6;font-size:1.06rem;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+.camp-hero .hero-art{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.camp-hero .welt-back{background:rgba(0,0,0,.22)}
+@media (max-width:640px){ .camp-hero .sym{opacity:.45} }
+@media (prefers-reduced-motion: no-preference){
+  .camp-hero .flamme{transform-box:fill-box;transform-origin:50% 100%;animation:flacker 1.4s ease-in-out infinite alternate}
+  .camp-hero .flamme.b{animation-duration:1.1s;animation-delay:-.4s}
+  @keyframes flacker{0%{transform:scale(1,1) skewX(0)}50%{transform:scale(.94,1.06) skewX(3deg)}100%{transform:scale(1.04,.95) skewX(-3deg)}}
+  .camp-hero .welle{animation:welle 6s ease-in-out infinite alternate}
+  @keyframes welle{to{transform:translateX(-14px)}}
+  .camp-hero .rad{transform-box:fill-box;transform-origin:50% 50%;animation:dreh 9s linear infinite}
+  .camp-hero .rad.rueck{animation-direction:reverse}
+  @keyframes dreh{to{transform:rotate(360deg)}}
+  .camp-hero .strahl{transform-box:view-box;transform-origin:912px 92px;animation:strahl 7s ease-in-out infinite alternate}
+  @keyframes strahl{from{transform:rotate(-14deg)}to{transform:rotate(10deg)}}
+  .camp-hero .glimm{animation:glimm 2.4s ease-in-out infinite alternate}
+  @keyframes glimm{from{opacity:.55}to{opacity:1}}
+}
+
+/* Bilder auf Infokarten (gezeichnete Szenen als .webp, bis dahin ein Symbol) */
+.ln-art img.lnbild{display:block;width:100%;height:auto;max-height:min(58vh,calc(var(--avail,700px) - 260px));object-fit:contain;margin:0 auto;border-radius:16px;background:#fff;border:3px solid var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.ln-stage:has(.lnbild){grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.4rem}
+.ln-art:has(.lnbild){align-self:stretch;display:flex;align-items:center;justify-content:center}
+.ln-art > span:has(.lnbild){display:block;width:100%;animation:lnPop .6s both}
+@media (max-aspect-ratio:1/1), (max-width:640px){ .ln-stage:has(.lnbild){grid-template-columns:1fr;overflow-y:auto} .ln-art img.lnbild{max-height:32vh;width:auto;max-width:100%} }
+.zg .ztarget{font-size:clamp(1.5rem,4.4vw,2.4rem)}
+
+/* Muskelkarte (vorne/hinten) zum Antippen */
+.mk g[data-z]{cursor:pointer;transition:filter .2s}
+.mk g[data-z] > *{transition:fill .2s,stroke .2s}
+.mk g[data-z].z-ok > *{fill:#5BE38C !important;stroke:#1E7F4E !important}
+.mk g[data-z].z-no > *{fill:#FF6B6B !important;stroke:#8E1F14 !important}
+.mk g[data-z].z-show > *,.mk g[data-z].z-hl > *{fill:#FFD34D !important;stroke:#8A6400 !important}
+.mk g[data-z].z-show{filter:drop-shadow(0 0 7px rgba(255,211,77,.95))}
+@media (hover:hover){ .mk g[data-z]:not(.z-ok):not(.z-no):not(.z-show):hover > *{fill:#E98A7C} }
+@media (prefers-reduced-motion: no-preference){ .mk g[data-z].z-show{animation:mkpuls 1s ease-in-out 3} @keyframes mkpuls{50%{filter:drop-shadow(0 0 14px rgba(255,211,77,1))}} }

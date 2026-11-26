@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16281F">
+<title>Aufwärmen, Cool-down & Stretching – Camp Start</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
+<script>
+/* =========================================================
+   Schaubilder (selbst gezeichnet)
+   ========================================================= */
+// Vier Gründe fürs Aufwärmen
+const W_ICON = {
+  koerper: `<rect x="40" y="16" width="16" height="64" rx="8" fill="${HELL}"/><rect x="44" y="34" width="8" height="42" rx="4" fill="${RO}"/><circle cx="48" cy="82" r="12" fill="${RO}"/>
+    <path d="M66 70 L66 30 M58 38 L66 28 L74 38" stroke="${GE}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M126 58 C126 46 110 42 106 52 C102 42 86 46 86 58 C86 72 102 80 106 90 C110 80 126 72 126 58 Z" fill="${RO}"/>
+    <path d="M84 66 h8 l5 -10 l6 20 l5 -12 h12" stroke="${HELL}" stroke-width="3" fill="none" stroke-linejoin="round"/>`,
+  kopf: `<path d="M50 92 C46 70 40 64 42 46 C44 24 64 14 84 16 C108 18 120 36 116 56 L124 70 L114 72 L114 86 C114 92 104 94 96 92 L96 100" fill="none" stroke="${HELL}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="80" cy="46" r="17" fill="${GE}"/><path d="M73 62 h14 M74 68 h12" stroke="${GE}" stroke-width="4" stroke-linecap="round"/>
+    ${[0,1,2,3,4].map(k => { const a = -Math.PI * .9 + k * Math.PI * .2; return `<path d="M${80 + Math.cos(a) * 24} ${46 + Math.sin(a) * 24} L${80 + Math.cos(a) * 32} ${46 + Math.sin(a) * 32}" stroke="${GE}" stroke-width="3" stroke-linecap="round"/>`; }).join("")}`,
+  verletz: `<path d="M48 20 C46 46 50 62 62 72 C70 80 70 92 66 104 M96 20 C96 46 92 60 86 70 C80 80 82 92 86 104" stroke="${SA}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g transform="rotate(-30 76 64)"><rect x="42" y="52" width="68" height="24" rx="12" fill="${SA}" stroke="${OR}" stroke-width="3"/><rect x="66" y="55" width="20" height="18" rx="3" fill="#E9C9A0"/>
+    ${[0,1,2].map(i => [0,1].map(j => `<circle cx="${71 + i * 5}" cy="${60 + j * 8}" r="1.3" fill="${OR}"/>`).join("")).join("")}</g>
+    <path d="M118 30 L132 30 M125 23 L125 37" stroke="${GR}" stroke-width="5" stroke-linecap="round"/>`,
+  leistung: `<circle cx="72" cy="58" r="32" fill="none" stroke="${HELL}" stroke-width="5"/><rect x="66" y="16" width="12" height="9" rx="2" fill="${HELL}"/><path d="M98 32 l7 -7" stroke="${HELL}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M72 58 L72 36 M72 58 L88 66" stroke="${GE}" stroke-width="4" stroke-linecap="round"/><circle cx="72" cy="58" r="4" fill="${GE}"/>
+    <path d="M124 26 L110 58 H124 L114 90 L140 50 H126 L136 26 Z" fill="${GE}"/>`
+};
+const warum = k => KACHELN("Warum wärmen wir uns auf?", [["Körper", W_ICON.koerper], ["Kopf", W_ICON.kopf], ["Verletzungen", W_ICON.verletz], ["Leistung", W_ICON.leistung]], k, "");
+
+// Kleine Figuren für die Phasen (Piktogramme)
+const PFIG = {
+  joggen: (x, y, c) => PIKTO({k:[x+4,y-38], h:[x+1,y-30], b:[x-3,y-12], ea:[x+9,y-22], ha:[x+14,y-28], eb:[x-8,y-24], hb:[x-12,y-17], ka:[x+6,y-4], fa:[x+2,y+6], kb:[x-9,y-2], fb:[x-17,y+2]}, c, 4.2),
+  kreisen: (x, y, c) => PIKTO({k:[x,y-40], h:[x,y-31], b:[x,y-12], ea:[x+10,y-31], ha:[x+19,y-31], eb:[x-10,y-31], hb:[x-19,y-31], ka:[x+4,y-2], fa:[x+5,y+7], kb:[x-4,y-2], fb:[x-5,y+7]}, c, 4.2) +
+    [1,-1].map(d => `<circle cx="${x+d*19}" cy="${y-31}" r="7" fill="none" stroke="${c}" stroke-width="1.6" stroke-dasharray="3 2"/><path d="M${x+d*19-3} ${y-40} l3 2 l-3 2" stroke="${c}" stroke-width="1.6" fill="none"/>`).join(""),
+  skipping: (x, y, c) => PIKTO({k:[x+1,y-40], h:[x,y-31], b:[x,y-12], ea:[x+9,y-24], ha:[x+12,y-32], eb:[x-8,y-22], hb:[x-10,y-14], ka:[x+12,y-14], fa:[x+10,y-3], kb:[x-2,y-1], fb:[x-1,y+8]}, c, 4.2) +
+    `<path d="M${x-18} ${y-26} h-8 M${x-16} ${y-18} h-10" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`,
+  handstand: (x, y, c) => PIKTO({k:[x,y-1], h:[x,y-10], b:[x+1,y-29], ea:[x-6,y-3], ha:[x-8,y+6], eb:[x+6,y-3], hb:[x+8,y+6], ka:[x+1,y-40], fa:[x+1,y-50], kb:[x+2,y-40], fb:[x+3,y-50]}, c, 4.2),
+  dehnen: (x, y, c) => PIKTO({k:[x,y-40], h:[x,y-31], b:[x,y-12], ea:[x+8,y-24], ha:[x+12,y-32], eb:[x-6,y-20], hb:[x-9,y-10], ka:[x+2,y-1], fa:[x+2,y+8], kb:[x-4,y-1], fb:[x-10,y-9]}, c, 4.2) +
+    `<circle cx="${x+18}" cy="${y-38}" r="7" fill="none" stroke="${c}" stroke-width="1.6"/><path d="M${x+18} ${y-38} v-4 M${x+18} ${y-38} h3" stroke="${c}" stroke-width="1.6"/>`
+};
+const PHASEN = [
+  {n:"Allgemein", m:"3–5 min", c:GR, fig:"joggen", w:4},
+  {n:"Mobilisation", m:"2–3 min", c:BL, fig:"kreisen", w:3},
+  {n:"Aktivierung", m:"2–3 min", c:OR, fig:"skipping", w:3},
+  {n:"Speziell", m:"3–5 min", c:RO, fig:"handstand", w:4},
+  {n:"Cool-down", m:"5 min", c:LI, fig:"dehnen", w:4}];
+function phasen(k){
+  const x0 = 18, x1 = 362, tot = PHASEN.reduce((a, p) => a + p.w, 0), xs = []; let x = x0;
+  PHASEN.forEach(p => { xs.push(x); x += (x1 - x0) * p.w / tot; }); xs.push(x1);
+  // Belastungskurve: steigt bis „Speziell“, fällt im Cool-down
+  const pts = [[x0, .18], [xs[1], .36], [xs[2], .46], [xs[3], .72], [(xs[3] + xs[4]) / 2, .86], [xs[4], .8], [x1, .14]].map(([px, v]) => [px, 140 - v * 92]);
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for(let i = 0; i < pts.length - 1; i++){ const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += ` C${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]} ${p2[1]}`; }
+  let s = `<path d="M${x0} 140 H${x1}" stroke="${CL}" stroke-width="2"/>` + TX(x0, 46, "Belastung ↑", {s:11, c:HG, a:"start", w:600});
+  s += `<path d="${d} L${x1} 140 L${x0} 140 Z" fill="${GE}" opacity=".14"/><path d="${d}" stroke="${GE}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  PHASEN.forEach((p, i) => { const a = xs[i], b = xs[i + 1], m = (a + b) / 2, an = k < 0 || k === i;
+    s += `<g opacity="${an ? 1 : .3}"><rect x="${a + 2}" y="208" width="${b - a - 4}" height="30" rx="8" fill="${p.c}"/>` +
+      TX(m, 227, p.n, {s:p.n.length > 10 ? 9.2 : 11.5, c:CB}) + TX(m, 256, p.m, {s:11, c:HG, w:600}) + PFIG[p.fig](m, 192, an ? p.c : HG) +
+      (i < 4 ? TX(m, 276, i + 1 + ".", {s:12, c:p.c}) : "") + `</g>`;
+    if(k === i) s += `<rect x="${a}" y="40" width="${b - a}" height="244" rx="10" fill="none" stroke="${GE}" stroke-width="2.5" stroke-dasharray="6 5"/>`; });
+  return CK(380, 296, TX(190, 26, "Vom Allgemeinen zum Speziellen", {s:16, c:HELL}) + s);
+}
+
+// Dynamisch oder statisch dehnen
+function dehnen(k){
+  const box = (x, an, sel) => `<rect x="${x}" y="40" width="170" height="226" rx="16" fill="${CB2}" stroke="${sel ? GE : CL}" stroke-width="${sel ? 4 : 2}" opacity="${an ? 1 : .5}"/>`;
+  const dyn = PIKTO({k:[96,78], h:[96,92], b:[96,140], ea:[110,112], ha:[118,126], eb:[82,112], hb:[74,124], ka:[98,172], fa:[98,200], kb:[124,166], fb:[146,178]}, BL, 9) +
+    `<path d="M150 192 C134 214 102 220 74 196" stroke="${BL}" stroke-width="3" stroke-dasharray="6 5" fill="none"/><path d="M80 186 L72 196 L84 202" stroke="${BL}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M144 160 C156 142 152 124 140 112" stroke="${BL}" stroke-width="3" stroke-dasharray="6 5" fill="none"/>`;
+  const stat = PIKTO({k:[281,82], h:[281,97], b:[282,146], ea:[266,116], ha:[252,108], eb:[292,124], hb:[302,150], ka:[283,180], fa:[284,210], kb:[283,184], fb:[304,156]}, GR, 9) +
+    `<path d="M240 212 H330" stroke="${HG}" stroke-width="3"/><circle cx="328" cy="74" r="18" fill="none" stroke="${GE}" stroke-width="4"/><path d="M328 74 V62 M328 74 L337 79" stroke="${GE}" stroke-width="3.5" stroke-linecap="round"/>` +
+    TX(328, 108, "20–30 s", {s:13, c:GE});
+  return CK(380, 300, TX(190, 26, "Zwei Arten zu dehnen", {s:17, c:HELL}) +
+    `<g opacity="${k === 1 ? .45 : 1}">${box(14, k !== 1, k === 0)}${dyn}${TX(99, 228, "dynamisch", {s:16, c:k === 0 ? GE : HELL})}${TX(99, 248, "in Bewegung · vorher", {s:11.5, c:HG, w:600})}</g>` +
+    `<g opacity="${k === 0 ? .45 : 1}">${box(196, k !== 0, k === 1)}${stat}${TX(281, 228, "statisch", {s:16, c:k === 1 ? GE : HELL})}${TX(281, 248, "halten · danach", {s:11.5, c:HG, w:600})}</g>`);
+}
+
+// Puls am Handgelenk messen
+const finger = (x1, y1, x2, y2, w, f, st) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${st}" stroke-width="${w + 3}" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="${f}" stroke-width="${w}" stroke-linecap="round"/>`;
+const HAUT = "#EBCBA4", HAUT2 = "#DDB68A", RAND = "#A9805A";
+const PULS = CK(380, 280, TX(190, 26, "Puls am Handgelenk messen", {s:16, c:HELL}) +
+  // Unterarm (Handfläche nach oben)
+  `<path d="M14 182 C80 178 160 176 222 176 C232 176 238 180 246 182 L246 210 C238 212 230 214 222 214 C160 216 80 222 14 226 Z" fill="${HAUT}" stroke="${RAND}" stroke-width="2.5"/>` +
+  `<path d="M60 206 C110 202 170 198 222 196" stroke="#C98C78" stroke-width="2.4" fill="none" opacity=".6"/><path d="M80 194 C130 190 180 188 220 188" stroke="#9BB4C9" stroke-width="2" fill="none" opacity=".55"/>` +
+  // Hand: Ballen, vier Finger, Daumen
+  `<path d="M244 178 C262 170 290 172 302 182 C306 192 304 206 296 212 C282 220 260 218 244 212 Z" fill="${HAUT}" stroke="${RAND}" stroke-width="2.5"/>` +
+  finger(300, 182, 346, 176, 10, HAUT, RAND) + finger(302, 192, 352, 190, 10.5, HAUT, RAND) + finger(300, 202, 348, 204, 10, HAUT, RAND) + finger(294, 210, 336, 216, 9, HAUT, RAND) +
+  finger(254, 176, 278, 150, 11, HAUT, RAND) +
+  `<path d="M262 196 C272 192 284 194 292 200" stroke="${RAND}" stroke-width="1.4" fill="none"/>` +
+  // Pulsschlag auf der Daumenseite
+  [0,1,2].map(i => `<path d="M${226 + i * 9} ${168 - i * 2} q5 -7 0 -14" stroke="${RO}" stroke-width="2.6" fill="none" opacity="${1 - i * .25}"/>`).join("") +
+  // andere Hand: Zeige- und Mittelfinger von oben
+  `<path d="M96 70 C120 60 160 64 178 82 C186 92 184 106 176 112 L150 118 C130 118 108 108 96 96 Z" fill="${HAUT2}" stroke="${RAND}" stroke-width="2.5"/>` +
+  finger(170, 100, 224, 172, 10, HAUT2, RAND) + finger(160, 108, 210, 176, 10, HAUT2, RAND) + finger(150, 112, 178, 132, 9, HAUT2, RAND) +
+  `<ellipse cx="226" cy="174" rx="5" ry="3" fill="#F2D2B6"/><ellipse cx="212" cy="177" rx="5" ry="3" fill="#F2D2B6"/>` +
+  TX(290, 64, "Zeige- und Mittelfinger", {s:12.5, c:HG, w:600}) + TX(290, 80, "auf die Daumenseite", {s:12.5, c:HG, w:600}) +
+  TX(110, 262, "15 Sekunden zählen × 4", {s:15, c:GE}) + TX(296, 262, "= Schläge pro Minute", {s:13, c:HELL, w:600}));
+
+/* =========================================================
+   Inhalte (abgestimmt auf Camp-Logbuch Etappe 3)
+   ========================================================= */
+const LERNEN = {
+  warum: { titel:"Warum aufwärmen?", folien:[
+    {bild:warum(-1), titel:"Kalt in den Sport? Lieber nicht.", text:"Knete aus dem Kühlschrank bricht, wenn man sie biegt. Warm geknetet lässt sie sich formen. Mit Muskeln ist es ähnlich. Ein gutes Aufwärmen dauert **etwa 10 bis 15 Minuten** und wirkt auf **Körper, Kopf, Verletzungsrisiko und Leistung**."},
+    {bild:warum(0), titel:"Körper", text:"**Körper- und Muskeltemperatur steigen**. **Puls und Atmung** werden schneller, die Muskeln werden **besser durchblutet** und mit Sauerstoff versorgt. Der Gelenkknorpel saugt sich mit **Gelenkflüssigkeit** voll und federt Stöße besser ab."},
+    {bild:warum(1), titel:"Kopf", text:"Aufwärmen **stimmt dich ein**: Du bist **konzentrierter**, aufmerksamer und motivierter. Die Nerven leiten Signale **schneller** weiter, du reagierst schneller."},
+    {bild:warum(2), titel:"Verletzungen", text:"Warme Muskeln, Sehnen und Bänder sind **dehnfähiger und elastischer**. Das senkt das Risiko für **Zerrungen** und andere Verletzungen deutlich."},
+    {bild:warum(3), titel:"Leistung", text:"Aufgewärmt bist du **schneller, kräftiger und geschickter**: Die **Koordination** klappt besser, und du kannst mehr Kraft entwickeln."}
+  ]},
+  phasen: { titel:"Die Phasen des Aufwärmens", folien:[
+    {bild:phasen(-1), titel:"Vom Allgemeinen zum Speziellen", text:"Ein gutes Aufwärmen hat **vier Phasen**. Die Belastung steigt **langsam** an: erst den ganzen Körper aufwecken, dann immer genauer auf die Sportart vorbereiten. Nach dem Sport kommt das **Cool-down**."},
+    {bild:phasen(0), titel:"1 · Allgemein", text:"Den **Kreislauf in Schwung** bringen: lockeres Laufen, Hampelmann, Seilspringen. Viele Muskeln arbeiten, Puls und Temperatur steigen."},
+    {bild:phasen(1), titel:"2 · Mobilisation", text:"Die **Gelenke** durchbewegen: Arme, Schultern, Handgelenke, Hüfte und Knöchel **kreisen**. Dazu passt **dynamisches Dehnen** in Bewegung."},
+    {bild:phasen(2), titel:"3 · Aktivierung", text:"**Kurz und schnell**: Skippings, Anfersen, Strecksprünge, kurze Sprints. Jetzt werden Muskeln und Nerven auf **Tempo** gebracht."},
+    {bild:phasen(3), titel:"4 · Speziell", text:"Übungen, die **genau zur Sportart** passen. Fürs Turnen: **Rolle**, **Stützsprünge**, **Körperspannung**. Im Basketball wären es Dribbeln, Passen und Korbleger."},
+    {bild:phasen(4), titel:"Cool-down", text:"Nach dem Sport den Körper **zur Ruhe bringen**: locker auslaufen oder gehen, **statisch dehnen**, durchatmen. Puls und Atmung sinken langsam, die Erholung beginnt."}
+  ]},
+  dehnen: { titel:"Stretching: wie und wann?", folien:[
+    {bild:dehnen(0), titel:"Dynamisch dehnen", text:"**In Bewegung**, schwungvoll, aber **kontrolliert**: Beinpendeln, Ausfallschritte im Gehen, Armkreisen. Etwa **10 Wiederholungen**. Das passt **vor dem Sport**, in Phase 2 des Aufwärmens."},
+    {bild:dehnen(1), titel:"Statisch dehnen", text:"Eine Dehnposition **ruhig halten**, etwa **20 bis 30 Sekunden**, dabei **weiteratmen** und **nicht wippen**. Das passt **nach dem Sport**, im Cool-down, oder als eigenes Beweglichkeitstraining."},
+    {bild:dehnen(-1), titel:"Warum nicht lange vor dem Sprint?", text:"Langes statisches Dehnen **entspannt** den Muskel. Direkt vor einem Sprint oder Sprung sinkt dadurch kurzfristig die **Spannkraft**: Man ist etwas langsamer und springt weniger hoch."},
+    {bild:FOTO("aw8-dehnregeln","🧘","Richtig dehnen"), titel:"Dehn-Regeln", text:"Dehnen soll **ziehen, aber nicht wehtun**. Langsam in die Position gehen, **ruhig atmen**, beide Seiten dehnen. Nur **aufgewärmte** Muskeln intensiv dehnen."}
+  ]},
+  puls: { titel:"Puls messen", folien:[
+    {bild:PULS, titel:"So misst du den Puls", text:"Lege **Zeige- und Mittelfinger** auf die Innenseite des Handgelenks, auf der **Daumenseite**, oder seitlich an den Hals. Nicht mit dem Daumen messen, der hat einen eigenen Puls. **15 Sekunden zählen und mal 4 nehmen**."},
+    {bild:FOTO("aw8-puls","❤️","Puls nach dem Aufwärmen"), titel:"Was der Puls zeigt", text:"In Ruhe schlägt das Herz bei Jugendlichen meist **60 bis 100 Mal pro Minute**. Nach dem Aufwärmen ist der Puls **deutlich höher**: Der Kreislauf ist **angekurbelt**. Im Cool-down sinkt er wieder."}
+  ]},
+  reime: { titel:"Merk-Reime", folien:[
+    {bild:phasen(-1), titel:"Reihenfolge", text:"**„Erst allgemein, dann mobil, dann schnell – zum Schluss speziell, und du bist hell.“**"},
+    {bild:warum(2), titel:"Verletzungen", text:"**„Ein kalter Muskel reißt geschwind – drum wärm dich auf, wie’s Profis sind.“**"},
+    {bild:dehnen(-1), titel:"Dehnen", text:"**„Vorher schwingen, nachher halten – so lässt du deine Muskeln walten.“**"},
+    {bild:PULS, titel:"Puls", text:"**„Fünfzehn Sekunden zählen, mal vier – schon steht dein Puls pro Minute hier.“**"}
+  ]}
+};
+
+const PH = ["Allgemein","Mobilisation","Aktivierung","Speziell","Cool-down"], DS = ["dynamisch","statisch"];
+LW.start(Object.assign({}, CAMP, {
+  id: "aw8",
+  titel: "Aufwärmen – Lernwelt",
+  hero: campHero({ ort:"wiese", symbol:"sonne", etappe:"Etappe 3", titel:"Aufwärmen & Cool-down",
+    text:"Auf der Sonnen-Wiese bereitest du dich auf die Turnstunde vor: Warum wärmen wir uns auf, in welcher Reihenfolge, und wie dehnt man richtig? Sammle Holzscheite 🪵 für dein Camp-Feuer." }),
+  kartenSymbol: "🌅",
+  lernen: LERNEN,
+  levels: [
+    { id:"warum", typ:"quiz", lernen:"warum", icon:"🌡️", titel:"Warum eigentlich?", art:"Quiz · 8 Fragen",
+      anleitung:"Was passiert beim Aufwärmen? Jede richtige Antwort = **1 Punkt**.",
+      ab:"Ergänze in **Aufgabe 1** an jedem Ast der Mind-Map mindestens zwei Stichworte.",
+      fragen:[
+        {q:"Was passiert mit der Temperatur in den Muskeln?", o:["Sie steigt","Sie sinkt","Sie bleibt gleich","Sie schwankt stark"], c:0},
+        {q:"Warum verletzt man sich aufgewärmt seltener?", o:["Muskeln und Sehnen sind dehnfähiger","Die Knochen werden weicher","Man spürt keinen Schmerz mehr","Man bewegt sich langsamer"], c:0},
+        {q:"Was macht der Gelenkknorpel beim Aufwärmen?", o:["Er wird hart und starr","Er saugt Gelenkflüssigkeit auf und federt besser","Er löst sich auf","Er wird kleiner"], c:1},
+        {q:"Wie wirkt das Aufwärmen auf den Kopf?", o:["Man wird müde","Man wird konzentrierter und reagiert schneller","Man vergisst die Regeln","Gar nicht"], c:1},
+        {q:"Wie lange sollte ein gutes Aufwärmen ungefähr dauern?", o:["1–2 Minuten","10–15 Minuten","45 Minuten","Eine ganze Stunde"], c:1},
+        {q:"Was passiert mit Puls und Atmung?", o:["Sie werden schneller","Sie hören auf","Sie werden langsamer","Nur die Atmung wird schneller"], c:0},
+        {q:"Warum ist man aufgewärmt leistungsfähiger?", o:["Weil man mehr gegessen hat","Weil die Koordination besser klappt und mehr Kraft möglich ist","Weil die Schuhe warm sind","Weil man schon müde ist"], c:1},
+        {q:"Was bringt die bessere Durchblutung?", o:["Mehr Sauerstoff für die Muskeln","Kalte Hände","Weniger Energie","Steifere Gelenke"], c:0}
+      ]},
+    { id:"reihe", typ:"zeitstrahl", lernen:"phasen", icon:"🪜", titel:"Die richtige Reihenfolge", art:"Ordnen · 5 Phasen",
+      anleitung:"Tippe die Phasen in der **richtigen Reihenfolge** an, die erste zuerst. Jeder richtige Platz = 1 Punkt.",
+      ab:"Nummeriere in **Aufgabe 2** die vier Phasen in der richtigen Reihenfolge.",
+      items:[
+        {j:"1", t:"Allgemein: Kreislauf in Schwung bringen"}, {j:"2", t:"Mobilisation: Gelenke kreisen und lockern"}, {j:"3", t:"Aktivierung: kurze, schnelle Bewegungen"},
+        {j:"4", t:"Speziell: Übungen passend zur Sportart"}, {j:"5", t:"Cool-down: auslaufen, statisch dehnen, ausatmen"}
+      ]},
+    { id:"programm", typ:"sortieren", lernen:"phasen", icon:"🧩", titel:"Mein Turn-Aufwärmprogramm", art:"Sortieren · 15 Übungen",
+      anleitung:"In welche **Phase** gehört die Übung? Jede richtige Karte = **1 Punkt**.",
+      ab:"Klebe in **Aufgabe 3** die Übungskarten in die passende Phase und plane die Minuten und dein Cool-down.",
+      koerbe:PH.map(t => ({t})),
+      items:[
+        {t:"Lockeres Laufen durch die Halle", k:0}, {t:"Hampelmann", k:0}, {t:"Seilspringen", k:0},
+        {t:"Arme kreisen", k:1}, {t:"Handgelenke kreisen", k:1}, {t:"Hüfte kreisen", k:1},
+        {t:"Skippings", k:2}, {t:"Anfersen", k:2}, {t:"Strecksprünge", k:2},
+        {t:"Rolle vorwärts auf der Matte", k:3}, {t:"Stützsprünge über die Bank", k:3}, {t:"Unterarmstütz („Brett“)", k:3, e:"**Körperspannung** braucht man beim Turnen ständig, z. B. im Handstand."},
+        {t:"Locker auslaufen", k:4}, {t:"Oberschenkel dehnen und halten", k:4}, {t:"Auf dem Rücken liegen und tief atmen", k:4}
+      ]},
+    { id:"ds", typ:"rush", lernen:"dehnen", icon:"⚡", titel:"Dynamisch oder statisch?", art:"Speed-Game · 60 Sekunden",
+      anleitung:"Ist das **dynamisches** Dehnen (linker Knopf) oder **statisches** Dehnen (rechter Knopf)? **Ziel: 10 Treffer** in 60 Sekunden.",
+      zeit:60, ziel:10, fest:true,
+      ab:"Ergänze in **Aufgabe 4** die Tabelle und trage bei b) D oder S ein.",
+      items:[
+        {q:"Beinpendeln vor und zurück", o:DS, c:0}, {q:"Oberschenkel im Stand dehnen, 20 Sekunden halten", o:DS, c:1},
+        {q:"Ausfallschritte im Gehen", o:DS, c:0}, {q:"Schmetterlingssitz, ruhig atmen und halten", o:DS, c:1},
+        {q:"Armkreisen vorwärts und rückwärts", o:DS, c:0}, {q:"Wade an der Wand dehnen und 30 Sekunden halten", o:DS, c:1},
+        {q:"Passt besonders vor dem Sport", o:DS, c:0}, {q:"Passt besonders nach dem Sport", o:DS, c:1},
+        {q:"Schwungvoll, aber kontrolliert", o:DS, c:0}, {q:"Ruhig halten, nicht wippen", o:DS, c:1},
+        {q:"Hüfte öffnen: Knie im Gehen nach außen kreisen", o:DS, c:0}, {q:"Im Sitzen zu den Zehen greifen und halten", o:DS, c:1},
+        {q:"Etwa 10 Wiederholungen", o:DS, c:0}, {q:"Etwa 20 bis 30 Sekunden", o:DS, c:1}
+      ]},
+    { id:"coach", typ:"quiz", lernen:"dehnen", icon:"📣", titel:"Du bist der Coach", art:"Situationen · 7 Fälle",
+      anleitung:"Was sagst du als Coach? Jede richtige Antwort = **2 Punkte**.", punkte:2, szenenLabel:"Fall",
+      ab:"Beantworte in **Aufgabe 4c**, warum man vor einem Sprint nicht lange statisch dehnt.",
+      fragen:[
+        {szene:"Lena will gleich 50 m sprinten. Vorher hält sie jede Dehnung eine Minute lang.", q:"Was rätst du ihr?", o:["Super, so ist sie am schnellsten","Lieber dynamisch dehnen, langes Halten senkt kurz die Spannkraft","Gar nicht aufwärmen","Noch länger halten"], c:1},
+        {szene:"Tom wippt beim Dehnen der Oberschenkelrückseite immer wieder ganz schnell nach unten.", q:"Was sagst du?", o:["Weiter so, je mehr Schwung, desto besser","Langsam in die Position gehen und ruhig halten","Er soll aufhören zu atmen","Er soll das nur einbeinig machen"], c:1},
+        {szene:"Mia beginnt das Aufwärmen direkt mit Strecksprüngen und Sprints.", q:"Was fehlt am Anfang?", o:["Das Cool-down","Die allgemeine Phase: erst den Kreislauf in Schwung bringen","Die spezielle Phase","Nichts"], c:1},
+        {szene:"Nach der Turnstunde laufen alle sofort in die Umkleide.", q:"Was fehlt?", o:["Die Aktivierung","Das Cool-down","Ein zweites Aufwärmen","Die Mobilisation"], c:1},
+        {szene:"Ben dehnt so weit, dass es richtig wehtut, und beißt die Zähne zusammen.", q:"Was sagst du?", o:["Dehnen soll ziehen, aber nicht wehtun","Je mehr Schmerz, desto mehr bringt es","Er soll den Atem anhalten","Er soll schneller dehnen"], c:0},
+        {szene:"Im Aufwärmen fürs Turnen spielt die Gruppe zum Schluss 10 Minuten Fußball.", q:"Was fehlt für die Turnstunde?", o:["Ein spezieller Teil mit Übungen fürs Turnen","Noch mehr Fußball","Ein Cool-down","Gar nichts"], c:0},
+        {szene:"Elif fragt, ob sie die Dehnung nur auf der rechten Seite machen soll, weil die linke nicht zieht.", q:"Was sagst du?", o:["Ja, nur rechts","Beide Seiten dehnen","Gar nicht dehnen","Nur dann dehnen, wenn es wehtut"], c:1}
+      ]},
+    { id:"puls", typ:"eingabe", lernen:"puls", icon:"❤️", titel:"Puls-Rechner", art:"Rechnen · 6 Aufgaben",
+      anleitung:"Rechne den **Puls pro Minute** aus: **Schläge in 15 Sekunden × 4**. Gib nur die Zahl ein.",
+      ab:"Miss in **Aufgabe 5** deinen eigenen Puls vor und nach dem Aufwärmen.",
+      fragen:[
+        {q:"Du zählst in 15 Sekunden **18** Schläge. Wie hoch ist dein Puls pro Minute?", a:["72"], re:["^72$"], e:"18 × 4 = **72**"},
+        {q:"Nach dem Aufwärmen zählst du **32** Schläge in 15 Sekunden.", a:["128"], re:["^128$"], e:"32 × 4 = **128**"},
+        {q:"Lea zählt **21** Schläge in 15 Sekunden.", a:["84"], re:["^84$"], e:"21 × 4 = **84**"},
+        {q:"Nach dem Sprint zählt Tom **40** Schläge in 15 Sekunden.", a:["160"], re:["^160$"], e:"40 × 4 = **160**"},
+        {q:"Ruhepuls 72, nach dem Aufwärmen 128. Wie groß ist der **Unterschied**?", a:["56"], re:["^56$"], e:"128 − 72 = **56**"},
+        {q:"Nach dem Cool-down zählst du **25** Schläge in 15 Sekunden.", a:["100"], re:["^100$"], e:"25 × 4 = **100**: Der Puls sinkt schon wieder."}
+      ]},
+    { id:"wahr", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 10 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch**.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Aufwärmen ist nur etwas für Profis.", r:"l", e:"Gerade im Schulsport schützt es vor Verletzungen."},
+        {t:"Beim Aufwärmen steigt die Belastung langsam an.", r:"r"},
+        {t:"Den Puls misst man am besten mit dem Daumen.", r:"l", e:"Der Daumen hat einen eigenen Puls. Nimm Zeige- und Mittelfinger."},
+        {t:"Ein Aufwärmen fürs Turnen sieht anders aus als eins fürs Basketball.", r:"r", e:"Der **spezielle** Teil passt immer zur Sportart."},
+        {t:"Statisches Dehnen ist ideal direkt vor einem Sprint.", r:"l", e:"Davor besser dynamisch, statisch im Cool-down."},
+        {t:"Beim Dehnen soll man ruhig weiteratmen.", r:"r"},
+        {t:"Das Cool-down kann man sich sparen.", r:"l", e:"Es hilft dem Körper, zur Ruhe zu kommen und sich zu erholen."},
+        {t:"Aufgewärmte Muskeln sind dehnfähiger.", r:"r"},
+        {t:"Dehnen muss richtig wehtun, sonst bringt es nichts.", r:"l", e:"Ziehen ja, Schmerz nein."},
+        {t:"Mobilisation heißt: Gelenke durchbewegen.", r:"r"}
+      ]},
+    { id:"reime", typ:"quiz", lernen:"reime", icon:"🎵", titel:"Reim-Werkstatt", art:"Merk-Reime ergänzen · 4 Reime",
+      anleitung:"Welches Wort fehlt im **Merk-Reim**? Lies ihn laut, so bleibt er hängen.",
+      fragen:[
+        {q:"„Erst allgemein, dann mobil, dann schnell – zum Schluss ______, und du bist hell.“", o:["speziell","Cool-down","dehnen"], c:0},
+        {q:"„Ein kalter ______ reißt geschwind – drum wärm dich auf, wie’s Profis sind.“", o:["Knochen","Muskel","Schuh"], c:1},
+        {q:"„Vorher schwingen, nachher ______ – so lässt du deine Muskeln walten.“", o:["springen","laufen","halten"], c:2},
+        {q:"„Fünfzehn Sekunden zählen, mal ______ – schon steht dein Puls pro Minute hier.“", o:["vier","drei","zehn"], c:0}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 6 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      fragen:[
+        {q:"Wie heißt die erste Phase des Aufwärmens?", hilfe:"💡 A…", a:["Allgemein"], re:["^(die )?allgemein(e)?( phase| aufwärmen)?$"], e:"**Allgemein**."},
+        {q:"Wie heißt die Phase, in der man die Gelenke kreist?", hilfe:"💡 M…", a:["Mobilisation"], re:["^(die )?mobilisation$","^mobilisieren$"], e:"**Mobilisation**."},
+        {q:"Wie heißt der ruhige Abschluss nach dem Sport?", hilfe:"💡 C…", a:["Cool-down"], re:["^(das )?cool[- ]?down$"], e:"**Cool-down**."},
+        {q:"Welche Art zu dehnen passt vor dem Sport?", hilfe:"💡 d…", a:["dynamisch"], re:["^(das )?dynamisch(e|es)?( dehnen)?$"], e:"**Dynamisches** Dehnen."},
+        {q:"Wie viele Sekunden hält man eine statische Dehnung ungefähr? (eine Zahl genügt)", hilfe:"💡 z. B. 20", a:["20"], re:["^(15|20|25|30)( sekunden| s)?$","^20 ?(-|–|bis) ?30( sekunden| s)?$"], e:"Etwa **20 bis 30 Sekunden**."},
+        {q:"Mit welchen zwei Fingern misst man den Puls? (einen nennen genügt)", hilfe:"💡 Z… oder M…", a:["Zeigefinger"], re:["^(zeigefinger|mittelfinger)$","^zeige(finger)? und mittelfinger$"], e:"Mit **Zeige- und Mittelfinger**."}
+      ]}
+  ]
+}));
+</script>
+</body>
+</html>

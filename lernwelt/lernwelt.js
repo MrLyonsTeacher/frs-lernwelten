@@ -321,7 +321,7 @@ function home(){
     return `<button class="panel lvl" data-go="l=${esc(l.id)}">
       <span class="ic" aria-hidden="true">${l.icon||"🎯"}</span>
       <span class="t">${esc(l.titel)}</span>
-      <span class="k">${deckOf(l)?"📖 ":""}${esc(l.art||"")}</span>
+      <span class="k">${deckOf(l)?"📖 ":""}${esc(l.art||"")}${l.ab?" · 📒":""}</span>
       <span class="s"><span>${played(l.id)?`${b}/${m}`:T.open}</span>${platGame(l.id)?`<span class="plat-b" title="${esc(T.platGame)}">${medalSvg(4,16)}</span>`:""}${starHtml(starsFor(b,m))}</span></button>`;}).join("")}</div>
   <div class="foot"><span>${T.saved}</span><button id="lwReset">${T.reset}</button></div>`;
 }
@@ -486,6 +486,7 @@ function finish(l, A, pts, info, perfectRun){
     <p class="res-gain${gain?"":" none"}">${gain ? `${W.sammel||"⭐"} ${T.newFlags(gain)}` : T.noNew}</p>
     <p class="res-info">${T.thisRound}: ${pts} / ${m}${info?` · ${esc(info)}`:""}</p>
     ${msg?`<p class="res-msg">${esc(msg)}</p>`:""}
+    ${l.ab?`<div class="res-ab"><span class="res-ab-i" aria-hidden="true">📒</span><div><b>${esc(W.abTitel||"Jetzt aufs Arbeitsblatt")}</b><span>${rich(l.ab)}</span></div></div>`:""}
     <div class="row">${nx?`<button class="btn big" data-go="l=${esc(nx.id)}">${T.nextLvl}: ${esc(nx.titel)}</button>`:""}${pnx?`<button class="btn big" data-go="${esc(pnx.hash)}">${esc(T.pfadNext)}: ${esc(pnx.titel)}</button>`:W.pfad?`<button class="btn big" data-go="">🧭 ${esc(T.pfadBack)}</button>`:""}
       <button class="btn alt" data-again>${T.again}</button><button class="btn alt" data-go="">${T.toMap}</button></div></div>${rvHtml}</div>`;
   if(plat || perfect || st===3) confetti(plat?200:140); else if(gain && st===2) confetti(45);

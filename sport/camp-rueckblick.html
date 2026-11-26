@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16281F">
+<title>Mein Profiljahr – Camp Start</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../lernwelt/lernwelt.css">
+<link rel="stylesheet" href="sport-kit.css">
+<link rel="stylesheet" href="camp-kit.css">
+</head>
+<body>
+<main class="lw" id="app"></main>
+
+<script src="../qrcode.js"></script>
+<script src="../ergebnis.js"></script>
+<script src="../lernwelt/lernwelt.js"></script>
+<script src="sport-kit.js"></script>
+<script src="camp-kit.js"></script>
+<script>
+/* =========================================================
+   Schaubild: aufgeschlagenes Logbuch mit Reitern für die Etappen
+   ========================================================= */
+const ETAPPEN = [
+  {n:"Was ist Sport?", o:"Lagerfeuer", c:OR, w:["4 Merkmale von Sport", "7 Motive fürs Sporttreiben", "WHO: 60 Minuten am Tag", "Bewegungsmangel schadet", "Körper und Kopf"]},
+  {n:"Spielregeln & Fairness", o:"Schiri-Turm", c:"#E8833A", w:["Schritte, Dribbling, 3 s, 24 s", "3x3: 1 Korb, 12 s, bis 21", "4 Aufgaben von Regeln", "formelles Fair Play", "informelles Fair Play"]},
+  {n:"Aufwärmen & Stretching", o:"Sonnen-Wiese", c:GE, w:["Körper, Kopf, Verletzungen,", "Leistung", "4 Phasen + Cool-down", "dynamisch: vorher", "statisch: danach"]},
+  {n:"Muskeln & Gegenspieler", o:"Muskel-Mühle", c:RO, w:["Muskeln können nur ziehen", "Agonist zieht", "Antagonist gibt nach", "5 Muskelpaare", "beide Seiten trainieren"]},
+  {n:"Motorische Fähigkeiten", o:"Abenteuer-Parcours", c:GR, w:["Ausdauer, Kraft,", "Schnelligkeit, Beweglichkeit,", "Koordination", "konditionell ↔ koordinativ", "gute Zirkelstation"]},
+  {n:"Fair Play & Emotionen", o:"Leuchtturm", c:BL, w:["Gefühle dürfen sein", "Verhalten bleibt fair", "STOPP-Regel", "Fair-Play-Werte", "Fair-Play-Vertrag"]}
+];
+function logbuch(k){
+  let s = `<path d="M22 50 Q114 38 206 52 Q298 38 390 50 V266 Q298 254 206 268 Q114 254 22 266 Z" fill="#F4EBD5" stroke="${SA}" stroke-width="3"/><path d="M206 52 V268" stroke="#CDBE9A" stroke-width="3"/>`;
+  ETAPPEN.forEach((e, i) => { const y = 62 + i * 33, an = k === i;
+    s += `<rect x="392" y="${y}" width="${an ? 22 : 16}" height="28" rx="5" fill="${e.c}" opacity="${k < 0 || an ? 1 : .5}"/>` + TX(400 + (an ? 3 : 0), y + 19, i + 1, {s:12, c:CB}); });
+  if(k < 0){
+    s += TX(114, 100, "Camp-Logbuch", {s:17, c:CB, st:"font-family:Georgia,serif"}) + TX(114, 124, "Profil Sport · Kl. 8", {s:12, c:"#6B5E43", w:600});
+    s += `<g transform="translate(114 188)"><circle r="40" fill="none" stroke="#2F6B4F" stroke-width="3"/><path d="M-24 18 L0 -22 L24 18 Z" fill="none" stroke="#2F6B4F" stroke-width="3.5" stroke-linejoin="round"/><path d="M-26 28 q8 -5 17 0 t17 0 t17 0" stroke="#2E6A85" stroke-width="3" fill="none"/></g>`;
+    ETAPPEN.forEach((e, i) => { s += TX(220, 86 + i * 30, `${i + 1}  ${e.n}`, {s:11.5, c:CB, a:"start"}); });
+  } else {
+    const e = ETAPPEN[k];
+    s += TX(114, 92, `Etappe ${k + 1}`, {s:13, c:"#6B5E43", w:600}) + TX(114, 120, e.n, {s:15, c:CB, st:"font-family:Georgia,serif"}) + TX(114, 146, e.o, {s:12, c:e.c}) +
+      `<circle cx="114" cy="204" r="34" fill="${e.c}" opacity=".9"/>` + TX(114, 216, k + 1, {s:34, c:CB});
+    e.w.forEach((t, j) => { s += `<circle cx="222" cy="${84 + j * 36}" r="4" fill="${e.c}"/>` + TX(232, 88 + j * 36, t, {s:11.5, c:CB, a:"start", w:600}); });
+  }
+  return CK(430, 292, TX(215, 28, k < 0 ? "Dein Profiljahr" : "Das bleibt hängen", {s:16.5, c:HELL}) + s);
+}
+
+const LERNEN = {
+  rueck: { titel:"Das Profiljahr im Überblick", folien:[
+    {bild:logbuch(-1), titel:"Zurückblättern", text:"Sechs Etappen liegen hinter dir. Hier siehst du auf einen Blick, **was du dir merken solltest**: gut für die **Theorietests** und für deinen **Rückblick** im Logbuch."},
+    ...ETAPPEN.map((e, i) => ({bild:logbuch(i), titel:`Etappe ${i + 1} · ${e.n}`, text:{
+      0:"**Sport** erkennt man an **Bewegung**, **Ziel oder Regeln**, **Freiwilligkeit** und **Anstrengung & Freude**. Menschen haben verschiedene **Motive**. Die **WHO** empfiehlt mindestens **60 Minuten** Bewegung am Tag.",
+      1:"Basketball: **Schrittfehler**, **Doppeldribbling**, **3 Sekunden**, **24 Sekunden**. **3x3**: ein Korb, **12 Sekunden**, **1 und 2 Punkte**, Ende bei **21**. Regeln sorgen für **Sicherheit, Chancengleichheit, Spielfluss** und **Vergleichbarkeit**.",
+      2:"Aufwärmen wirkt auf **Körper, Kopf, Verletzungsrisiko** und **Leistung**. Reihenfolge: **Allgemein, Mobilisation, Aktivierung, Speziell**, danach **Cool-down**. **Dynamisch** dehnen vorher, **statisch** danach.",
+      3:"Muskeln können nur **ziehen**. Der **Agonist** führt die Bewegung aus, der **Antagonist** gibt nach. Paare: **Bizeps ↔ Trizeps**, **Bauch ↔ Rücken**, **vorne ↔ hinten** am Oberschenkel, **Hüftbeuger ↔ Gesäß**, **Schienbein ↔ Wade**.",
+      4:"Die fünf motorischen Fähigkeiten: **Ausdauer, Kraft, Schnelligkeit, Beweglichkeit, Koordination**. Die ersten drei sind **konditionell**, die Koordination ist **Steuerung**.",
+      5:"**Gefühle** dürfen sein, das **Verhalten** muss fair bleiben. Wenn’s kocht: **STOPP** – Stehen bleiben, Tief durchatmen, Ordnen, Positiv handeln, Partner holen."}[i]}))
+  ]}
+};
+
+LW.start(Object.assign({}, CAMP, {
+  id: "rb8",
+  titel: "Mein Profiljahr – Lernwelt",
+  hero: campHero({ ort:"huette", symbol:"huette", etappe:"Etappe 7", titel:"Mein Profiljahr",
+    text:"In der Logbuch-Hütte blätterst du zurück: Was ist von diesem Jahr geblieben? Teste dein Wissen aus allen Etappen, bevor du deinen Rückblick schreibst. Sammle die letzten Holzscheite 🪵." }),
+  kartenSymbol: "📖",
+  lernen: LERNEN,
+  levels: [
+    { id:"marathon", typ:"quiz", lernen:"rueck", icon:"🏕️", titel:"Camp-Marathon", art:"Quiz · 12 Fragen aus allen Etappen",
+      anleitung:"Eine Frage aus jeder Ecke des Camps. Jede richtige Antwort = **1 Punkt**.",
+      fragen:[
+        {q:"Welches Merkmal fehlt, wenn jemand zur Strafe Runden läuft?", o:["Freiwilligkeit","Bewegung","Anstrengung","Ziel"], c:0},
+        {q:"Wie viele Minuten Bewegung pro Tag empfiehlt die WHO Jugendlichen mindestens?", o:["30","60","90","120"], c:1},
+        {q:"Wie viele Sekunden hat ein 3x3-Team für einen Angriff?", o:["24","8","12","30"], c:2},
+        {q:"Welche Aufgabe hat die Regel „Der Korb hängt überall in 3,05 m Höhe“?", o:["Sicherheit","Spielfluss","Chancengleichheit","Vergleichbarkeit"], c:3},
+        {q:"Was kommt im Aufwärmen nach der Mobilisation?", o:["Aktivierung","Allgemein","Cool-down","Speziell"], c:0},
+        {q:"Wann passt statisches Dehnen am besten?", o:["Direkt vor dem Sprint","Nach dem Sport","Während des Spiels","Nie"], c:1},
+        {q:"Wer ist der Gegenspieler des Bizeps?", o:["Wadenmuskel","Bauchmuskeln","Trizeps","Gesäßmuskel"], c:2},
+        {q:"Wie heißt der Muskel, der die Bewegung ausführt?", o:["Antagonist","Sehne","Gelenk","Agonist"], c:3},
+        {q:"Welche Fähigkeit trainiert Jonglieren vor allem?", o:["Koordination","Ausdauer","Kraft","Beweglichkeit"], c:0},
+        {q:"Welche Fähigkeiten nennt man konditionell?", o:["Koordination und Beweglichkeit","Ausdauer, Kraft, Schnelligkeit","Nur die Kraft","Gleichgewicht und Rhythmus"], c:1},
+        {q:"Wofür steht das erste P in STOPP?", o:["Partner holen","Pause machen","Positiv handeln","Pfeifen"], c:2},
+        {q:"Was muss im Wettkampf immer fair bleiben?", o:["Das Ergebnis","Die Gefühle","Die Laune","Das Verhalten"], c:3}
+      ]},
+    { id:"memory", typ:"memory", lernen:"rueck", icon:"🧠", titel:"Begriffe-Memory", art:"Memory · 8 Paare",
+      anleitung:"Finde zu jedem **Fachbegriff** die passende **Erklärung**. Jedes Paar = 1 Punkt.",
+      paare:[
+        {a:"Motiv", b:"Grund, warum jemand Sport treibt"}, {a:"Informelles Fair Play", b:"Gegner auch ohne Regel achten"},
+        {a:"Mobilisation", b:"Gelenke durchbewegen"}, {a:"Cool-down", b:"Körper nach dem Sport zur Ruhe bringen"},
+        {a:"Antagonist", b:"Gegenspieler, der nachgibt"}, {a:"Dysbalance", b:"Ungleichgewicht zwischen Muskeln"},
+        {a:"Koordination", b:"Bewegungen gezielt steuern"}, {a:"STOPP-Regel", b:"fünf Schritte, wenn’s kocht"}
+      ]},
+    { id:"etappe", typ:"sortieren", lernen:"rueck", icon:"🗂️", titel:"Welche Etappe?", art:"Sortieren · 12 Begriffe",
+      anleitung:"Aus welcher Etappe stammt der Begriff? Jede richtige Karte = **1 Punkt**.",
+      koerbe:[ {t:"Sport & Regeln", info:"Etappe 1 und 2"}, {t:"Körper", info:"Etappe 3 und 4"}, {t:"Fähigkeiten", info:"Etappe 5"}, {t:"Fair Play & Gefühle", info:"Etappe 6"} ],
+      items:[
+        {t:"Freiwilligkeit", k:0}, {t:"Shot Clock", k:0}, {t:"Chancengleichheit", k:0},
+        {t:"Aktivierung", k:1}, {t:"Agonist", k:1}, {t:"Statisches Dehnen", k:1},
+        {t:"Schnellkraft", k:2}, {t:"Gleichgewicht", k:2}, {t:"Zirkelstation", k:2},
+        {t:"Tief durchatmen", k:3}, {t:"Enttäuschung", k:3}, {t:"Fair-Play-Vertrag", k:3}
+      ]},
+    { id:"wahr", typ:"swipe", icon:"🧐", titel:"Wahr oder falsch?", art:"Wischen · 12 Karten",
+      anleitung:"Stimmt die Aussage? Wische nach **rechts = wahr**, nach **links = falsch**.",
+      links:{t:"Falsch", icon:"❌"}, rechts:{t:"Wahr", icon:"✅"},
+      karten:[
+        {t:"Zuschauen im Stadion ist Sport.", r:"l"}, {t:"Beim 3x3 zählt ein Korb von hinter dem Bogen 2 Punkte.", r:"r"},
+        {t:"Fair Play gilt nur, wenn der Schiri hinschaut.", r:"l"}, {t:"Aufwärmen senkt das Verletzungsrisiko.", r:"r"},
+        {t:"Den Puls misst man mit dem Daumen.", r:"l"}, {t:"Muskeln können nur ziehen.", r:"r"},
+        {t:"Der Quadrizeps beugt das Knie.", r:"l", e:"Er **streckt** das Knie."}, {t:"Alle motorischen Fähigkeiten sind trainierbar.", r:"r"},
+        {t:"Jonglieren trainiert vor allem die Ausdauer.", r:"l"}, {t:"Gefühle dürfen sein, das Verhalten muss fair bleiben.", r:"r"},
+        {t:"Das Cool-down kommt vor dem Aufwärmen.", r:"l"}, {t:"Bauch und Rücken sind Gegenspieler.", r:"r"}
+      ]},
+    { id:"profi", typ:"eingabe", icon:"🎓", titel:"Profi-Check", art:"Selbst schreiben · 8 Fragen",
+      anleitung:"Jetzt ohne Auswahl: **Schreibe die Antwort selbst.** Kleine Tippfehler werden gelb angezeigt, geben aber keinen Punkt.",
+      ab:"Jetzt bist du bereit für **Etappe 7** im Logbuch: Schau auf dein Jahr zurück, vergleiche dein Radar und schreib deinen Brief an dich in Klasse 9.",
+      fragen:[
+        {q:"Wie nennt man einen Grund, warum jemand Sport treibt?", hilfe:"💡 M…", a:["Motiv"], re:["^(ein |das )?motiv(e)?$"], e:"**Motiv**."},
+        {q:"Wie viele Spieler hat ein 3x3-Team auf dem Feld?", hilfe:"💡 Zahl", a:["3"], re:["^(3|drei)( spieler)?$"], e:"**Drei**."},
+        {q:"Wie heißt die letzte Phase nach dem Sport?", hilfe:"💡 C…", a:["Cool-down"], re:["^(das )?cool[- ]?down$"], e:"**Cool-down**."},
+        {q:"Welche Art zu dehnen passt vor dem Sport?", hilfe:"💡 d…", a:["dynamisch"], re:["^(das )?dynamisch(e|es)?( dehnen)?$"], e:"**Dynamisch**."},
+        {q:"Wer ist der Gegenspieler des Trizeps?", hilfe:"💡 B…", a:["Bizeps"], re:["^(der )?(bizeps|biceps)$"], e:"Der **Bizeps**."},
+        {q:"Welche Fähigkeit misst die Rumpfbeuge?", hilfe:"💡 B…", a:["Beweglichkeit"], re:["^(die )?beweglichkeit$"], e:"**Beweglichkeit**."},
+        {q:"Wofür steht das S in STOPP?", hilfe:"💡 S… b…", a:["Stehen bleiben"], re:["^stehen ?bleiben$","^stehenbleiben$"], e:"**Stehen bleiben**."},
+        {q:"Wie nennt man Fair Play, bei dem man sich an die Regeln hält?", hilfe:"💡 f…", a:["formell"], re:["^(das )?formell(es)?( fair play)?$"], e:"**Formelles** Fair Play."}
+      ]}
+  ]
+}));
+</script>
+</body>
+</html>
